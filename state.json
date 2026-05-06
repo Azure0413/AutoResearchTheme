@@ -1,6 +1,6 @@
 {
   "date": "2026-05-07",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,6 +9,10 @@
     {
       "stage": 2,
       "summary": "**Diffusion-Based Generative Models** 的關鍵事實、結論、技術細節、論點如下：\n\n**關鍵事實：**\n\n1. Diffusion 模型在 2023-2024 年間的研究熱度最高，產業落地速度最快。\n2. Diffusion 模型的技術突破點在噪聲逆向過程和大規模語意條件。\n3. Diffusion 模型的計算資源需求高，但 Latent Diffusion 大幅降低需求。\n\n**結論：**\n\n1. Diffusion 模型在當前與未來的研究與應用版圖中最具衝擊力。\n2. Diffusion 模型的可擴展性高，可以接入多種條件，如文本、語音、深度圖、3D、影片。\n\n**技術細節：**\n\n1. Forward Diffusion Process：逐步向資料加入 Gaussian noise，形成一條馬爾可夫鏈。\n2. Reverse Denoising Process：以參數化的神經網路學習逆向分布。\n3. Score Matching：直接預測噪聲或 score。\n4. Variational Lower-Bound (VLB)：透過 ELBO 逼近真實資料分布，得到訓練目標。\n\n**論點：**\n\n1. Diffusion 模型的核心思想是逐步向資料加入 Gaussian noise，形成一條馬爾可夫鏈。\n2. Diffusion 模型的技術突破點在噪聲逆向過程和大規模語意條件。\n3. Diffusion 模型的計算資源需求高，但 Latent Diffusion 大幅降低需求。\n4. Diffusion 模型的可擴展性高，可以接入多種條件，如文本、語音、深度圖、3D、影片。"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 最關鍵的事實\n\n* 提出了 5 種具體可實作的創新研究方法或架構改良。\n* 每種方法都針對不同的問題或需求，例如多模態 Diffusion 模型、基于 Transformer 的 Diffusion 模型、分層 Diffusion 模型、基於注意力的 Diffusion 模型和多任務 Diffusion 模型。\n\n### 最關鍵的結論\n\n* 這些創新方法可以提高模型的多樣性、表達能力和生成質量。\n* 可以應用於不同的領域，例如影像生成、語音生成和分類。\n\n### 技術細節\n\n* 多模態 Diffusion 模型：結合多模態的 Diffusion 模型，能夠同時生成多種類型的數據。\n* 基于 Transformer 的 Diffusion 模型：使用 Transformer 架構來改良 Diffusion 模型，提高模型的表達能力和生成質量。\n* 分層 Diffusion 模型：使用分層的 Diffusion 模型架構，能夠更好地捕捉數據的多尺度和多重解析度的特徵。\n* 基於注意力的 Diffusion 模型：使用注意力的機制來權重不同的 Diffusion 步驟，能夠更好地捕捉數據的重要特徵和模式。\n* 多任務 Diffusion 模型：使用多任務的 Diffusion 模型架構，能夠同時完成多個任務。\n\n### 論點\n\n* 這些創新方法可以提高模型的多樣性和應用範圍。\n* 可以應用於不同的領域，例如影像生成、語音生成和分類。\n* 可以提高生成數據的質量和真實性。"
     }
   ]
 }
