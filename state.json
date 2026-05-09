@@ -1,6 +1,6 @@
 {
   "date": "2026-05-09",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,6 +9,10 @@
     {
       "stage": 2,
       "summary": "**控制 Diffusion 方法與模型架構深入解析**\n\n### 1. ControlNet\n\n* **Zero-Convolution (Zero-Conv)**：在 UNet 各層的 skip-connection 前插入一個全零初始化的 1×1 卷積層，使得在未訓練前不會影響原始訊號。\n* **Condition-to-Feature Branch**：將條件圖先經過 Encoder（ResNet-Style）→ Feature-Map，然後透過 Cross-Attention 注入到 UNet 每層的 query/key/value。\n* **訓練流程**：\n  1. 凍結 Stable Diffusion 的所有參數（包括 Text-Encoder、UNet、VAE）。\n  2. 隨機抽取文字-圖像-條件三元組，將條件圖做 data-augmentation（旋轉、隨機遮擋）。\n  3. 噪聲預測：模型接受 z_t（噪聲 latent） + c（文字 embedding） + cond_feat（條件特徵），預測 ε_θ(z_t, t, c, cond_feat)。\n  4. 損失：標準 MSE（ε-prediction）+ Condition-Consistency Loss（條件特徵在不同層的 L2 正則化）。\n\n### 2. T2I-Adapter\n\n* **Adapter 設計**：每個 Adapter 由 3 個 Conv-Block（3×3 Conv + GroupNorm + SiLU）組成，最後接 Cross-Attention（Query 來自 UNet 的中間特徵，Key/Value 來自條件特徵）。\n* **多條件疊加**：不同條件的 Adapter 可以平行放置，最終特徵透過加權求和（可學習權重）融合。\n* **訓練策略**：只訓練 Adapter 本身（約 2–3 M 參數），使用 LoRA-style 的低秩更新方式進一步壓縮參數量。\n\n### 3. SDXL-Control (Multi-Condition Fusion Module, MCFM)\n\n* **多尺度融合**：MCFM 在 Encoder、Mid、Decoder 三個階段各插入 Condition Fusion Block，包含 Condition Encoder、Scale-Aware Gating 和 Feature Concatenation + 1×1 Conv。\n* **兩階段訓練**：\n  1. 大規模預訓練：使用 LAION-5B 配合自動生成的條件圖進行自監督，目標是學習條件 ↔ latent 的通用映射。\n  2. 領域微調：在特定領域（如醫學 CT、建築平面圖）上加入真實條件，僅更新 MCF"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 最關鍵的事實\n\n* 提出 5 種具體可實作的創新研究方法或架構改良。\n* 每種方法都有不同的核心 idea 和技術細節。\n* 每種方法都有預期改善的指標。\n\n### 結論\n\n* 這 5 種方法都可以提高 Diffusion 模型的生成能力和控制性。\n* 這些方法可以用來生成高質量的圖像。\n\n### 技術細節\n\n* **1. 多模態條件 Diffusion 模型 (Multimodal Conditional Diffusion Model)**\n + 使用多模態的 Encoder 將不同模態的條件轉換為統一的特徵表達。\n + 使用 Cross-Attention 機制將這些特徵注入到 UNet 中。\n* **2. 雙向 Diffusion 模型 (Bidirectional Diffusion Model)**\n + 使用兩個 UNet，一個用於正向生成，另一個用於反向生成。\n + 兩個 UNet 共享相同的權重，但使用不同的輸入和輸出。\n* **3. 注意力機制增強的 Diffusion 模型 (Attention-Enhanced Diffusion Model)**\n + 使用 Self-Attention 機制和 Cross-Attention 機制，將注意力權重注入到 UNet 中。\n* **4. 雜訊分解 Diffusion 模型 (Noise-Disentangled Diffusion Model)**\n + 使用多個噪聲分量，每個分量對應一個特定的圖像特徵。\n + 使用 UNet 將這些分量合成為最終的圖像。\n* **5. 圖像分割 Diffusion 模型 (Image-Segmentation Diffusion Model)**\n + 使用圖像分割算法將圖像分割為多個區域。\n + 使用 UNet 將每個區域的特徵合成為最終的圖像。\n\n### 論點\n\n* 這些方法都可以提高 Diffusion 模型的生成能力和控制性。\n* 這些方法可以用來生成高質量的圖像。\n* 每種方法都有不同的核心 idea 和技術細節。\n* 每種方法都有預期改善的指標。"
     }
   ]
 }
