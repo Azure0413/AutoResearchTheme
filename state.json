@@ -1,6 +1,6 @@
 {
   "date": "2026-05-09",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,6 +13,10 @@
     {
       "stage": 3,
       "summary": "**Stage 3: 提出創新方法**\n\n### 最關鍵的事實\n\n* 提出 5 種具體可實作的創新研究方法或架構改良。\n* 每種方法都有不同的核心 idea 和技術細節。\n* 每種方法都有預期改善的指標。\n\n### 結論\n\n* 這 5 種方法都可以提高 Diffusion 模型的生成能力和控制性。\n* 這些方法可以用來生成高質量的圖像。\n\n### 技術細節\n\n* **1. 多模態條件 Diffusion 模型 (Multimodal Conditional Diffusion Model)**\n + 使用多模態的 Encoder 將不同模態的條件轉換為統一的特徵表達。\n + 使用 Cross-Attention 機制將這些特徵注入到 UNet 中。\n* **2. 雙向 Diffusion 模型 (Bidirectional Diffusion Model)**\n + 使用兩個 UNet，一個用於正向生成，另一個用於反向生成。\n + 兩個 UNet 共享相同的權重，但使用不同的輸入和輸出。\n* **3. 注意力機制增強的 Diffusion 模型 (Attention-Enhanced Diffusion Model)**\n + 使用 Self-Attention 機制和 Cross-Attention 機制，將注意力權重注入到 UNet 中。\n* **4. 雜訊分解 Diffusion 模型 (Noise-Disentangled Diffusion Model)**\n + 使用多個噪聲分量，每個分量對應一個特定的圖像特徵。\n + 使用 UNet 將這些分量合成為最終的圖像。\n* **5. 圖像分割 Diffusion 模型 (Image-Segmentation Diffusion Model)**\n + 使用圖像分割算法將圖像分割為多個區域。\n + 使用 UNet 將每個區域的特徵合成為最終的圖像。\n\n### 論點\n\n* 這些方法都可以提高 Diffusion 模型的生成能力和控制性。\n* 這些方法可以用來生成高質量的圖像。\n* 每種方法都有不同的核心 idea 和技術細節。\n* 每種方法都有預期改善的指標。"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4: 嚴格自我批判**\n\n### 結論\n\n* 多模態條件 Diffusion 模型、雙向 Diffusion 模型、注意力機制增強的 Diffusion 模型、雜訊分解 Diffusion 模型和圖像分割 Diffusion 模型都存在理論假設和實驗評估的問題。\n* 這些方法需要大量的資料和計算資源來訓練和評估。\n* 目前尚不清楚這些方法是否真的優於現有的 SOTA 方法。\n\n### 技術細節\n\n* 多模態條件 Diffusion 模型需要有效地將不同模態的條件轉換為統一的特徵表達。\n* 雙向 Diffusion 模型需要有效地學習到正向和反向生成的知識。\n* 注意力機制增強的 Diffusion 模型需要有效地增強 Diffusion 模型的表達能力。\n* 雜訊分解 Diffusion 模型需要有效地將雜訊分量分離出來。\n* 圖像分割 Diffusion 模型需要有效地將圖像分割為多個區域。\n\n### 論點\n\n* 需要進行更深入的理論分析和實驗評估，以確保這些方法的有效性。\n* 需要收集和標注更多的資料，並使用更有效的訓練方法來避免過度擬合。\n* 需要評估這些方法的計算資源和資料可行性。\n\n### 最關鍵的事實\n\n* 多模態條件 Diffusion 模型、雙向 Diffusion 模型、注意力機制增強的 Diffusion 模型、雜訊分解 Diffusion 模型和圖像分割 Diffusion 模型都存在理論假設和實驗評估的問題。\n* 這些方法需要大量的資料和計算資源來訓練和評估。\n* 目前尚不清楚這些方法是否真的優於現有的 SOTA 方法。"
     }
   ]
 }
