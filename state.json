@@ -1,10 +1,14 @@
 {
   "date": "2026-05-09",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "以下是 Stage 1 (🔍 探索熱門議題) 內容濃縮為結構化摘要：\n\n**1️⃣ 可控 Diffusion 及「條件」生成（Control‑Diffusion）**\n\n* **主題說明**：Diffusion Model 的可控生成，透過額外的條件圖（edge map、depth map、pose keypoints、segmentation mask、scribble 等）作為「輔助訊號」注入到 UNet 中。\n* **關鍵技術**：\n + 精細局部控制：使用者可指定物體的輪廓、姿勢或光照，模型在保持全局語意一致的同時遵守這些限制。\n + 跨模態條件：結合深度圖、法線圖、語意分割等多種視覺訊號，使生成結果更符合真實世界的幾何與材質分布。\n + 即時微調：大部分方法只需在固定的預訓練 Diffusion 上添加輕量化的條件分支，無需重新訓練整個模型。\n* **代表性 Paper**：\n + ControlNet: Adding Conditional Control to Text‑to‑Image Diffusion Models (2023)\n + T2I‑Adapter: Learning Adapters to Control Stable Diffusion (2023)\n + Stable Diffusion XL‑Control: A Unified Framework for Multi‑Condition Diffusion (2024)\n* **為何值得深入**：\n + 商業落地門檻下降：只需少量額外參數即可在現有大模型上實現高度可控的內容生成。\n + 跨領域應用：醫學影像、建築設計等需要嚴格幾何約束的領域，Control‑Diffusion 能提供可靠的合成管線。\n + 技術延伸性：條件注入的概念可直接搬移至 Video Diffusion、3D Diffusion（如 DreamFusion）以及 Inverse Problems（超分辨率、去噪）。\n\n**2️⃣ 高效長序列 Transformer（Long‑Context / Sparse‑Attention）**\n\n* **主題說明**：長序列 Transformer 優化技術，目標在保持注意力表達力的同時降低時間/空間複雜度。\n* **關鍵技術**：\n + 稀疏注意力（Sparse‑Attention、Longformer、BigBird）：只計算局部或全局少量關鍵 token。\n + 線性化注意力（Performer、Linear Transformer、FAVOR+）：透過核技巧將注意力近似為 O(N)。\n + 硬體友好加速（FlashAttention、FlashAttention‑2）：針"
+    },
+    {
+      "stage": 2,
+      "summary": "**控制 Diffusion 方法與模型架構深入解析**\n\n### 1. ControlNet\n\n* **Zero-Convolution (Zero-Conv)**：在 UNet 各層的 skip-connection 前插入一個全零初始化的 1×1 卷積層，使得在未訓練前不會影響原始訊號。\n* **Condition-to-Feature Branch**：將條件圖先經過 Encoder（ResNet-Style）→ Feature-Map，然後透過 Cross-Attention 注入到 UNet 每層的 query/key/value。\n* **訓練流程**：\n  1. 凍結 Stable Diffusion 的所有參數（包括 Text-Encoder、UNet、VAE）。\n  2. 隨機抽取文字-圖像-條件三元組，將條件圖做 data-augmentation（旋轉、隨機遮擋）。\n  3. 噪聲預測：模型接受 z_t（噪聲 latent） + c（文字 embedding） + cond_feat（條件特徵），預測 ε_θ(z_t, t, c, cond_feat)。\n  4. 損失：標準 MSE（ε-prediction）+ Condition-Consistency Loss（條件特徵在不同層的 L2 正則化）。\n\n### 2. T2I-Adapter\n\n* **Adapter 設計**：每個 Adapter 由 3 個 Conv-Block（3×3 Conv + GroupNorm + SiLU）組成，最後接 Cross-Attention（Query 來自 UNet 的中間特徵，Key/Value 來自條件特徵）。\n* **多條件疊加**：不同條件的 Adapter 可以平行放置，最終特徵透過加權求和（可學習權重）融合。\n* **訓練策略**：只訓練 Adapter 本身（約 2–3 M 參數），使用 LoRA-style 的低秩更新方式進一步壓縮參數量。\n\n### 3. SDXL-Control (Multi-Condition Fusion Module, MCFM)\n\n* **多尺度融合**：MCFM 在 Encoder、Mid、Decoder 三個階段各插入 Condition Fusion Block，包含 Condition Encoder、Scale-Aware Gating 和 Feature Concatenation + 1×1 Conv。\n* **兩階段訓練**：\n  1. 大規模預訓練：使用 LAION-5B 配合自動生成的條件圖進行自監督，目標是學習條件 ↔ latent 的通用映射。\n  2. 領域微調：在特定領域（如醫學 CT、建築平面圖）上加入真實條件，僅更新 MCF"
     }
   ]
 }
