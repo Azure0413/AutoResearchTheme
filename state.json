@@ -1,6 +1,6 @@
 {
   "date": "2026-05-10",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,6 +9,10 @@
     {
       "stage": 2,
       "summary": "**條件化潛在擴散模型（Conditional Latent Diffusion）** 的核心方法、模型架構、訓練策略和資料集可以在以下結構化摘要中找到：\n\n**關鍵事實**\n\n*   Stable Diffusion 是一種 Latent Diffusion Model，將 diffusion 完全搬到潛在空間，提供開源大規模文本-to-image 基礎模型。\n*   ControlNet 是一種可凍結的條件支路，支援多種外部條件（深度、姿態、邊緣等）。\n*   DreamBooth 是一種少樣本個人化微調方法，使用類別詞和專屬詞來保持類別分布的同時學習專屬風格。\n\n**結論**\n\n*   條件化潛在擴散模型是一種強大的工具，能夠生成高品質的圖像，並且能夠控制生成的風格和內容。\n*   ControlNet 和 DreamBooth 是兩種重要的延伸，能夠提供更好的控制和個人化的功能。\n\n**技術細節**\n\n*   Stable Diffusion 使用 VAE 編碼器將高解析度影像映射至潛在向量，然後在潛在向量上執行 diffusion。\n*   ControlNet 使用雙路結構，平行插入一條 Condition-Net，接受外部條件並產生條件特徵。\n*   DreamBooth 使用類別詞和專屬詞來保持類別分布的同時學習專屬風格。\n\n**論點**\n\n*   條件化潛在擴散模型的強大之處在於它能夠生成高品質的圖像，並且能夠控制生成的風格和內容。\n*   ControlNet 和 DreamBooth 的延伸能夠提供更好的控制和個人化的功能。\n*   這些模型的訓練策略和資料集都是非常重要的，需要仔細設計和選擇。\n\n**表格比較**\n\n| 方法 | Stable Diffusion | ControlNet | DreamBooth |\n| --- | --- | --- | --- |\n| 核心方法 | 潛在空間映射 | 雙路結構 | 類別詞和專屬詞 |\n| 模型架構 | VAE 編碼器 + Diffusion UNet | Condition-Net + UNet | CLIP-Text Encoder + Embedding 替換 |\n| 訓練策略 | KL-loss + L2 reconstruction | 凍結策略 + 梯度累積 | 雙向正則化 + 類別保持 loss |\n| 資料集 | LAION-Aesthetics v2 5B |"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n**方案 1:** 多模態潛在擴散模型 (Multimodal Latent Diffusion)\n\n* **核心 idea:** 跨模態生成和控制\n* **技術細節:** 使用多模態編碼器將不同模態的輸入映射到同一潛在空間中\n* **與現有方法的差異:** 可處理多種模態的輸入\n* **預期改善的指標:** 跨模態生成的品質和控制能力的提高\n\n**方案 2:** 階層式條件化潛在擴散模型 (Hierarchical Conditional Latent Diffusion)\n\n* **核心 idea:** 多層次控制和生成\n* **技術細節:** 使用階層式的條件化潛在擴散模型架構\n* **與現有方法的差異:** 可實現多層次的控制和生成\n* **預期改善的指標:** 控制和生成的粒度和精度的提高\n\n**方案 3:** 圖像-文字對齊的潛在擴散模型 (Image-Text Alignment Latent Diffusion)\n\n* **核心 idea:** 圖像和文字的對齊和生成\n* **技術細節:** 使用圖像-文字對齊技術將圖像和文字映射到同一潛在空間中\n* **與現有方法的差異:** 可處理圖像和文字的對齊和生成\n* **預期改善的指標:** 圖像和文字的對齊和生成的品質和控制能力的提高\n\n**方案 4:** 少樣本學習的潛在擴散模型 (Few-Shot Learning Latent Diffusion)\n\n* **核心 idea:** 快速學習和生成\n* **技術細節:** 使用少樣本學習技術將潛在擴散模型適應新的樣本和任務\n* **與現有方法的差異:** 可實現快速學習和生成\n* **預期改善的指標:** 學習和生成的速度和效率的提高\n\n**方案 5:** 多任務學習的潛在擴散模型 (Multi-Task Learning Latent Diffusion)\n\n* **核心 idea:** 多任務學習和生成\n* **技術細節:** 使用多任務學習技術將潛在擴散模型適應多個任務和目標\n* **與現有方法的差異:** 可實現多任務學習和生成\n* **預期改善的指標:** 多任務學習和生成的能力和效率的提高"
     }
   ]
 }
