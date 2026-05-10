@@ -1,10 +1,14 @@
 {
   "date": "2026-05-10",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "以下是 Stage 1 (🔍 探索熱門議題) 內容濃縮為結構化摘要：\n\n**主題一：潛在 Diffusion（Latent Diffusion）與條件化生成技術**\n\n* **最關鍵的事實**：\n + Latent Diffusion Model (LDM) 將高解析度影像映射至較低維度的潛在空間，執行 diffusion，降低運算與儲存需求。\n + 多種條件化擴充技術使模型能夠根據文字、姿態、深度圖、邊緣圖、語音等多種訊號生成影像。\n* **結論**：\n + 潛在 Diffusion Model 可以降低運算與儲存需求，保留高品質的合成能力。\n + 条件化擴充技術使模型能夠根據多種訊號生成影像，形成「可控」的生成管線。\n* **技術細節**：\n + 跨模態對齊：將非影像條件映射到潛在空間的同一分佈。\n + 少樣本微調：在僅有少量目標樣本時仍能保持高保真度與風格一致性。\n + 高解析度與細節恢復：從 64×64 → 1024×1024 甚至更高解析度的升級。\n* **論點**：\n + 商業落地速度最快：Stable Diffusion、ControlNet、DreamBooth 等已在設計、廣告、遊戲、虛擬人物等產業形成即時生成服務。\n + 計算資源友好：相較於像素‑level diffusion，LDM 的 GPU 記憶體需求下降 70% 以上。\n + 可控性是未來關鍵：從「隨機生成」到「指令驅動」，條件化 diffusion 為內容創作、醫學影像合成、資料增強等提供了精細的控制桿。\n\n**主題二：多模態大型語言模型（Multimodal LLM）與視覺‑語言基礎模型**\n\n* **最關鍵的事實**：\n + 多模態 LLM 結合了大規模語言模型的推理能力與視覺編碼器的感知能力。\n + 可以直接接受圖像、影片、音訊作為輸入，並以自然語言回應。\n* **結論**：\n + 多模態 LLM 能夠同時處理文字、圖像、音訊，接近人類感知的「跨感官」能力。\n + 可以直接受"
+    },
+    {
+      "stage": 2,
+      "summary": "**條件化潛在擴散模型（Conditional Latent Diffusion）** 的核心方法、模型架構、訓練策略和資料集可以在以下結構化摘要中找到：\n\n**關鍵事實**\n\n*   Stable Diffusion 是一種 Latent Diffusion Model，將 diffusion 完全搬到潛在空間，提供開源大規模文本-to-image 基礎模型。\n*   ControlNet 是一種可凍結的條件支路，支援多種外部條件（深度、姿態、邊緣等）。\n*   DreamBooth 是一種少樣本個人化微調方法，使用類別詞和專屬詞來保持類別分布的同時學習專屬風格。\n\n**結論**\n\n*   條件化潛在擴散模型是一種強大的工具，能夠生成高品質的圖像，並且能夠控制生成的風格和內容。\n*   ControlNet 和 DreamBooth 是兩種重要的延伸，能夠提供更好的控制和個人化的功能。\n\n**技術細節**\n\n*   Stable Diffusion 使用 VAE 編碼器將高解析度影像映射至潛在向量，然後在潛在向量上執行 diffusion。\n*   ControlNet 使用雙路結構，平行插入一條 Condition-Net，接受外部條件並產生條件特徵。\n*   DreamBooth 使用類別詞和專屬詞來保持類別分布的同時學習專屬風格。\n\n**論點**\n\n*   條件化潛在擴散模型的強大之處在於它能夠生成高品質的圖像，並且能夠控制生成的風格和內容。\n*   ControlNet 和 DreamBooth 的延伸能夠提供更好的控制和個人化的功能。\n*   這些模型的訓練策略和資料集都是非常重要的，需要仔細設計和選擇。\n\n**表格比較**\n\n| 方法 | Stable Diffusion | ControlNet | DreamBooth |\n| --- | --- | --- | --- |\n| 核心方法 | 潛在空間映射 | 雙路結構 | 類別詞和專屬詞 |\n| 模型架構 | VAE 編碼器 + Diffusion UNet | Condition-Net + UNet | CLIP-Text Encoder + Embedding 替換 |\n| 訓練策略 | KL-loss + L2 reconstruction | 凍結策略 + 梯度累積 | 雙向正則化 + 類別保持 loss |\n| 資料集 | LAION-Aesthetics v2 5B |"
     }
   ]
 }
