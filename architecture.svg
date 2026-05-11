@@ -1,0 +1,223 @@
+<svg viewBox="0 0 1200 1020" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5568"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#805ad5"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b45309"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="1020" fill="#fafbfc"/>
+
+  <!-- TITLE -->
+  <text x="600" y="40" text-anchor="middle" font-size="22" font-weight="700" fill="#1a202c">AutoResearchTheme — Agent Architecture</text>
+  <text x="600" y="62" text-anchor="middle" font-size="12" fill="#718096">Daily 5-Stage AI Research Pipeline · Groq LLM + GitHub Actions</text>
+
+  <!-- ========== CRON TRIGGER ========== -->
+  <g transform="translate(440, 92)">
+    <rect width="320" height="56" rx="10" fill="#1a202c" filter="url(#shadow)"/>
+    <text x="160" y="26" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">📅 GitHub Actions Cron Trigger</text>
+    <text x="160" y="44" text-anchor="middle" font-size="11" fill="#a0aec0">Taipei 01:00 / 02:00 / 03:00 / 04:00 / 05:00</text>
+  </g>
+  <line x1="600" y1="148" x2="600" y2="180" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========== CONTEXT LAYER ========== -->
+  <g transform="translate(60, 188)">
+    <rect width="1080" height="100" rx="10" fill="#edf2f7" stroke="#cbd5e0" stroke-width="1"/>
+    <text x="20" y="22" font-size="11" font-weight="700" fill="#4a5568" letter-spacing="1.5">CONTEXT LAYER</text>
+
+    <g transform="translate(40, 38)">
+      <rect width="310" height="50" rx="6" fill="#fff" filter="url(#shadow)"/>
+      <text x="155" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#2d3748">state.json</text>
+      <text x="155" y="38" text-anchor="middle" font-size="10" fill="#718096">date · step · summaries[]</text>
+    </g>
+
+    <g transform="translate(385, 38)">
+      <rect width="310" height="50" rx="6" fill="#fff" filter="url(#shadow)"/>
+      <text x="155" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#2d3748">topic_history.json</text>
+      <text x="155" y="38" text-anchor="middle" font-size="10" fill="#718096">last 14 days · avoid-list</text>
+    </g>
+
+    <g transform="translate(730, 38)">
+      <rect width="310" height="50" rx="6" fill="#fff" filter="url(#shadow)"/>
+      <text x="155" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#2d3748">Daily Focus Rotation</text>
+      <text x="155" y="38" text-anchor="middle" font-size="10" fill="#718096">14 themes × day-of-year</text>
+    </g>
+  </g>
+  <line x1="600" y1="288" x2="600" y2="324" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========== PROMPT COMPOSER ========== -->
+  <g transform="translate(340, 334)">
+    <rect width="520" height="56" rx="10" fill="#4a5568" filter="url(#shadow)"/>
+    <text x="260" y="24" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">🛠️ Prompt Composer</text>
+    <text x="260" y="44" text-anchor="middle" font-size="10" fill="#cbd5e0">system + previous_summaries + history_avoid + stage_prompt</text>
+  </g>
+  <line x1="600" y1="390" x2="600" y2="424" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========== 5-STAGE PIPELINE ========== -->
+  <g transform="translate(60, 434)">
+    <rect width="1080" height="200" rx="10" fill="#fffbeb" stroke="#fbbf24" stroke-width="1" stroke-dasharray="5 3"/>
+    <text x="20" y="22" font-size="11" font-weight="700" fill="#92400e" letter-spacing="1.5">5-STAGE PIPELINE</text>
+
+    <!-- Stage 1 -->
+    <g transform="translate(15, 40)">
+      <rect width="190" height="148" rx="10" fill="#3498DB" filter="url(#shadow)"/>
+      <text x="95" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Stage 1</text>
+      <text x="95" y="60" text-anchor="middle" font-size="24" fill="#fff">🔍</text>
+      <text x="95" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">探索熱門議題</text>
+      <line x1="20" y1="100" x2="170" y2="100" stroke="#fff" stroke-opacity="0.3"/>
+      <text x="95" y="118" text-anchor="middle" font-size="10" fill="#e0f2fe">compound-mini</text>
+      <text x="95" y="130" text-anchor="middle" font-size="9" fill="#bae6fd">+ web search</text>
+      <text x="170" y="142" text-anchor="end" font-size="11" font-weight="700" fill="#fff">T 0.6</text>
+    </g>
+    <path d="M 205 114 L 230 114" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Stage 2 -->
+    <g transform="translate(230, 40)">
+      <rect width="190" height="148" rx="10" fill="#2ECC71" filter="url(#shadow)"/>
+      <text x="95" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Stage 2</text>
+      <text x="95" y="60" text-anchor="middle" font-size="24" fill="#fff">📖</text>
+      <text x="95" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">深入相關方法</text>
+      <line x1="20" y1="100" x2="170" y2="100" stroke="#fff" stroke-opacity="0.3"/>
+      <text x="95" y="118" text-anchor="middle" font-size="10" fill="#dcfce7">compound-mini</text>
+      <text x="95" y="130" text-anchor="middle" font-size="9" fill="#bbf7d0">+ web search</text>
+      <text x="170" y="142" text-anchor="end" font-size="11" font-weight="700" fill="#fff">T 0.5</text>
+    </g>
+    <path d="M 420 114 L 445 114" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Stage 3 -->
+    <g transform="translate(445, 40)">
+      <rect width="190" height="148" rx="10" fill="#9B59B6" filter="url(#shadow)"/>
+      <text x="95" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Stage 3</text>
+      <text x="95" y="60" text-anchor="middle" font-size="24" fill="#fff">💡</text>
+      <text x="95" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">提出創新方法</text>
+      <line x1="20" y1="100" x2="170" y2="100" stroke="#fff" stroke-opacity="0.3"/>
+      <text x="95" y="118" text-anchor="middle" font-size="10" fill="#f3e8ff">llama-3.3-70b</text>
+      <text x="95" y="130" text-anchor="middle" font-size="9" fill="#e9d5ff">versatile</text>
+      <text x="170" y="142" text-anchor="end" font-size="11" font-weight="700" fill="#fff">T 0.85 ⚡</text>
+    </g>
+    <path d="M 635 114 L 660 114" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Stage 4 -->
+    <g transform="translate(660, 40)">
+      <rect width="190" height="148" rx="10" fill="#E67E22" filter="url(#shadow)"/>
+      <text x="95" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Stage 4</text>
+      <text x="95" y="60" text-anchor="middle" font-size="24" fill="#fff">🔥</text>
+      <text x="95" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">嚴格自我批判</text>
+      <line x1="20" y1="100" x2="170" y2="100" stroke="#fff" stroke-opacity="0.3"/>
+      <text x="95" y="118" text-anchor="middle" font-size="10" fill="#ffedd5">llama-3.3-70b</text>
+      <text x="95" y="130" text-anchor="middle" font-size="9" fill="#fed7aa">versatile</text>
+      <text x="170" y="142" text-anchor="end" font-size="11" font-weight="700" fill="#fff">T 0.5</text>
+    </g>
+    <path d="M 850 114 L 875 114" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Stage 5 -->
+    <g transform="translate(875, 40)">
+      <rect width="190" height="148" rx="10" fill="#F1C40F" filter="url(#shadow)"/>
+      <text x="95" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#744210">Stage 5</text>
+      <text x="95" y="60" text-anchor="middle" font-size="24">✅</text>
+      <text x="95" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#744210">完整研究提案</text>
+      <line x1="20" y1="100" x2="170" y2="100" stroke="#744210" stroke-opacity="0.25"/>
+      <text x="95" y="118" text-anchor="middle" font-size="10" fill="#92400e">llama-3.3-70b</text>
+      <text x="95" y="130" text-anchor="middle" font-size="9" fill="#92400e">versatile</text>
+      <text x="170" y="142" text-anchor="end" font-size="11" font-weight="700" fill="#744210">T 0.4</text>
+    </g>
+  </g>
+
+  <!-- Down arrow from pipeline -->
+  <line x1="600" y1="634" x2="600" y2="678" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Fork point -->
+  <circle cx="600" cy="688" r="4" fill="#4a5568"/>
+  <line x1="200" y1="688" x2="1000" y2="688" stroke="#4a5568" stroke-width="2"/>
+  <line x1="200" y1="688" x2="200" y2="720" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="600" y1="688" x2="600" y2="720" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1000" y1="688" x2="1000" y2="720" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========== OUTPUTS ========== -->
+  <!-- Summary loop (left) -->
+  <g transform="translate(60, 728)">
+    <rect width="280" height="98" rx="10" fill="#faf5ff" stroke="#9f7aea" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="140" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#553c9a">🔄 Summary Compression</text>
+    <line x1="20" y1="36" x2="260" y2="36" stroke="#9f7aea" stroke-opacity="0.3"/>
+    <text x="140" y="56" text-anchor="middle" font-size="11" fill="#553c9a">llama-3.1-8b-instant</text>
+    <text x="140" y="74" text-anchor="middle" font-size="10" fill="#6b46c1">~400 chars structured</text>
+    <text x="140" y="90" text-anchor="middle" font-size="10" fill="#6b46c1">→ state.json (next stage)</text>
+  </g>
+
+  <!-- Discord (center) -->
+  <g transform="translate(460, 728)">
+    <rect width="280" height="98" rx="10" fill="#eef2ff" stroke="#5865F2" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="140" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#3730a3">📣 Discord Webhook</text>
+    <line x1="20" y1="36" x2="260" y2="36" stroke="#5865F2" stroke-opacity="0.3"/>
+    <text x="140" y="55" text-anchor="middle" font-size="10" fill="#3730a3">LaTeX → Unicode · tables → code block</text>
+    <text x="140" y="71" text-anchor="middle" font-size="10" fill="#3730a3">smart chunk @ 1900 chars (no code-block split)</text>
+    <text x="140" y="88" text-anchor="middle" font-size="10" fill="#3730a3">color embed per stage</text>
+  </g>
+
+  <!-- Report (right) -->
+  <g transform="translate(860, 728)">
+    <rect width="280" height="98" rx="10" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="140" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">📄 Markdown Report</text>
+    <line x1="20" y1="36" x2="260" y2="36" stroke="#22c55e" stroke-opacity="0.3"/>
+    <text x="140" y="55" text-anchor="middle" font-size="11" fill="#166534">reports/YYYY-MM-DD.md</text>
+    <text x="140" y="73" text-anchor="middle" font-size="10" fill="#15803d">append each stage</text>
+    <text x="140" y="89" text-anchor="middle" font-size="10" fill="#15803d">attached to Discord @ Stage 5</text>
+  </g>
+
+  <!-- Feedback loop: summary back to state.json -->
+  <path d="M 60 770 Q 20 770 20 238 L 80 238" fill="none" stroke="#805ad5" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arrow-purple)"/>
+  <text x="32" y="500" font-size="10" fill="#6b46c1" transform="rotate(-90, 32, 500)">summary feeds next stage</text>
+
+  <!-- Stage 5 → topic_history update -->
+  <path d="M 1000 770 Q 1180 770 1180 238 L 1100 238" fill="none" stroke="#b45309" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#arrow-amber)"/>
+  <text x="1168" y="500" font-size="10" fill="#b45309" transform="rotate(-90, 1168, 500)">Stage 5: update history</text>
+
+  <!-- ========== LEGEND ========== -->
+  <g transform="translate(60, 860)">
+    <rect width="1080" height="130" rx="10" fill="#f7fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="20" y="22" font-size="11" font-weight="700" fill="#4a5568" letter-spacing="1.5">KEY DESIGN CHOICES</text>
+
+    <g transform="translate(20, 38)">
+      <circle cx="6" cy="6" r="4" fill="#3498DB"/>
+      <text x="18" y="10" font-size="11" font-weight="600" fill="#2d3748">Web-search stages (1-2)</text>
+      <text x="18" y="26" font-size="10" fill="#718096">groq/compound-mini fetches</text>
+      <text x="18" y="40" font-size="10" fill="#718096">live 2025-2026 papers via Tavily</text>
+    </g>
+
+    <g transform="translate(270, 38)">
+      <circle cx="6" cy="6" r="4" fill="#9B59B6"/>
+      <text x="18" y="10" font-size="11" font-weight="600" fill="#2d3748">Reasoning stages (3-5)</text>
+      <text x="18" y="26" font-size="10" fill="#718096">llama-3.3-70b w/ adaptive</text>
+      <text x="18" y="40" font-size="10" fill="#718096">temperature per cognitive task</text>
+    </g>
+
+    <g transform="translate(520, 38)">
+      <circle cx="6" cy="6" r="4" fill="#9f7aea"/>
+      <text x="18" y="10" font-size="11" font-weight="600" fill="#2d3748">Token-efficient context</text>
+      <text x="18" y="26" font-size="10" fill="#718096">8B summary compression keeps</text>
+      <text x="18" y="40" font-size="10" fill="#718096">input ~2-3k tokens, avoids 413</text>
+    </g>
+
+    <g transform="translate(780, 38)">
+      <circle cx="6" cy="6" r="4" fill="#b45309"/>
+      <text x="18" y="10" font-size="11" font-weight="600" fill="#2d3748">Anti-repetition</text>
+      <text x="18" y="26" font-size="10" fill="#718096">14-day history + 14-theme</text>
+      <text x="18" y="40" font-size="10" fill="#718096">daily rotation → fresh topics</text>
+    </g>
+
+    <g transform="translate(20, 95)">
+      <text x="0" y="10" font-size="10" fill="#4a5568">
+        <tspan font-weight="700">State persistence:</tspan>
+        <tspan> state.json (intra-day) · topic_history.json (cross-day) · reports/ (markdown archive) — all committed by GitHub Actions bot after each stage</tspan>
+      </text>
+    </g>
+  </g>
+</svg>
