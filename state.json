@@ -1,6 +1,6 @@
 {
   "date": "2026-05-12",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,6 +9,10 @@
     {
       "stage": 2,
       "summary": "**Stage 2: 深入相關方法**\n\n### 核心方法群\n\n* **Routing-Transformer-2025**\n + 學習路由網路將輸入 token 分配到固定數量的子注意力頭\n + 降低計算複雜度至 O(N√N)\n* **Dynamic-Sparse-Attention (NeurIPS 2025)**\n + 使用可微分的稀疏門控根據 token 的資訊增益預測其在注意力圖中的活躍區域\n + 只計算高置信度的鍵值對\n* **Reinforced-Token-Pruning (ICLR 2026)**\n + 以強化學習代理決定每一步是否刪除或保留 token\n + 奏勵設計兼顧生成品質與計算成本\n\n### 模型架構細節\n\n* **輸入**: 標準序列化文字 token 或多模態 token\n* **輸出**: 隱層表示與原始全注意力模型相同\n* **關鍵模組**\n + 路由器/門控網路: 輕量的 MLP\n + 稀疏注意力計算器: 根據門控結果只在選中的 token 子集上執行注意力乘法\n + 強化學習回饋模組 (若使用 RL-Pruning): 計算即時 reward, 更新路由策略\n\n### 訓練策略\n\n* **資料規模**: 使用 2025 年公開的 OpenWebText-2 或 The Pile-v2\n* **Batch size**: 在單卡 40 GB GPU 上採用 256-512 token 的微批\n* **優化器**: AdamW, 學習率 2e-4, 使用 cosine decay\n* **Loss 設計**: L_total = L_ce + λ_sparse * L_gate + λ_flops * L_cost\n\n### 主要 benchmark 與資料集\n\n* **語言模型**: Wikitext-103, C4, OpenWebText-2\n* **生成任務**: StoryCloze-2025, Summarization-LongForm\n* **推理基準**: LRA-Sparse-Eval (NeurIPS 2025 新增的稀疏注意力測試套件)\n\n### 方法優劣比較\n\n* **Routing-Transformer-2025**\n + 優點: 結構簡單, 路由器只需少量參數, 易於在現有 Transformer 上插入\n + 缺點: 路由決策是一次性的, 缺乏動態調整, 對長序列的變化適應性差\n* **Dynamic-Sparse-Attention (NeurIPS 2025)**\n + 優"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1: 動態遮蔽編碼器 (Dynamic Masking Encoder)**\n\n* **關鍵事實**：\n + 學習動態遮蔽編碼器，根據輸入序列的重要性動態遮蔽不重要的 token。\n + 使用標準序列化文字 token，模組設計為一組遮蔽編碼器，每個編碼器負責遮蔽一部分不重要的 token。\n* **技術細節**：\n + 訓練目標為最小化遮蔽後的模型損失，損失函數為遮蔽後的模型損失加上遮蔽比例的懲罰項。\n + 可以使用 Wikitext-103 的訓練集和驗證集，模型大小為 256 個隱層單元，單張 40 GB 的 GPU 即可驗證。\n* **預期改善的指標與原因**：\n + 預期在 Wikitext-103 和 C4 等語言模型 benchmark 上獲得改善，因為動態遮蔽編碼器可以更好地捕捉輸入序列的重要性，並減少不重要的 token 對模型的干擾。\n\n**方案 2: 多步驟推測解碼器 (Multi-Step Speculative Decoding)**\n\n* **關鍵事實**：\n + 學習多步驟推測解碼器，根據模型不確定性動態調整推測步驟。\n + 使用標準序列化文字 token，模組設計為一組多步驟推測解碼器，每個解碼器負責推測一部分序列。\n* **技術細節**：\n + 訓練目標為最小化推測後的模型損失，損失函數為推測後的模型損失加上不確定性的懲罰項。\n + 可以使用 StoryCloze-2025 的訓練集和驗證集，模型大小為 256 個隱層單元，單張 40 GB 的 GPU 即可驗證。\n* **預期改善的指標與原因**：\n + 預期在 StoryCloze-2025 和 Summarization-LongForm 等生成任務 benchmark 上獲得改善，因為多步驟推測解碼器可以更好地捕捉模型不確定性，並減少不確定性的干擾。\n\n**方案 3: 標記路由器 (Token Router)**\n\n* **關鍵事實**：\n + 學習標記路由器，根據輸入序列的重要性動態路由 token。\n + 使用標準序列化文字 token"
     }
   ]
 }
