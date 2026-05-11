@@ -1,10 +1,14 @@
 {
   "date": "2026-05-11",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**離散擴散研究方向摘要**\n\n### 主題一: 離散擴散於蛋白質接觸圖的結構生成\n\n* **關鍵事實**：\n + 離散擴散模型仍在萌芽階段，研究者數量低。\n + 可直接結合生物物理圖譜資訊，具高突破潛力。\n* **核心技術問題**：\n + 設計有效的噪聲轉移機制，逆向過程保持生物學上合理的接觸約束。\n + 離散擴散的樣本效率低，缺乏針對稀疏圖結構的加速抽樣策略。\n* **代表 paper**：\n + Lin 等 (2025) - Graph-Discrete Diffusion for Protein Backbone Design\n + Zhao 等 (2026) - Discrete State Diffusion for Protein Folding Pathways\n + arXiv:2503.01427 (2025) - Markovian Discrete Diffusion on Protein Contact Maps\n\n### 主題二: 離散流匹配於事件驅動時間序列的缺失值填補\n\n* **關鍵事實**：\n + 時間序列領域的缺失值填補大多聚焦於連續數值。\n + 對於同時包含類別事件與時間戳的混合序列缺乏專門方法。\n* **核心技術問題**：\n + 設計同時處理連續值與離散事件的流向量場。\n + 缺乏對高頻稀疏事件序列的穩定訓練技巧。\n* **代表 paper**：\n + Chen 等 (2025) - Flow Matching for Categorical Time Series Generation\n + Liu 等 (2025) - Discrete Flow Matching on Event Sequences\n + Patel 等 (2026) - Hybrid Continuous-Discrete Flow for Missing Data Imputation\n\n### 主題三: 抽象語法樹 (AST) 離散擴散於程式碼自動生成\n\n* **關鍵事實**：\n + 現有程式碼生成多採用連續語言模型或微調大型模型。\n + 離散擴散直接在 AST 節點上操作的工作仍極少。\n* **核心技術問題**：\n + 設計符合語法規則的離散噪聲轉移。\n + 大規模 AST 空間的抽樣效率低，缺乏針對子樹級別的分層抽樣或重參考機制。\n* **代表 paper**：\n + Gupta 等 (2025) - AST Diffusion: Discrete Diffusion over Syntax Trees for Code Generation\n + Wang 等 (2025) -"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **AST-Diffusion (Gupta 等, 2025)**：離散噪聲在 AST 節點上做隨機翻轉，逆向過程透過條件化的馬可夫鏈逐步還原語法樹。\n* **Tree-Flow Diffusion (Wang 等, 2025)**：結合連續流模型與離散樹結構，先將 AST 轉為序列化的節點編碼，再使用可逆流映射產生隱向量，最後以離散化投影恢復樹形。\n* **Hierarchical Sub-Tree Diffusion (Li 等, 2026, arXiv:2602.04113)**：把整棵 AST 切分為多層子樹，對每層分別施行離散擴散，利用自上而下的條件分布降低抽樣空間的指數爆炸。\n\n### 2. 模型架構細節\n\n* **輸入**：原始程式碼的抽象語法樹，通常以節點類型、父子關係與屬性向量表示。\n* **輸出**：經過逆向擴散後的完整 AST，最終可透過語法樹到程式碼的逆序列化得到可編譯程式。\n* **關鍵模組**：\n + `NodeEncoder`：將每個節點類型映射到離散嵌入向量。\n + `DiffusionScheduler`：負責噪聲水平的時間表，決定每一步的離散轉移概率。\n + `TreeConstraintChecker`：在每一步抽樣後檢查語法合法性，必要時執行投影修正。\n\n### 3. 訓練策略\n\n* **資料規模**：常用的開源程式碼庫有 `CodeSearchNet (Python)` 約 6M 程式片段，或 `GitHub Java Corpus` 約 3M 方法。\n* **Batch size**：受限於樹結構的變長性，通常採用動態批次，平均每批 2k-4k 個節點（相當於 32-64 個完整函式）。\n* **優化器**：AdamW 是主流選擇，學習率在 1e-4 到 5e-4 之間，使用 cosine decay。\n\n### 4. 主要 benchmark 與資料集\n\n* **Benchmark**：`CodeXGLUE` 中的 **Code Generation** 子任務（Python → Python、Java → Java）是目前最常用的評測平台。\n* **資料集**：\n + `Code"
     }
   ]
 }
