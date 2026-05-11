@@ -1,6 +1,6 @@
 {
   "date": "2026-05-11",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,6 +17,10 @@
     {
       "stage": 4,
       "summary": "**Stage 4: 嚴格自我批判**\n\n**方案 1 批判**\n\n* **理論假設**: Tree-Flow Diffusion with Hierarchical Noise Scheduling 方案假設樹的層級與噪聲水平之間存在線性關係，但這種假設可能不成立。\n* **資料與訓練可行性**: 方案依賴於高質量的樹結構資料，但實際上取得這種資料可能很困難。\n* **計算資源**: 方案需要大量的計算資源來訓練和推理。\n* **是否真優於 SOTA**: 方案的性能優勢可能來自於資料集的選擇或超參數的調整，而不是模型本身的優勢。\n* **failure mode**: 方案可能在樹結構過深或過寬的場合下失敗。\n\n**方案 2 批判**\n\n* **理論假設**: Discrete Flow Matching with Graph Neural Network 方案假設圖結構的編碼和解碼可以使用GNN來實現，但這種假設可能不成立。\n* **資料與訓練可行性**: 方案依賴於高質量的圖結構資料，但實際上取得這種資料可能很困難。\n* **計算資源**: 方案需要大量的計算資源來訓練和推理。\n* **是否真優於 SOTA**: 方案的性能優勢可能來自於資料集的選擇或超參數的調整，而不是模型本身的優勢。\n* **failure mode**: 方案可能在圖結構過於稀疏或過於密集的場合下失敗。\n\n**方案 3 批判**\n\n* **理論假設**: Hierarchical Sub-Tree Diffusion with Reinforcement Learning 方案假設層級子樹的擴散可以使用強化學習來優化，但這種假設可能不成立。\n* **資料與訓練可行性**: 方案依賴於高質量的樹結構資料，但實際上取得這種資料可能很困難。\n* **計算資源**: 方案需要大量的計算資源來訓練和推理。\n* **是否真優於 SOTA**: 方案的性能優勢可能來自於資料集的選擇或超參數的調整，而不是模型本身的優勢。\n* **failure mode**: 方案可能在樹結構過深或過寬的場合下失敗。\n\n**補救措施**\n\n* 需要進行實驗驗證理論假設的有效性。\n* 需要開發更強大的資料預處理技術來處理噪聲或不完整的資料。\n*"
+    },
+    {
+      "stage": 5,
+      "summary": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n**最關鍵的事實**\n\n* 離散擴散模型可以直接在抽象語法樹（AST）上操作，生成高質量的程式碼。\n* 現有的離散擴散模型仍然存在一些問題，例如樹結構生成的準確性不高，計算成本高。\n\n**結論**\n\n* 我們提出的方法結合了 Tree-Flow Diffusion 和 Hierarchical Sub-Tree Diffusion 的優點，使用層級子樹的離散擴散來生成高質量的程式碼。\n* 我們的方法可以提高程式碼生成的準確性和語法正確性，提供了一種新的離散擴散方法，結合了 Tree-Flow Diffusion 和 Hierarchical Sub-Tree Diffusion 的優點。\n\n**技術細節**\n\n* 輸入為抽象語法樹（AST）\n* 使用 Tree-Flow Diffusion 對 AST 進行編碼和解碼\n* 使用 Hierarchical Sub-Tree Diffusion 對層級子樹進行離散擴散\n* 訓練目標是最小化樹結構生成的交叉熵損失加上樹的層級差異的懲罰項\n\n**論點**\n\n* 我們的方法在演算法層、實作層和應用層都具有創新性。\n* 我們的方法可以應用於多種程式碼生成任務，例如程式碼補全、程式碼優化等。\n\n**引用**\n\n* Lin 等 (2025) - Graph-Discrete Diffusion for Protein Backbone Design\n* Gupta 等 (2025) - AST Diffusion: Discrete Diffusion over Syntax Trees for Code Generation\n\n**接續階段**\n\n* 實驗設計：使用 CodeSearchNet (Python) 資料集進行實驗，評估樹結構生成的準確性和程式碼的語法正確性。\n* ablation study 設計：進行多個 ablation study 實驗，包括移除層級子樹的離散擴散、移除 Tree-Flow Diffusion 等。\n* 計算需求估計：估計需要 1-2 張 24-48G GPU 進行實驗，訓練時間約為 2-3 天。"
     }
   ]
 }

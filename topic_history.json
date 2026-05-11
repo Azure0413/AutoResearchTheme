@@ -1,0 +1,7 @@
+[
+  {
+    "date": "2026-05-11",
+    "stage1_topics": "**離散擴散研究方向摘要**\n\n### 主題一: 離散擴散於蛋白質接觸圖的結構生成\n\n* **關鍵事實**：\n + 離散擴散模型仍在萌芽階段，研究者數量低。\n + 可直接結合生物物理圖譜資訊，具高突破潛力。\n* **核心技術問題**：\n + 設計有效的噪聲轉移機制，逆向過程保持生物學上合理的接觸約束。\n + 離散擴散的樣本效率低，缺乏針對稀疏圖結構的加速抽樣策略。\n* **代表 paper**：\n + Lin 等 (2025) - Graph-Discrete Diffusion for Protein Backbone Design\n + Zhao 等 (2026) - Discrete State Diffusion for Protein Folding Pathways\n + arXiv:2503.01427 (2025) - Markovian Discrete Diffusio",
+    "final_proposal": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n**最關鍵的事實**\n\n* 離散擴散模型可以直接在抽象語法樹（AST）上操作，生成高質量的程式碼。\n* 現有的離散擴散模型仍然存在一些問題，例如樹結構生成的準確性不高，計算成本高。\n\n**結論**\n\n* 我們提出的方法結合了 Tree-Flow Diffusion 和 Hierarchical Sub-Tree Diffusion 的優點，使用層級子樹的離散擴散來生成高質量的程式碼。\n* 我們的方法可以提高程式碼生成的準確性和語法正確性，提供了一種新的離散擴散方法，結合了 Tree-Flow Diffusion 和 Hierarchical"
+  }
+]
