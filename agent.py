@@ -1,10 +1,55 @@
+"""
+Daily Research Agent — robust edition.
+
+主要改動(全部目的:不要再卡在 stage 3/4/5):
+
+1. State 推進提前:拿到主 API 回應立刻存 state,後續所有步驟(report/discord/summary)
+   都允許失敗,不會回頭影響進度。
+
+2. safe_completion 強化:transient errors (429, 5xx, timeout, connection error)
+   走指數退避重試;重試耗盡才走 fallback ladder。
+
+3. Fallback ladder:reasoning → research → summary 三層,最後一層 8b 模型
+   幾乎不會掛,確保至少有東西產出。
+
+4. Per-stage max_tokens:stage 3 從 2048 提到 4096(原本對 3-5 個方案根本不夠,
+   被 truncate 也算半失敗)。
+
+5. 失敗計數 + 降級 prompt:同一階段累積失敗 ≥ 2 次,自動切到簡化 prompt,
+   保證每天能跑完五階段。
+
+6. Top-level error handler:任何 pre-state-advancement 失敗都會推到 Discord,
+   並把失敗計數寫回 state.json(然後 return 而不是 raise,確保 GitHub Actions
+   的 commit 步驟還能跑、把計數推到遠端)。
+
+7. Groq client timeout 拉長到 180s(預設過短)。
+"""
+
 import os
 import re
 import json
+import time
+import traceback
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
 import requests
-from groq import Groq, APIStatusError
+from groq import Groq
+
+# Groq error 類別 — 防禦式 import(版本可能略有差異)
+try:
+    from groq import APIStatusError
+except ImportError:
+    APIStatusError = Exception
+try:
+    from groq import APITimeoutError
+except ImportError:
+    APITimeoutError = Exception
+try:
+    from groq import APIConnectionError
+except ImportError:
+    APIConnectionError = Exception
+
 
 # ===== 基本設定 =====
 TAIPEI_TZ = ZoneInfo("Asia/Taipei")
@@ -16,18 +61,32 @@ DISCORD_MAX_CHARS = 1900
 today_str = datetime.now(TAIPEI_TZ).strftime("%Y-%m-%d")
 REPORT_FILE = f"reports/research_report_{today_str}.md"
 
-client = Groq(api_key=os.environ["GROQ_API_KEY"])
+# timeout 拉長 — stage 3 配 4096 tokens 在 Groq 上有可能跑 1-2 分鐘
+client = Groq(api_key=os.environ["GROQ_API_KEY"], timeout=180.0)
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+
 
 # ===== 模型分配 =====
 MODEL_RESEARCH = "groq/compound-mini"          # Stage 1, 2 — 內建 web search
 MODEL_REASONING = "llama-3.3-70b-versatile"    # Stage 3, 4, 5 — 純推理
-MODEL_SUMMARY = "llama-3.1-8b-instant"         # 摘要壓縮 — 便宜快速
+MODEL_SUMMARY = "llama-3.1-8b-instant"         # 摘要壓縮 / 最後 fallback
 
-MAX_TOKENS_MAIN = 2048
+# Per-stage max_tokens(關鍵修正:stage 3 本來 2048 嚴重不夠)
+STAGE_MAX_TOKENS = {
+    1: 2048,
+    2: 2048,
+    3: 4096,   # 要產出 3-5 個詳細方案
+    4: 3072,   # 每個方案 5+ 個批判點
+    5: 4096,   # 完整最終提案
+}
 MAX_TOKENS_SUMMARY = 600
 
-# ===== 每日輪替焦點(用 day-of-year 旋轉,確保 14 天內不重複大方向) =====
+# 重試 / fallback 設定
+MAX_RETRIES = 3                       # 每個模型的最大重試次數
+MAX_FAILURES_BEFORE_DEGRADE = 2       # 同階段累積失敗幾次後切到降級 prompt
+
+
+# ===== 每日輪替焦點 =====
 DAILY_FOCUS_THEMES = [
     "Mechanistic Interpretability 與模型內部結構(Sparse Autoencoder、circuit analysis、emergent misalignment 偵測、internal feature vectors)",
     "非 Transformer 架構創新(Mamba/SSM 變體、Gated DeltaNet、Gated Attention、xLSTM、線性注意力新解法)",
@@ -47,7 +106,6 @@ DAILY_FOCUS_THEMES = [
 
 
 def get_today_focus():
-    """根據今天的 day-of-year 選擇一個焦點主題,確保 14 天內不重複大方向。"""
     doy = datetime.now(TAIPEI_TZ).timetuple().tm_yday
     return DAILY_FOCUS_THEMES[doy % len(DAILY_FOCUS_THEMES)]
 
@@ -83,7 +141,6 @@ STAGE_META = {
 
 
 def build_stage_prompts():
-    """每次跑都動態生成,把今日焦點與歷史主題注入 Stage 1。"""
     today_focus = get_today_focus()
     history_block = build_history_avoid_block()
 
@@ -169,13 +226,32 @@ def build_stage_prompts():
     }
 
 
+# Stage 3 的降級 prompt — 連續失敗後用這個確保能跑完
+DEGRADED_STAGE_3_PROMPT = (
+    "前面已分析過主題與方法。**注意:之前用完整 prompt 失敗過,本次採用精簡版。**\n\n"
+    "請提出 **2 個** 具體可實作的創新方法,每個方案精簡輸出,避免冗長:\n\n"
+    "**方案 X:[名稱]**\n"
+    "- 核心 idea(1 句話)\n"
+    "- 技術細節(3-4 句話,具體說明改了哪個元件)\n"
+    "- 與 SOTA 的差異(2 句話)\n"
+    "- 預期改善的指標(1 句話)\n"
+    "- MVP 設計(1 句話)\n\n"
+    "**禁止**任何 LaTeX 與表格。每個方案總字數控制在 200-300 字。"
+)
+
+
 def get_model(stage: int) -> str:
     return MODEL_RESEARCH if stage in (1, 2) else MODEL_REASONING
 
 
 # ===== 狀態管理 =====
 def new_state() -> dict:
-    return {"date": today_str, "step": 1, "summaries": []}
+    return {
+        "date": today_str,
+        "step": 1,
+        "summaries": [],
+        "failures": {},  # str(stage) -> 連續失敗次數
+    }
 
 
 def load_state() -> dict:
@@ -185,6 +261,7 @@ def load_state() -> dict:
         state = json.load(f)
     if state.get("date") != today_str:
         return new_state()
+    state.setdefault("failures", {})  # 舊版 state 沒有這欄
     return state
 
 
@@ -193,7 +270,7 @@ def save_state(state: dict) -> None:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
 
-# ===== 主題歷史管理(避免日復一日重複題目) =====
+# ===== 主題歷史管理 =====
 def load_history() -> list:
     if not os.path.exists(HISTORY_FILE):
         return []
@@ -206,21 +283,18 @@ def load_history() -> list:
 
 def save_history_entry(date: str, stage1_summary: str, stage5_summary: str) -> None:
     history = load_history()
-    # 移除同日舊條目(若有)
     history = [h for h in history if h.get("date") != date]
     history.append({
         "date": date,
         "stage1_topics": stage1_summary[:400],
         "final_proposal": stage5_summary[:300],
     })
-    # 只保留最近 HISTORY_DAYS 天
     history = sorted(history, key=lambda x: x["date"])[-HISTORY_DAYS:]
     with open(HISTORY_FILE, "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
 
 
 def build_history_avoid_block() -> str:
-    """生成「過去 N 天已探討主題,請務必避開」prompt 區塊。"""
     history = load_history()
     if not history:
         return ""
@@ -256,62 +330,40 @@ GREEK_MAP = {
 
 
 def _latex_to_text(s: str) -> str:
-    """將常見 LaTeX 數學語法轉成可讀的 Unicode/純文字。"""
-    # 結構性
     s = re.sub(r"\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}", r"(\1)/(\2)", s)
     s = re.sub(r"\\sqrt\s*\{([^{}]+)\}", r"√(\1)", s)
     s = re.sub(r"\\sum_\{([^{}]+)\}\^\{([^{}]+)\}", r"Σ_{\1}^{\2}", s)
     s = re.sub(r"\\prod_\{([^{}]+)\}\^\{([^{}]+)\}", r"Π_{\1}^{\2}", s)
     s = re.sub(r"\\int_\{([^{}]+)\}\^\{([^{}]+)\}", r"∫_{\1}^{\2}", s)
-
-    # 字體
     s = re.sub(r"\\mathbb\s*\{([^{}]+)\}", r"\1", s)
     s = re.sub(r"\\mathbf\s*\{([^{}]+)\}", r"**\1**", s)
     s = re.sub(r"\\mathcal\s*\{([^{}]+)\}", r"\1", s)
     s = re.sub(r"\\mathrm\s*\{([^{}]+)\}", r"\1", s)
     s = re.sub(r"\\text\s*\{([^{}]+)\}", r"\1", s)
     s = re.sub(r"\\operatorname\s*\{([^{}]+)\}", r"\1", s)
-
-    # 上下標(簡單版)
     s = re.sub(r"\^\{([^{}]+)\}", r"^(\1)", s)
     s = re.sub(r"_\{([^{}]+)\}", r"_(\1)", s)
-
-    # 希臘字母與符號
     for pat, rep in GREEK_MAP.items():
         s = re.sub(pat + r"(?![a-zA-Z])", rep, s)
-
-    # 剩餘 backslash 命令(沒處理到的)→ 移除 backslash
     s = re.sub(r"\\([a-zA-Z]+)", r"\1", s)
-
-    # 清掉多餘 braces
     s = re.sub(r"\{([^{}]*)\}", r"\1", s)
-
     return s.strip()
 
 
 def _convert_math_delims(text: str) -> str:
-    """把 $...$、$$...$$、\\(...\\)、\\[...\\] 轉成 Discord 可讀格式。"""
-    # $$...$$ → 獨立行的 inline code(放 backtick 比 code block 不會吃太多空間)
     def block(m):
         return "`" + _latex_to_text(m.group(1)) + "`"
     text = re.sub(r"\$\$(.+?)\$\$", block, text, flags=re.DOTALL)
-
-    # \[...\] → 同上
     text = re.sub(r"\\\[(.+?)\\\]", block, text, flags=re.DOTALL)
 
-    # $...$ → inline backtick
     def inline(m):
         return "`" + _latex_to_text(m.group(1)) + "`"
     text = re.sub(r"\$([^\$\n]+?)\$", inline, text)
-
-    # \(...\) → inline backtick
     text = re.sub(r"\\\((.+?)\\\)", inline, text, flags=re.DOTALL)
-
     return text
 
 
 def _convert_tables(text: str) -> str:
-    """將 markdown 表格包進 code block(monospace 至少能對齊)。"""
     lines = text.split("\n")
     out, buf, in_table = [], [], False
 
@@ -333,21 +385,16 @@ def _convert_tables(text: str) -> str:
                 in_table = False
                 buf = []
             out.append(line)
-
     if in_table:
         out.append("```")
         out.extend(buf)
         out.append("```")
-
     return "\n".join(out)
 
 
 def format_for_discord(text: str) -> str:
-    """把模型輸出整理成 Discord 可正確顯示的格式。"""
     if not text:
         return text
-
-    # 1. 先保護已存在的 code block 與 inline code,避免被後續正則破壞
     placeholders = {}
 
     def stash(prefix, m):
@@ -357,33 +404,20 @@ def format_for_discord(text: str) -> str:
 
     text = re.sub(r"```[\s\S]*?```", lambda m: stash("CB", m), text)
     text = re.sub(r"`[^`\n]+`", lambda m: stash("IC", m), text)
-
-    # 2. 轉 LaTeX 公式
     text = _convert_math_delims(text)
-
-    # 3. 轉表格
     text = _convert_tables(text)
-
-    # 4. 移除過長連續換行
     text = re.sub(r"\n{3,}", "\n\n", text)
-
-    # 5. 還原 placeholders
     for key, original in placeholders.items():
         text = text.replace(key, original)
-
     return text
 
 
 def chunk_text(text: str, size: int = DISCORD_MAX_CHARS):
-    """智慧分塊:不切斷 code block,優先切在段落邊界。"""
     chunks, remaining = [], text
-
     while remaining:
         if len(remaining) <= size:
             chunks.append(remaining)
             break
-
-        # 優先在段落邊界切
         cut = remaining.rfind("\n\n", 0, size)
         if cut < size // 3:
             cut = remaining.rfind("\n", 0, size)
@@ -391,19 +425,14 @@ def chunk_text(text: str, size: int = DISCORD_MAX_CHARS):
             cut = remaining.rfind(" ", 0, size)
         if cut <= 0:
             cut = size
-
         chunk = remaining[:cut]
-
-        # 檢查是否有未閉合 code block,如有則自動補上
         if chunk.count("```") % 2 == 1:
             chunk = chunk.rstrip() + "\n```"
             rest = "```\n" + remaining[cut:].lstrip("\n")
         else:
             rest = remaining[cut:].lstrip("\n")
-
         chunks.append(chunk)
         remaining = rest
-
     return chunks
 
 
@@ -448,26 +477,97 @@ def notify_discord(stage: int, model: str, reply: str):
         _discord_file(REPORT_FILE, f"📎 **今日完整報告** ({today_str})")
 
 
-# ===== API 呼叫(帶 fallback) =====
-def safe_completion(messages, model, max_tokens, temperature=0.7):
+def notify_error_to_discord(stage: int, exc_text: str):
+    """把失敗 traceback 推到 Discord,方便排查。"""
+    if not DISCORD_WEBHOOK_URL:
+        return
+    truncated = exc_text[-1500:]
+    msg = (
+        f"❌ **Stage {stage}/5 失敗 — {today_str}**\n"
+        f"```\n{truncated}\n```\n"
+        f"(失敗計數會自動累積,連續失敗 {MAX_FAILURES_BEFORE_DEGRADE} 次後切換為簡化 prompt)"
+    )
     try:
-        resp = client.chat.completions.create(
-            model=model, messages=messages,
-            temperature=temperature, max_tokens=max_tokens,
-        )
-        return resp, model
-    except APIStatusError as e:
-        if e.status_code in (413, 429) and model != MODEL_REASONING:
-            print(f"[fallback] {model} 失敗 ({e.status_code}),改用 {MODEL_REASONING}")
-            resp = client.chat.completions.create(
-                model=MODEL_REASONING, messages=messages,
-                temperature=temperature, max_tokens=max_tokens,
-            )
-            return resp, MODEL_REASONING
-        raise
+        _discord_json({"content": msg})
+    except Exception as e:
+        print(f"[Discord] 連推錯誤通知都失敗了: {e}")
 
 
-# ===== 摘要壓縮 =====
+# ===== API 呼叫(強化版) =====
+def safe_completion(messages, model, max_tokens, temperature=0.7):
+    """
+    強化的 Groq chat completion:
+    1. transient errors (429, 5xx, timeout, connection) 走指數退避重試
+    2. 重試耗盡後沿 fallback ladder 換模型
+    3. ladder 都用完才 raise — 這時上層會記錄失敗、推 Discord、return(不 raise)
+    """
+    if model == MODEL_RESEARCH:
+        ladder = [MODEL_RESEARCH, MODEL_REASONING, MODEL_SUMMARY]
+    elif model == MODEL_REASONING:
+        ladder = [MODEL_REASONING, MODEL_RESEARCH, MODEL_SUMMARY]
+    else:
+        ladder = [model]
+
+    last_error = None
+
+    for m in ladder:
+        for attempt in range(MAX_RETRIES):
+            try:
+                resp = client.chat.completions.create(
+                    model=m,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
+                if m != model:
+                    print(f"[Fallback OK] 用 {m} 替代 {model} 成功")
+                return resp, m
+
+            except APIStatusError as e:
+                last_error = e
+                status = getattr(e, "status_code", None)
+                if status == 429:
+                    wait = min((2 ** attempt) * 15, 90)
+                    print(f"[429] {m} rate limit,等 {wait}s 重試 "
+                          f"({attempt + 1}/{MAX_RETRIES})")
+                    time.sleep(wait)
+                    continue
+                if status in (500, 502, 503, 504):
+                    wait = (2 ** attempt) * 5
+                    print(f"[{status}] {m} server error,等 {wait}s 重試 "
+                          f"({attempt + 1}/{MAX_RETRIES})")
+                    time.sleep(wait)
+                    continue
+                if status == 413:
+                    print(f"[413] {m} payload 過大,直接換 ladder 下一個模型")
+                    break  # 換模型,不重試
+                # 其他 4xx
+                print(f"[{status}] {m} 不可重試的錯誤: {e}")
+                break
+
+            except (APITimeoutError, APIConnectionError) as e:
+                last_error = e
+                wait = (2 ** attempt) * 5
+                print(f"[Network] {m} {type(e).__name__}: {e},等 {wait}s 重試")
+                time.sleep(wait)
+                continue
+
+            except Exception as e:
+                last_error = e
+                wait = (2 ** attempt) * 5
+                print(f"[Unknown] {m} {type(e).__name__}: {e},等 {wait}s 重試")
+                time.sleep(wait)
+                continue
+
+        print(f"[Exhausted] {m} 已用盡 {MAX_RETRIES} 次重試,改試 ladder 下一個")
+
+    raise RuntimeError(
+        f"所有 fallback 模型都失敗。最後錯誤: "
+        f"{type(last_error).__name__}: {last_error}"
+    )
+
+
+# ===== 摘要壓縮(走 safe_completion 確保也有重試) =====
 def generate_summary(stage: int, full_text: str) -> str:
     sys_msg = (
         "你是研究助理,擅長精煉長文,只保留最關鍵的事實、結論、技術細節。"
@@ -479,12 +579,12 @@ def generate_summary(stage: int, full_text: str) -> str:
         "讓接續階段能在不讀原文的情況下精準延伸。字數 300–500 字。\n\n"
         f"=== 原始內容 ===\n{full_text}"
     )
-    resp = client.chat.completions.create(
-        model=MODEL_SUMMARY,
+    resp, _ = safe_completion(
         messages=[{"role": "system", "content": sys_msg},
                   {"role": "user", "content": user_msg}],
-        temperature=0.3,
+        model=MODEL_SUMMARY,
         max_tokens=MAX_TOKENS_SUMMARY,
+        temperature=0.3,
     )
     return resp.choices[0].message.content.strip()
 
@@ -492,7 +592,6 @@ def generate_summary(stage: int, full_text: str) -> str:
 # ===== 訊息組裝 =====
 def build_messages(stage: int, summaries: list, prompts: dict) -> list:
     msgs = [{"role": "system", "content": SYSTEM_PROMPT}]
-
     if summaries:
         ctx = "以下是先前各階段的研究摘要,請依此延伸:\n\n"
         for s in summaries:
@@ -500,9 +599,18 @@ def build_messages(stage: int, summaries: list, prompts: dict) -> list:
         msgs.append({"role": "user", "content": ctx.strip()})
         msgs.append({"role": "assistant",
                      "content": "了解,我已掌握前面各階段的研究內容,請給我下一個任務。"})
-
     msgs.append({"role": "user", "content": prompts[stage]})
     return msgs
+
+
+# ===== 每階段 temperature =====
+STAGE_TEMPERATURE = {
+    1: 0.6,
+    2: 0.5,
+    3: 0.85,
+    4: 0.5,
+    5: 0.4,
+}
 
 
 # ===== 報告 =====
@@ -519,14 +627,19 @@ def append_report(stage, model, prompt, reply, summary):
         )
 
 
-# ===== 每階段 temperature 微調 =====
-STAGE_TEMPERATURE = {
-    1: 0.6,   # 探索:中等溫度,平衡多樣性與聚焦
-    2: 0.5,   # 深入分析:偏低,要求精確
-    3: 0.85,  # 創新發想:高溫,鼓勵跳躍
-    4: 0.5,   # 嚴格批判:偏低,要求嚴謹
-    5: 0.4,   # 整合提案:低溫,確保穩定整合
-}
+def get_active_prompt(stage: int, state: dict, prompts: dict) -> str:
+    """若此階段累積失敗 >= 門檻,回傳降級 prompt。"""
+    fc = int(state.get("failures", {}).get(str(stage), 0))
+    if stage == 3 and fc >= MAX_FAILURES_BEFORE_DEGRADE:
+        print(f"[Degraded] Stage 3 已連續失敗 {fc} 次,改用簡化 prompt")
+        try:
+            _discord_json({
+                "content": f"⚠️ Stage 3 已連續失敗 {fc} 次,本次改用簡化 prompt 以求完成。"
+            })
+        except Exception:
+            pass
+        return DEGRADED_STAGE_3_PROMPT
+    return prompts[stage]
 
 
 # ===== 主流程 =====
@@ -540,46 +653,80 @@ def main():
 
     print(f"=== Stage {step} | date={state['date']} ===")
     print(f"今日輪替焦點:{get_today_focus()}")
+    print(f"歷史失敗計數:{state.get('failures', {})}")
 
-    prompts = build_stage_prompts()
-    messages = build_messages(step, state["summaries"], prompts)
+    # ===== 區段 A: 計算 prompt / 取得主回應(失敗會記錄失敗計數) =====
     primary = get_model(step)
     temp = STAGE_TEMPERATURE.get(step, 0.7)
-    print(f"主模型: {primary} | temperature: {temp}")
+    max_tok = STAGE_MAX_TOKENS.get(step, 2048)
+    print(f"主模型: {primary} | temperature: {temp} | max_tokens: {max_tok}")
 
-    response, used_model = safe_completion(
-        messages, primary, MAX_TOKENS_MAIN, temperature=temp,
-    )
-    reply = response.choices[0].message.content
-    print(f"主模型回應完成 (實際用 {used_model}),長度 {len(reply)} 字")
+    try:
+        prompts = build_stage_prompts()
+        active_prompt = get_active_prompt(step, state, prompts)
+        prompts_to_use = dict(prompts)
+        prompts_to_use[step] = active_prompt
+        messages = build_messages(step, state["summaries"], prompts_to_use)
 
-    # 寫報告 + 推 Discord
-    append_report(step, used_model, prompts[step], reply, summary="(產生中...)")
+        response, used_model = safe_completion(
+            messages, primary, max_tok, temperature=temp,
+        )
+        reply = response.choices[0].message.content
+        print(f"主模型回應完成 (實際用 {used_model}),長度 {len(reply)} 字")
+
+    except Exception:
+        tb = traceback.format_exc()
+        print(f"[FATAL] Stage {step} 取得主回應失敗:\n{tb}")
+        # 失敗計數 +1 然後存檔(關鍵:不要 raise,否則 workflow commit 步驟不會跑)
+        state["failures"][str(step)] = int(
+            state.get("failures", {}).get(str(step), 0)
+        ) + 1
+        try:
+            save_state(state)
+        except Exception as save_err:
+            print(f"[Warn] 連 state 都存不下: {save_err}")
+        notify_error_to_discord(step, tb)
+        return  # 結束本次執行,等下次排程重試
+
+    # ===== 區段 B: 主回應已取得 → 立刻推進 state(這之後失敗都不影響進度) =====
+    state["summaries"].append({"stage": step, "summary": reply[:1500]})  # 暫存截斷版
+    state["step"] = step + 1
+    state["failures"][str(step)] = 0  # 此階段成功,清空失敗計數
+    save_state(state)
+    print(f"✓ State 已推進到 step {step + 1}")
+
+    # ===== 區段 C: best-effort 後處理(每個獨立 try/except) =====
+    try:
+        append_report(step, used_model, active_prompt, reply, summary="(generating...)")
+    except Exception as e:
+        print(f"[Warn] append_report 失敗: {e}")
+
     try:
         notify_discord(step, used_model, reply)
     except Exception as e:
-        print(f"[Discord] 推送失敗: {e}")
+        print(f"[Warn] Discord 推送失敗: {e}")
 
-    # 壓縮摘要供下一階段使用
-    print(f"產生 Stage {step} 摘要...")
+    # 摘要生成 — 失敗就保留截斷版
+    summary = reply[:1500]
     try:
+        print(f"產生 Stage {step} 摘要...")
         summary = generate_summary(step, reply)
+        state["summaries"][-1]["summary"] = summary
+        save_state(state)
+        print(f"✓ Stage {step} 摘要已存檔")
     except Exception as e:
-        print(f"[Warn] 摘要失敗 ({e}),使用截斷版內容")
-        summary = reply[:1500]
+        print(f"[Warn] 摘要失敗 ({e}),保留截斷版內容")
 
-    state["summaries"].append({"stage": step, "summary": summary})
-    state["step"] = step + 1
-    save_state(state)
-    print(f"✓ Stage {step} 完成,摘要已存檔")
-
-    # Stage 5 結束後,把今日主題寫進歷史,供未來避免重複
+    # 歷史寫入(僅 stage 5)
     if step == 5:
-        stage1_summary = next(
-            (s["summary"] for s in state["summaries"] if s["stage"] == 1), ""
-        )
-        save_history_entry(today_str, stage1_summary, summary)
-        print(f"✓ 今日主題已寫入 {HISTORY_FILE}")
+        try:
+            stage1_summary = next(
+                (s["summary"] for s in state["summaries"] if s["stage"] == 1), ""
+            )
+            save_history_entry(today_str, stage1_summary, summary)
+            print(f"✓ 今日主題已寫入 {HISTORY_FILE}")
+        except Exception as e:
+            print(f"[Warn] history 寫入失敗: {e}")
 
 
 if __name__ == "__main__":
