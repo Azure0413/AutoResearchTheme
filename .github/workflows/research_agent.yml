@@ -1,10 +1,7 @@
 name: Daily Research Agent
 on:
   schedule:
-    # 改用 :11 / :41 兩個非整點時段,避開 GitHub Actions 整點塞車
-    # 台灣時間 01:11, 01:41, 02:11, 02:41, ..., 05:11, 05:41
-    # = UTC 17:11, 17:41, 18:11, 18:41, 19:11, 19:41, 20:11, 20:41, 21:11, 21:41
-    - cron: '11,41 17-21 * * *'
+    - cron: '12,42 17-21 * * *'
   workflow_dispatch:
 
 permissions:
