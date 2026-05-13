@@ -1,13 +1,18 @@
 {
   "date": "2026-05-14",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 自我監督的層級技能發現與世界模型結合**\n\n* **關鍵事實**：\n + 研究人數仍少，因為需要同時解決長期規劃、層級抽象與高維感知的交叉挑戰。\n + 需要開創新型自主代理的潛力。\n* **結論**：\n + 需要設計自動抽取可重用的子策略的方法。\n + 需要發展有效的誤差校正機制。\n* **技術細節**：\n + 使用世界模型預測誤差累積問題。\n + 需要設計層級技能發現的方法。\n* **論點**：\n + 需要探索新型自主代理的潛力。\n + 需要發展有效的誤差校正機制。\n* **引用的 paper 名稱**：\n + 《Hierarchical Skill Discovery via Predictive World Models》\n + 《Unsupervised Intrinsic Motivation for Multi-Level RL in Physics Simulators》\n + 《Learning Structured Options through Contrastive Predictive Coding》\n\n**主題二: 基於圖神經網路的多任務政策蒸餾與知識融合**\n\n* **關鍵事實**：\n + 多任務政策蒸餾仍以單一網路或簡單權重平均為主。\n + 圖結構的知識傳遞尚未被廣泛探索。\n* **結論**：\n + 需要設計圖訊息傳遞機制。\n + 需要發展蒸餾後的圖形策略的適應性與穩定性。\n* **技術細節**：\n + 使用圖神經網路的多任務政策蒸餾。\n + 需要設計蒸餾過程中的知識傳遞機制。\n* **論點**：\n + 需要探索圖結構的知識傳遞。\n + 需要發展蒸餾後的圖形策略的適應性與穩定性。\n* **引用的 paper 名稱**：\n + 《Graph-Based Policy Distillation for Scalable Multi-Task Reinforcement Learning》\n + 《Neural Relational Distillation for Heterogeneous RL Tasks》\n + 《Composable Policy Graphs via Message-Passing Distillation》\n\n**主題三: 零樣本工具使用的組合式元強化學習**\n\n* **關鍵事實**：\n + 零樣本工具使用仍主要依賴大型語言模型的提示。\n + 探索純粹從交互中學習的機制仍是新興且未飽和領域。\n* **結論**：\n + 需要設計組合式"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 關鍵事實\n\n* 零樣本工具使用的組合式元強化學習技術已經可在單機 GPU 上復現\n* 目前缺乏系統性的 ablation 分析和計算成本優化\n* 未來的突破點可聚焦於設計更有效的稀疏獎勵 shaping、建立跨域工具嵌入的自適應微調機制和系統化的超參數 ablation\n\n### 結論\n\n* 零樣本工具使用的組合式元強化學習在技術成熟度與研究空間之間取得了最佳平衡\n* 未來的研究方向應聚焦於提高稀疏獎勵 shaping、跨域工具嵌入和超參數 ablation\n\n### 技術細節\n\n* **核心方法群**：Meta-ToolRL、Composable Prompt-Driven RL 和 Zero-Shot Tool Embedding\n* **模型架構細節**：輸入、輸出、關鍵模組和訓練目標\n* **訓練策略**：資料規模、Batch size、優化器、Loss 設計和實作 tricks\n* **主要 benchmark 和資料集**：ToolBench、Mini-WebNav 和 Zero-Shot ToolEval\n\n### 論點\n\n* 零樣本工具使用的組合式元強化學習技術已經可在單機 GPU 上復現\n* 目前缺乏系統性的 ablation 分析和計算成本優化\n* 未來的突破點可聚焦於設計更有效的稀疏獎勵 shaping、建立跨域工具嵌入的自適應微調機制和系統化的超參數 ablation\n\n### 引用的 paper 名稱\n\n* Meta-ToolRL：ICLR 2025\n* Composable Prompt-Driven RL：NeurIPS 2025\n* Zero-Shot Tool Embedding：ICML 2026\n* ToolBench：NeurIPS 2025\n* Mini-WebNav：ICML 2026\n* Zero-Shot ToolEval：arXiv 2025.12"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
