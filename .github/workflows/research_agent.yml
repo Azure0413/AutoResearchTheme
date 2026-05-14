@@ -1,7 +1,13 @@
 name: Daily Research Agent
 on:
   schedule:
-    - cron: '12,42 17-21 * * *'
+    # 大幅放寬 cron 視窗 — 因為 GitHub Actions cron 在尖峰時段常被跳過
+    # 從台灣時間 01:12 ~ 12:42 連續嘗試,每 30 分鐘一次,共 24 次機會
+    # 5 階段最多只需要 5 次成功,所以即使被跳過 70% 也跑得完
+    #
+    # 拆成兩段 cron 是因為這個時間範圍會跨 UTC 換日
+    - cron: '12,42 17-23 * * *'   # UTC 17:12 ~ 23:42 = 台灣 01:12 ~ 07:42(隔日)
+    - cron: '12,42 0-4 * * *'     # UTC 00:12 ~ 04:42 = 台灣 08:12 ~ 12:42(當日)
   workflow_dispatch:
 
 permissions:
@@ -14,7 +20,6 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    # 整個 job 最多跑 20 分鐘(防止 agent 卡死無限佔資源)
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -32,8 +37,6 @@ jobs:
 
       - name: Run agent
         id: run_agent
-        # 即使 agent.py 噴錯也要繼續跑 commit 步驟 — 我們把錯誤訊息寫進 state.json
-        # 讓失敗計數能推到遠端,下次才會自動降級
         continue-on-error: true
         env:
           GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
@@ -41,7 +44,6 @@ jobs:
         run: python agent.py
 
       - name: Commit and push (with retry)
-        # if: always() 確保即使 agent 失敗也會嘗試 commit(把失敗計數推上去)
         if: always()
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -57,7 +59,6 @@ jobs:
 
           git commit -m "chore: agent stage update [skip ci]"
 
-          # Push 失敗時最多重試 3 次 — 解決多個 workflow 同時 push 的競爭問題
           for i in 1 2 3; do
             echo "Push attempt $i..."
             if git pull --rebase origin ${{ github.ref_name }} && git push; then
@@ -71,7 +72,6 @@ jobs:
           echo "::error::Failed to push after 3 attempts"
           exit 1
 
-      # 如果 agent 步驟失敗,讓整個 workflow 也標記為失敗(方便你在 Actions 頁面看到)
       - name: Mark workflow failed if agent failed
         if: steps.run_agent.outcome == 'failure'
         run: |
