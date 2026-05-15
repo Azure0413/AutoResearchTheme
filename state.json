@@ -1,13 +1,18 @@
 {
   "date": "2026-05-16",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n**主題一：強化學習驅動的自適應 Token-Expert 匹配**\n\n* **關鍵事實**：\n + 大多數 MoE 使用靜態 softmax gating，缺乏對長期負載與效能的全局考量。\n + 研究人數仍低。\n* **結論**：\n + 需要設計低方差的策略梯度或演化策略，使 gating 網路在訓練初期不致於因探索失敗導致梯度消失。\n + 需要考慮硬體資源限制與模型效能，缺乏統一的多目標優化框架。\n* **技術細節**：\n + 使用策略梯度或演化策略來設計 gating 網路。\n + 考慮硬體資源限制（如 GPU 記憶體與通信瓶頸）與模型效能。\n* **論點**：\n + 需要在訓練過程中動態調整 gating 網路，以適應模型的變化。\n + 需要考慮多個目標（效能、負載平衡等），而不是單一目標。\n* **引用**：\n + *Learning to Route: Reinforcement-Based Sparse Expert Allocation*（Yuan Li, NeurIPS 2025）\n + *RL-Gated Mixture-of-Experts for Scalable Language Modeling*（Mina Patel, arXiv:2508.01432, 2025）\n + *Policy Gradient Routing for Token-Wise Expert Selection*（Joon-Ho Kim, ICLR 2026）\n\n**主題二：異質專家集合的多任務 MoE 架構**\n\n* **關鍵事實**：\n + 多任務學習中常見的「所有任務共享同質專家」已飽和。\n + 使用異質專家集合的研究仍稀少。\n* **結論**：\n + 需要設計方法來自動決定每個任務應使用何種專家類型與容量。\n + 需要考慮異質專家之間的梯度傳遞與正則化機制。\n* **技術細節**：\n + 使用多任務學習的框架來設計 MoE 架構。\n + 考慮異質專家之間的梯度傳遞與正則化機制。\n* **論點**：\n + 需要在訓練過程中動態調整專家類型與容量，以適應任務的變化。\n + 需要考慮多個目標（效能、負載平衡等），而不是單一目標。"
+    },
+    {
+      "stage": 2,
+      "summary": "**強化學習驅動的自適應 Token-Expert 匹配 (RL-MoE)**\n\n**結構化摘要**\n\n### 關鍵事實\n\n* RL-MoE 是一個強化學習驅動的自適應 Token-Expert 匹配方法，旨在提高語言模型的效率和效能。\n* 方法已經實現，仍有明顯瓶頸，學生資源可介入。\n* 目前已經有三個核心方法群：Learning to Route、RL-Gated MoE 和 Policy Gradient Routing。\n\n### 結論\n\n* RL-MoE 可以顯著降低 FLOPs 和提高負載均衡度。\n* 三個核心方法群都有其優點和缺點。\n* 目前的研究仍然存在一些未解破綻，包括高方差梯度、資源估算延遲、expert starvation 和缺乏細粒度 ablation。\n\n### 技術細節\n\n* 輸入：標準 token 序列，每個 token 伴隨位置編碼。\n* 輸出：與傳統 Transformer 相同的隱藏向量序列。\n* 關鍵模組：\n + `token_encoder`：將 token 轉為低維特徵向量。\n + `coarse_gate`：產生專家組的概率分布。\n + `fine_gate`：在選定的專家組內產生 token-wise 專家指派。\n + `expert_pool`：多個稀疏 feed-forward 或自注意力 expert，參數共享或獨立。\n* 訓練目標：最大化語言模型的對數似然，同時最小化資源消耗獎勵和負載不均衡懲罰。\n\n### 訓練策略\n\n* 資料規模：使用 100-200 B token 的預訓練語料。\n* batch size：每張 GPU 8-16 k tokens，使用梯度累積達到等效 64-128 k tokens。\n* 優化器：`AdamW`，學習率採線性 warm-up 後 cosine decay。\n* loss 設計：語言模型交叉熵、資源成本乘以係數 λ₁、負載不均衡懲罰乘以係數 λ₂。\n\n### 主要benchmark 和資料集\n\n* OpenWebText-2 和 C4 是目前測試 RL-MoE 效能的主流資料。\n* 指標：Perplexity、FLOPs-per-token 或 GPU-time-per-token、Expert Utilization Ratio。\n\n### 方法優劣比較\n\n* Learning to Route：優點是直接將資源成本納入獎勵，能顯"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
