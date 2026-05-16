@@ -1,6 +1,6 @@
 {
   "date": "2026-05-17",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **`PeriodicE3NN`**：E(3) 等變卷積核心，加入晶格平移對稱的周期邊界條件，保證旋轉、鏡射與平移不變性。\n* **`LatticeDiffusion`**：等變擴散模型直接生成晶格原子位置與動力學軌跡，利用噪聲注入與逆向擴散過程保證對稱性。\n* **`GaugeEquivariantTransformer`**：將 gauge 群等變概念引入 Transformer，將晶格的局部對稱視為 gauge field，透過自注意力機制在整個晶格上共享等變表示。\n\n### 2. 模型架構細節\n\n* **輸入**：原子類型嵌入、原子坐標、單位胞基向量、周期鄰接資訊（如最近鄰圖）。\n* **輸出**：能量預測、力向量預測、可選的 phonon_spectrum 或 elastic_tensor。\n* **關鍵模組**：等變訊息傳遞層、周期邊界封裝、噪聲注入/擴散模組（若採用 `LatticeDiffusion`）。\n\n### 3. 訓練策略\n\n* **資料規模**：常用的公開資料集有 Materials Project (~130k 結構) 與 Open Catalyst (~1M 反應過程)。\n* **Batch size**：單卡 GPU（A100）常設 `batch_size = 32`（每個樣本為一個單位胞），若使用分布式可擴展至 128。\n* **優化器**：`AdamW`（學習率 1e‑3 起點），配合 **cosine decay** 與 **warm‑up** 前 5% 迭代。\n\n### 4. 主要 Benchmark 與資料集\n\n* **Materials Project Energy & Force Benchmark**（MP‑EF）：評估指標：能量 MAE（毫電子伏特/原子）與力 MAE（eV/Å）。\n* **Open Catalyst 2025 (OC20) Relaxation Task**：評估指標：Relaxation Energy Error、Final Structure RMSD。\n\n### 5. 方法優劣比較\n\n* **`PeriodicE3NN`**：結構簡潔、易於在單卡上實作，但對於大尺度超晶格的訊息傳遞成本呈二次增長。\n* **`LatticeDiffusion`**：同時學習能量與動力學軌跡，但訓練過程需要"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 週期晶格對稱性增強的 GNN\n\n* **核心 idea**: 加入週期晶格對稱性約束，保證模型輸出對於晶格平移、旋轉和鏡射變換具有不變性。\n* **技術細節**:\n + 輸入: 原子坐標和週期邊界條件\n + 模組: 週期晶格對稱性增強的 GNN 層\n + 訓練目標: 能量和力預測\n + 損失函數: L2 損失加上週期晶格對稱性約束項\n* **與 SOTA 的差異**: 加入週期晶格對稱性約束\n* **預期改善的指標與原因**: 在 Materials Project Energy & Force Benchmark 中預期提升，原因是週期晶格對稱性增強的 GNN 能夠更好地捕捉晶格的對稱性和週期性\n* **最小可行實驗(MVP)**: 使用 Materials Project資料集，模型尺寸為 128 個單位胞，單張 GPU 可以驗證\n\n### 方案 2: 動力學軌跡引導的 Lattice Diffusion\n\n* **核心 idea**: 加入動力學軌跡引導，保證模型生成的動力學軌跡符合實際物理過程。\n* **技術細節**:\n + 輸入: 原子坐標和動力學軌跡\n + 模組: 動力學軌跡引導的 Lattice Diffusion 層\n + 訓練目標: 能量和動力學軌跡預測\n + 損失函數: L2 損失加上動力學軌跡引導項\n* **與 SOTA 的差異**: 加入動力學軌跡引導\n* **預期改善的指標與原因**: 在 Open Catalyst 2025 (OC20) Relaxation Task 中預期提升，原因是動力學軌跡引導的 Lattice Diffusion 能夠更好地捕捉動力學過程的物理性質\n* **最小可行實驗(MVP)**: 使用 Open Catalyst 2025 (OC20) 資料集，模型尺寸為 256 個單位胞，單張 GPU 可以驗證\n\n### 方案 3: 自適應晶格分解的等變 GNN\n\n* **核心 idea**: 加入自適應晶格分解，保證模型能夠自適應地學習晶格的對稱性"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
