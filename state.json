@@ -1,13 +1,18 @@
 {
   "date": "2026-05-17",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：周期晶格與材料科學的群等變 GNN**\n\n* **關鍵事實**：\n + 大多數 SE(3) 等變模型只處理有限尺寸的分子，對於具週期邊界條件的晶體結構仍缺乏系統化方法。\n + 研究者數量極少且與材料設計需求高度匹配。\n* **結論**：\n + 周期晶格與材料科學的群等變 GNN 有很大潛力，但仍面臨許多挑戰。\n* **技術細節**：\n + 設計高效的訊息傳遞與噪聲注入機制，保持平移、旋轉與晶格對稱性。\n + 解決周期邊界下的樣本效率與可擴展性問題，特別是大尺度超晶格的訓練成本。\n* **論點**：\n + 需要發展新的群等變 GNN 模型來處理周期晶格與材料科學的問題。\n + 需要研究新的訊息傳遞與噪聲注入機制來提高模型的效率。\n* **引用的 paper 名稱**：\n + 《Periodic Equivariant Neural Networks for Crystalline Materials》, 首位作者 **Liu**, NeurIPS 2025\n + 《E(3)‑Equivariant Diffusion for Lattice Dynamics》, 首位作者 **Kim**, ICLR 2026\n + 《Gauge‑Equivariant Transformers for Lattice Gauge Theories》, 首位作者 **Patel**, arXiv:2509.04123, 2025\n\n**主題二：結合群論先驗的神經‑符號混合求解器**\n\n* **關鍵事實**：\n + 神經‑符號方法在組合優化領域仍屬新興領域，特別是把群對稱性嵌入 SAT、圖著色等 NP‑hard 問題的求解器。\n + 已有的工作僅限於少數小規模實驗，社群規模尚未形成。\n* **結論**：\n + 結合群論先驗的神經‑符號混合求解器有很大潛力，但仍面臨許多挑戰。\n* **技術細節**：\n + 正確編碼離散對稱群（如置換群）而不產生梯度消失或表示冗餘。\n + 提升求解器對大規模實例的泛化與收斂速度。\n* **論點**：\n + 需要發展新的神經‑符號混合求解器來處理組合優化問題。\n + 需要研究新的"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **`PeriodicE3NN`**：E(3) 等變卷積核心，加入晶格平移對稱的周期邊界條件，保證旋轉、鏡射與平移不變性。\n* **`LatticeDiffusion`**：等變擴散模型直接生成晶格原子位置與動力學軌跡，利用噪聲注入與逆向擴散過程保證對稱性。\n* **`GaugeEquivariantTransformer`**：將 gauge 群等變概念引入 Transformer，將晶格的局部對稱視為 gauge field，透過自注意力機制在整個晶格上共享等變表示。\n\n### 2. 模型架構細節\n\n* **輸入**：原子類型嵌入、原子坐標、單位胞基向量、周期鄰接資訊（如最近鄰圖）。\n* **輸出**：能量預測、力向量預測、可選的 phonon_spectrum 或 elastic_tensor。\n* **關鍵模組**：等變訊息傳遞層、周期邊界封裝、噪聲注入/擴散模組（若採用 `LatticeDiffusion`）。\n\n### 3. 訓練策略\n\n* **資料規模**：常用的公開資料集有 Materials Project (~130k 結構) 與 Open Catalyst (~1M 反應過程)。\n* **Batch size**：單卡 GPU（A100）常設 `batch_size = 32`（每個樣本為一個單位胞），若使用分布式可擴展至 128。\n* **優化器**：`AdamW`（學習率 1e‑3 起點），配合 **cosine decay** 與 **warm‑up** 前 5% 迭代。\n\n### 4. 主要 Benchmark 與資料集\n\n* **Materials Project Energy & Force Benchmark**（MP‑EF）：評估指標：能量 MAE（毫電子伏特/原子）與力 MAE（eV/Å）。\n* **Open Catalyst 2025 (OC20) Relaxation Task**：評估指標：Relaxation Energy Error、Final Structure RMSD。\n\n### 5. 方法優劣比較\n\n* **`PeriodicE3NN`**：結構簡潔、易於在單卡上實作，但對於大尺度超晶格的訊息傳遞成本呈二次增長。\n* **`LatticeDiffusion`**：同時學習能量與動力學軌跡，但訓練過程需要"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
