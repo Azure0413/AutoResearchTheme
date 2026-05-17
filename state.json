@@ -1,13 +1,18 @@
 {
   "date": "2026-05-18",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n**主題一: 因果圖驅動的後訓練資料中毒根因追蹤**\n\n* 最關鍵的事實:\n + 研究人數仍少，因為需要結合因果推斷與大規模語言模型的內部表示，跨領域門檻高。\n + 可直接定位被植入的惡意樣本來源。\n* 結論:\n + 因果圖驅動的後訓練資料中毒根因追蹤仍是未解之處。\n + 需要設計方法在不暴露模型權重的前提下，從輸出分布重建可靠的因果圖結構。\n* 技術細節:\n + 需要針對高維嵌入空間的因果效應估計有效的樣本效率策略。\n* 論點:\n + 研究人數仍少，需要跨領域合作。\n + 需要設計方法來防止惡意樣本被植入。\n* 引用的 paper 名稱:\n + 「Causal Detection of Post‑Training Data Poisoning in Large Language Models」, Y. Liu 等, NeurIPS 2025。\n + 「Tracing Poisoned Tokens via Structural Causal Models」, M. Chen 等, arXiv:2506.04123, 2025。\n + 「Counterfactual Analysis for Data‑Poisoning Attribution」, S. Gupta 等, ICLR 2026。\n\n**主題二: 動態水印與指紋結合的持續學習防後門機制**\n\n* 最關鍵的事實:\n + 持續學習場景中模型會不斷接收新資料，現有靜態水印易被逐步稀釋。\n + 動態更新的水印仍是少數研究，具備長期防護與快速後門偵測的雙重潛力。\n* 結論:\n + 動態水印與指紋結合的持續學習防後門機制仍是未解之處。\n + 需要設計方法來設計在模型權重微調時仍能保持辨識度的水印更新規則。\n* 技術細節:\n + 需要防止惡意方利用水印的可預測性逆向生成隱蔽後門。\n* 論點:\n + 需要設計方法來防止水印被逐步稀釋。\n + 需要設計方法來防止惡意方利用水印的可預測性。\n* 引用的 paper 名稱:\n + 「Adaptive Watermarking for Backdoor Resilience in Continual Learning」"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Causal Detection of Post‑Training Data Poisoning**：\n + 建構「輸入‑嵌入‑輸出」的三層因果圖\n + 利用條件獨立測試判斷異常因果效應\n + 以貝葉斯網路估計因果強度\n* **Tracing Poisoned Tokens via Structural Causal Models**：\n + 把每個 token 視為 SCM 中的節點\n + 利用「前向因果介入」模擬植入惡意 token 的影響\n + 透過逆向推理找出最可能的中毒來源\n* **Counterfactual Analysis for Data‑Poisoning Attribution**：\n + 以反事實生成 (counterfactual generation) 產生「若未植入特定樣本」的模型預測\n + 比較實際與反事實輸出差異，以量化每筆訓練樣本的「毒性貢獻分數」\n\n### 2. 模型架構細節\n\n* **輸入**：原始文本或 token 序列，外加可選的「候選中毒樣本」集合\n* **輸出**：\n + 因果效應分數（每個候選樣本對特定輸出結果的貢獻）\n + 根因圖（顯示哪些樣本與哪些輸出節點形成因果鏈）\n* **關鍵模組**：\n + 因果圖構建模組：將 transformer 的層級注意力映射為因果邊\n + 介入與反事實生成模組：基於 gradient‑based 介入或 GAN 產生假設的未中毒模型行為\n + 貢獻度估計模組：採用 Shapley‑like 加權平均或因果強度指標\n\n### 3. 訓練策略\n\n* **資料規模**：使用公開的 LLM 微調資料集（如 Pile、OpenWebText）約 10‑20 GB\n* **Batch size**：GPU 記憶體允許下採 64‑128 個序列，序列長度 512 token\n* **優化器**：AdamW，學習率 2e‑4，使用 cosine decay\n* **Loss 設計**：\n + 因果圖重建損失：交叉熵 + KL 散度\n + 介入一致性損失：L2 距離\n + 稀疏正則：L1 懲罰\n\n### 4. 主要 benchmark 與資料集\n\n* **Benchmark**：\n + Poisoned"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
