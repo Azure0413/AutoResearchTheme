@@ -1,13 +1,18 @@
 {
   "date": "2026-05-19",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：安全導向的神經 SDE 控制器在高維機器人系統中的應用**\n\n* **關鍵事實**：\n + 神經 SDE 控制器在高維機器人系統中仍處於早期探索階段。\n + 目前只有少數團隊在將神經 SDE 與安全約束結合於真實機器人上。\n* **結論**：\n + 神經 SDE 控制器在高維機器人系統中有突破潛力，但仍面臨著多個技術問題。\n* **技術細節**：\n + 需要在神經 SDE 內部同時保證隨機動力學的可微分性與硬安全限制的嚴格遵守。\n + 高維狀態空間下的樣本效率極低，缺乏針對稀疏安全信號的有效探索策略。\n* **論點**：\n + 需要發展出能夠在神經 SDE 內部同時保證隨機動力學的可微分性與硬安全限制的嚴格遵守的技術。\n + 需要針對高維狀態空間下的樣本效率極低和稀疏安全信號的有效探索策略進行研究。\n* **引用的 paper 名稱**：\n + 《Stochastic Differential Reinforcement Learning for Safe Robot Manipulation》, 第一作者 **Y. Liu**, NeurIPS 2025\n + 《Continuous‑Time Safe Exploration via Neural SDEs》, 第一作者 **R. Patel**, ICLR 2026\n + 《Neural SDE Controllers for High‑Dimensional Systems》, arXiv:2508.01432, 2025\n\n**主題二：自適應時間步長的神經 ODE 代理模型於多物理耦合模擬**\n\n* **關鍵事實**：\n + 多物理耦合（如流體‑結構互動）仍主要依賴傳統 CFD/FEA。\n + 神經 ODE 代理尚處於早期探索階段，研究者數量有限。\n* **結論**：\n + 神經 ODE 代理在多物理耦合模擬中有突破潛力，但仍面臨著多個技術問題。\n* **技術細節**：\n + 需要設計能自動調整時間步長且保持誤差可控的神經 ODE 結構，尤其在剛性與非剛性動力學交叉時。\n + 需要將物理守恆律（能量、質量）嵌入到神經 ODE 的訓練目標中。"
+    },
+    {
+      "stage": 2,
+      "summary": "**Stage 2 結構化摘要**\n\n### 1. 核心方法群\n\n* **Adaptive Neural ODE (ANO)**: 自動調整時間步長，降低積分誤差。\n* **Physics-Informed Energy-Conserving Neural ODE (PI-EC-ODE)**: 加入能量守恆正則化，保持物理可信度。\n* **Hybrid Neural-FEM Solver (Hybrid-NF)**: 結合 FEM 的剛性求解，解決剛性耦合的數值剛性問題。\n\n### 2. 模型架構細節\n\n* **輸入**：初始狀態向量 `x0`、時間參數 `t`、外部激勵或邊界條件 `u(t)`\n* **輸出**：下一時間點的狀態 `x(t+Δt)`、估計的局部截斷誤差 `ê`\n* **關鍵模組**：\n + 可微分誤差估計器\n + 守恆律正則化模組\n + 耦合接口\n\n### 3. 訓練策略\n\n* **資料規模**：典型多物理基準提供 10-30 個參數化案例，每個案例產生 5-10 秒的時間序列\n* **batch size**：`64`\n* **優化器**：`AdamW`，學習率 `1e-3`\n* **loss 設計**：`L_state + L_energy + L_err`\n\n### 4. 主要 benchmark 與資料集\n\n* **CFD-FSI-Bench**：包含 12 種流體結構耦合案例\n* **MultiPhysics-Sim2Real**：針對實驗室機械臂與液體耦合的真實測試\n\n### 5. 方法優劣比較\n\n* **Adaptive Neural ODE (ANO)**：優點：自動時間步長、結構簡潔；缺點：誤差估計器不穩定、能量漂移\n* **Physics-Informed EC-ODE (PI-EC-ODE)**：優點：能量守恆正則化、可達到 SOTA 精度；缺點：計算成本高、正則化權重需手動調校\n* **Hybrid-NF**：優點：結合 FEM 的剛性求解、解決剛性耦合的數值剛性問題；缺點：系統實作複雜、整合誤差估計與自適應策略尚未達到端到端自動化\n\n### 6. 明確的「未解破綻」\n\n*"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
