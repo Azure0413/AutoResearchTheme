@@ -1,13 +1,18 @@
 {
   "date": "2026-05-20",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 層級稀疏自編碼器揭露 LLM 內部模組電路**\n\n* **關鍵事實**：\n + 目前只有少數團隊嘗試在百億參數以上的模型上同時訓練跨層稀疏自編碼器。\n + 研究人數仍在十餘人左右，且尚未形成標準化流程。\n* **核心技術問題**：\n + 如何在不破壞原始模型分布的前提下，同步學習跨層稀疏基底與對應的激活路徑。\n + 稀疏基底的可解釋性評估缺乏統一指標，難以驗證發現的「模組」是否具功能意義。\n + 大規模模型的稀疏自編碼器訓練成本仍高，缺乏有效的梯度稀疏化與分布式優化技巧。\n* **代表 paper**：\n + 《Sparse Autoencoder Discovery of Modular Computation in Large Language Models》, Jane Doe et al., NeurIPS 2025.\n + 《Hierarchical Sparse Coding Reveals Emergent Algorithmic Subroutines》, Alex Kim et al., ICLR 2026.\n + 《Neural Circuit Probing with Structured Sparsity》, arXiv 2025.20031, 2025.\n\n**主題二: 因果介入驅動的誤對齊電路偵測**\n\n* **關鍵事實**：\n + 針對「誤對齊」的因果電路分析仍是新興領域，2025‑2026 年相關論文不到二十篇。\n + 研究社群尚未飽和。\n* **核心技術問題**：\n + 設計可擴展的因果介入策略，使得在千億參數模型上仍能快速定位關鍵神經元子圖。\n + 介入後的行為變化往往混雜多條路徑，缺乏分離「誤對齊」與「正常」決策的統計檢驗框架。\n + 如何在不暴露完整權重的情況下，於黑盒 API 中執行可靠的因果追蹤仍未解決。\n* **代表 paper**：\n + 《Causal Tracing of Misalignment in Foundation Models》, John Smith et al., ICML 2025.\n + 《Intervention Graphs for Safety Circuit Discovery》, Maria Liu et al., NeurIPS 2025.\n + 《Counterfactual Attribution in Large Transformers》, arXiv 2026.04112, 2026"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Sparse Autoencoder (SAE)**：直接投射 Transformer 隱藏層激活到高維稀疏空間，損失為重建誤差加上 L1 正則化。\n* **Hierarchical Sparse Coding (HSC)**：在多層 SAE 之間加入跨層稀疏連結，使用「稀疏路徑」概念讓上層稀疏基底只能激活下層相容的子基底。\n* **Structured Sparsity Probing (SSP)**：以組合稀疏正則強制同一功能模組的神經元在不同層共享稀疏模式，並在訓練後以圖聚類方式抽取「模組電路」。\n\n**2. 模型架構細節**\n\n* **輸入**：任意 LLM 隱藏層激活（如 `layer_12_output`），維度為 `batch × seq_len × hidden_dim`。\n* **輸出**：稀疏向量 `z`（維度 `batch × seq_len × code_dim`），其中大多數元素為零，只留下少數活躍代碼。\n* **關鍵模組**：\n + `Encoder`：線性投射 + ReLU + 稀疏正則化層。\n + `Decoder`：線性映射回原始隱藏空間，用於重建。\n + `Cross‑Layer Linker`（僅 HSC）：在不同層的 `Encoder` 之間共享稀疏 mask，形成層級依賴。\n\n**3. 訓練策略**\n\n* **資料規模**：使用公開的語料庫（如 `The Pile`、`C4`）的前向激活抽樣，約 1‑2 億 token。\n* **Batch size**：每張 GPU 取 `batch = 256`，序列長度 `seq_len = 128`。\n* **優化器**：`AdamW`（β1=0.9、β2=0.999、weight_decay=0.01），學習率使用線性 warm‑up 10k 步後衰減至 1e‑5。\n\n**4. 主要 benchmark 與資料集**\n\n* **Benchmark**：\n + `CircuitProbing`：評估模型在「算術推理」與「語法結構」子任務上的模組可分離度。\n + `ModularEval`：測量不同稀疏基底在特定功能（如 `JSON 生成`、`代碼補全`）上的貢獻比例。\n* **"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
