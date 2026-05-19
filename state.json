@@ -1,6 +1,6 @@
 {
   "date": "2026-05-20",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Sparse Autoencoder (SAE)**：直接投射 Transformer 隱藏層激活到高維稀疏空間，損失為重建誤差加上 L1 正則化。\n* **Hierarchical Sparse Coding (HSC)**：在多層 SAE 之間加入跨層稀疏連結，使用「稀疏路徑」概念讓上層稀疏基底只能激活下層相容的子基底。\n* **Structured Sparsity Probing (SSP)**：以組合稀疏正則強制同一功能模組的神經元在不同層共享稀疏模式，並在訓練後以圖聚類方式抽取「模組電路」。\n\n**2. 模型架構細節**\n\n* **輸入**：任意 LLM 隱藏層激活（如 `layer_12_output`），維度為 `batch × seq_len × hidden_dim`。\n* **輸出**：稀疏向量 `z`（維度 `batch × seq_len × code_dim`），其中大多數元素為零，只留下少數活躍代碼。\n* **關鍵模組**：\n + `Encoder`：線性投射 + ReLU + 稀疏正則化層。\n + `Decoder`：線性映射回原始隱藏空間，用於重建。\n + `Cross‑Layer Linker`（僅 HSC）：在不同層的 `Encoder` 之間共享稀疏 mask，形成層級依賴。\n\n**3. 訓練策略**\n\n* **資料規模**：使用公開的語料庫（如 `The Pile`、`C4`）的前向激活抽樣，約 1‑2 億 token。\n* **Batch size**：每張 GPU 取 `batch = 256`，序列長度 `seq_len = 128`。\n* **優化器**：`AdamW`（β1=0.9、β2=0.999、weight_decay=0.01），學習率使用線性 warm‑up 10k 步後衰減至 1e‑5。\n\n**4. 主要 benchmark 與資料集**\n\n* **Benchmark**：\n + `CircuitProbing`：評估模型在「算術推理」與「語法結構」子任務上的模組可分離度。\n + `ModularEval`：測量不同稀疏基底在特定功能（如 `JSON 生成`、`代碼補全`）上的貢獻比例。\n* **"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 層級稀疏自編碼器的多尺度擴展\n\n* **最關鍵的事實**:\n + 層級稀疏自編碼器的架構從單一尺度擴展為多尺度\n + 多尺度的稀疏連結允許模型在不同層次上學習多尺度的模組化特徵\n* **結論**:\n + 預期在 CircuitProbing 和 ModularEval benchmark 上提升\n + 多尺度的稀疏連結可以捕捉更豐富的模組化特徵\n* **技術細節**:\n + 輸入流程保持不變\n + 模組設計中添加多尺度的稀疏連結\n + 訓練目標為重建誤差加上多尺度的稀疏正則化\n* **論點**:\n + 多尺度的稀疏連結可以提高模型的模組化能力\n + 可以捕捉更豐富的模組化特徵\n* **引用的 paper 名稱**:\n + Hierarchical Sparse Coding (HSC)\n\n### 方案 2: 因果介入驅動的誤對齊電路偵測\n\n* **最關鍵的事實**:\n + 使用因果介入驅動的方法來偵測誤對齊電路\n + 增加了誤對齊電路偵測模組\n* **結論**:\n + 預期在 Safety Circuit Discovery benchmark 上提升\n + 錯誤對齊電路偵測模組可以提高模型的安全性和可靠性\n* **技術細節**:\n + 輸入流程中添加因果介入的步驟\n + 模組設計中添加誤對齊電路偵測模組\n + 訓練目標為誤對齊電路的檢測\n* **論點**:\n + 錯誤對齊電路偵測模組可以提高模型的安全性和可靠性\n + 可以更有效地偵測誤對齊電路\n* **引用的 paper 名稱**:\n + Causal Tracing of Misalignment in Foundation Models\n\n### 方案 3: 結構化稀疏正則化的自動搜索\n\n* **最關鍵的事實**:\n + 使用自動搜索算法來搜索最優的結構化稀疏正則化方案\n + 增加了自動搜索算法\n* **結論**:\n + 預期在 ModularEval"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
