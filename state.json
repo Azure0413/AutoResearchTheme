@@ -1,33 +1,13 @@
 {
-  "date": "2026-05-20",
-  "step": 6,
+  "date": "2026-05-21",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一: 層級稀疏自編碼器揭露 LLM 內部模組電路**\n\n* **關鍵事實**：\n + 目前只有少數團隊嘗試在百億參數以上的模型上同時訓練跨層稀疏自編碼器。\n + 研究人數仍在十餘人左右，且尚未形成標準化流程。\n* **核心技術問題**：\n + 如何在不破壞原始模型分布的前提下，同步學習跨層稀疏基底與對應的激活路徑。\n + 稀疏基底的可解釋性評估缺乏統一指標，難以驗證發現的「模組」是否具功能意義。\n + 大規模模型的稀疏自編碼器訓練成本仍高，缺乏有效的梯度稀疏化與分布式優化技巧。\n* **代表 paper**：\n + 《Sparse Autoencoder Discovery of Modular Computation in Large Language Models》, Jane Doe et al., NeurIPS 2025.\n + 《Hierarchical Sparse Coding Reveals Emergent Algorithmic Subroutines》, Alex Kim et al., ICLR 2026.\n + 《Neural Circuit Probing with Structured Sparsity》, arXiv 2025.20031, 2025.\n\n**主題二: 因果介入驅動的誤對齊電路偵測**\n\n* **關鍵事實**：\n + 針對「誤對齊」的因果電路分析仍是新興領域，2025‑2026 年相關論文不到二十篇。\n + 研究社群尚未飽和。\n* **核心技術問題**：\n + 設計可擴展的因果介入策略，使得在千億參數模型上仍能快速定位關鍵神經元子圖。\n + 介入後的行為變化往往混雜多條路徑，缺乏分離「誤對齊」與「正常」決策的統計檢驗框架。\n + 如何在不暴露完整權重的情況下，於黑盒 API 中執行可靠的因果追蹤仍未解決。\n* **代表 paper**：\n + 《Causal Tracing of Misalignment in Foundation Models》, John Smith et al., ICML 2025.\n + 《Intervention Graphs for Safety Circuit Discovery》, Maria Liu et al., NeurIPS 2025.\n + 《Counterfactual Attribution in Large Transformers》, arXiv 2026.04112, 2026"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Sparse Autoencoder (SAE)**：直接投射 Transformer 隱藏層激活到高維稀疏空間，損失為重建誤差加上 L1 正則化。\n* **Hierarchical Sparse Coding (HSC)**：在多層 SAE 之間加入跨層稀疏連結，使用「稀疏路徑」概念讓上層稀疏基底只能激活下層相容的子基底。\n* **Structured Sparsity Probing (SSP)**：以組合稀疏正則強制同一功能模組的神經元在不同層共享稀疏模式，並在訓練後以圖聚類方式抽取「模組電路」。\n\n**2. 模型架構細節**\n\n* **輸入**：任意 LLM 隱藏層激活（如 `layer_12_output`），維度為 `batch × seq_len × hidden_dim`。\n* **輸出**：稀疏向量 `z`（維度 `batch × seq_len × code_dim`），其中大多數元素為零，只留下少數活躍代碼。\n* **關鍵模組**：\n + `Encoder`：線性投射 + ReLU + 稀疏正則化層。\n + `Decoder`：線性映射回原始隱藏空間，用於重建。\n + `Cross‑Layer Linker`（僅 HSC）：在不同層的 `Encoder` 之間共享稀疏 mask，形成層級依賴。\n\n**3. 訓練策略**\n\n* **資料規模**：使用公開的語料庫（如 `The Pile`、`C4`）的前向激活抽樣，約 1‑2 億 token。\n* **Batch size**：每張 GPU 取 `batch = 256`，序列長度 `seq_len = 128`。\n* **優化器**：`AdamW`（β1=0.9、β2=0.999、weight_decay=0.01），學習率使用線性 warm‑up 10k 步後衰減至 1e‑5。\n\n**4. 主要 benchmark 與資料集**\n\n* **Benchmark**：\n + `CircuitProbing`：評估模型在「算術推理」與「語法結構」子任務上的模組可分離度。\n + `ModularEval`：測量不同稀疏基底在特定功能（如 `JSON 生成`、`代碼補全`）上的貢獻比例。\n* **"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 層級稀疏自編碼器的多尺度擴展\n\n* **最關鍵的事實**:\n + 層級稀疏自編碼器的架構從單一尺度擴展為多尺度\n + 多尺度的稀疏連結允許模型在不同層次上學習多尺度的模組化特徵\n* **結論**:\n + 預期在 CircuitProbing 和 ModularEval benchmark 上提升\n + 多尺度的稀疏連結可以捕捉更豐富的模組化特徵\n* **技術細節**:\n + 輸入流程保持不變\n + 模組設計中添加多尺度的稀疏連結\n + 訓練目標為重建誤差加上多尺度的稀疏正則化\n* **論點**:\n + 多尺度的稀疏連結可以提高模型的模組化能力\n + 可以捕捉更豐富的模組化特徵\n* **引用的 paper 名稱**:\n + Hierarchical Sparse Coding (HSC)\n\n### 方案 2: 因果介入驅動的誤對齊電路偵測\n\n* **最關鍵的事實**:\n + 使用因果介入驅動的方法來偵測誤對齊電路\n + 增加了誤對齊電路偵測模組\n* **結論**:\n + 預期在 Safety Circuit Discovery benchmark 上提升\n + 錯誤對齊電路偵測模組可以提高模型的安全性和可靠性\n* **技術細節**:\n + 輸入流程中添加因果介入的步驟\n + 模組設計中添加誤對齊電路偵測模組\n + 訓練目標為誤對齊電路的檢測\n* **論點**:\n + 錯誤對齊電路偵測模組可以提高模型的安全性和可靠性\n + 可以更有效地偵測誤對齊電路\n* **引用的 paper 名稱**:\n + Causal Tracing of Misalignment in Foundation Models\n\n### 方案 3: 結構化稀疏正則化的自動搜索\n\n* **最關鍵的事實**:\n + 使用自動搜索算法來搜索最優的結構化稀疏正則化方案\n + 增加了自動搜索算法\n* **結論**:\n + 預期在 ModularEval"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 結構化摘要**\n\n**方案 1 批判**\n\n* **理論假設**:多尺度的稀疏連結是否能夠捕捉更豐富的模組化特徵？需要進行嚴格的理論分析和實驗設計。\n* **資料與訓練可行性**:需要大量的資料來訓練多尺度的稀疏連結，需要設計有效的資料增強和預訓練策略。\n* **計算資源**:需要大量的計算資源來訓練多尺度的稀疏連結，需要設計更有效的模型架構和訓練策略。\n* **是否真優於 SOTA**:需要進行嚴格的基準選擇和實驗設計，來確保方案 1 的優勢是真實的和可靠的。\n* **failure mode**:需要進行嚴格的實驗設計和分析，來識別方案 1 的 failure mode 和改進方向。\n\n**方案 2 批判**\n\n* **理論假設**:因果介入驅動的方法是否能夠偵測誤對齊電路？需要進行嚴格的理論分析和實驗設計。\n* **資料與訓練可行性**:需要大量的資料來訓練因果介入驅動的方法，需要設計有效的資料增強和預訓練策略。\n* **計算資源**:需要大量的計算資源來訓練因果介入驅動的方法，需要設計更有效的模型架構和訓練策略。\n* **是否真優於 SOTA**:需要進行嚴格的基準選擇和實驗設計，來確保方案 2 的優勢是真實的和可靠的。\n* **failure mode**:需要進行嚴格的實驗設計和分析，來識別方案 2 的 failure mode 和改進方向。\n\n**方案 3 批判**\n\n* **理論假設**:自動搜索算法是否能夠找到最優的結構化稀疏正則化方案？需要進行嚴格的理論分析和實驗設計。\n* **資料與訓練可行性**:需要大量的資料來訓練自動搜索算法，需要設計有效的資料增強和預訓練策略。\n* **計算資源**:需要大量的計算資源來訓練自動搜索算法，需要設計更有效的模型架構和訓練策略。\n* **是否真優於 SOTA**:需要進行嚴格的基準選擇和實驗設計，來確保方案 3 的優勢是"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究提案摘要**\n\n**研究痛點與背景**\n\n* 層級稀疏自編碼器和因果介入驅動的誤對齊電路偵測方法存在缺陷\n* 需要大量的計算資源和資料\n* 根據《Hierarchical Sparse Coding Reveals Emergent Algorithmic Subroutines》和《Causal Tracing of Misalignment in Foundation Models》等論文\n\n**核心研究方法**\n\n* 結合層級稀疏自編碼器和因果介入驅動的方法\n* 提出多尺度的層級稀疏自編碼器架構\n* 使用自動搜索算法來搜索最優的結構化稀疏正則化方案\n* 訓練多尺度的層級稀疏自編碼器模型\n* 使用因果介入驅動的方法來偵測誤對齊電路\n* 評估模型的表現和可靠性\n\n**與既有方法的差異與創新性**\n\n* 演算法層：多尺度的層級稀疏自編碼器架構和自動搜索算法\n* 實作層：因果介入驅動的方法來偵測誤對齊電路\n* 應用層：多種自然語言處理任務和安全性評估\n\n**實驗設計**\n\n* 資料集：公開的語料庫，如 The Pile 和 C4\n* baseline：現有的層級稀疏自編碼器和因果介入驅動的方法\n* 評估指標：CircuitProbing 和 ModularEval 等指標\n* ablation study 設計：逐步的 ablation study 來評估每個模組的貢獻\n* 計算需求估計：2-3 張 24-48G GPU 來完成實驗，約需 1-2 周的時間\n\n**預期貢獻與影響**\n\n* 提高模型的表現和可靠性\n* 應用於多種自然語言處理任務和安全性評估\n* 為自然語言處理和安全性評估領域帶來新的發展機會和挑戰\n\n**風險與緩解**\n\n* 自動搜索算法和因果介入驅動的方法可能需要大量的計算資源和資料\n* 模型的表現和可靠性可能不夠高\n* 緩解策略：使用更有效的自動搜索算法和因果介入驅動的方法、使用更大的資料集和計算資源、進行逐步的 ablation study"
+      "summary": "**階層多尺度狀態空間模型 (Hierarchical Multi-Scale SSM) 用於長序列視訊建模**\n\n* **關鍵事實**：\n + 目前僅有少數工作將 SSM 延伸至多尺度結構\n + 能夠捕捉局部動作與全局情節對長影片生成與理解有巨大需求\n* **結論**：\n + Hierarchical Multi-Scale SSM 可以有效建模長序列視訊\n + 需要設計跨層狀態耦合機制和避免梯度衰減與數值不穩定\n* **技術細節**：\n + 需要在保持線性時間複雜度的同時設計跨層狀態耦合機制\n + 需要在訓練過程中避免梯度衰減與數值不穩定\n* **論點**：\n + Hierarchical Multi-Scale SSM 可以捕捉局部動作與全局情節\n + 需要設計有效的跨層狀態耦合機制和梯度衰減與數值不穩定控制方法\n* **引用**：\n + 「Hierarchical State Space Models for Long-Form Video Generation」, Y. Li, NeurIPS 2025\n + 「Multi-Scale Mamba for Video Prediction」, H. Zhang, arXiv 2025.0803, 2025\n + 「Scalable Hierarchical SSMs for Action Segmentation」, K. Patel, ICLR 2026\n\n**閘控 DeltaNet 在大規模稀疏圖優化中的應用**\n\n* **關鍵事實**：\n + 閘控 DeltaNet 仍屬新興架構\n + 結合稀疏圖訊息傳遞與動態增量更新可提供高效近似解\n* **結論**：\n + 閘控 DeltaNet 可以有效應用於大規模稀疏圖優化\n + 需要設計穩定的閘控機制和避免訊號在深層圖中衰減\n* **技術細節**：\n + 需要設計穩定的閘控機制\n + 需要在動態圖變化時保持增量更新的計算效率與精度\n* **論點**：\n + 閘控 DeltaNet 可以提供高效近似解\n + 需要設計有效的穩定閘控機制和增量更新方法\n* **引用**：\n + 「DeltaNet++: Gated Delta Networks for Scalable Graph Optimization」, M. Chen, ICLR 2026\n + 「Sparse Gated Delta"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
