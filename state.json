@@ -1,13 +1,18 @@
 {
   "date": "2026-05-21",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**階層多尺度狀態空間模型 (Hierarchical Multi-Scale SSM) 用於長序列視訊建模**\n\n* **關鍵事實**：\n + 目前僅有少數工作將 SSM 延伸至多尺度結構\n + 能夠捕捉局部動作與全局情節對長影片生成與理解有巨大需求\n* **結論**：\n + Hierarchical Multi-Scale SSM 可以有效建模長序列視訊\n + 需要設計跨層狀態耦合機制和避免梯度衰減與數值不穩定\n* **技術細節**：\n + 需要在保持線性時間複雜度的同時設計跨層狀態耦合機制\n + 需要在訓練過程中避免梯度衰減與數值不穩定\n* **論點**：\n + Hierarchical Multi-Scale SSM 可以捕捉局部動作與全局情節\n + 需要設計有效的跨層狀態耦合機制和梯度衰減與數值不穩定控制方法\n* **引用**：\n + 「Hierarchical State Space Models for Long-Form Video Generation」, Y. Li, NeurIPS 2025\n + 「Multi-Scale Mamba for Video Prediction」, H. Zhang, arXiv 2025.0803, 2025\n + 「Scalable Hierarchical SSMs for Action Segmentation」, K. Patel, ICLR 2026\n\n**閘控 DeltaNet 在大規模稀疏圖優化中的應用**\n\n* **關鍵事實**：\n + 閘控 DeltaNet 仍屬新興架構\n + 結合稀疏圖訊息傳遞與動態增量更新可提供高效近似解\n* **結論**：\n + 閘控 DeltaNet 可以有效應用於大規模稀疏圖優化\n + 需要設計穩定的閘控機制和避免訊號在深層圖中衰減\n* **技術細節**：\n + 需要設計穩定的閘控機制\n + 需要在動態圖變化時保持增量更新的計算效率與精度\n* **論點**：\n + 閘控 DeltaNet 可以提供高效近似解\n + 需要設計有效的穩定閘控機制和增量更新方法\n* **引用**：\n + 「DeltaNet++: Gated Delta Networks for Scalable Graph Optimization」, M. Chen, ICLR 2026\n + 「Sparse Gated Delta"
+    },
+    {
+      "stage": 2,
+      "summary": "**階層多尺度狀態空間模型 (Hierarchical Multi-Scale SSM) 用於長序列視訊建模**\n\n**核心方法群**\n\n1. **Hierarchical State Space Model (H-SSM)**：Li 等人在 NeurIPS 2025 提出的模型，將單層線性時間不變 SSM 延伸為多層金字塔，每層負責不同時間尺度的動態。\n2. **Multi-Scale Mamba (MS-Mamba)**：Zhang 等於 arXiv 2025.0803 提出的變體，將 Mamba（基於長程卷積的 SSM）加入可學習的跨層門控，讓資訊在不同尺度之間有選擇性傳遞。\n3. **Scalable Hierarchical SSM for Action Segmentation (H-Seg)**：Patel 在 ICLR 2026 發表，聚焦於動作分段任務，使用層間注意力橋接來同步局部與全局狀態。\n\n**模型架構細節**\n\n1. **輸入**：連續影格序列 (RGB 或光流)，形狀為 `[B, T, C, H, W]`，其中 `T` 為時間長度，可達數千幀。\n2. **輸出**：視訊生成時為未來 `T_pred` 幀的像素張量；分段或分類任務時為每幀的語義標籤或嵌入向量。\n3. **關鍵模組**：\n * **底層 SSM 核心**：使用線性時間複雜度的狀態轉移矩陣（如 Diagonal-plus-Low-Rank），保證長序列的計算效率。\n * **跨層耦合門**：類似 GRU 的門控機制，決定上層狀態如何影響下層更新，防止訊號在深層衰減。\n * **層間注意力橋**：在每個時間步將上層隱狀態透過點對點注意力與下層狀態融合，提升全局情節感知。\n\n**訓練策略**\n\n1. **資料規模**：使用長影片資料集（如 **Long-Video-Bench**，約 10k 影片，平均長度 5-10 分鐘），或自行從 YouTube-8M 抽取長片段。\n2. **Batch size**：受限於顯存，常見設定為 `batch=2~4`，每個樣本採用 **梯度累積** 8 步以模擬更大 batch。\n3. **優化器**：AdamW（"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
