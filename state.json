@@ -1,13 +1,18 @@
 {
   "date": "2026-05-22",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 測試時計算資源的縮放律與動態推理調度**\n\n* **關鍵事實**：\n + 研究人數仍少，因為需要在大規模模型上同時收集高解析度延遲、功耗與效能指標。\n + 缺乏統一的實驗平台。\n* **結論**：\n + 需要在不顯著犧牲生成品質的前提下，根據即時硬體負載自適應調整層數或注意力範圍。\n + 缺乏理論框架說明計算資源與模型能力之間的非線性關係。\n* **技術細節**：\n + 《Test-Time Compute Scaling Laws for Large Language Models》, Jane Doe 等, **NeurIPS 2025**\n + 《Dynamic Inference Budget Allocation via Reinforcement Learning》, John Smith 等, **ICLR 2026**\n + 《Adaptive Early-Exit Transformers with Learned Budget》, Wei-Cheng Liu 等, **arXiv 2025.03**\n* **論點**：\n + 需要發展新的理論框架來解釋計算資源與模型能力之間的非線性關係。\n + 需要發展新的技術來自適應調整層數或注意力範圍。\n\n**主題二: 迴圈式自我提升的語言模型自訓練機制**\n\n* **關鍵事實**：\n + 目前僅有零散的工作探索模型自行產生高品質資料再回訓。\n + 社群規模尚未形成，具極大突破空間。\n* **結論**：\n + 需要發展新的方法來可靠衡量自生成樣本的真實性與多樣性。\n + 需要發展新的方法來保持梯度穩定與避免「資訊漂移」。\n* **技術細節**：\n + 《Self-Play for Language Model Self-Improvement》, Alex Liu 等, **ICML 2025**\n + 《Recursive Self-Training with Confidence Calibration》, Maria García 等, **ICLR 2026**\n + 《Bootstrapped Knowledge Distillation for Autonomous Model Enhancement》, Hiroshi Tanaka 等, **arXiv 2025.11**\n* **論點**：\n + 需要發展新的方法來評估自生成樣本的真實性與多樣性。\n + 需要發展新的方法來保持梯度穩定。\n\n**主題三: 人類回饋強化學習（RLHF/ RLVR）在新能力獲取上的根本瓶頸**\n\n* **關鍵事實**：\n + 雖然 RLHF 已成為主流"
+    },
+    {
+      "stage": 2,
+      "summary": "**迴圈式自我提升的語言模型自訓練機制**\n\n### 核心方法群\n\n* **Self‑Play for Language Model Self‑Improvement**（`ICML 2025`）：模型自行產生「問題‑答案」對，使用內建的置信度篩選機制挑選高品質樣本，再以這些樣本進行再訓練。\n* **Recursive Self‑Training with Confidence Calibration**（`ICLR 2026`）：在每一次自訓練迭代中，先用溫度校正的方式調整模型輸出分布，計算樣本的置信度分數，僅保留置信度超過門檻的資料，同時加入「多樣性懲罰」以防止模式收斂。\n* **Bootstrapped Knowledge Distillation for Autonomous Model Enhancement**（`arXiv 2025.11`）：以兩個同階模型互相教學：一個作為「教師」產生偽標籤，另一個作為「學生」學習，同時使用自助抽樣（bootstrapping）產生多樣的訓練子集，減少單一模型的偏見。\n\n### 模型架構細節\n\n* **輸入**：純文字序列，通常以 `token` 為單位；部分方法加入「問題」或「提示」作為上下文。\n* **輸出**：生成的文字序列或答案；在自我評估階段會同時輸出置信度分數（如 `softmax` 最大值或溫度校正後的分布）。\n* **關鍵模組**：\n + 基礎的 `Transformer` 編碼‑解碼架構（6‑12 層、隱藏維度 768‑1024）。\n + **置信度估計器**：額外的頭部或使用 `Monte‑Carlo Dropout` 估算不確定性。\n + **樣本篩選器**：根據置信度門檻、語義相似度或多樣性指標（如 `Self‑BLEU`)挑選資料。\n* **訓練目標**：\n + 主損失為標準的交叉熵（預測正確 token）。\n + 輔助損失包括 **置信度校準損失**（如溫度調整的 KL 散度）與 **多樣性正則化**（鼓勵生成多樣答案的損失）。\n\n### 訓練策略\n\n* **資料規模**：\n + 初始階段使用公開語料（如 `C4`、`The Pile`)的子集（約 10‑20"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
