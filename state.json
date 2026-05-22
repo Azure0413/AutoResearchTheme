@@ -1,13 +1,18 @@
 {
   "date": "2026-05-23",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要**\n\n**主題一: 因果圖驅動的離線世界模型**\n\n* **關鍵事實**：\n + 離線資料中隱含的因果結構尚未被系統化利用。\n + 能同時提升樣本效率與策略安全性。\n* **核心技術問題**：\n + 自動抽取可靠的因果圖，保證圖的可辨識性與可擴展性。\n + 因果推斷與策略優化的耦合訓練缺乏穩定的梯度傳遞機制。\n* **代表 paper**：\n + 《Causal Dynamics Modeling for Reinforcement Learning》, NeurIPS 2025\n + 《Counterfactual World Models for Offline RL》, ICLR 2026\n + 《Causal Graph Neural World Models》, arXiv:2504.1123, 2025\n\n**主題二: 事件驅動的物件中心化連續時間世界模型**\n\n* **關鍵事實**：\n + 大多數物件中心模型仍以離散時間步為基礎。\n + 無法直接處理事件流或高頻感測器資料。\n* **核心技術問題**：\n + 嵌入連續時間動力學，使得事件間隔的變化能被精確捕捉。\n + 事件驅動的訓練需要稀疏且不規則的梯度訊號。\n* **代表 paper**：\n + 《Neural ODE World Models for Real‑World Robotics》, NeurIPS 2025\n + 《Event‑Based Object‑Centric Dynamics》, ICLR 2026\n + 《Temporal Point Process World Models for Asynchronous Sensors》, arXiv:2601.0459, 2026\n\n**主題三: 稀疏多尺度狀態空間模型於超長序列視訊的高效推理**\n\n* **關鍵事實**：\n + 現有多尺度 SSM 多聚焦於分鐘級影片。\n + 對於十分鐘以上、甚至小時級的長序列仍無法在記憶與計算上保持線性。\n* **核心技術問題**：\n + 設計跨尺度狀態耦合機制時，避免訊號衰減與梯度消失。\n + 稀疏注意力的選取策略需兼顧視訊內容的動態變化與硬體記憶限制。\n* **代表 paper**：\n + 《Sparse Multi‑Scale State Space Networks》, ICML 2025\n + 《Hierarchical State Space Transformers for 10‑Minute Video Generation》, ICLR 2026\n + 《Long‑Context SSM"
+    },
+    {
+      "stage": 2,
+      "summary": "**稀疏多尺度狀態空間模型於超長序列視訊的高效推理**\n\n**核心方法群**\n\n* **Sparse Multi-Scale State Space Networks (SM-SSM)**：ICML 2025\n + 使用分層狀態空間單元，交替使用稀疏卷積與低秩近似\n + 訊號在長時間跨度上保持線性記憶，同時在局部細節上保留高頻資訊\n* **Hierarchical State Space Transformers (HSST)**：ICLR 2026\n + 將傳統Transformer的自注意力替換為狀態空間注意力\n + 每個層級先經過長程 SSM 編碼，再以稀疏跨層注意力聚合\n* **Long-Context State Space Model (LC-SSM)**：arXiv 2026 (2602.0112)\n + 引入可學習的稀疏門控在時間軸上動態選擇哪些時間點進行狀態更新\n + 透過多尺度跳躍連結減少梯度衰減，實現超過 30 分鐘的連續推理\n\n**模型架構細節**\n\n* **輸入**：原始影片帧序列 (RGB 或 YUV)，或預先抽取的視覺特徵向量\n* **輸出**：未來 T 步的帧特徵或直接的像素重建\n* **關鍵模組**：\n + 多尺度 SSM 層：每層包含狀態轉移矩陣與輸入映射的低秩近似\n + 稀疏門控/選取模組：根據訊息能量或學習的門控分數決定哪些時間點執行狀態更新\n + 跨尺度融合單元：利用可學習的加權或注意力將粗尺度的全局資訊注入細尺度\n\n**訓練策略**\n\n* **資料規模**：使用公開的長影片資料集，如 Long-VideoBench\n* **Batch size**：受限於 GPU 記憶，常見做法是每卡 batch=2，利用梯度累積到等效 batch=16\n* **優化器**：AdamW，學習率 1e-4，使用 cosine decay\n* **Loss 設計**：重建損失 + 感知損失 + 稀疏門控的 L0 近似正則 + 時間一致性正則\n\n**主要benchmark 與資料集**\n\n* **Long-VideoBench (LV-B)**：10-30 分"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
