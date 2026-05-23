@@ -1,13 +1,18 @@
 {
   "date": "2026-05-24",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**層級任務分解與巢狀回放緩衝 (Hierarchical Task Decomposition & Nested Replay)**\n\n* **關鍵事實**：\n + 研究人數仍少，因為同時需要設計可自動抽取子任務的結構化表示與多層次回放機制。\n + 目前缺乏可擴展的評估基準。\n* **結論**：\n + 需要發展可靠的子任務樹和跨層回放的分布一致性。\n + 巢狀回放緩衝的記憶容量與取樣效率之間的權衡缺乏理論指導。\n* **技術細節**：\n + 需要發展動態生成可靠的子任務樹的方法。\n + 需要設計可計算且不會過度限制新策略探索的功能正則項。\n* **論點**：\n + 需要結合層級任務分解和巢狀回放緩衝來發展終身學習的方法。\n + 需要發展可擴展的評估基準來評估終身學習的方法。\n* **引用**：\n + 《Hierarchical Task Decomposition for Continual Learning via Nested Replay Buffers》, arXiv:2503.01427, 2025。\n + 《Nested Replay: Memory‑Efficient Continual Learning with Structured Buffers》, ICLR 2026, 2026.1.0045。\n\n**功能正則化的漸進式策略梯度 (Functional Regularization for Continual RL)**\n\n* **關鍵事實**：\n + 此方向結合功能近似的正則化與策略梯度，能在非平穩環境下保留舊策略的行為特徵。\n + 相關工作仍在萌芽階段。\n* **結論**：\n + 需要發展可計算且不會過度限制新策略探索的功能正則項。\n + 正則化強度的自適應調整缺乏穩定的元學習機制。\n* **技術細節**：\n + 需要發展高維策略空間中的功能正則項。\n + 需要設計可動態調整的重建損失權重以平衡探索與穩定性。\n* **論點**：\n + 需要結合功能正則化和漸進式策略梯度來發展終身學習的方法。\n + 需要發展穩定的元學習機制來調整正則化強度。\n* **引用**：\n + 《Functional Regularization for Continual Reinforcement Learning in Non‑Stationary Environments》, ICML"
+    },
+    {
+      "stage": 2,
+      "summary": "**層級任務分解與巢狀回放緩衝 (Hierarchical Task Decomposition & Nested Replay)**\n\n**最值得深入的主題**\n\n* 基礎框架已在 *arXiv:2503.01427*（2025）與 *ICLR 2026, 2026.1.0045* 中提出\n* 技術成熟度足以讓研究生或個人開發者直接實作\n* 仍存在記憶容量‑取樣效率、子任務樹自動生成與跨層分布一致性等明顯破綻\n\n**核心方法群**\n\n1. **Hierarchical Replay Buffer (HRB)**\n * 以多層次緩衝區對應任務層級\n * 低層保存原始樣本，高層保存抽象化的子任務表示\n2. **Dynamic Sub-task Tree Generation (DSTG)**\n * 使用圖神經網路從環境交互序列自動抽取子任務節點\n * 以貝葉斯樹搜索優化樹結構\n3. **Cross-Level Consistency Regularization (CLCR)**\n * 在訓練過程中加入正則項\n * 強制不同層級回放樣本的策略輸出在功能空間保持相似\n\n**模型架構細節**\n\n* 輸入：環境觀測序列（圖像、向量或混合），以及當前任務的層級編碼\n* 輸出：對應層級的行動分布或策略參數\n* 關鍵模組：\n + 子任務抽取器（基於 Graph‑SAGE）\n + 多層回放緩衝（每層一個 FIFO + 優先抽樣模組）\n + 一致性正則化模組（計算不同層策略輸出的 KL 距離）\n\n**訓練策略**\n\n* 資料規模：在每個新任務開始前收集 5k–10k 步的原始交互資料\n* Batch size：每層緩衝分別抽樣 64 條樣本，總 batch 為 192\n* 優化器：AdamW（學習率 3e‑4）\n* Loss 設計：\n + 主回報損失（TD‑error 或 PPO‑clip）\n + CLCR 正則化（KL‑penalty 乘以 λ，λ 隨訓練自適應）\n + DSTG 結構損失（資訊增益負值）\n\n**主要 benchmark 與資料集**\n\n* Mini‑Grid 2‑Level Suite（多層任務結構的離散格子世界）\n* Meta‑World Multi‑Task（機械手臂的階層"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
