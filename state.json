@@ -1,6 +1,6 @@
 {
   "date": "2026-05-25",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* `AST-Flow Matching` (ICLR 2026)\n + 透過流匹配逆向過程，將目標 AST 逐層映射到噪聲分布\n + 正向過程中以可逆的線性變換將噪聲推回原始 AST\n* `Type-Aware Discrete Diffusion` (NeurIPS 2025)\n + 在離散擴散的噪聲設計上加入類型資訊\n + 逆向抽樣時利用類型條件分布恢復正確的語義結構\n* `Hierarchical Flow Matching for Program Synthesis` (ICML 2025)\n + 把程式結構拆成「模組層」與「語句層」兩級\n + 先在模組層完成粗粒度的控制流生成，再在語句層細化每個模組的內部 AST\n\n**2. 模型架構細節**\n\n* 輸入：AST-Flow Matching（噪聲向量 + 目標程式的語法樹深度編碼）、Type-Aware Diffusion（離散 token 序列 + 類型標籤向量）、Hierarchical Flow Matching（兩階層的結構描述）\n* 輸出：完整的抽象語法樹\n* 關鍵模組：噪聲調度器、結構保證模組、逆向抽樣網路\n* 訓練目標：最小化逆向過程的 KL 散度（或交叉熵）與類型一致性懲罰\n\n**3. 訓練策略**\n\n* 資料規模：CodeSearchNet、GitHub-Java-Large、HumanEval、MBPP、DeepFix\n* Batch size：單卡 RTX-3090 上常見 64-128，多卡（8×A100）可擴展至 1024\n* 優化器：AdamW，學習率 1e-4，使用 cosine decay 與 warm-up 前 5% 步驟\n* Loss 設計：主體為「逆向 KL」或「交叉熵」損失，加上類型一致性損失與語法正確性懲罰\n\n**4. 主要 benchmark 與資料集**\n\n* HumanEval：成功通過測試案例的比例（Pass@k）是主要指標\n* MBPP：同樣以 Pass@k 評估\n* CodeXGLUE：使用 BLEU 與 Exact Match 作為輔助指標\n* DeepFix：以修復率（Fix@k）衡量\n\n**"
+    },
+    {
+      "stage": 3,
+      "summary": "**結構化摘要**\n\n**方案 1: 結構化噪聲調度**\n\n* **核心 idea**: 對離散擴散的噪聲進行結構化調度，以保證生成的 AST 節點遵守語法正確性和類型一致性。\n* **技術細節**:\n + 增加結構化噪聲調度模組\n + 根據目標 AST 的結構和類型標籤生成噪聲向量\n + 使用噪聲向量對 AST 進行擴散\n* **與 SOTA 的差異**: 改變了噪聲調度的方式\n* **預期改善的指標與原因**: 預期在 HumanEval 和 MBPP benchmark 上提升\n* **最小可行實驗(MVP)**: 使用 CodeSearchNet 資料集，訓練一個小型的 AST-Flow Matching 模型（約 100M 參數）\n\n**方案 2: 層級化流匹配**\n\n* **核心 idea**: 對 AST 進行層級化流匹配，以保證生成的 AST 節點遵守語法正確性和類型一致性。\n* **技術細節**:\n + 增加層級化流匹配模組\n + 根據目標 AST 的層級結構生成流匹配向量\n + 使用流匹配向量對 AST 進行擴散\n* **與 SOTA 的差異**: 改變了流匹配的方式\n* **預期改善的指標與原因**: 預期在 CodeXGLUE 和 DeepFix benchmark 上提升\n* **最小可行實驗(MVP)**: 使用 GitHub-Java-Large 資料集，訓練一個中型的 Hierarchical Flow Matching 模型（約 500M 參數）\n\n**方案 3: 結合語法和類型約束**\n\n* **核心 idea**: 對 AST 進行結合語法和類型約束，以保證生成的 AST 節點遵守語法正確性和類型一致性。\n* **技術細節**:\n + 增加結合語法和類型約束模組\n + 根據目標 AST 的語法和類型標籤生成約束向量\n + 使用約束向量對 AST 進行擴散\n* **與 SOTA 的差異**: 改變了約束的方式\n* **預期改善的指標與原因**: 預期在 HumanEval、MBPP 和 CodeXGLUE benchmark 上提升\n* **最小可行實驗(MVP)**: 使用 CodeSearchNet 資料集，訓"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
