@@ -63,5 +63,10 @@
     "date": "2026-05-25",
     "stage1_topics": "**離散擴散於蛋白質扭轉角空間的結構生成**\n\n* **關鍵事實**：\n + 研究人數仍少，因為要同時處理高維離散角度空間、物理能量約束與高效抽樣。\n + 代表 paper：《Discrete Diffusion on Protein Torsion Angles with Physics-Guided Noise Schedule》, 《Graph-Structured Discrete Diffusion for Protein Contact Map Generation》, 《Energy-Constrained Discrete Diffusion for Protein Folding》。\n* **結論**：\n + 設計噪聲轉移機制，使離散化的 φ/ψ 角在逆向過程中仍遵守鍵合角與 steric clash 的物理限制。\n + 提供針對稀疏角度分布的加速抽樣或多階段抽樣策略。\n",
     "final_proposal": "**結構化摘要**\n\n**研究痛點與背景**\n\n* 程式碼生成方法存在語法正確性和類型一致性的問題\n* 結合語法和類型約束的方法可以有效解決這個問題\n* 參考 `AST-Flow Matching` (ICLR 2026) 和 `Type-Aware Discrete Diffusion` (NeurIPS 2025)\n\n**核心研究方法**\n\n* 使用結構化的噪聲調度機制生成約束向量\n* 結合噪聲向量和類型標籤向量生成約束向量\n* 使用約束向量對程式碼進行擴散\n* 訓練目標是最小化逆向過程的 KL 散度和類型一致性懲罰\n\n**與既有方法的差異與創新性**\n\n* 使用結合語法和類型約束的方法\n"
+  },
+  {
+    "date": "2026-05-26",
+    "stage1_topics": "**主題一: KV 快取壓縮與動態淘汰機制**\n\n* **關鍵事實**:\n + 研究人數仍少，因為要兼顧壓縮率、查詢延遲與模型精度的微妙平衡。\n + 硬體支援尚未普及。\n* **結論**:\n + 需要發展動態淘汰機制來提高壓縮率。\n + 需要發展統一的量化指標來評估累積誤差。\n* **技術細節**:\n + Product-Quantized KV Cache\n + Low-Rank Factorized KV Memory\n + Cache-Aware Mixed-Precision KV Storage\n* **論點**:\n + 需要在不顯著增加解碼時間的前提下，動態決定哪些 KV 條目可被淘汰或合併。\n + 需要評估壓縮後的 KV 向量在多輪對話或長文檔中產生的累積誤差。\n* **引用**:\n + 《Product-Quantized KV Cache for LLM Inferenc",
+    "final_proposal": "**研究提案結構化摘要**\n\n**1. 研究痛點與背景**\n\n* 目前的 KV 快取壓縮方法存在缺陷：量化誤差、秩選擇不當、熱度估計不可靠\n* 根據《Product-Quantized KV Cache for LLM Inference》和《Low-Rank Factorized KV Memory with Adaptive Eviction》兩篇 paper，目前的方法仍然存在壓縮率、查詢延遲和模型精度之間的微妙平衡問題\n\n**2. 核心研究方法**\n\n* 提出了一種新的動態 KV 重構方法，結合了圖結構的 KV 查找和多階段 KV 精煉\n* 方法包括：\n + 輸入流程為標準 Trans"
   }
 ]
