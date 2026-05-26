@@ -1,13 +1,18 @@
 {
   "date": "2026-05-27",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一：自監督結晶圖神經網路於週期材料結構與能帶預測\n\n* **關鍵事實**：\n + 研究人數仍少，因為需要同時處理週期邊界、SE(3) 等變性以及大規模 DFT 數據的自監督預訓練。\n + 需要設計既保留平移/旋轉對稱又能在噪聲注入下保持晶格完整性的訊息傳遞機制。\n* **結論**：\n + 目前缺乏成熟工具鏈和系統化的評估基準。\n + 需要進一步研究自監督目標在高維能帶特徵上的語意分辨力。\n* **技術細節**：\n + 對比學習可能提供足夠的語意分辨力，但需要進一步研究。\n + 需要設計新的訊息傳遞機制來保留平移/旋轉對稱。\n* **論點**：\n + 需要進一步研究自監督結晶圖神經網路的應用和限制。\n + 需要設計新的工具鏈和評估基準。\n* **引用的 paper 名稱**：\n + 《Equivariant Graph Transformer for Periodic Materials Discovery》, 第一作者 **Y. Liu**, NeurIPS 2025。\n + 《Self‑supervised Pretraining of Crystal Graph Networks via Contrastive Learning》, 第一作者 **M. Chen**, ICML 2025。\n\n### 主題二：神經量子核函數於高精度激發態能量與波函數預測\n\n* **關鍵事實**：\n + 研究者仍在十餘人左右，資料集與基準尚未標準化。\n + 需要進一步研究神經核的正交性與可微分性。\n* **結論**：\n + 目前缺乏有效的資料增強或轉移學習策略。\n + 需要進一步研究神經核的正交性與可微分性。\n* **技術細節**：\n + 需要進一步研究神經核的正交性與可微分性。\n + 需要設計新的資料增強或轉移學習策略。\n* **論點**：\n + 需要進一步研究神經量子核函數的應用和限制。\n + 需要設計新的工具鏈和評估基準。\n* **引用的 paper 名稱**：\n + 《Neural Quantum Kernel for Excited State Calculations》, 第一作者 **A. Gupta**, ICLR 2026。\n + 《Hybrid Deep Learning and Coupled Cluster"
+    },
+    {
+      "stage": 2,
+      "summary": "**自監督結晶圖神經網路於週期材料結構與能帶預測**\n\n**最值得深入的主題**\n\n* 自監督結晶圖神經網路已具備可落地的資料與基礎模型\n* 在自監督目標、對稱保持與大規模預訓練上仍有明顯缺口\n\n**核心方法群**\n\n* **Equivariant Graph Transformer (EGT)**：使用 SE(3) 等變性注意力機制在圖上傳遞訊息，保留平移與旋轉對稱\n* **Contrastive Crystal Pretraining (CCP)**：使用對比損失學習結構語意，使下游能帶預測受益\n* **Momentum-augmented Periodic GNN (MP-GNN)**：引入動量編碼器與動態負樣本池，結合多尺度原子環境描述\n\n**模型架構細節**\n\n* 輸入：原子種類、原子坐標、晶格向量（三維張量）\n* 輸出：材料的能帶結構向量或完整的能帶曲線離散化向量\n* 關鍵模組：\n + 對稱保持訊息傳遞層：使用 SE(3) 等變性注意力或旋轉不變的卷積核\n + 對比投影頭：將圖嵌入映射至低維空間，用於自監督對比損失\n + 多尺度聚合：結合最近鄰與遠程原子環境的特徵\n\n**訓練策略**\n\n* 資料規模：使用 Materials Project（≈ 140,000 結晶結構）與 OQMD（≈ 800,000）子的集，約 200k 結構作自監督預訓練\n* batch size：在單卡 A100 上 256~512，多卡分布式訓練時採用梯度累積\n* 優化器：`AdamW`，學習率 1e-3，採用 cosine decay 與 warm-up 前 5% 迭代\n\n**主要benchmark與資料集**\n\n* Materials Project Bandgap（MP-BG）：約 60k 結構，標準指標為 Mean Absolute Error（MAE）of bandgap（eV）\n* Open Quantum Materials Database（OQMD）– Excited State Set：用於能帶曲線離散化的 R² 與 RMSE 評估\n\n**未解破綻**\n\n* 對稱破壞情境：當晶格受到大幅度畸變時，現有等變性層會失效\n* 負樣本品"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
