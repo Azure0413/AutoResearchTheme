@@ -1,6 +1,6 @@
 {
   "date": "2026-05-29",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間編碼器增強的 DiffSkill\n\n* **最關鍵的事實**:\n + 將時間編碼器與可執行性評估網路緊密結合\n + 時間編碼器可以根據可執行性評估結果進行調整\n* **結論**:\n + 可以提高模型的可執行性評估準確性\n + 可以提高成功率和累積回報\n* **技術細節**:\n + 輸入流程中加入時間編碼器\n + 將時間向量與動作序列一起輸入到可執行性評估網路中\n + 計算可執行性評估結果並反饋到時間編碼器中\n* **論點**:\n + 時間編碼器增強的 DiffSkill 可以學習到時間和動作之間的關係\n + 可以提高可執行性評估的準確性\n* **引用**:\n + [1] DiffSkill: A Diffusion-Based Framework for Skill Learning (ICLR 2022)\n\n### 方案 2: SkillDiffusion 中的多步預測\n\n* **最關鍵的事實**:\n + 將單步預測修改為多步預測\n + 模型可以學習到更長距離的動作序列\n* **結論**:\n + 可以提高模型的泛化能力\n + 可以提高累積回報和技能多樣性指數\n* **技術細節**:\n + 輸入流程中加入多步預測模組\n + 將前 k 步的動作序列作為輸入，預測下 l 步的動作序列\n* **論點**:\n + 多步預測的 SkillDiffusion 可以學習到更長距離的動作序列\n + 可以提高模型的泛化能力和可執行性\n* **引用**:\n + [2] SkillDiffusion: A Diffusion-Based Framework for Skill Learning (NeurIPS 2022)\n\n### 方案 3: Diffusion-RL 中的強化學習與預測信息結合\n\n* **最關鍵的事實**:\n + 將強化學習與預測信息結合\n + 模型可以學習到更好的行動策略\n* **結論**:\n + 可以提高模型的泛化能力和可執行性\n + 可以提高成功率和累積回報\n* **技術細節**:\n + 輸入流程中加入預測信息模組\n + 將預測信息與強化學習結果結合，"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**最關鍵的事實**\n\n* 時間編碼器增強的 DiffSkill、SkillDiffusion 和 Diffusion-RL 都面臨著理論假設、資料質量、計算資源和 failure mode 等挑戰。\n* 這些挑戰可能會對模型的性能產生重大影響，甚至導致模型的失敗。\n\n**結論**\n\n* 需要進行更深入的理論分析和實驗評估，以證明模型的收斂性和穩定性。\n* 需要進行資料質量評估和資料增強，以提高模型的 robustness。\n* 需要進行模型壓縮和剪枝，以減少計算成本。\n* 需要進行 failure mode 分析和模型改進，以提高模型的泛化能力。\n\n**技術細節**\n\n* 使用 techniques 如 data augmentation、noise injection 等來提高模型的 robustness。\n* 使用 techniques 如 knowledge distillation、quantization 等來減少模型的計算成本。\n* 使用 techniques 如 domain adaptation、transfer learning 等來提高模型的泛化能力。\n\n**論點**\n\n* 時間編碼器增強的 DiffSkill、SkillDiffusion 和 Diffusion-RL 都面臨著相同的挑戰。\n* 這些挑戰需要進行嚴格的自我批判和改進。\n\n**引用的 paper 名稱**\n\n* \"時間編碼器增強的 DiffSkill\"\n* \"SkillDiffusion\"\n* \"Diffusion-RL\"\n\n**接續階段**\n\n* 需要進行更深入的理論分析和實驗評估，以證明模型的收斂性和穩定性。\n* 需要進行資料質量評估和資料增強，以提高模型的 robustness。\n* 需要進行模型壓縮和剪枝，以減少計算成本。\n* 需要進行 failure mode 分析和模型改進，以提高模型的泛化能力。"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
