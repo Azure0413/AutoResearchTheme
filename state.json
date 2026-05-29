@@ -1,6 +1,6 @@
 {
   "date": "2026-05-30",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**動態深度 MoE 路由 (Adaptive Depth Mixture-of-Experts) 概要**\n\n### 關鍵方法群\n\n* **Depth-Conditional Routing (DCR)**：在每層 MoE 前加入輕量的深度選擇器，根據 token 表示估算是否需要再往下走的概率。\n* **Adaptive Gating with Early-Exit (AGEE)**：使用兩段式門控，第一段產生跳層分數，第二段決定是否提前退出。\n* **Hierarchical Expert Scheduling (HES)**：將所有層的專家分成淺層專家和深層專家兩組，路由器輸出兩個選擇向量。\n\n### 模型架構細節\n\n* **輸入**：長序列 token 向量，經過嵌入層和位置編碼。\n* **關鍵模組**：\n + 標準多頭自注意力層。\n + 動態深度 MoE 層：包含 gate_depth 和 gate_expert。\n + 可選的 Early-Exit 分支：在最終層前加入輕量分類/回歸頭。\n* **輸出**：根據任務不同，可能是序列標記、分類 logits 或回歸向量。\n* **訓練目標**：主損失為任務交叉熵或回歸 MSE，額外加上計算成本正則項和門控熵懲罰。\n\n### 訓練策略\n\n* **資料規模**：使用 10-30 B token 的長序列語料或領域特化的基因序列資料。\n* **batch size**：在單卡上 8-16 個序列，使用梯度累積達到等效 64-128 的全局 batch。\n* **優化器**：AdamW，學習率採線性 warm-up 後 cosine decay。\n* **loss 設計**：L_task（交叉熵或 MSE），L_cost（期望層數乘以超參數 λ），L_entropy（鼓勵門控分布均勻）。\n\n### 主要benchmark與資料集\n\n* **Long-Range Arena (LRA)**：特別是 PathX 和 Text 子任務，指標為 accuracy / perplexity 和 FLOPs。\n* **Enwik8 / Text8**：測試壓縮率（bits-per-character）和推理時間。\n* **DNA-Seq-Long**：以 ROC-AUC 和計算成本為主要衡量。\n\n### 方法優劣比較\n\n* **Depth-Conditional Routing (DCR)**：優點是直接在每層決定是否跳過，實現細粒度計算削"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 動態深度 MoE 路由中的層級自適應\n\n* **核心 idea**: 在動態深度 MoE 路由中，引入層級自適應機制，使得模型能夠根據不同層的重要性動態調整深度。\n* **技術細節**:\n + 輸入流程包括長序列 token 向量，經過嵌入層和位置編碼。\n + 模組設計包括標準多頭自注意力層和動態深度 MoE 層。\n + 訓練目標包括任務交叉熵或回歸 MSE，以及計算成本正則項和門控熵懲罰。\n + 損失函數包括 L_task、L_cost 和 L_entropy。\n* **與 SOTA 的差異**: 可以根據不同層的重要性動態調整深度。\n* **預期改善的指標與原因**: 在 Long-Range Arena (LRA) 的 PathX 和 Text 子任務中，預期可以提升 accuracy 和 perplexity。\n* **最小可行實驗(MVP)**: 使用 Enwik8 或 Text8 資料集，訓練一個小型的動態深度 MoE 路由模型。\n\n### 方案 2: 異構專家池中的圖結構專家\n\n* **核心 idea**: 在異構專家池中，引入圖結構專家，以捕捉資料中的圖結構依賴關係。\n* **技術細節**:\n + 輸入流程包括長序列 token 向量，經過嵌入層和位置編碼。\n + 模組設計包括標準多頭自注意力層和異構專家池。\n + 訓練目標包括任務交叉熵或回歸 MSE，以及計算成本正則項和門控熵懲罰。\n + 損失函數包括 L_task、L_cost 和 L_entropy。\n* **與 SOTA 的差異**: 可以更好地捕捉資料中的圖結構依賴關係。\n* **預期改善的指標與原因**: 在 DNA-Seq-Long 資料集中，預期可以提升 ROC-AUC 和計算成本。\n* **最小可行實驗(MVP)**: 使用 DNA-Seq-Long 資料集，訓練一個小型的異構專家池模型。\n\n### 方案 3: 終身學習中的專家增刪機制\n\n* **核心 idea**: 在終身學習中，引入專家增刪機制，以動態調整模型的容量和複"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
