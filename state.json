@@ -1,33 +1,13 @@
 {
-  "date": "2026-05-29",
-  "step": 6,
+  "date": "2026-05-30",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 元好奇心驅動的跨任務探索\n\n* **關鍵事實**:\n + 研究人數仍少，因為需要設計能在不同環境間快速適應的內在獎勵產生器。\n + 缺乏可衡量的「跨任務好奇度」指標。\n* **結論**:\n + 需要在元學習框架下穩定傳遞好奇心信號至基礎策略網路。\n + 需要統一標準來度量跨任務好奇度。\n* **技術細節**:\n + 使用元學習框架來設計內在獎勵產生器。\n + 使用梯度穩定傳遞來避免早期探索失敗導致的梯度消失。\n* **論點**:\n + 需要在元學習框架下設計能在不同環境間快速適應的內在獎勵產生器。\n + 需要統一標準來度量跨任務好奇度。\n* **引用**:\n + 《Meta‑Curiosity: Learning to Explore Across Tasks》, Jiawei Li 等, **NeurIPS 2025**\n + 《Adaptive Intrinsic Motivation via Predictive Information Bottleneck》, Marta Gómez 等, **ICLR 2026**\n + 《Task‑Agnostic Curiosity through Meta‑Learned Exploration Policies》, arXiv:2509.04567, **2025**\n\n### 主題二: 基於擴散模型的技能生成與無監督強化學習\n\n* **關鍵事實**:\n + 目前只有少數團隊嘗試將擴散生成技術應用於高維動作空間的技能合成。\n + 缺乏成熟的評估基準。\n* **結論**:\n + 需要設計擴散過程的噪聲排程來保證技能多樣性與可執行性。\n + 需要端到端的穩定訓練流程來映射生成的潛在技能到具體行為策略。\n* **技術細節**:\n + 使用擴散生成技術來合成技能。\n + 使用梯度學習來設計噪聲排程。\n* **論點**:\n + 需要設計擴散過程的噪聲排程來保證技能多樣性與可執行性。\n + 需要端到端的穩定訓練流程來映射生成的潛在技能到具體行為策略。\n* **引用**:\n + 《DiffSkill: Diffusion"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **DiffSkill**：使用條件擴散模型生成連續動作序列，噪聲排程由可執行性指標反向調整。\n* **SkillDiffusion**：引入動作可逆映射模組，將擴散產生的 latent 向量映射回具體控制指令。\n* **Diffusion-RL**：把擴散過程與環境回饋結合，使用環境回報作為條件訊號。\n\n**2. 模型架構細節**\n\n* **輸入**：任務描述、隨機噪聲向量 `z`（與時間步 `t` 一起作為條件）\n* **輸出**：長度為 `T` 的連續動作序列 `a_1,…,a_T`（或對應的 motor primitives）\n* **關鍵模組**：時間編碼器、可執行性評估網路、逆向映射解碼器\n* **訓練目標**：重建損失、可執行性懲罰、任務回報條件損失\n\n**3. 訓練策略**\n\n* **資料規模**：典型使用 1-2 百萬條從模擬環境收集的動作序列\n* **batch size**：256-512，視 GPU 記憶體而定\n* **優化器**：AdamW，學習率 1e-4，使用 cosine decay\n* **loss 設計**：`L_total = L_recon + λ1 * L_executable + λ2 * L_conditional`\n\n**4. 主要 benchmark 與資料集**\n\n* **Meta-World**：包含 50 種機械手臂任務，關鍵指標：成功率、樣本效率\n* **DMControl**：關鍵指標：累積回報、技能多樣性指數\n* **Adroit**：關鍵指標：精度、能耗\n\n**5. 方法優劣比較**\n\n* **DiffSkill**：優點：噪聲排程設計簡潔、可直接產生長序列；缺點：可執行性指標依賴手工設計、生成序列在高頻動作上仍會出現抖動。\n* **SkillDiffusion**：優點：逆向映射解碼器提升了動作的物理可行性、多樣性指標明顯高於 DiffSkill；缺點：訓練過程需同步訓練兩個網路、計算成本約提升 1.5 倍。\n*"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間編碼器增強的 DiffSkill\n\n* **最關鍵的事實**:\n + 將時間編碼器與可執行性評估網路緊密結合\n + 時間編碼器可以根據可執行性評估結果進行調整\n* **結論**:\n + 可以提高模型的可執行性評估準確性\n + 可以提高成功率和累積回報\n* **技術細節**:\n + 輸入流程中加入時間編碼器\n + 將時間向量與動作序列一起輸入到可執行性評估網路中\n + 計算可執行性評估結果並反饋到時間編碼器中\n* **論點**:\n + 時間編碼器增強的 DiffSkill 可以學習到時間和動作之間的關係\n + 可以提高可執行性評估的準確性\n* **引用**:\n + [1] DiffSkill: A Diffusion-Based Framework for Skill Learning (ICLR 2022)\n\n### 方案 2: SkillDiffusion 中的多步預測\n\n* **最關鍵的事實**:\n + 將單步預測修改為多步預測\n + 模型可以學習到更長距離的動作序列\n* **結論**:\n + 可以提高模型的泛化能力\n + 可以提高累積回報和技能多樣性指數\n* **技術細節**:\n + 輸入流程中加入多步預測模組\n + 將前 k 步的動作序列作為輸入，預測下 l 步的動作序列\n* **論點**:\n + 多步預測的 SkillDiffusion 可以學習到更長距離的動作序列\n + 可以提高模型的泛化能力和可執行性\n* **引用**:\n + [2] SkillDiffusion: A Diffusion-Based Framework for Skill Learning (NeurIPS 2022)\n\n### 方案 3: Diffusion-RL 中的強化學習與預測信息結合\n\n* **最關鍵的事實**:\n + 將強化學習與預測信息結合\n + 模型可以學習到更好的行動策略\n* **結論**:\n + 可以提高模型的泛化能力和可執行性\n + 可以提高成功率和累積回報\n* **技術細節**:\n + 輸入流程中加入預測信息模組\n + 將預測信息與強化學習結果結合，"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**最關鍵的事實**\n\n* 時間編碼器增強的 DiffSkill、SkillDiffusion 和 Diffusion-RL 都面臨著理論假設、資料質量、計算資源和 failure mode 等挑戰。\n* 這些挑戰可能會對模型的性能產生重大影響，甚至導致模型的失敗。\n\n**結論**\n\n* 需要進行更深入的理論分析和實驗評估，以證明模型的收斂性和穩定性。\n* 需要進行資料質量評估和資料增強，以提高模型的 robustness。\n* 需要進行模型壓縮和剪枝，以減少計算成本。\n* 需要進行 failure mode 分析和模型改進，以提高模型的泛化能力。\n\n**技術細節**\n\n* 使用 techniques 如 data augmentation、noise injection 等來提高模型的 robustness。\n* 使用 techniques 如 knowledge distillation、quantization 等來減少模型的計算成本。\n* 使用 techniques 如 domain adaptation、transfer learning 等來提高模型的泛化能力。\n\n**論點**\n\n* 時間編碼器增強的 DiffSkill、SkillDiffusion 和 Diffusion-RL 都面臨著相同的挑戰。\n* 這些挑戰需要進行嚴格的自我批判和改進。\n\n**引用的 paper 名稱**\n\n* \"時間編碼器增強的 DiffSkill\"\n* \"SkillDiffusion\"\n* \"Diffusion-RL\"\n\n**接續階段**\n\n* 需要進行更深入的理論分析和實驗評估，以證明模型的收斂性和穩定性。\n* 需要進行資料質量評估和資料增強，以提高模型的 robustness。\n* 需要進行模型壓縮和剪枝，以減少計算成本。\n* 需要進行 failure mode 分析和模型改進，以提高模型的泛化能力。"
-    },
-    {
-      "stage": 5,
-      "summary": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n**研究痛點與背景**\n\n* 元好奇心驅動的跨任務探索方法存在缺陷：缺乏可衡量的「跨任務好奇度」指標、內在獎勵產生器的設計不夠完善\n* 根據 Jiawei Li 等人的論文《Meta-Curiosity: Learning to Explore Across Tasks》和 Marta Gómez 等人的論文《Adaptive Intrinsic Motivation via Predictive Information Bottleneck》，這些問題的重要性和挑戰性\n\n**核心研究方法**\n\n* 基於時間編碼器增強的 DiffSkill 和 SkillDiffusion 的結合\n* 使用多步預測和預測信息結合的方式來提高模型的泛化能力和可執行性\n* 訓練目標：最大化累積回報和最小化重建損失\n* 推論流程：使用時間編碼器和 DiffSkill 和 SkillDiffusion 來生成動作序列\n\n**與既有方法的差異與創新性**\n\n* 演算法層：使用時間編碼器和多步預測來提高模型的泛化能力\n* 實作層：使用 DiffSkill 和 SkillDiffusion 的結合來提高模型的可執行性\n* 應用層：使用預測信息結合來提高模型的泛化能力和可執行性\n\n**實驗設計**\n\n* 資料集：Meta-World 和 DMControl\n* baseline：DiffSkill 和 SkillDiffusion\n* 評估指標：累積回報、成功率和技能多樣性指數\n* ablation study 設計：分別考察時間編碼器、多步預測和預測信息結合的影響\n* 計算需求估計：單張 24-48G GPU 可以在 1-2 周內完成訓練\n\n**預期貢獻與影響**\n\n* 預期可以對元好奇心驅動的跨任務探索方法做出重要貢獻，提高模型的泛化能力和可執行性\n* 可以應用於各種領域，例如機器人學習、自動駕駛等\n\n**風險與緩解**\n\n* 風險：時間編碼器的設計不夠完善、多步預測的計算成本過高、預測信息結合的效果不佳\n* 緩解策略：使用更好的時間編碼器設計、使用更有效的多步預測算法、使用更好的預測信息結合方法"
+      "summary": "**主題一: 動態深度 MoE 路由 (Adaptive Depth Routing)**\n\n* **關鍵事實**：\n + 大多數 MoE 只在同一層選擇少數專家，缺乏讓不同 token 在不同層次「跳躍」至更深或更淺的專家池。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **技術細節**：\n + 設計低方差的深度選擇策略，使得在訓練早期不會因過度跳過層而導致梯度稀疏。\n + 動態深度決策與硬體流水線的匹配問題：不同 token 可能在同一批次內走不同深度，如何在 GPU/TPU 上高效調度。\n* **論點**：\n + 動態深度 MoE 路由可以顯著降低計算成本同時提升長程依賴捕捉能力。\n* **代表 paper**：\n + 《Adaptive Depth Mixture‑of‑Experts for Efficient Long‑Sequence Modeling》, 第一作者 **Yuan Li**, NeurIPS 2025。\n + 《Depth‑Conditional Routing in Sparse Transformers》, 第一作者 **Mina Patel**, ICLR 2026。\n\n**主題二: 異構專家池與跨領域專精 (Heterogeneous Expert Pools for Specialized Domains)**\n\n* **關鍵事實**：\n + 大多數 MoE 採用同質化的 Feed‑Forward 專家，忽略了不同資料型別需要截然不同的運算模組。\n + 研究社群仍非常小。\n* **技術細節**：\n + 建構異構專家（例如圖卷積、卷積、遞迴）並讓路由器根據 token 的隱式類型自適應選擇。\n + 如何在單一路由器中同時評估多種專家類型的適配度，避免因尺度差異導致的偏置。\n* **論點**：\n + 異構專家池可以在單一模型中同時支援多種專業任務。\n* **代表 paper**：\n + 《Heterogeneous Mixture‑of‑Experts for Unified Scientific Modeling》, 第一作者 **Jae‑Hoon Kim**, ICML 2025。\n + 《Graph‑Aware Expert Routing in Sparse Transformers》, 第一作者 **Sofia García**, ICLR 2026。\n\n**主題三: 終身學習與專家增刪機制 (Lifelong MoE with Expert Birth‑Death)**\n\n* **關鍵事實**：\n + 現有 MoE 大多在"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
