@@ -1,13 +1,18 @@
 {
   "date": "2026-05-30",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 動態深度 MoE 路由 (Adaptive Depth Routing)**\n\n* **關鍵事實**：\n + 大多數 MoE 只在同一層選擇少數專家，缺乏讓不同 token 在不同層次「跳躍」至更深或更淺的專家池。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **技術細節**：\n + 設計低方差的深度選擇策略，使得在訓練早期不會因過度跳過層而導致梯度稀疏。\n + 動態深度決策與硬體流水線的匹配問題：不同 token 可能在同一批次內走不同深度，如何在 GPU/TPU 上高效調度。\n* **論點**：\n + 動態深度 MoE 路由可以顯著降低計算成本同時提升長程依賴捕捉能力。\n* **代表 paper**：\n + 《Adaptive Depth Mixture‑of‑Experts for Efficient Long‑Sequence Modeling》, 第一作者 **Yuan Li**, NeurIPS 2025。\n + 《Depth‑Conditional Routing in Sparse Transformers》, 第一作者 **Mina Patel**, ICLR 2026。\n\n**主題二: 異構專家池與跨領域專精 (Heterogeneous Expert Pools for Specialized Domains)**\n\n* **關鍵事實**：\n + 大多數 MoE 採用同質化的 Feed‑Forward 專家，忽略了不同資料型別需要截然不同的運算模組。\n + 研究社群仍非常小。\n* **技術細節**：\n + 建構異構專家（例如圖卷積、卷積、遞迴）並讓路由器根據 token 的隱式類型自適應選擇。\n + 如何在單一路由器中同時評估多種專家類型的適配度，避免因尺度差異導致的偏置。\n* **論點**：\n + 異構專家池可以在單一模型中同時支援多種專業任務。\n* **代表 paper**：\n + 《Heterogeneous Mixture‑of‑Experts for Unified Scientific Modeling》, 第一作者 **Jae‑Hoon Kim**, ICML 2025。\n + 《Graph‑Aware Expert Routing in Sparse Transformers》, 第一作者 **Sofia García**, ICLR 2026。\n\n**主題三: 終身學習與專家增刪機制 (Lifelong MoE with Expert Birth‑Death)**\n\n* **關鍵事實**：\n + 現有 MoE 大多在"
+    },
+    {
+      "stage": 2,
+      "summary": "**動態深度 MoE 路由 (Adaptive Depth Mixture-of-Experts) 概要**\n\n### 關鍵方法群\n\n* **Depth-Conditional Routing (DCR)**：在每層 MoE 前加入輕量的深度選擇器，根據 token 表示估算是否需要再往下走的概率。\n* **Adaptive Gating with Early-Exit (AGEE)**：使用兩段式門控，第一段產生跳層分數，第二段決定是否提前退出。\n* **Hierarchical Expert Scheduling (HES)**：將所有層的專家分成淺層專家和深層專家兩組，路由器輸出兩個選擇向量。\n\n### 模型架構細節\n\n* **輸入**：長序列 token 向量，經過嵌入層和位置編碼。\n* **關鍵模組**：\n + 標準多頭自注意力層。\n + 動態深度 MoE 層：包含 gate_depth 和 gate_expert。\n + 可選的 Early-Exit 分支：在最終層前加入輕量分類/回歸頭。\n* **輸出**：根據任務不同，可能是序列標記、分類 logits 或回歸向量。\n* **訓練目標**：主損失為任務交叉熵或回歸 MSE，額外加上計算成本正則項和門控熵懲罰。\n\n### 訓練策略\n\n* **資料規模**：使用 10-30 B token 的長序列語料或領域特化的基因序列資料。\n* **batch size**：在單卡上 8-16 個序列，使用梯度累積達到等效 64-128 的全局 batch。\n* **優化器**：AdamW，學習率採線性 warm-up 後 cosine decay。\n* **loss 設計**：L_task（交叉熵或 MSE），L_cost（期望層數乘以超參數 λ），L_entropy（鼓勵門控分布均勻）。\n\n### 主要benchmark與資料集\n\n* **Long-Range Arena (LRA)**：特別是 PathX 和 Text 子任務，指標為 accuracy / perplexity 和 FLOPs。\n* **Enwik8 / Text8**：測試壓縮率（bits-per-character）和推理時間。\n* **DNA-Seq-Long**：以 ROC-AUC 和計算成本為主要衡量。\n\n### 方法優劣比較\n\n* **Depth-Conditional Routing (DCR)**：優點是直接在每層決定是否跳過，實現細粒度計算削"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
