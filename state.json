@@ -1,13 +1,18 @@
 {
   "date": "2026-06-01",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 動態梯度一致性檢測於後訓練資料中毒防禦**\n\n* **關鍵事實**：\n + 目前只有少數團隊在大規模微調流程中即時監測梯度分布。\n + 可直接在不暴露原始模型權重的情況下偵測惡意樣本。\n* **結論**：\n + 需要設計低偽陽性率的統計檢驗，同時保持對少量惡意樣本的高靈敏度。\n + 需要研究在多任務微調或參數高效微調情境下，梯度訊號是否仍具備可分辨的中毒特徵。\n* **技術細節**：\n + 需要在高維梯度空間中設計統計檢驗。\n + 需要研究梯度訊號在不同微調情境下的變化。\n* **論點**：\n + 需要在不依賴大量乾淨驗證資料的情況下設計檢測方法。\n + 需要研究檢測方法的魯棒性。\n* **引用的 paper 名稱**：\n + 《Detecting Post‑Training Data Poisoning via Gradient Consistency Checks》, 首作者 **Yuan Liu**, NeurIPS 2025。\n + 《Online Gradient Anomaly Detection for Secure Model Fine‑Tuning》, 首作者 **Mina Patel**, arXiv 2025.12.03。\n + 《Adaptive Gradient Screening for Streaming Fine‑Tuning」, 首作者 **Jae‑Hyun Kim**, ICLR 2026。\n\n**主題二: 激活指紋挖掘與隱蔽後門逆向**\n\n* **關鍵事實**：\n + 隱蔽後門往往只在特定觸發條件下改變少量神經元激活。\n + 現有防禦多聚焦於輸入層面，缺乏對模型內部「指紋」的系統化研究。\n* **結論**：\n + 需要設計穩定且可重現的激活指紋。\n + 需要研究指紋方法的魯棒性。\n* **技術細節**：\n + 需要在單一模型的激活分布中抽取指紋。\n + 需要研究指紋方法的抗對抗性。\n* **論點**：\n + 需要在不依賴大量乾淨驗證資料的情況下設計指紋方法。\n + 需要研究指紋方法的穩定性。\n* **引用的 paper 名稱**：\n + 《Activation Fingerprint Mining for Stealth Backdoor Identification》, 首作者 **S"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Gradient Consistency Check (GCC)**：使用滑動窗口收集梯度向量，計算 KL 散度或馬氏距離。\n* **Online Gradient Anomaly Detection (OGAD)**：使用雙向指標，密度估計和重構誤差。\n* **Adaptive Gradient Screening (AGS)**：動態調整檢測門檻，根據梯度方差自適應縮放。\n\n**2. 模型架構細節**\n\n* **輸入**：微調時的 mini-batch 資料和標籤。\n* **輸出**：每筆樣本的「是否疑似中毒」二元指標或梯度異常分數。\n* **關鍵模組**：\n + `GradientCollector`：捕捉梯度向量。\n + `StatisticalEngine`：維持滑動窗口的統計量。\n + `ThresholdAdapter`：自適應調整檢測門檻。\n\n**3. 訓練策略**\n\n* **資料規模**：10 k–100 k 乾淨樣本作為基線統計，微調資料 1 k–50 k。\n* **batch size**：64–256，視 GPU 記憶體而定。\n* **優化器**：AdamW，學習率 1e-4–5e-4。\n* **loss 設計**：主任務損失加上 gradient-anomaly loss。\n\n**4. 主要 benchmark 與資料集**\n\n* **Datasets**：SST-2、AGNews、CIFAR-10、ImageNet-1k、MultiNLI、VQA-v2。\n* **評估指標**：偽陽性率、召回率、AUROC、微調效能衝擊。\n\n**5. 方法優劣比較**\n\n* **GCC**：實作簡單，但對梯度方差大的任務偽陽性較高。\n* **OGAD**：結合密度與重構兩種訊號，但需要額外訓練變分自編碼器。\n* **AGS**：門檻自適應，但需要額外的「梯度方差估計」模組。\n\n**6. 明確的「未解破綻」**\n\n* 跨任務微調的偽陽性。\n* PEFT 環境中梯度向量的幅度極小。\n* 極端低噪聲資料中統計量的估計方差過大。\n* 缺少 ablation。"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
