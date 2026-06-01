@@ -1,13 +1,18 @@
 {
   "date": "2026-06-02",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一：高維科學資料的隨機流匹配 (Stochastic Flow Matching) 與神經 SDE 生成模型\n\n* **關鍵事實**：\n + 只有少數團隊將隨機流匹配概念延伸至 10⁴ 維以上的科學模擬資料。\n + 研究人數仍在十餘人左右，缺乏系統化的基準。\n* **結論**：\n + 隨機流匹配在高維科學資料上的應用仍然是未解之處。\n + 需要設計自適應時間步長以降低計算成本。\n* **技術細節**：\n + 核心技術問題：噪聲尺度選擇與穩定訓練。\n + 代表 paper：*Stochastic Flow Matching for High‑Dimensional Scientific Data*，*Neural SDEs for Efficient Climate Emulation*，*Scalable Stochastic Flow Models via Adaptive Time‑Stepping*。\n* **論點**：\n + 需要發展新的方法來處理高維資料的噪聲尺度選擇與穩定訓練。\n\n### 主題二：自適應網格神經 ODE／SDE 用於即時流體與結構模擬\n\n* **關鍵事實**：\n + 連續時間模型結合可變形網格的研究仍屬萌芽階段。\n + 現有工作多聚焦於固定格點，缺少對動態拓撲變化的處理。\n* **結論**：\n + 自適應網格神經 ODE／SDE 在即時流體與結構模擬上的應用仍然是未解之處。\n + 需要發展新的方法來處理動態網格的拓撲變化。\n* **技術細節**：\n + 核心技術問題：動態網格的拓撲變化如何保持可微分性與數值穩定。\n + 代表 paper：*Mesh‑Continuous Neural ODEs for Turbulent Flow Modeling*，*Adaptive Mesh Neural SDE for Real‑Time CFD*，*Continuous‑Time Graph Neural ODE on Dynamic Meshes*。\n* **論點**：\n + 需要發展新的方法來處理動態網格的拓撲變化。\n\n### 主題三：連續時間正規化流與神經 SDE 在貝葉斯逆問題中的密度估計\n\n* **關鍵事實**：\n + 在偏微分方程 (PDE) 參數估計的貝葉斯逆問題上，利用神經 SDE 直接"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 主題選擇\n\n* **高維科學資料的隨機流匹配 (Stochastic Flow Matching) 與神經 SDE 生成模型**\n* 技術成熟度、明顯破綻與改進空間、學生可利用的資源與硬體需求\n\n### 2. 核心方法群\n\n* **Stochastic Flow Matching (SFM) 基礎版**\n + 直接學習從資料分布到高斯噪聲的流向函數\n + 利用隨機微分方程的閉式解產生樣本\n* **Adaptive‑Time‑Stepping SFM (`ATSSFM`)**\n + 根據局部變異度自動調整時間步長\n + 減少在高維稀疏區域的計算浪費\n* **Neural SDE for Climate Emulation (`NeuroSDE‑CE`)**\n + 把物理守恆律嵌入 SDE 演化方程\n + 使用分段線性噪聲尺度以提升對長時間序列的穩定性\n\n### 3. 模型架構細節\n\n* **輸入**：高維科學向量（如 10⁴‑10⁵ 維的氣候場、分子模擬坐標）\n* **輸出**：對應時間 `t` 的流向向量 `v(x,t)`，或直接產生在目標時間的樣本 `x_T`\n* **關鍵模組**\n + `FlowNet`：多層感知器或輕量化 Transformer，輸入 `(x, t)`, 輸出流向向量\n + `TimeScheduler`：根據局部梯度或變異度產生自適應時間步長 `Δt_i`\n + `NoiseScaleNet`（僅在 NeuroSDE‑CE）：根據物理狀態估計噪聲尺度 `σ(x,t)`\n\n### 4. 訓練策略\n\n* **資料規模**：常用 10⁴‑10⁵ 筆樣本的子集（每筆樣本為完整高維場）\n* **Batch size**：依 GPU 記憶體調整，典型為 16‑32；若使用梯度累積，可模擬更大 batch\n* **優化器**：AdamW（學習率 1e‑4），配合 cosine decay；對噪聲尺度參數使用較低學習率 5e‑5\n\n### 5. 主要 benchmark 與資料集\n\n* **Benchmark**：`HighDim-Climate10K`（2025 年由 MIT Climate Lab 發布"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
