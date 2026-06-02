@@ -1,13 +1,18 @@
 {
   "date": "2026-06-03",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 以因果介入追蹤 (Causal Tracing) 揭露 Transformer 前饋層電路\n\n* **關鍵事實**：\n + 只有少數團隊在百億以上模型上系統化執行因果介入。\n + 缺乏可擴展的自動化流程。\n* **結論**：\n + 需要設計低方差的介入抽樣策略。\n + 介入結果的可解釋性指標尚未統一。\n* **技術細節**：\n + 使用因果介入追蹤來揭露 Transformer 前饋層電路。\n + 需要設計可擴展的自動化流程。\n* **論點**：\n + 因果介入追蹤可以幫助理解 Transformer 前饋層電路。\n + 需要進一步研究設計低方差的介入抽樣策略。\n* **引用的 paper 名稱**：\n + 《Causal Tracing of Large‑Scale Transformer Circuits》, Y. Liu, NeurIPS 2025, arXiv:2503.01412\n + 《Mediated Attribution in Feed‑Forward Networks》, M. Patel, ICLR 2026, arXiv:2601.04567\n + 《Intervention‑Based Circuit Discovery for GPT‑4‑Scale Models》, S. Kim, ICML 2025, arXiv:2512.09834\n\n### 主題二: 時間序列稀疏自編碼器 (Temporal Sparse Autoencoder) 用於追蹤模型訓練階段的內部結構變遷\n\n* **關鍵事實**：\n + 大多數現有稀疏自編碼器僅聚焦於單一訓練快照。\n + 跨訓練階段的動態稀疏基底仍屬新興領域。\n* **結論**：\n + 需要設計基底在不同訓練階段保持可比性。\n + 缺乏統一的評估基準來量化「階段性結構變化」對模型功能的實際影響。\n* **技術細節**：\n + 使用時間序列稀疏自編碼器來追蹤模型訓練階段的內部結構變遷。\n + 需要設計基底在不同訓練階段保持可比性。\n* **論點**：\n + 時間序列稀疏自編碼器可以幫助理解模型訓練階段的內部結構變遷。\n + 需要進一步研究設計基底在不同訓練階段保持可"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Causal Tracing**：通過插入干預訊號，觀測輸出變化，推斷資訊流的因果路徑。\n* **Mediated Attribution**：加入中介變數，計算每個前饋層神經元對最終決策的貢獻度。\n* **Intervention-Based Circuit Discovery**：結合貪婪搜尋與梯度指導的干預策略，系統化探索電路。\n\n**2. 模型架構細節**\n\n* **輸入**：原始文字序列或 token 序列\n* **輸出**：干預後的模型預測分布和每層/每神經元的因果影響度分數\n* **關鍵模組**：前饋層攔截器和影響度計算器\n* **訓練目標**：分析而非重新訓練模型，學習代理模型映射干預向量到影響度分數\n\n**3. 訓練策略**\n\n* **資料規模**：10 萬句子\n* **Batch size**：32-64 個樣本\n* **優化器**：AdamW\n* **Loss 設計**：交叉熵和均方誤差的加權和\n* **實作 tricks**：混合精度、分層抽樣和先驗模型驗證\n\n**4. 主要 benchmark 與資料集**\n\n* **Benchmark**：TruthfulQA、LAMBADA和Synthetic circuit tests\n* **關鍵指標**：因果影響度相關係數、干預後性能下降率和方差/信噪比\n\n**5. 方法優劣比較**\n\n* **Causal Tracing**：實作簡單，但抽樣方差高\n* **Mediated Attribution**：引入中介變數，但計算成本高\n* **Intervention-Based Circuit Discovery**：自動組合子電路，但計算成本高\n\n**6. 明確的「未解破綻」**\n\n* 高方差抽樣\n* 跨層因果關係缺失\n* 指標不完整\n* 缺乏標準化基準\n* 計算成本高"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
