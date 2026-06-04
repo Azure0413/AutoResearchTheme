@@ -1,6 +1,6 @@
 {
   "date": "2026-06-04",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n**可學習核線性注意力**\n\n* **核心方法群**\n + AdaKernel-Attention (ICLR 2026): 使用小型神經網路產生動態核函數，提高長距離依賴捕捉能力\n + Linformer++: Learnable Kernel (NeurIPS 2025): 在投影矩陣上加入可參數化的核映射\n + EdgeKernel-Linear (arXiv 2025.12): 低位元量化與分段近似，適合手機 GPU\n* **模型架構細節**\n + 輸入/輸出: 長序列向量 (4096維 token嵌入)\n + 關鍵模組: 核生成器、線性化注意力層、殘差與層正規化\n* **訓練策略**\n + 資料規模: 10-30 GB 長序列語料 (OpenWebText-Long、Gene-Seq-500M)\n + batch size: 32-64 (單卡 A100)\n + 優化器: AdamW, 學習率 1e-4\n* **主要benchmark與資料集**\n + Long-Range Arena (LRA): 測試序列長度 1k-8k 的文本、圖像與音訊任務\n + OpenWebText-Long: 評估語言模型的生成品質\n + Gene-Seq-500M: 在基因序列預測任務上評估 ROC-AUC\n + Edge-Inference-Suite: 測試延遲 (ms) 和功耗 (mW)\n* **方法優劣比較**\n + AdaKernel-Attention: 動態核函數提升長距離依賴捕捉, 但計算開銷增加\n + Linformer++: 參數增長低, 但核函數為全局固定\n + EdgeKernel-Linear: 低位元量化與分段近似, 但量化誤差導致語言生成任務上的精度下降\n\n**未解破綻**\n\n* 動態核穩定性: AdaKernel-Attention 在高學習率或小批次下容易出現核係數發散\n* 長序列數值飽和: Linformer++ 在超過 12k token 時, 投影後的特徵向量會出現梯度消失\n* 量化誤差傳播: EdgeKernel-Linear 的 INT8 量化在多層堆疊後會累積誤差\n* 缺乏跨任務 Ablation: 目前三篇工作大多只在單一領域 (文本或基因)"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間遞歸核穩定器\n\n* **核心 idea**: 在高階狀態空間模型中引入時間遞歸核穩定器，以穩定訓練高階差分係數。\n* **技術細節**:\n + 輸入為長序列向量\n + 模組設計為在高階狀態空間模型中增加時間遞歸核穩定器\n + 訓練目標為最小化損失函數\n + 損失函數為交叉熵損失加上時間遞歸核穩定器的正則化項\n* **與 SOTA 的差異**: 增加時間遞歸核穩定器以穩定訓練高階差分係數\n* **預期改善的指標與原因**: 在 Long-Range Arena (LRA) 資料集上的表現將會改善，因為時間遞歸核穩定器可以穩定訓練高階差分係數\n* **最小可行實驗(MVP)**: 使用 OpenWebText-Long 資料集，模型大小為 12 層，單張 A100 GPU 即可驗證\n\n### 方案 2: 門控DeltaNet快速適應模組\n\n* **核心 idea**: 在 Gated DeltaNet 中引入快速適應模組，以加速新任務的學習。\n* **技術細節**:\n + 輸入為新任務的數據\n + 模組設計為在 Gated DeltaNet 中增加快速適應模組\n + 訓練目標為最小化損失函數\n + 損失函數為交叉熵損失加上快速適應模組的正則化項\n* **與 SOTA 的差異**: 增加快速適應模組以加速新任務的學習\n* **預期改善的指標與原因**: 在 Edge-Inference-Suite 資料集上的延遲和功耗將會改善，因為快速適應模組可以加速新任務的學習\n* **最小可行實驗(MVP)**: 使用 Edge-Inference-Suite 資料集，模型大小為 6 層，單張 A100 GPU 即可驗證\n\n### 方案 3: 動態核線性注意力模組\n\n* **核心 idea**: 在線性注意力中引入動態核線性注意力模組，以提高長距離依賴捕捉能力。\n* **技術細節**:\n + 輸"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
