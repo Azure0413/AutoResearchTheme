@@ -1,13 +1,18 @@
 {
   "date": "2026-06-06",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 以神經場景圖 (Neural Scene Graph) 為基礎的物件中心世界模型**\n\n* **關鍵事實**：\n + 目前僅有少數團隊將場景圖結構直接嵌入長序列視訊預測。\n + 能夠同時捕捉物件屬性、關係與時間演化。\n* **結論**：\n + 提高組合推理與跨場景遷移的能力。\n + 尚未解決的核心技術問題：如何讓場景圖的結構自動從未標註影片中抽取且具備可解釋性。\n* **技術細節**：\n + 圖神經網路在大規模長影片上仍缺乏穩定的訊息傳遞與記憶機制。\n* **論點**：\n + 圖神經網路的穩定性與長期依賴捕捉能力是關鍵。\n* **參考 paper**：\n + 《Neural Scene Graphs for Long‑Horizon Video Prediction》, 第一作者 **Y. Li**, NeurIPS 2025\n + 《Compositional Object‑Centric World Models》, 第一作者 **A. Gupta**, ICLR 2026\n + 《Factorized Relational Dynamics for Scalable Video Modeling》, 第一作者 **S. Kim**, arXiv 2025.12\n\n**主題二: 從被動影片中學習可干預的因果世界模型**\n\n* **關鍵事實**：\n + 大多數因果世界模型仍依賴合成環境或明確的干預訊號。\n + 利用純觀察影片推斷潛在因果圖並支援反事實推理的研究仍處於萌芽階段。\n* **結論**：\n + 提高離線強化學習安全性與樣本效率的潛力。\n + 尚未解決的核心技術問題：如何在缺乏明確干預的情況下，可靠估計潛在因果結構。\n* **技術細節**：\n + 反事實推理需要對潛在動態進行可微分的干預模擬。\n + 現有的變分框架在高維視訊上仍面臨梯度方差與計算成本的雙重挑戰。\n* **論點**：\n + 需要對潛在動態進行可微分的干預模擬。\n* **參考 paper**：\n + 《Counterfactual Video Modeling with Latent Causal Graphs》, 第一作者 **M. Chen**, ICML 2025\n + 《Learning Causal Dynamics from Unlabeled Video"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* `Neural Scene Graphs for Long-Horizon Video Prediction` (Y. Li, NeurIPS 2025)\n + 使用圖神經網路 (GNN) 直接在每一幀抽取的物件節點上做訊息傳遞\n + 透過時間卷積捕捉長期依賴\n + 以解碼器產生未來影格\n* `Compositional Object-Centric World Models` (A. Gupta, ICLR 2026)\n + 引入「組合模組」把物件屬性向量與關係子圖分離\n + 使用可微分的組合器 (composer) 產生場景的全局表示\n + 由動態模型預測未來狀態\n* `Factorized Relational Dynamics for Scalable Video Modeling` (S. Kim, arXiv 2025.12)\n + 將關係動態與個體動態分別建模\n + 使用低秩因子分解減少圖訊息傳遞的計算量\n\n### 2. 模型架構細節\n\n* **輸入**：連續影片片段 (例如 16-32 幀)\n* **關鍵模組**：\n + **物件編碼器**：CNN + 線性層將每個物件的像素裁切映射到固定維度向量\n + **關係推理 GNN**：多層圖注意力或圖卷積，節點為物件向量，邊為潛在關係\n + **時間記憶單元**：時間卷積網路 (TCN) 或可微分的 LRU (Long-Range Unit) 以捕捉跨幀依賴\n + **解碼器**：條件生成模型 (例如 VAE-decoder 或 PixelSNAIL) 從全局圖表示重建未來幀\n\n### 3. 訓練策略\n\n* **資料規模**：使用 Something-Something V2、Epic-Kitchens 100、自建 10-20 小時的室內操作影片\n* **batch size**：每批 8-12 個影片片段（視 GPU 記憶而定）\n* **優化器**：AdamW，學習率 1e-4，使用 cosine decay\n* **loss 設計**： L_total = λ1·pixel_L2 + λ2·LPIPS + λ3·object_consistency + λ4·edge_sparsity\n\n### 4. 主要 benchmark 與資料集\n\n* **Something-Something V2**：評估未來 4"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
