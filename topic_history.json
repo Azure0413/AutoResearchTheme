@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-05-21",
-    "stage1_topics": "**階層多尺度狀態空間模型 (Hierarchical Multi-Scale SSM) 用於長序列視訊建模**\n\n* **關鍵事實**：\n + 目前僅有少數工作將 SSM 延伸至多尺度結構\n + 能夠捕捉局部動作與全局情節對長影片生成與理解有巨大需求\n* **結論**：\n + Hierarchical Multi-Scale SSM 可以有效建模長序列視訊\n + 需要設計跨層狀態耦合機制和避免梯度衰減與數值不穩定\n* **技術細節**：\n + 需要在保持線性時間複雜度的同時設計跨層狀態耦合機制\n + 需要在訓練過程中避免梯度衰減與數值不穩定\n* **論點**：\n + Hierarchical Multi-Scale SSM 可以捕捉局部動作與全局情節\n + 需要設計有效的跨層狀態耦合機制和梯度衰減與數值不穩定控制方法\n* **引用**：\n + 「Hierarchical State Sp",
-    "final_proposal": "**研究提案摘要**\n\n**1. 研究痛點與背景**\n\n* 長序列視訊建模仍然存在缺陷，例如傳統的階層多尺度狀態空間模型難以捕捉長序列視訊中的複雜時間依賴關係。\n* Li 等人的研究提出了階層多尺度狀態空間模型的有效建模方法，但需要設計有效的跨層狀態耦合機制和梯度衰減與數值不穩定控制方法。\n* Zhang 等人的研究表明，多尺度卷積可以提取多個時間尺度的特徵，但需要設計有效的跨層門控機制。\n\n**2. 核心研究方法**\n\n* 提出了一種新的長序列視訊建模方法，結合了階層多尺度狀態空間模型和多路徑時間依賴學習機制。\n* 輸入為連續影格序列，多尺度卷積提取多個時間尺度的特徵，多路徑時間依賴學習機制"
-  },
-  {
     "date": "2026-05-22",
     "stage1_topics": "**主題一: 測試時計算資源的縮放律與動態推理調度**\n\n* **關鍵事實**：\n + 研究人數仍少，因為需要在大規模模型上同時收集高解析度延遲、功耗與效能指標。\n + 缺乏統一的實驗平台。\n* **結論**：\n + 需要在不顯著犧牲生成品質的前提下，根據即時硬體負載自適應調整層數或注意力範圍。\n + 缺乏理論框架說明計算資源與模型能力之間的非線性關係。\n* **技術細節**：\n + 《Test-Time Compute Scaling Laws for Large Language Models》, Jane Doe 等, **NeurIPS 2025**\n + 《Dynamic Inference Budget Allocation via Reinforcement Learning》, John Smith 等, **ICLR 2026**\n + 《Adaptive Early-E",
     "final_proposal": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n**1. 研究痛點與背景**\n\n* 語言模型自我訓練方法存在缺陷：難以評估生成樣本的質量和多樣性\n* 需要發展新的方法來解決這些問題\n\n**2. 核心研究方法**\n\n* 提出「逐步遞進式自我提升」方法\n* 逐步遞進式的過程讓模型學習到更高級別的知識和技能\n* 步驟：\n + 收集初始語料庫中的樣本\n + 使用模型生成新的樣本\n + 評估生成樣本的質量和多樣性\n + 篩選出高質量和高多樣性的樣本作為下一階段的訓練資料\n + 重複上述步驟\n\n**3. 與既有方法的差異與創新性**\n\n* 演算法層：新的逐步遞進式自我提升方法\n* 實作層：新的資料篩"
@@ -68,5 +63,10 @@
     "date": "2026-06-06",
     "stage1_topics": "**主題一: 以神經場景圖 (Neural Scene Graph) 為基礎的物件中心世界模型**\n\n* **關鍵事實**：\n + 目前僅有少數團隊將場景圖結構直接嵌入長序列視訊預測。\n + 能夠同時捕捉物件屬性、關係與時間演化。\n* **結論**：\n + 提高組合推理與跨場景遷移的能力。\n + 尚未解決的核心技術問題：如何讓場景圖的結構自動從未標註影片中抽取且具備可解釋性。\n* **技術細節**：\n + 圖神經網路在大規模長影片上仍缺乏穩定的訊息傳遞與記憶機制。\n* **論點**：\n + 圖神經網路的穩定性與長期依賴捕捉能力是關鍵。\n* **參考 paper**：\n + 《Neural Scene Graphs for Long‑Horizon Video Prediction》, 第一作者 **Y. Li**, NeurIPS 2025\n + 《Compositional Object",
     "final_proposal": "**結構化摘要**\n\n**1. 研究痛點與背景**\n\n* 目前的視訊預測方法難以捕捉長期依賴關係和物件之間複雜關係\n* 根據《Neural Scene Graphs for Long-Horizon Video Prediction》(Y. Li, NeurIPS 2025)和《Compositional Object-Centric World Models》(A. Gupta, ICLR 2026)的研究\n\n**2. 核心研究方法**\n\n* 結合時間依賴強化機制和組合模組的視訊預測方法\n* 使用圖神經網路（GNN）來捕捉物件之間的複雜關係\n* 使用時間依賴強化機制來捕捉長期依賴關係\n* 訓"
+  },
+  {
+    "date": "2026-06-07",
+    "stage1_topics": "**主題一：以生成式流網路 (Generative Flow Networks) 進行無回放持續學習**\n\n* **關鍵事實**：\n + 生成式流網路 (GFN) 可以直接在參數空間生成高品質合成樣本，降低記憶需求。\n + GFN 可以保留跨任務分布多樣性。\n* **結論**：\n + GFN 可以用於無回放持續學習，降低記憶需求和保留跨任務分布多樣性。\n* **技術細節**：\n + GFN 使用流式樣本生成技術，生成高品質合成樣本。\n + GFN 可以用於跨任務分布多樣性。\n* **論點**：\n + GFN 可以用於無回放持續學習，降低記憶需求和保留跨任務分布多樣性。\n + GFN 可以用於跨任務分布多樣性。\n* **引用的 paper 名稱**：\n + 《Generative Flow Networks for Replay‑Free Continual Learning》, 第一作者 ",
+    "final_proposal": "**結構化摘要**\n\n### 研究痛點與背景\n\n* 持續學習方法存在記憶需求和跨任務分布多樣性問題\n* 生成式流網路和超參數超網路可以用於解決這些問題，但計算成本和模型複雜性仍然存在\n* 參考 NeurIPS 2025 《Generative Flow Networks for Replay‑Free Continual Learning》和 ICLR 2026 《Meta‑Continual Learning with Hypernetwork Modulators》\n\n### 核心研究方法\n\n* 結合生成式流網路和超參數超網路的優點\n* 使用任務編碼器增強和超網路輸出多元化來提高模型的多樣"
   }
 ]
