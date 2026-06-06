@@ -1,13 +1,18 @@
 {
   "date": "2026-06-07",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：以生成式流網路 (Generative Flow Networks) 進行無回放持續學習**\n\n* **關鍵事實**：\n + 生成式流網路 (GFN) 可以直接在參數空間生成高品質合成樣本，降低記憶需求。\n + GFN 可以保留跨任務分布多樣性。\n* **結論**：\n + GFN 可以用於無回放持續學習，降低記憶需求和保留跨任務分布多樣性。\n* **技術細節**：\n + GFN 使用流式樣本生成技術，生成高品質合成樣本。\n + GFN 可以用於跨任務分布多樣性。\n* **論點**：\n + GFN 可以用於無回放持續學習，降低記憶需求和保留跨任務分布多樣性。\n + GFN 可以用於跨任務分布多樣性。\n* **引用的 paper 名稱**：\n + 《Generative Flow Networks for Replay‑Free Continual Learning》, 第一作者 **Yuan‑Chi Lee**, NeurIPS 2025, arXiv:2503.01427\n + 《Task‑Conditional Flow Sampling for Lifelong Vision Models》, 第一作者 **Mira Patel**, ICLR 2026, arXiv:2601.09845\n + 《Memory‑Efficient Continual Learning via Flow‑Based Generative Replay》, 第一作者 **Jae‑Hyun Kim**, ICML 2026, arXiv:2610.07211\n\n**主題二：超參數超網路 (Hypernetwork) 驅動的元持續學習**\n\n* **關鍵事實**：\n + 超網路可以為每個新任務生成專屬的子網路參數，限制任務間干擾。\n + 超網路可以用於跨任務學習。\n* **結論**：\n + 超網路可以用於元持續學習，限制任務間干擾。\n* **技術細節**：\n + 超網路使用超參數調整技術，生成專屬的子網路參數。\n + 超網路可以用於跨任務學習。\n* **論點**：\n + 超網路可以用於元持續學習，限制任務間干擾。\n + 超網路可以用於跨任務學習。\n* **引用的 paper 名稱**：\n + 《Meta‑Continual Learning with Hypernetwork Modulators》, 第一作者 **Lina Gómez**, ICLR 2026, arXiv:2605.04122\n + 《Task‑Adaptive Hypernetworks for Lifelong Reinforcement Learning》, 第一作者"
+    },
+    {
+      "stage": 2,
+      "summary": "**超參數超網路 (Hypernetwork) 驅動的元持續學習**\n\n### 核心方法群\n\n* **Meta‑Continual Learning with Hypernetwork Modulators**\n + 透過全域超網路產生任務的調節向量\n + 注入目標網路的每層權重\n + 減少直接微調造成的干擾\n* **Task‑Adaptive Hypernetworks for Lifelong Reinforcement Learning**\n + 超網路根據環境描述產生策略網路的子模組\n + 使用策略梯度同步更新\n + 讓新環境的學習不會破壞舊環境的策略\n* **Conditional Hypernetwork Replay (CHR)**\n + 結合超網路與少量真實樣本的條件回放\n + 超網路在生成「虛擬回放」時以任務標籤作為條件\n + 提升回放品質，同時降低記憶體需求\n\n### 模型架構細節\n\n* **輸入**：主模型的原始資料、任務標籤或環境描述\n* **輸出**：主模型的預測/策略分佈、超網路產生的調節向量或子網路權重\n* **關鍵模組**：\n + 超網路：小型 MLP，接受任務編碼 → 輸出每層的調節參數\n + 主模型：常見 ResNet、Transformer 或 Actor‑Critic 結構\n + 任務編碼器：將任務描述映射為固定長度向量\n* **訓練目標**：主模型的任務損失、超網路的正則化項\n\n### 訓練策略\n\n* **資料規模**：每個新任務 5k‑20k 樣本，總體可累積至 200k 左右\n* **Batch size**：64‑128，視 GPU 記憶體而定\n* **優化器**：AdamW（學習率 1e‑4），對超網路使用較低的 LR (5e‑5)\n* **Loss 設計**：`L_total = L_task + λ1 * L_reg_hyper + λ2 * L_contrast`\n* **實作 tricks**：先預訓練主模型於大規模基礎資料，再凍結底層特徵抽取器\n\n### 主要 benchmark 與資料集\n\n* **圖像持續學習**：`CIFAR‑100 → Split‑CIFAR100`、`Mini‑ImageNet → 20 任務分割`\n* **強化學習持續學習**"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
