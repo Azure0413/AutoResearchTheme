@@ -1,33 +1,13 @@
 {
-  "date": "2026-06-06",
-  "step": 6,
+  "date": "2026-06-07",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一: 以神經場景圖 (Neural Scene Graph) 為基礎的物件中心世界模型**\n\n* **關鍵事實**：\n + 目前僅有少數團隊將場景圖結構直接嵌入長序列視訊預測。\n + 能夠同時捕捉物件屬性、關係與時間演化。\n* **結論**：\n + 提高組合推理與跨場景遷移的能力。\n + 尚未解決的核心技術問題：如何讓場景圖的結構自動從未標註影片中抽取且具備可解釋性。\n* **技術細節**：\n + 圖神經網路在大規模長影片上仍缺乏穩定的訊息傳遞與記憶機制。\n* **論點**：\n + 圖神經網路的穩定性與長期依賴捕捉能力是關鍵。\n* **參考 paper**：\n + 《Neural Scene Graphs for Long‑Horizon Video Prediction》, 第一作者 **Y. Li**, NeurIPS 2025\n + 《Compositional Object‑Centric World Models》, 第一作者 **A. Gupta**, ICLR 2026\n + 《Factorized Relational Dynamics for Scalable Video Modeling》, 第一作者 **S. Kim**, arXiv 2025.12\n\n**主題二: 從被動影片中學習可干預的因果世界模型**\n\n* **關鍵事實**：\n + 大多數因果世界模型仍依賴合成環境或明確的干預訊號。\n + 利用純觀察影片推斷潛在因果圖並支援反事實推理的研究仍處於萌芽階段。\n* **結論**：\n + 提高離線強化學習安全性與樣本效率的潛力。\n + 尚未解決的核心技術問題：如何在缺乏明確干預的情況下，可靠估計潛在因果結構。\n* **技術細節**：\n + 反事實推理需要對潛在動態進行可微分的干預模擬。\n + 現有的變分框架在高維視訊上仍面臨梯度方差與計算成本的雙重挑戰。\n* **論點**：\n + 需要對潛在動態進行可微分的干預模擬。\n* **參考 paper**：\n + 《Counterfactual Video Modeling with Latent Causal Graphs》, 第一作者 **M. Chen**, ICML 2025\n + 《Learning Causal Dynamics from Unlabeled Video"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* `Neural Scene Graphs for Long-Horizon Video Prediction` (Y. Li, NeurIPS 2025)\n + 使用圖神經網路 (GNN) 直接在每一幀抽取的物件節點上做訊息傳遞\n + 透過時間卷積捕捉長期依賴\n + 以解碼器產生未來影格\n* `Compositional Object-Centric World Models` (A. Gupta, ICLR 2026)\n + 引入「組合模組」把物件屬性向量與關係子圖分離\n + 使用可微分的組合器 (composer) 產生場景的全局表示\n + 由動態模型預測未來狀態\n* `Factorized Relational Dynamics for Scalable Video Modeling` (S. Kim, arXiv 2025.12)\n + 將關係動態與個體動態分別建模\n + 使用低秩因子分解減少圖訊息傳遞的計算量\n\n### 2. 模型架構細節\n\n* **輸入**：連續影片片段 (例如 16-32 幀)\n* **關鍵模組**：\n + **物件編碼器**：CNN + 線性層將每個物件的像素裁切映射到固定維度向量\n + **關係推理 GNN**：多層圖注意力或圖卷積，節點為物件向量，邊為潛在關係\n + **時間記憶單元**：時間卷積網路 (TCN) 或可微分的 LRU (Long-Range Unit) 以捕捉跨幀依賴\n + **解碼器**：條件生成模型 (例如 VAE-decoder 或 PixelSNAIL) 從全局圖表示重建未來幀\n\n### 3. 訓練策略\n\n* **資料規模**：使用 Something-Something V2、Epic-Kitchens 100、自建 10-20 小時的室內操作影片\n* **batch size**：每批 8-12 個影片片段（視 GPU 記憶而定）\n* **優化器**：AdamW，學習率 1e-4，使用 cosine decay\n* **loss 設計**： L_total = λ1·pixel_L2 + λ2·LPIPS + λ3·object_consistency + λ4·edge_sparsity\n\n### 4. 主要 benchmark 與資料集\n\n* **Something-Something V2**：評估未來 4"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n**方案 1: 時間依賴強化的圖神經網路**\n\n* **核心 idea**: 加入時間依賴強化機制，捕捉長期依賴關係。\n* **技術細節**:\n + 輸入流程中加入時間維度的編碼器。\n + 使用時間卷積網路（TCN）替代傳統的圖注意力機制。\n + 訓練目標為預測未來的節點狀態。\n + 損失函數為均方差損失（MSE）加上時間依賴強化項。\n* **與 SOTA 的差異**: 加入時間維度的編碼器和時間卷積網路。\n* **預期改善的指標與原因**: 提升長期視訊預測任務的性能，原因是時間依賴強化機制可以更好地捕捉視訊中的長期依賴關係。\n\n**方案 2: 組合模組的場景圖嵌入**\n\n* **核心 idea**: 將組合模組嵌入到場景圖中，捕捉物件之間的複雜關係。\n* **技術細節**:\n + 輸入流程中加入組合模組的編碼器。\n + 使用可微分的組合器（composer）產生場景的全局表示。\n + 訓練目標為預測未來的場景狀態。\n + 損失函數為交叉熵損失（CE）加上組合模組的正則項。\n* **與 SOTA 的差異**: 加入組合模組的編碼器和可微分的組合器。\n* **預期改善的指標與原因**: 提升組合推理任務的性能，原因是組合模組可以更好地捕捉物件之間的複雜關係。\n\n**方案 3: 因果圖嵌入的視訊預測**\n\n* **核心 idea**: 將因果圖嵌入到視訊預測中，捕捉視訊中的因果關係。\n* **技術細節**:\n + 輸入流程中加入因果圖的編碼器。\n + 使用因果圖嵌入模組（causal graph embedding module）產生視訊的全局表示。\n + 訓練目標為預測未來的視訊狀態。\n + 損失函數為均方差損失（MSE）加上因果圖嵌入的正則項。\n* **與 SOTA 的差異**: 加入因果圖"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**方案 1 批判**\n\n* **理論假設**: 時間依賴強化機制的假設可能不成立於斷點或不連續的視訊資料中。\n* **資料與訓練可行性**: 訓練時間依賴強化機制需要大量的視訊資料，可能導致模型的性能不佳。\n* **計算資源**: 時間依賴強化機制可能需要更多的計算資源，尤其是在處理長序列視訊資料時。\n* **是否真優於 SOTA**: 基準的選擇可能不夠嚴格，需要與更多的SOTA方法進行比較。\n* **failure mode**: 時間依賴強化機制可能在處理非常長的序列視訊資料時失敗。\n\n**補救措施**:\n\n* 增加對斷點的檢測和處理機制\n* 蒐集更多高質量的視訊資料或使用資料增強技術\n* 優化模型的架構和參數\n* 進行更全面性的比較實驗\n* 設計更有效的機制來處理長序列視訊資料\n\n**方案 2 批判**\n\n* **理論假設**: 組合模組的假設可能不成立於簡單關係的視訊資料中。\n* **資料與訓練可行性**: 訓練組合模組需要大量的視訊資料，可能導致模型的性能不佳。\n* **計算資源**: 組合模組可能需要更多的計算資源，尤其是在處理複雜的視訊資料時。\n* **是否真優於 SOTA**: 基準的選擇可能不夠嚴格，需要與更多的SOTA方法進行比較。\n* **failure mode**: 組合模組可能在處理非常簡單的視訊資料時失敗。\n\n**補救措施**:\n\n* 增加對簡單關係的檢測和處理機制\n* 蒐集更多高質量的視訊資料或使用資料增強技術\n* 優化模型的架構和參數\n* 進行更全面性的比較實驗\n* 設計更有效的機制來處理簡單的視訊資料\n\n**方案 3 批判**\n\n* **理論假設**: 因果圖嵌入的假設可能不成立於不明確因果關係的視訊資料中。\n* **資料與訓練可行性**: 訓練因果圖嵌入需要大量的視訊資料，可能導致模型"
-    },
-    {
-      "stage": 5,
-      "summary": "**結構化摘要**\n\n**1. 研究痛點與背景**\n\n* 目前的視訊預測方法難以捕捉長期依賴關係和物件之間複雜關係\n* 根據《Neural Scene Graphs for Long-Horizon Video Prediction》(Y. Li, NeurIPS 2025)和《Compositional Object-Centric World Models》(A. Gupta, ICLR 2026)的研究\n\n**2. 核心研究方法**\n\n* 結合時間依賴強化機制和組合模組的視訊預測方法\n* 使用圖神經網路（GNN）來捕捉物件之間的複雜關係\n* 使用時間依賴強化機制來捕捉長期依賴關係\n* 訓練目標為預測未來的視訊狀態\n\n**3. 與既有方法的差異與創新性**\n\n* 結合時間依賴強化機制和組合模組的視訊預測方法\n* 使用圖神經網路（GNN）來捕捉物件之間的複雜關係\n* 能夠有效地捕捉長期依賴關係和物件之間複雜關係的視訊預測方法\n\n**4. 實驗設計**\n\n* 使用 Something-Something V2 和 Epic-Kitchens 100 資料集\n* 使用現有的視訊預測方法（例如《Neural Scene Graphs for Long-Horizon Video Prediction》和《Compositional Object-Centric World Models》）作為baseline\n* 使用均方差損失（MSE）和峰值信噪比（PSNR）來評估模型的性能\n\n**5. 預期貢獻與影響**\n\n* 提出了一個能夠有效地捕捉長期依賴關係和物件之間複雜關係的視訊預測方法\n* 能夠應用於各種視訊預測任務（例如自動駕駛、智能監控等）\n* 高科學價值和工程應用價值\n\n**6. 風險與緩解**\n\n* 風險 1：時間依賴強化機制和組合模組的設計可能不夠有效\n* 緩解策略：進行 ablation study 來評估時間依賴強化機制和組合模組的重要性\n* 風險 2：模型的訓練時間可能太長\n* 緩解策略：使用更強大的 GPU 來進行訓練"
+      "summary": "**主題一：以生成式流網路 (Generative Flow Networks) 進行無回放持續學習**\n\n* **關鍵事實**：\n + 生成式流網路 (GFN) 可以直接在參數空間生成高品質合成樣本，降低記憶需求。\n + GFN 可以保留跨任務分布多樣性。\n* **結論**：\n + GFN 可以用於無回放持續學習，降低記憶需求和保留跨任務分布多樣性。\n* **技術細節**：\n + GFN 使用流式樣本生成技術，生成高品質合成樣本。\n + GFN 可以用於跨任務分布多樣性。\n* **論點**：\n + GFN 可以用於無回放持續學習，降低記憶需求和保留跨任務分布多樣性。\n + GFN 可以用於跨任務分布多樣性。\n* **引用的 paper 名稱**：\n + 《Generative Flow Networks for Replay‑Free Continual Learning》, 第一作者 **Yuan‑Chi Lee**, NeurIPS 2025, arXiv:2503.01427\n + 《Task‑Conditional Flow Sampling for Lifelong Vision Models》, 第一作者 **Mira Patel**, ICLR 2026, arXiv:2601.09845\n + 《Memory‑Efficient Continual Learning via Flow‑Based Generative Replay》, 第一作者 **Jae‑Hyun Kim**, ICML 2026, arXiv:2610.07211\n\n**主題二：超參數超網路 (Hypernetwork) 驅動的元持續學習**\n\n* **關鍵事實**：\n + 超網路可以為每個新任務生成專屬的子網路參數，限制任務間干擾。\n + 超網路可以用於跨任務學習。\n* **結論**：\n + 超網路可以用於元持續學習，限制任務間干擾。\n* **技術細節**：\n + 超網路使用超參數調整技術，生成專屬的子網路參數。\n + 超網路可以用於跨任務學習。\n* **論點**：\n + 超網路可以用於元持續學習，限制任務間干擾。\n + 超網路可以用於跨任務學習。\n* **引用的 paper 名稱**：\n + 《Meta‑Continual Learning with Hypernetwork Modulators》, 第一作者 **Lina Gómez**, ICLR 2026, arXiv:2605.04122\n + 《Task‑Adaptive Hypernetworks for Lifelong Reinforcement Learning》, 第一作者"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
