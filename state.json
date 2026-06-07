@@ -1,13 +1,18 @@
 {
   "date": "2026-06-08",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**離散擴散與流匹配研究摘要**\n\n**主題一: 離散擴散於程式碼生成與抽象語法樹 (AST)**\n\n* **關鍵事實**：\n + 目前僅有少數團隊嘗試在離散結構（AST）上直接建模擴散過程。\n + 能同時保證語法正確性與多樣性。\n* **核心技術問題**：\n + 設計符合程式語法規則的噪聲注入與逆向去噪步驟。\n + 處理大規模程式庫的高維離散詞彙與長程依賴。\n* **未解之處**：\n + 噪聲排程與抽樣效率仍未達實用水平。\n* **代表 paper**：\n + `Discrete Diffusion for Program Generation via Syntax Tree Transformations`, X. Liu et al., ICLR 2025\n + `AST Diffusion: Learning Discrete Diffusion on Structured Code Representations`, Y. Kim et al., NeurIPS 2025\n + `Flow Matching on Graph‑Structured Code Representations`, Z. Chen et al., arXiv 2025.12\n\n**主題二: 離散流匹配於不規則時間序列與事件序列預測**\n\n* **關鍵事實**：\n + 時間序列領域的離散化擴散模型仍屬萌芽階段。\n + 對於稀疏事件與不規則取樣的處理缺乏成熟方法。\n* **核心技術問題**：\n + 在保持時間依賴性的同時，將連續時間訊號離散化為可擴散的狀態空間。\n + 噪聲排程需兼顧事件稀疏性與長期趨勢。\n* **未解之處**：\n + 噪聲排程在長序列上仍出現模式崩解。\n* **代表 paper**：\n + `Discrete Diffusion Models for Event Sequence Forecasting`, A. Gupta et al., ICML 2025\n + `Flow Matching for Irregular Time Series via State‑Space Discretization`, M. Zhou et al., NeurIPS 2025\n + `Temporal Diffusion on Symbolic Sequences`, H. Lee et al., arXiv 2026.03\n\n**主題三: 離散擴散與流匹配於混合型表格資料生成與隱私保護**\n\n* **關鍵事實**：\n + 表格資料的離散特徵（高基數類別、序列型欄位）在擴散模型中尚未被系統"
+    },
+    {
+      "stage": 2,
+      "summary": "**離散擴散與流匹配於混合型表格資料生成與隱私保護**\n\n### 核心方法群\n\n* **Tabular Diffusion (ICLR 2025)**\n + 以離散擴散在每個欄位上逐步加入噪聲\n + 使用欄位‑wise 噪聲排程，保證類別欄位保持有效的離散分布\n + 逆向去噪時透過條件分布恢復欄位值\n* **FlowMatch‑Tab (NeurIPS 2025)**\n + 以流匹配取代傳統的噪聲預測\n + 直接學習從資料分布到簡單基礎分布的映射\n + 對於混合型欄位，設計了「類別‑嵌入」與「數值‑正規化」的雙路徑\n* **PrivDiff‑Tab (arXiv 2025.11)**\n + 在離散擴散過程中加入差分隱私噪聲\n + 在去噪階段使用隱私‑aware 估計器\n\n### 模型架構細節\n\n* **輸入**: 原始表格的欄位向量\n* **輸出**: 在每一步噪聲/去噪階段產生的「噪聲向量」或「去噪預測」\n* **關鍵模組**\n + `Column‑wise Noise Scheduler`: 根據欄位類型分別設定噪聲強度與時間步長\n + `Dual‑Path Transformer`: 上層使用多頭自注意力捕捉欄位間長程關聯，下層以前饋網路處理欄位內部結構\n + `Privacy‑Aware Denoiser` (僅在 PrivDiff‑Tab): 在去噪時加入拉普拉斯/高斯差分隱私噪聲的校正項\n\n### 訓練策略\n\n* **資料規模**: 公開的 UCI、Kaggle 表格資料集（10k‑200k 行）\n* **Batch size**: 在單卡 RTX 4090 上 256‑512 行\n* **優化器**: `AdamW`（學習率 1e‑4），配合 cosine decay\n* **Loss 設計**\n + `Noise Prediction Loss`: 對每個欄位的噪聲向量使用均方誤差（數值欄位）或交叉熵（類別欄位）\n + `Flow Matching Loss` (FlowMatch‑Tab): 直接最小化模型輸出與目標向量的 L2 距離\n + `Privacy Penalty`"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
