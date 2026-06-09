@@ -1,13 +1,18 @@
 {
   "date": "2026-06-10",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 高壓相圖預測與材料設計的等變圖神經網路\n\n* **關鍵事實**：\n + 高壓相變行為資料極度稀缺\n + 現有模型多聚焦於常壓條件\n + 等變圖神經網路結合主動學習可快速探索新相\n* **結論**：\n + 等變圖神經網路有潛力預測高壓相圖\n + 需要解決圖神經網路中等變性的問題\n* **技術細節**：\n + 等變圖神經網路需要保留平移、旋轉與壓力尺度的等變性\n + 主動學習策略需要設計能衡量「相變不確定性」的指標\n* **論點**：\n + 等變圖神經網路可以快速探索新相\n + 需要解決圖神經網路中等變性的問題\n* **引用**：\n + 《Equivariant Graph Networks for Pressure‑Dependent Crystal Stability》, Wei Liu, NeurIPS 2025\n + 《Active Learning of High‑Pressure Phase Diagrams with Deep Ensembles》, Sara Kim, ICML 2025\n + 《DeepPhase: Neural Prediction of High‑Pressure Materials》, Hiroshi Tanaka, arXiv 2025.12345, 2025\n\n### 主題二: 量子化學與催化反應的神經算子式電子動力學\n\n* **關鍵事實**：\n + 傳統量子化學模擬電子轉移耗時且難以擴展至實際催化表面\n + 神經算子可以直接預測時間演化\n* **結論**：\n + 神經算子有潛力預測電子轉移\n + 需要解決神經算子的穩定性問題\n* **技術細節**：\n + 神經算子需要滿足單位保持與能量守恆的物理約束\n + 需要設計有效的局部特徵抽取機制\n* **論點**：\n + 神經算子可以快速預測電子轉移\n + 需要解決神經算子的穩定性問題\n* **引用**：\n + 《Physics‑Informed Neural Operators for Electron Transfer in Catalysis》, Jia‑Wei Zhang, ICLR 2026\n + 《Neural Quantum Dynamics for Real‑Time Catalytic Reaction Pathways》, Lena Müller, NeurIPS 2025\n + 《Surrogate Models of Non‑Adiabatic Dynamics via Graph Neural PDEs》, Rohit Patel,"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**主題:** 高壓相圖預測與材料設計的等變圖神經網路\n\n**關鍵事實:**\n\n* 2025-2026 年已出現可直接實作的基礎模型\n* 資料與工具相對成熟\n* 仍存在「等變性」處理、壓力不確定性量化等明顯缺口\n* 所需計算資源與材料科學基礎可由大學研究生自行取得\n\n**核心方法群:**\n\n* Equivariant Graph Convolution (EGC)\n* Active Learning with Deep Ensembles (AL-DE)\n* Hybrid Symmetry-aware Message Passing (HSMP)\n\n**模型架構細節:**\n\n* 輸入: 晶體圖（原子序、電負性、局部壓力指標）\n* 輸出: 能量預測、相位分類、不確定性估計\n* 關鍵模組: 等變訊息傳遞層、壓力嵌入層、集成頭\n\n**訓練策略:**\n\n* 資料規模: 約 30,000 筆 DFT 計算\n* batch size: 64\n* 優化器: AdamW\n* loss 設計: MSE 能量 + CE 相位 + KL 集成\n\n**主要benchmark與資料集:**\n\n* High-Pressure Materials Project (HP-MP)\n* 關鍵指標: MAE 能量、相位分類正確率、不確定性校準\n\n**方法優劣比較:**\n\n* EGC (Liu 2025): 完全等變、計算成本低，但僅支援單一壓力標量\n* AL-DE (Kim 2025): 主動學習迴圈大幅降低所需 DFT 樣本，但訓練多模型需要額外的 GPU 記憶體\n* HSMP (Tanaka 2025): 融合球諧函數、提升相變邊界的辨識率，但訊息傳遞層較複雜\n\n**明確的「未解破綻」:**\n\n* 壓力外推限制\n* 稀有元素與高熵合金\n* 不確定性校準不足\n* 缺少系統性 ablation\n* 資料偏倚"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
