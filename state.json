@@ -1,13 +1,18 @@
 {
   "date": "2026-06-12",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**分布式不確定性驅動的模型式探索**\n\n* **關鍵事實**\n + 研究人數仍少，因為結合分布式價值估計與動態模型的不確定性估計在高維環境中仍缺乏穩定的訓練流程。\n + 代表 paper: 《Distributional Uncertainty for Exploration in Model‑Based Reinforcement Learning》, 《Quantile‑Based Intrinsic Rewards via Distributional RL》, 《Uncertainty‑Aware Model‑Based RL without External Rewards》。\n* **結論**\n + 需要設計穩定的訓練流程來學習分布式價值函數與環境動態的信賴區間。\n + 內在獎勵的尺度與分布式置信度之間的耦合關係缺乏理論指導，導致探索行為在複雜隨機環境中不穩定。\n* **技術細節**\n + 需要解決能量函數的正規化與技能多樣性的平衡。\n + 需要設計穩定的正則化機制以保證技能的多樣性。\n* **論點**\n + 需要發展新的訓練流程來學習分布式價值函數與環境動態的信賴區間。\n + 需要設計新的內在獎勵機制來兼顧訊息壓縮與任務協同。\n\n**能量基底的階層技能發現**\n\n* **關鍵事實**\n + 目前僅有少數團隊使用能量模型來自動生成可重用的子策略，因為需要同時解決能量函數的正規化與技能多樣性的平衡。\n + 代表 paper: 《Energy‑Based Skill Discovery for Unsupervised Reinforcement Learning》, 《Hierarchical Unsupervised RL with Energy Potentials》, 《Self‑Supervised Goal Generation via Energy Contrastive Learning》。\n* **結論**\n + 需要設計穩定的正則化機制來保證技能的多樣性。\n + 需要發展新的技能切換策略來避免策略漂移。\n* **技術細節**\n + 需要解決能量函數的正規化與技能多樣性的平衡。\n + 需要設計穩定的正則化機制來保證技能的多樣性。\n* **論點**\n + 需要發展新的正則化機制來保證技能的多樣性。\n + 需要設計新的技能切換策略來避免策略漂移。\n\n**圖結構的自發通信協議**\n\n* **關鍵事實**\n + 研究人數仍在十餘人左右"
+    },
+    {
+      "stage": 2,
+      "summary": "以下是 Stage 2 (📖 深入相關方法) 內容濃縮為結構化摘要：\n\n**關鍵事實**\n\n* 能量基底的階層技能發現是三個方向中最具突破潛力且研究人數尚未飽和的領域。\n* 核心方法群包括 Energy-Based Skill Discovery (EBSD)、Hierarchical Energy-Based RL (HEBRL) 和 Self-Supervised Goal Generation via Energy Contrast (SSG-EC)。\n\n**結論**\n\n* 聚焦於正則化平衡與穩定的技能切換機制是當前能量基底階層技能發現最迫切且最具突破性的研究方向。\n* 這些問題在資源需求上可由單卡 GPU 完成，適合學生團隊直接著手實作與驗證。\n\n**技術細節**\n\n* **輸入**: 環境觀測 `s`（圖像或向量）＋可選的任務描述向量 `c`。\n* **輸出**: 高層策略 `π_h(z|s)`（離散或連續技能代碼 `z`）和低層能量模型 `E(s, a, z)`，輸出一個實數分數表示「該動作在此技能下的能量」。\n* **關鍵模組**: Encoder、Skill Encoder、Energy Network、High-Level Policy 和訓練目標。\n* **訓練策略**: 資料規模、Batch size、優化器、Loss 設計和實作 tricks。\n\n**論點**\n\n* 能量基底的階層技能發現是研究人數尚未飽和的領域。\n* 正則化平衡與穩定的技能切換機制是當前能量基底階層技能發現最迫切且最具突破性的研究方向。\n\n**引用的 paper 名稱**\n\n* EBSD (2025 NeurIPS)\n* HEBRL (2026 ICLR)\n* SSG-EC (2025 ICML)"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
