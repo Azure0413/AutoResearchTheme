@@ -1,6 +1,6 @@
 {
   "date": "2026-06-14",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n### 1. 最值得深入的主題\n\n* 具備規範等變性的網格神經網路 (Gauge-Equivariant Mesh GNN) 用於可變形物理模擬\n* 初步原型已經有初步原型，實作成本相對可控\n\n### 2. 核心方法群\n\n* **Gauge-Equivariant Mesh Convolution (GEM-Conv)**\n + 透過在每個網格面上定義局部座標系，利用平行運輸把訊息從一個面傳遞到相鄰面\n + 保證在局部座標變換下的等變性\n* **Adaptive Gauge Connection Learning (AGCL)**\n + 以可微分的圖注意力機制同時學習邊的連接權重與座標系的平行運輸矩陣\n + 使模型能自適應處理拓撲變化\n* **Spectral Gauge Regularization (SGR)**\n + 在頻域上對平行運輸矩陣施加光譜範數懲罰\n + 抑制高頻噪聲，提升在大變形下的數值穩定性\n\n### 3. 模型架構細節\n\n* **輸入**：動態三角形或四面體網格，包含頂點座標 `V`、面/體拓撲 `E`，以及每個面/體的局部座標基底 `B`\n* **輸出**：每個節點或面上的物理量預測（如速度、壓力、應變能），或直接產生下一時間步的網格座標 `V'`\n* **關鍵模組**：\n + `GaugeEmbedding`：將局部座標基底映射為可訓練的向量表示\n + `GEM-Conv` 層：在每層內部執行平行運輸 + 加權聚合\n + `AGCL` 模組：產生每條邊的平行運輸矩陣 `U_{ij}`，並動態調整鄰接權重\n + `SGR` 正則化層：在每次前向傳播後計算光譜懲罰\n\n### 4. 訓練策略\n\n* **資料規模**：使用 2025 年 **ICML** 競賽提供的 *DeformableMeshSim* 合成資料集\n* **Batch size**：受限於 GPU 記憶，常見設定為 `batch=4`\n* **優化器**：`AdamW`（學習率 1e-4），"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 局部座標系對齊學習 (Local Coordinate System Alignment Learning)\n\n* **核心 idea**: 學習局部座標系之間的對齊以提高 Gauge-Equivariant Mesh GNN 的等變性。\n* **技術細節**:\n + 輸入流程: mesh 的頂點座標、面/體拓撲和局部座標基底\n + 模組設計: 對齊模組學習每個面/體之間的局部座標系對齊\n + 訓練目標: 最小化對齊後的預測誤差\n + 損失函數: 對齊後的預測誤差與真實值之間的 MSE\n* **與 SOTA 的差異**: 對齊模組被添加到 Gauge-Equivariant Mesh GNN 中，以學習局部座標系之間的對齊\n* **預期改善的指標與原因**: 在 DeformableMeshSim 資料集上預期提升預測準確度\n* **最小可行實驗(MVP)**: 使用 DeformableMeshSim 資料集、模型大小為 128 個節點、單張 GPU 可以驗證\n\n### 方案 2: 自適應規範連接學習 (Adaptive Gauge Connection Learning)\n\n* **核心 idea**: 學習自適應規範連接以提高 Gauge-Equivariant Mesh GNN 的性能。\n* **技術細節**:\n + 輸入流程: mesh 的頂點座標、面/體拓撲和局部座標基底\n + 模組設計: 自適應規範連接模組學習每個面/體之間的規範連接關係\n + 訓練目標: 最小化連接關係下的預測誤差\n + 損失函數: 連接關係下的預測誤差與真實值之間的 MSE\n* **與 SOTA 的差異**: 自適應規範連接模組被添加到 Gauge-Equivariant Mesh GNN 中，以學習自適應規範連接關係\n* **預期改善的指標與原因**: 在 DeformableMeshSim 資料集上預期提升預測準確度\n* **最小可行實驗(MVP)**: 使用 DeformableMeshSim 資料集、模型大小為 128 個節點、單張 GPU 可以驗證\n\n### 方案 3: 高階群表示學習 (High-Order Group Representation Learning)\n\n* **核心 idea**: 學習高階群表示"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
