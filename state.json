@@ -1,13 +1,18 @@
 {
   "date": "2026-06-14",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**等變神經算子 (Equivariant Neural Operators) 用於高維偏微分方程求解**\n\n* **關鍵事實**：\n + 目前僅有少數團隊將 SE(3) 或更一般的李群等變性引入神經算子。\n + 在高維流體與量子場論等領域的需求急速增長。\n* **結論**：\n + 等變神經算子有潛力在高維偏微分方程求解中取得突破。\n + 但仍存在核心技術問題與未解之處。\n* **技術細節**：\n + 設計可擴展至上千維度的核函數或卷積核。\n + 訓練穩定性受限於高階群表示的參數化。\n + 缺乏有效的正則化與自適應學習率策略。\n* **論點**：\n + 需要發展新的核函數或卷積核設計方法。\n + 需要研究有效的正則化與自適應學習率策略。\n* **引用的 paper 名稱**：\n + “E(3)-Equivariant Neural Operators for Turbulent Flow Prediction”\n + “Gauge‑Equivariant Neural Operators for Solving PDEs on Manifolds”\n + “Symmetry‑Preserving Operator Learning for Quantum Many‑Body Systems”\n\n**具備規範（Gauge）等變性的網格神經網路 (Gauge‑Equivariant Mesh GNN) 用於可變形物理模擬**\n\n* **關鍵事實**：\n + 幾何深度學習已在剛性結構上取得進展，但對於帶有局部座標系變換的非剛性網格仍屬新興領域。\n + 研究人數不足且與高效渲染結合的需求未被滿足。\n* **結論**：\n + 具備規範等變性的網格神經網路有潛力在可變形物理模擬中取得突破。\n + 但仍存在核心技術問題與未解之處。\n* **技術細節**：\n + 如何在動態拓撲變化時保持局部規範一致性。\n + 計算圖形的規範連接需要額外的代價。\n + 缺乏與 GPU/TPU 流水線兼容的高效實作。\n* **論點**：\n + 需要發展新的計算圖形的規範連接方法。\n + 需要研究與 GPU/TPU 流水線兼容的高效實作方法。\n* **引用的 paper 名稱**：\n + “Gauge‑Equivariant"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 最值得深入的主題\n\n* 具備規範等變性的網格神經網路 (Gauge-Equivariant Mesh GNN) 用於可變形物理模擬\n* 初步原型已經有初步原型，實作成本相對可控\n\n### 2. 核心方法群\n\n* **Gauge-Equivariant Mesh Convolution (GEM-Conv)**\n + 透過在每個網格面上定義局部座標系，利用平行運輸把訊息從一個面傳遞到相鄰面\n + 保證在局部座標變換下的等變性\n* **Adaptive Gauge Connection Learning (AGCL)**\n + 以可微分的圖注意力機制同時學習邊的連接權重與座標系的平行運輸矩陣\n + 使模型能自適應處理拓撲變化\n* **Spectral Gauge Regularization (SGR)**\n + 在頻域上對平行運輸矩陣施加光譜範數懲罰\n + 抑制高頻噪聲，提升在大變形下的數值穩定性\n\n### 3. 模型架構細節\n\n* **輸入**：動態三角形或四面體網格，包含頂點座標 `V`、面/體拓撲 `E`，以及每個面/體的局部座標基底 `B`\n* **輸出**：每個節點或面上的物理量預測（如速度、壓力、應變能），或直接產生下一時間步的網格座標 `V'`\n* **關鍵模組**：\n + `GaugeEmbedding`：將局部座標基底映射為可訓練的向量表示\n + `GEM-Conv` 層：在每層內部執行平行運輸 + 加權聚合\n + `AGCL` 模組：產生每條邊的平行運輸矩陣 `U_{ij}`，並動態調整鄰接權重\n + `SGR` 正則化層：在每次前向傳播後計算光譜懲罰\n\n### 4. 訓練策略\n\n* **資料規模**：使用 2025 年 **ICML** 競賽提供的 *DeformableMeshSim* 合成資料集\n* **Batch size**：受限於 GPU 記憶，常見設定為 `batch=4`\n* **優化器**：`AdamW`（學習率 1e-4），"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
