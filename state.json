@@ -1,33 +1,13 @@
 {
-  "date": "2026-06-14",
-  "step": 6,
+  "date": "2026-06-15",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**等變神經算子 (Equivariant Neural Operators) 用於高維偏微分方程求解**\n\n* **關鍵事實**：\n + 目前僅有少數團隊將 SE(3) 或更一般的李群等變性引入神經算子。\n + 在高維流體與量子場論等領域的需求急速增長。\n* **結論**：\n + 等變神經算子有潛力在高維偏微分方程求解中取得突破。\n + 但仍存在核心技術問題與未解之處。\n* **技術細節**：\n + 設計可擴展至上千維度的核函數或卷積核。\n + 訓練穩定性受限於高階群表示的參數化。\n + 缺乏有效的正則化與自適應學習率策略。\n* **論點**：\n + 需要發展新的核函數或卷積核設計方法。\n + 需要研究有效的正則化與自適應學習率策略。\n* **引用的 paper 名稱**：\n + “E(3)-Equivariant Neural Operators for Turbulent Flow Prediction”\n + “Gauge‑Equivariant Neural Operators for Solving PDEs on Manifolds”\n + “Symmetry‑Preserving Operator Learning for Quantum Many‑Body Systems”\n\n**具備規範（Gauge）等變性的網格神經網路 (Gauge‑Equivariant Mesh GNN) 用於可變形物理模擬**\n\n* **關鍵事實**：\n + 幾何深度學習已在剛性結構上取得進展，但對於帶有局部座標系變換的非剛性網格仍屬新興領域。\n + 研究人數不足且與高效渲染結合的需求未被滿足。\n* **結論**：\n + 具備規範等變性的網格神經網路有潛力在可變形物理模擬中取得突破。\n + 但仍存在核心技術問題與未解之處。\n* **技術細節**：\n + 如何在動態拓撲變化時保持局部規範一致性。\n + 計算圖形的規範連接需要額外的代價。\n + 缺乏與 GPU/TPU 流水線兼容的高效實作。\n* **論點**：\n + 需要發展新的計算圖形的規範連接方法。\n + 需要研究與 GPU/TPU 流水線兼容的高效實作方法。\n* **引用的 paper 名稱**：\n + “Gauge‑Equivariant"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n### 1. 最值得深入的主題\n\n* 具備規範等變性的網格神經網路 (Gauge-Equivariant Mesh GNN) 用於可變形物理模擬\n* 初步原型已經有初步原型，實作成本相對可控\n\n### 2. 核心方法群\n\n* **Gauge-Equivariant Mesh Convolution (GEM-Conv)**\n + 透過在每個網格面上定義局部座標系，利用平行運輸把訊息從一個面傳遞到相鄰面\n + 保證在局部座標變換下的等變性\n* **Adaptive Gauge Connection Learning (AGCL)**\n + 以可微分的圖注意力機制同時學習邊的連接權重與座標系的平行運輸矩陣\n + 使模型能自適應處理拓撲變化\n* **Spectral Gauge Regularization (SGR)**\n + 在頻域上對平行運輸矩陣施加光譜範數懲罰\n + 抑制高頻噪聲，提升在大變形下的數值穩定性\n\n### 3. 模型架構細節\n\n* **輸入**：動態三角形或四面體網格，包含頂點座標 `V`、面/體拓撲 `E`，以及每個面/體的局部座標基底 `B`\n* **輸出**：每個節點或面上的物理量預測（如速度、壓力、應變能），或直接產生下一時間步的網格座標 `V'`\n* **關鍵模組**：\n + `GaugeEmbedding`：將局部座標基底映射為可訓練的向量表示\n + `GEM-Conv` 層：在每層內部執行平行運輸 + 加權聚合\n + `AGCL` 模組：產生每條邊的平行運輸矩陣 `U_{ij}`，並動態調整鄰接權重\n + `SGR` 正則化層：在每次前向傳播後計算光譜懲罰\n\n### 4. 訓練策略\n\n* **資料規模**：使用 2025 年 **ICML** 競賽提供的 *DeformableMeshSim* 合成資料集\n* **Batch size**：受限於 GPU 記憶，常見設定為 `batch=4`\n* **優化器**：`AdamW`（學習率 1e-4），"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 局部座標系對齊學習 (Local Coordinate System Alignment Learning)\n\n* **核心 idea**: 學習局部座標系之間的對齊以提高 Gauge-Equivariant Mesh GNN 的等變性。\n* **技術細節**:\n + 輸入流程: mesh 的頂點座標、面/體拓撲和局部座標基底\n + 模組設計: 對齊模組學習每個面/體之間的局部座標系對齊\n + 訓練目標: 最小化對齊後的預測誤差\n + 損失函數: 對齊後的預測誤差與真實值之間的 MSE\n* **與 SOTA 的差異**: 對齊模組被添加到 Gauge-Equivariant Mesh GNN 中，以學習局部座標系之間的對齊\n* **預期改善的指標與原因**: 在 DeformableMeshSim 資料集上預期提升預測準確度\n* **最小可行實驗(MVP)**: 使用 DeformableMeshSim 資料集、模型大小為 128 個節點、單張 GPU 可以驗證\n\n### 方案 2: 自適應規範連接學習 (Adaptive Gauge Connection Learning)\n\n* **核心 idea**: 學習自適應規範連接以提高 Gauge-Equivariant Mesh GNN 的性能。\n* **技術細節**:\n + 輸入流程: mesh 的頂點座標、面/體拓撲和局部座標基底\n + 模組設計: 自適應規範連接模組學習每個面/體之間的規範連接關係\n + 訓練目標: 最小化連接關係下的預測誤差\n + 損失函數: 連接關係下的預測誤差與真實值之間的 MSE\n* **與 SOTA 的差異**: 自適應規範連接模組被添加到 Gauge-Equivariant Mesh GNN 中，以學習自適應規範連接關係\n* **預期改善的指標與原因**: 在 DeformableMeshSim 資料集上預期提升預測準確度\n* **最小可行實驗(MVP)**: 使用 DeformableMeshSim 資料集、模型大小為 128 個節點、單張 GPU 可以驗證\n\n### 方案 3: 高階群表示學習 (High-Order Group Representation Learning)\n\n* **核心 idea**: 學習高階群表示"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**最關鍵的事實**\n\n* 局部座標系對齊學習、自適應規範連接學習和高階群表示學習的假設可能會失效。\n* 資料集 DeformableMeshSim 是否足夠大和多樣化以支持訓練。\n* 單卡 24G VRAM 計算資源是否足夠以訓練模型。\n* 基準是否選太弱，是否有 cherry-picking 嫌疑。\n\n**結論**\n\n* 需要對局部座標系之間的變換進行分析和建模，以確保對齊學習的有效性。\n* 需要收集和整合更多的資料集，以支持對齊學習、自適應規範連接學習和高階群表示學習的訓練。\n* 需要優化模型的架構和參數，以降低計算資源的需求。\n* 需要使用更強大的基準和評估指標，以確保模型的優勢。\n\n**技術細節**\n\n* 需要使用資料增強和正則化技術來防止過擬合和欠擬合。\n* 需要使用分布式訓練和模型剪枝技術來提高訓練效率。\n* 需要使用早停和模型選擇技術來防止過擬合和欠擬合。\n\n**論點**\n\n* 需要對局部座標系之間的變換進行分析和建模，以確保對齊學習的有效性。\n* 需要收集和整合更多的資料集，以支持對齊學習、自適應規範連接學習和高階群表示學習的訓練。\n* 需要優化模型的架構和參數，以降低計算資源的需求。\n\n**引用的 paper 名稱**\n\n* 無\n\n**延伸**\n\n* 需要對局部座標系之間的變換進行分析和建模，以確保對齊學習的有效性。\n* 需要收集和整合更多的資料集，以支持對齊學習、自適應規範連接學習和高階群表示學習的訓練。\n* 需要優化模型的架構和參數，以降低計算資源的需求。\n* 需要使用更強大的基準和評估指標，以確保模型的優勢。"
-    },
-    {
-      "stage": 5,
-      "summary": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n**最關鍵的事實**\n\n* 目前的 Gauge-Equivariant Mesh GNN 方法在處理可變形物理模擬時存在局限性\n* 局限性主要體現在對於複雜的拓撲變化和非剛性網格的處理能力不足\n* 2026 年 ICLR 的論文 \"Adaptive Gauge Connection Learning for Gauge-Equivariant Mesh GNN\" 提出了一種自適應規範連接學習方法，但計算成本相對較高\n\n**結論**\n\n* 本研究提案提出了一種新的 Gauge-Equivariant Mesh GNN 方法，稱為對齊-自適應 Gauge-Equivariant Mesh GNN\n* 這種方法結合了局部座標系對齊學習和自適應規範連接學習，提高模型的等變性和準確性\n\n**技術細節**\n\n* 對齊模組學習每個面/體之間的局部座標系對齊\n* 自適應規範連接模組學習每個面/體之間的規範連接關係\n* Gauge-Equivariant Mesh GNN 層執行平行運輸和加權聚合\n* 訓練目標是最小化對齊後的預測誤差\n\n**論點**\n\n* 局部座標系對齊學習和自適應規範連接學習可以提高模型的等變性和準確性\n* 分布式訓練和模型剪枝技術可以降低計算資源的需求\n\n**引用的 paper 名稱**\n\n* \"Gauge-Equivariant Mesh GNN for Deformable Mesh Simulation\" (2025 年 ICML)\n* \"Adaptive Gauge Connection Learning for Gauge-Equivariant Mesh GNN\" (2026 年 ICLR)\n\n**預期貢獻與影響**\n\n* 本研究提案預期可以在可變形物理模擬和計算機視覺等領域取得突破性的成果\n* 提供了一種新的 Gauge-Equivariant Mesh GNN 方法，結合了局部座標系對齊學習和自適應規範連接學習"
+      "summary": "**主題一: 動態梯度異常偵測於後訓練資料中毒防禦**\n\n* **關鍵事實**：\n + 大多數防禦機制僅在訓練前或離線分析，缺乏在微調過程中即時偵測的機制。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **結論**：\n + 需要發展能夠在微調過程中即時偵測資料中毒的機制。\n + 需要研究如何在多任務或參數高效微調情境下保持低偽陽性率，同時對少量惡意樣本保持高靈敏度。\n* **技術細節**：\n + 需要發展梯度訊號在高維參數空間的噪聲抑制與統計檢驗的理論界限。\n + 需要研究如何在高維參數空間中有效估計梯度分布的異常。\n* **論點**：\n + 需要發展能夠在微調過程中即時偵測資料中毒的機制。\n + 需要研究如何在多任務或參數高效微調情境下保持低偽陽性率，同時對少量惡意樣本保持高靈敏度。\n* **引用的 paper 名稱**：\n + *Detecting Post‑Training Data Poisoning via Gradient Distribution Shifts*，第一作者 **Y. Liu**，NeurIPS 2025。\n + *Online Gradient Anomaly Detection for Secure Fine‑Tuning*，第一作者 **M. Chen**，ICLR 2026。\n + *Statistical Tests for Poisoned Sample Identification in Large Models*，第一作者 **K. Singh**，arXiv 2025.12。\n\n**主題二: 基於圖神經網路的資料中毒影響範圍推理**\n\n* **關鍵事實**：\n + 現有研究多聚焦於單一樣本的毒化效果，缺少對整體資料圖結構中毒傳播路徑的系統化建模。\n + 相關工作仍在萌芽階段。\n* **結論**：\n + 需要發展能夠系統化建模整體資料圖結構中毒傳播路徑的機制。\n + 需要研究如何在大型未標註資料圖上有效估計單一毒化樣本的影響範圍而不產生計算瓶頸。\n* **技術細節**：\n + 需要發展圖結構的動態變化下，毒化影響的持續追蹤與更新的"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
