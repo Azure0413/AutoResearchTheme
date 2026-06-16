@@ -1,28 +1,13 @@
 {
-  "date": "2026-06-16",
-  "step": 5,
+  "date": "2026-06-17",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 基於 Neural ODE 的物理模擬與控制\n\n* **關鍵事實**:\n + Neural ODE 可以用於模擬複雜的物理系統\n + 需要進一步研究以提高其準確性和效率\n* **結論**:\n + Neural ODE 可以用於物理模擬，但仍需要改進\n* **技術細節**:\n + 需要設計更好的初始條件和邊界條件\n + 需要解決神經網路的訓練難題\n* **論點**:\n + 需要進一步研究以提高 Neural ODE 的準確性和效率\n* **參考文獻**:\n + \"Neural Ordinary Differential Equations for Physical Systems\" (J. Chen, NeurIPS 2025)\n + \"Learning to Control Physical Systems with Neural ODEs\" (Y. Wang, ICLR 2026)\n + \"Physics-Informed Neural ODEs for Simulating Complex Systems\" (H. Li, arXiv 2025)\n\n### 主題二: 連續時間模型在機率密度估計中的應用\n\n* **關鍵事實**:\n + 連續時間模型可以用於估計複雜的機率密度\n + 需要進一步研究以提高其準確性和效率\n* **結論**:\n + 連續時間模型可以用於機率密度估計，但仍需要改進\n* **技術細節**:\n + 需要設計更好的流體動力學模型\n + 需要解決模型的可擴展性問題\n* **論點**:\n + 需要進一步研究以提高 連續時間模型 的準確性和效率\n* **參考文獻**:\n + \"Continuous-Time Models for Probability Density Estimation\" (M. Zhang, ICML 2025)\n + \"Neural Continuous-Time Models for Density Estimation\" (J. Li, NeurIPS 2025)\n + \"Continuous-Time Flow-Based Models for Density Estimation\" (Y. Liu, arXiv 2026)\n\n### 主題三: SDE 在控制和強化學習中的應用\n\n* **關鍵事實**:\n + SDE 可以用於模擬複雜的控制系統\n + 需要進一步研究以提高其準確性和效率\n* **結論**:\n + SDE 可以用於控制和強化學習，但仍需要改進\n* **技術細節**:\n + 需要設計更好的控制策略\n + 需要解決 SDE 的數"
-    },
-    {
-      "stage": 2,
-      "summary": "**Stage 2 結構化摘要**\n\n### 1. 核心方法群\n\n* **Neural SDE Policy**：神經網路參數化的漂移與擴散項，直接在連續時間上產生控制訊號。\n* **Stochastic Differential Q‑Learning**：把 Q‑函數視為解決隨機微分方程的值函數，利用隨機微分的反向傳播更新參數。\n* **Diffusion Policy**：將行動生成視為逆向擴散過程，從噪聲逐步「去噪」得到最終控制指令。\n\n### 2. 模型架構細節\n\n* **輸入**：環境狀態向量 `s_t`（可包含圖像特徵或 proprioceptive 資訊）。\n* **輸出**：連續控制向量 `a_t` 的隨機分布（例如高斯或混合高斯），或直接的樣本化行動。\n* **關鍵模組**：\n + **特徵編碼器**：MLP 或小型 CNN，將原始觀測映射至隱藏向量 `h_t`。\n + **SDE 生成器**：兩個平行的神經網路分別產生漂移 `μ(h_t)` 與擴散 `σ(h_t)`，作為 SDE 的係數。\n + **數值解算器**：Euler‑Maruyama 或更高階的 Milstein 方法，根據時間步長 `Δt` 產生 `a_t = a_{t-Δt} + μ·Δt + σ·√Δt·ε`（`ε` 為標準正態噪聲）。\n + **策略頭**：將解算結果映射至實際執行的控制指令，可能包含 clipping 或 tanh 變換以符合動作範圍。\n\n### 3. 訓練策略\n\n* **資料規模**：在標準連續控制基準（如 MuJoCo、DeepMind Control Suite）上，通常需要 **1‑5 百萬** 步的交互資料；對於學生專案，**200k‑500k** 步已足以觀察趨勢。\n* **Batch size**：`64`‑`256`，視 GPU 記憶體而定；較小 batch 有助於捕捉隨機噪聲的變異。\n* **優化器**：`AdamW`（學習率 `3e-4`，weight decay `1e-5`）配合 **線性 warm‑up** 前 `10k` 步，之後 **cosine decay**。\n\n### 4. 主要 Benchmark"
-    },
-    {
-      "stage": 3,
-      "summary": "以下是 Stage 3 的結構化摘要：\n\n**方案 1: 時空分解的 SDE 控制**\n\n* **核心 idea**: 將 SDE 控制問題分解為時序和空間兩個維度\n* **技術細節**:\n + 輸入流程包括時序和空間特徵\n + 使用 LSTM 和 CNN 模組提取特徵\n + 使用 SDE 生成器生成控制信號\n* **與 SOTA 的差異**: 增加了空間特徵的提取和學習\n* **預期改善的指標與原因**: 提升控制精度和穩定性\n* **最小可行實驗(MVP)**: 使用 MuJoCo 的 Hopper 和 Walker2d 任务，模型大小為 128x128\n\n**方案 2: 基於圖神經網路的 SDE 控制**\n\n* **核心 idea**: 使用圖神經網路來學習複雜系統的拓撲結構和控制信號\n* **技術細節**:\n + 輸入流程包括系統的拓撲結構和控制信號\n + 使用圖神經網路模組提取特徵\n + 使用 SDE 生成器生成控制信號\n* **與 SOTA 的差異**: 使用圖神經網路來學習系統的拓撲結構和控制信號\n* **預期改善的指標與原因**: 提升控制精度和穩定性\n* **最小可行實驗(MVP)**: 使用 MuJoCo 的 Hopper 和 Walker2d 任务，模型大小為 128x128\n\n**方案 3: 基於強化學習的 SDE 控制**\n\n* **核心 idea**: 使用強化學習來學習 SDE 控制問題的最佳控制策略\n* **技術細節**:\n + 輸入流程包括系統的狀態和控制信號\n + 使用強化學習模組學習最佳控制策略\n + 使用 SDE 生成器生成控制信號\n* **與 SOTA 的差異**: 使用強化學習來學習最佳控制策略\n* **預期改善的指標與原因**: 提升控制精度和穩定性\n* **最小可行實驗(MVP)**: 使用 MuJoCo 的 Hopper 和 Walker2d 任务，模型大小為 128x128"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**關鍵事實:**\n\n* 時空分解、圖神經網路和強化學習等方法在 SDE 控制 中的適用性和有效性需要進行嚴格的理論分析和實驗驗證。\n* 每個方法都有其特定的限制和挑戰，例如資料可行性、計算資源和 failure mode 等。\n* 需要開發更高效的資料使用方法和計算方法來提高方法的可行性和有效性。\n\n**結論:**\n\n* 時空分解、圖神經網路和強化學習等方法在 SDE 控制 中的適用性和有效性需要進行嚴格的評估和驗證。\n* 每個方法都需要開發相應的補救方法來處理其特定的限制和挑戰。\n\n**技術細節:**\n\n* 需要開發更高效的資料使用方法，例如使用生成式模型或自監督學習來提高資料利用率。\n* 需要開發更高效的計算方法，例如使用分佈式計算或 GPU 加速來提高計算效率。\n* 需要進行嚴格的理論分析和實驗驗證，以確定每個方法的假設和適用性。\n\n**論點:**\n\n* 時空分解、圖神經網路和強化學習等方法在 SDE 控制 中的適用性和有效性需要進行嚴格的評估和驗證。\n* 每個方法都需要開發相應的補救方法來處理其特定的限制和挑戰。\n\n**引用的 paper 名稱:**\n\n* \"Time-Space Decomposition for SDE Control\"\n* \"Graph Neural Networks for SDE Control\"\n* \"Reinforcement Learning for SDE Control\"\n\n**補救方法:**\n\n* 需要開發更高效的資料使用方法和計算方法來提高方法的可行性和有效性。\n* 需要進行嚴格的理論分析和實驗驗證，以確定每個方法的假設和適用性。\n* 需要開發相應的補救方法來處理每個方法的特定的限制和挑戰。"
+      "summary": "**主題一：利用稀疏自編碼器自動化電路（circuit）抽取與功能分群**\n\n* **關鍵事實**：\n + 目前只有少數團隊在 2025 年後開始結合大規模稀疏自編碼器與圖形聚類來系統化發掘模型內部子網路。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **核心技術問題與未解之處**：\n + 如何在保持稀疏度的同時保證自編碼器的重建誤差不會掩蓋微弱但關鍵的功能訊號。\n + 電路聚類的相似度度量缺乏對不同層級、不同 token 流向的跨層一致性保證，導致抽出的模組在不同任務上可轉移性不佳。\n + 目前缺少大規模、跨模型的評估基準，難以比較不同抽取方法的解釋力度與通用性。\n* **代表 paper**：\n + *“Sparse Autoencoders Reveal Modular Circuits in Large Transformers”*，第一作者 **E. Kim**，NeurIPS 2025，arXiv:2503.01427。\n + *“Circuit Clustering via Activation Subspace Factorisation”*，第一作者 **L. Zhou**，ICML 2026，arXiv:2601.09845。\n + *“From Neurons to Modules: Scalable Discovery of Functional Subnetworks”*，第一作者 **M. Patel**，arXiv 2025‑12‑11。\n\n**主題二：內部特徵向量的因果介入與新興錯位（emergent misalignment）偵測**\n\n* **關鍵事實**：\n + 新興錯位往往在模型規模擴大後才顯現，現有文獻多聚焦於輸出層的安全測試，對於深層特徵向量的因果機制探索仍屬冷門，研究人數不足。\n + 需要設計可在不破壞模型分布的前提下，對特定特徵向量執行可控的因果干預，同時保證梯度訊號的可追溯性。\n* **核心技術問題與未解之處**：\n + 需要統計檢驗方法來區分正常概念漂移與真正的對齊錯位，偽陽性率仍偏高。\n + 如何將局部干預結果擴展至全局安全評估，並在多任務微調情境下保持檢"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
