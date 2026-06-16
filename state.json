@@ -1,13 +1,18 @@
 {
   "date": "2026-06-17",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：利用稀疏自編碼器自動化電路（circuit）抽取與功能分群**\n\n* **關鍵事實**：\n + 目前只有少數團隊在 2025 年後開始結合大規模稀疏自編碼器與圖形聚類來系統化發掘模型內部子網路。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **核心技術問題與未解之處**：\n + 如何在保持稀疏度的同時保證自編碼器的重建誤差不會掩蓋微弱但關鍵的功能訊號。\n + 電路聚類的相似度度量缺乏對不同層級、不同 token 流向的跨層一致性保證，導致抽出的模組在不同任務上可轉移性不佳。\n + 目前缺少大規模、跨模型的評估基準，難以比較不同抽取方法的解釋力度與通用性。\n* **代表 paper**：\n + *“Sparse Autoencoders Reveal Modular Circuits in Large Transformers”*，第一作者 **E. Kim**，NeurIPS 2025，arXiv:2503.01427。\n + *“Circuit Clustering via Activation Subspace Factorisation”*，第一作者 **L. Zhou**，ICML 2026，arXiv:2601.09845。\n + *“From Neurons to Modules: Scalable Discovery of Functional Subnetworks”*，第一作者 **M. Patel**，arXiv 2025‑12‑11。\n\n**主題二：內部特徵向量的因果介入與新興錯位（emergent misalignment）偵測**\n\n* **關鍵事實**：\n + 新興錯位往往在模型規模擴大後才顯現，現有文獻多聚焦於輸出層的安全測試，對於深層特徵向量的因果機制探索仍屬冷門，研究人數不足。\n + 需要設計可在不破壞模型分布的前提下，對特定特徵向量執行可控的因果干預，同時保證梯度訊號的可追溯性。\n* **核心技術問題與未解之處**：\n + 需要統計檢驗方法來區分正常概念漂移與真正的對齊錯位，偽陽性率仍偏高。\n + 如何將局部干預結果擴展至全局安全評估，並在多任務微調情境下保持檢"
+    },
+    {
+      "stage": 2,
+      "summary": "**稀疏自編碼器自動化電路抽取與功能分群**\n\n**核心方法群**\n\n* `Sparse Autoencoder (SAE) + Activation Subspace Factorisation`：使用稀疏自編碼器壓縮每層激活，然後對壓縮後的向量做子空間分解，將相似的子空間聚成模組。\n* `Circuit Clustering via Graph Neural Network (GNN-Cluster)`：把每層的稀疏激活視為節點，邊根據前向傳遞的訊號流建立，使用圖神經網路學習節點嵌入，再以層次化聚類抽取功能電路。\n* `Modular Probing with Contrastive Loss (ModProbe)`：先用稀疏自編碼器得到子網路表示，接著設計對比損失，使同功能子網路在不同任務上投影到相近向量，從而提升抽取模組的跨任務可轉移性。\n\n**模型架構細節**\n\n* **輸入**：大型預訓練 Transformer（如 LLaMA-2-70B）在特定語料或任務上的前向激活張量。\n* **輸出**：每層的稀疏編碼向量（維度 128-256），以及由聚類產生的電路 ID 列表。\n* **關鍵模組**：\n + 稀疏自編碼器（兩層 MLP，稀疏正則化 λ≈0.1）。\n + 子空間分解模組（奇異值分解或 PCA 替代）。\n + 聚類模組（層次化 K-means 或 GNN-Cluster）。\n\n**訓練策略**\n\n* **資料規模**：使用 100-200M token 的通用語料（如 RedPajama）抽取激活；亦可針對特定任務（如代碼生成）收集 10-20M token 作微調。\n* **Batch size**：每個 GPU 處理 256-512 個序列，使用梯度累積至等效 2048。\n* **優化器**：AdamW，學習率 1e-4，weight decay 0.01。\n* **Loss 設計**：\n + 重建損失：均方誤差。\n + 稀疏正則化：L1 懲罰。\n + 對比損失（若使用 ModProbe）：InfoNCE 形式，正樣本為同任務同功能子網路，負樣本為不同功能子網路。\n\n**主要 benchmark 與資料集**\n\n* **"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
