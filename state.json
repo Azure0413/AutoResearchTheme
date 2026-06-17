@@ -1,13 +1,18 @@
 {
   "date": "2026-06-18",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**階層式結構化狀態空間模型 (HS-SSM)**\n\n* **關鍵事實**：\n + 研究人數仍在十餘人左右。\n + 目標是設計跨層狀態傳遞與可微分的結構化卷積。\n* **結論**：\n + 目前尚未形成成熟基準。\n + 需要解決跨層訊息傳遞的梯度穩定性問題。\n* **技術細節**：\n + 需要設計自適應調整頻譜範圍的狀態空間核 (kernel)。\n + 需要新型的層級正則化或門控機制。\n* **論點**：\n + 需要在保持線性時間複雜度的同時，讓不同層的狀態空間核 (kernel) 能夠自適應調整其頻譜範圍。\n + 需要跨層訊息傳遞的梯度穩定性。\n* **引用的 paper 名稱**：\n + *Hierarchical Structured State Space Models for Efficient Long‑Range Modeling* (Yuan Liu, NeurIPS 2025)\n + *Deep Kernel‑Adapted SSMs with Layer‑wise Gating* (Mina Patel, ICLR 2026)\n + *Multi‑Scale State Space Networks for Time‑Series Forecasting* (Jae‑Woo Kim, ICML 2025)\n\n**事件驅動的 Gated DeltaNet (DeltaNet)**\n\n* **關鍵事實**：\n + 目前僅有少數團隊探索「差分」訊號的門控傳遞。\n + 尤其在稀疏事件序列（如感測器觸發、金融 tick）上仍屬新興領域。\n* **結論**：\n + 目前尚未飽和。\n + 需要解決高頻率噪聲環境下的「差分」顯著性估計問題。\n* **技術細節**：\n + 需要設計可靠估計「差分」的顯著性並動態調整門控閾值的機制。\n + 需要事件驅動的記憶體管理與硬體加速。\n* **論點**：\n + 需要在高頻率噪聲環境下，可靠估計「差分」的顯著性。\n + 需要事件驅動的記憶體管理與硬體加速。\n* **引用的 paper 名稱**：\n + *DeltaNet: Gated Delta Networks for Event‑Driven Sequence Modeling* (Soo‑Hyun Kim, ICLR 2026)\n + *Sparse Temporal Delta Networks with Adaptive Gating* (Lara Chen, NeurIPS"
+    },
+    {
+      "stage": 2,
+      "summary": "**階層式結構化狀態空間模型 (HS-SSM) 剖析**\n\n### 1. 核心方法群\n\n* **Hierarchical Structured State Space (HS-SSM)**：由 Yuan Liu（NeurIPS 2025）提出，將多層 SSM 以金字塔方式堆疊，每層的狀態空間核在頻譜上自行擴張或收縮，實現長程依賴的多尺度捕捉。\n* **Deep Kernel-Adapted SSM with Layer-wise Gating**：由 Mina Patel（ICLR 2026）提出，在每層加入門控網路，根據輸入特徵自適應選擇「寬」或「窄」的頻譜範圍，同時使用梯度正則化抑制跨層梯度爆炸。\n* **Multi-Scale State Space Networks (MSS-Net)**：由 Jae-Woo Kim（ICML 2025）提出，將 SSM 與可微分卷積結合，透過跨層卷積核共享參數，減少記憶體佔用，同時在每個時間尺度上平行計算，提升訓練效率。\n\n### 2. 模型架構細節\n\n* **輸入/輸出**：接受形狀為 `(batch, seq_len, dim)` 的長序列向量；輸出同樣形狀的隱藏表示或經線性投影的預測向量。\n* **關鍵模組**：\n + `HierarchicalSSMBlock`：每層包含 `StateSpaceKernel`（頻譜可調）與 `GatingUnit`（根據當前狀態決定頻譜寬度）。\n + `CrossLayerFusion`：使用可微分加權將相鄰層的隱藏狀態融合，提供跨尺度訊息流。\n + `SpectralNormScheduler`：在訓練過程中逐步放大或收縮頻譜範圍，保持梯度尺度。\n\n### 3. 訓練策略\n\n* **資料規模**：公開長序列基準（如 `Long-Range Arena`、`Electricity`、`ETTh1`）每個資料集 10⁴-10⁵ 條序列即可。\n* **Batch size**：在單卡 16-32，若使用 `torch.compile` 可提升記憶體利用率，允許更大 batch。\n* **優化器**：`AdamW` 為主，學習率 1e-3，使用 **Cosine Annealing** 逐步衰減。\n\n### 4. 主要 benchmark 與資料集\n\n*"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
