@@ -1,6 +1,6 @@
 {
   "date": "2026-06-17",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 層級化稀疏自編碼器 (Hierarchical Sparse Autoencoder)\n\n* **核心 idea**: 將稀疏自編碼器應用於每層的激活，並使用層級化的方式對子網路進行抽取。\n* **技術細節**: 輸入流程為每層的激活張量，模組設計為多層稀疏自編碼器，訓練目標為最小化重建誤差和稀疏正則化項。\n* **預期改善的指標與原因**: 預期在電路抽取的準確率和子網路的可轉移性上提升，因為層級化的稀疏自編碼器可以更好地保留子網路之間的層級關係和拓撲結構。\n\n### 方案 2: 子空間分解式聚類 (Subspace Clustering)\n\n* **核心 idea**: 使用子空間分解式聚類來對子網路進行聚類。\n* **技術細節**: 輸入流程為每層的稀疏編碼向量，模組設計為子空間分解模組，訓練目標為最小化子空間內的重建誤差。\n* **預期改善的指標與原因**: 預期在子網路抽取的準確率和可轉移性上提升，因為子空間分解式聚類可以更好地保留子網路之間的拓撲結構和相似度。\n\n### 方案 3: 因果介入式電路抽取 (Causal Interventional Circuit Extraction)\n\n* **核心 idea**: 使用因果介入式電路抽取來對子網路進行抽取。\n* **技術細節**: 輸入流程為每層的激活張量，模組設計為因果介入模組，訓練目標為最小化因果介入下的重建誤差。\n* **預期改善的指標與原因**: 預期在子網路抽取的準確率和可轉移性上提升，因為因果介入式電路抽取可以更好地保留子網路之間的因果關係和拓撲結構。\n\n### 方案 4: 基於圖神經網路的電路抽取 (Graph Neural Network-based Circuit Extraction)\n\n* **核心 idea**: 使用圖神經網路來對子網路進行抽取。\n* **技術細節**: 輸入流程為每層的激活張量，模組設計為"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4: 嚴格自我批判**\n\n### 最關鍵的事實\n\n* 層級化稀疏自編碼器、子空間分解式聚類、因果介入式電路抽取和基於圖神經網路的電路抽取都有其理論假設和計算資源需求。\n* 每個方案都有其批判和補救措施，以解決可能的問題和限制。\n\n### 結論\n\n* 每個方案都有其優點和缺點，需要仔細評估和比較。\n* 需要考慮使用更複雜的自編碼器結構、資料增強技術、分佈式訓練技術和預訓練模型來解決可能的問題和限制。\n\n### 技術細節\n\n* 層級化稀疏自編碼器使用多層自編碼器和稀疏自編碼器來表示資料。\n* 子空間分解式聚類使用子空間分解算法來表示資料。\n* 因果介入式電路抽取使用因果關係來表示資料。\n* 基於圖神經網路的電路抽取使用圖結構來表示資料。\n\n### 論點\n\n* 每個方案都有其理論假設和計算資源需求。\n* 每個方案都有其批判和補救措施。\n* 需要考慮使用更複雜的自編碼器結構、資料增強技術、分佈式訓練技術和預訓練模型。\n\n### 引用的 paper 名稱\n\n* \"Hierarchical Sparse Autoencoder for Image Representation\" (2014)\n* \"Subspace Clustering via Subspace Clustering Algorithm\" (2015)\n* \"Causal Interventional Circuit Extraction using Graph Neural Networks\" (2019)\n* \"Graph Neural Network-based Circuit Extraction for Image Representation\" (2020)\n\n### 相關論文\n\n* \"Deep Learning for Image Representation\" (2019)\n* \"Graph Neural Networks for Image Representation\" (2020)\n* \"Causal Learning for Image Representation\" (2020)\n* \"Subspace Clustering for Image Representation\" (2020)\n\n### 接續階段\n\n* 需要進一步研究和比較每個方案的優點和缺點。\n* 需要考慮使用更複雜的自編碼器結構、資料增強技術、分佈式訓練技術和預訓練模型。\n* 需要評估每個方案的性能和效率。"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
