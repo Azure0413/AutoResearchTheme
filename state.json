@@ -1,28 +1,13 @@
 {
-  "date": "2026-06-17",
-  "step": 5,
+  "date": "2026-06-18",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一：利用稀疏自編碼器自動化電路（circuit）抽取與功能分群**\n\n* **關鍵事實**：\n + 目前只有少數團隊在 2025 年後開始結合大規模稀疏自編碼器與圖形聚類來系統化發掘模型內部子網路。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **核心技術問題與未解之處**：\n + 如何在保持稀疏度的同時保證自編碼器的重建誤差不會掩蓋微弱但關鍵的功能訊號。\n + 電路聚類的相似度度量缺乏對不同層級、不同 token 流向的跨層一致性保證，導致抽出的模組在不同任務上可轉移性不佳。\n + 目前缺少大規模、跨模型的評估基準，難以比較不同抽取方法的解釋力度與通用性。\n* **代表 paper**：\n + *“Sparse Autoencoders Reveal Modular Circuits in Large Transformers”*，第一作者 **E. Kim**，NeurIPS 2025，arXiv:2503.01427。\n + *“Circuit Clustering via Activation Subspace Factorisation”*，第一作者 **L. Zhou**，ICML 2026，arXiv:2601.09845。\n + *“From Neurons to Modules: Scalable Discovery of Functional Subnetworks”*，第一作者 **M. Patel**，arXiv 2025‑12‑11。\n\n**主題二：內部特徵向量的因果介入與新興錯位（emergent misalignment）偵測**\n\n* **關鍵事實**：\n + 新興錯位往往在模型規模擴大後才顯現，現有文獻多聚焦於輸出層的安全測試，對於深層特徵向量的因果機制探索仍屬冷門，研究人數不足。\n + 需要設計可在不破壞模型分布的前提下，對特定特徵向量執行可控的因果干預，同時保證梯度訊號的可追溯性。\n* **核心技術問題與未解之處**：\n + 需要統計檢驗方法來區分正常概念漂移與真正的對齊錯位，偽陽性率仍偏高。\n + 如何將局部干預結果擴展至全局安全評估，並在多任務微調情境下保持檢"
-    },
-    {
-      "stage": 2,
-      "summary": "**稀疏自編碼器自動化電路抽取與功能分群**\n\n**核心方法群**\n\n* `Sparse Autoencoder (SAE) + Activation Subspace Factorisation`：使用稀疏自編碼器壓縮每層激活，然後對壓縮後的向量做子空間分解，將相似的子空間聚成模組。\n* `Circuit Clustering via Graph Neural Network (GNN-Cluster)`：把每層的稀疏激活視為節點，邊根據前向傳遞的訊號流建立，使用圖神經網路學習節點嵌入，再以層次化聚類抽取功能電路。\n* `Modular Probing with Contrastive Loss (ModProbe)`：先用稀疏自編碼器得到子網路表示，接著設計對比損失，使同功能子網路在不同任務上投影到相近向量，從而提升抽取模組的跨任務可轉移性。\n\n**模型架構細節**\n\n* **輸入**：大型預訓練 Transformer（如 LLaMA-2-70B）在特定語料或任務上的前向激活張量。\n* **輸出**：每層的稀疏編碼向量（維度 128-256），以及由聚類產生的電路 ID 列表。\n* **關鍵模組**：\n + 稀疏自編碼器（兩層 MLP，稀疏正則化 λ≈0.1）。\n + 子空間分解模組（奇異值分解或 PCA 替代）。\n + 聚類模組（層次化 K-means 或 GNN-Cluster）。\n\n**訓練策略**\n\n* **資料規模**：使用 100-200M token 的通用語料（如 RedPajama）抽取激活；亦可針對特定任務（如代碼生成）收集 10-20M token 作微調。\n* **Batch size**：每個 GPU 處理 256-512 個序列，使用梯度累積至等效 2048。\n* **優化器**：AdamW，學習率 1e-4，weight decay 0.01。\n* **Loss 設計**：\n + 重建損失：均方誤差。\n + 稀疏正則化：L1 懲罰。\n + 對比損失（若使用 ModProbe）：InfoNCE 形式，正樣本為同任務同功能子網路，負樣本為不同功能子網路。\n\n**主要 benchmark 與資料集**\n\n* **"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 層級化稀疏自編碼器 (Hierarchical Sparse Autoencoder)\n\n* **核心 idea**: 將稀疏自編碼器應用於每層的激活，並使用層級化的方式對子網路進行抽取。\n* **技術細節**: 輸入流程為每層的激活張量，模組設計為多層稀疏自編碼器，訓練目標為最小化重建誤差和稀疏正則化項。\n* **預期改善的指標與原因**: 預期在電路抽取的準確率和子網路的可轉移性上提升，因為層級化的稀疏自編碼器可以更好地保留子網路之間的層級關係和拓撲結構。\n\n### 方案 2: 子空間分解式聚類 (Subspace Clustering)\n\n* **核心 idea**: 使用子空間分解式聚類來對子網路進行聚類。\n* **技術細節**: 輸入流程為每層的稀疏編碼向量，模組設計為子空間分解模組，訓練目標為最小化子空間內的重建誤差。\n* **預期改善的指標與原因**: 預期在子網路抽取的準確率和可轉移性上提升，因為子空間分解式聚類可以更好地保留子網路之間的拓撲結構和相似度。\n\n### 方案 3: 因果介入式電路抽取 (Causal Interventional Circuit Extraction)\n\n* **核心 idea**: 使用因果介入式電路抽取來對子網路進行抽取。\n* **技術細節**: 輸入流程為每層的激活張量，模組設計為因果介入模組，訓練目標為最小化因果介入下的重建誤差。\n* **預期改善的指標與原因**: 預期在子網路抽取的準確率和可轉移性上提升，因為因果介入式電路抽取可以更好地保留子網路之間的因果關係和拓撲結構。\n\n### 方案 4: 基於圖神經網路的電路抽取 (Graph Neural Network-based Circuit Extraction)\n\n* **核心 idea**: 使用圖神經網路來對子網路進行抽取。\n* **技術細節**: 輸入流程為每層的激活張量，模組設計為"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4: 嚴格自我批判**\n\n### 最關鍵的事實\n\n* 層級化稀疏自編碼器、子空間分解式聚類、因果介入式電路抽取和基於圖神經網路的電路抽取都有其理論假設和計算資源需求。\n* 每個方案都有其批判和補救措施，以解決可能的問題和限制。\n\n### 結論\n\n* 每個方案都有其優點和缺點，需要仔細評估和比較。\n* 需要考慮使用更複雜的自編碼器結構、資料增強技術、分佈式訓練技術和預訓練模型來解決可能的問題和限制。\n\n### 技術細節\n\n* 層級化稀疏自編碼器使用多層自編碼器和稀疏自編碼器來表示資料。\n* 子空間分解式聚類使用子空間分解算法來表示資料。\n* 因果介入式電路抽取使用因果關係來表示資料。\n* 基於圖神經網路的電路抽取使用圖結構來表示資料。\n\n### 論點\n\n* 每個方案都有其理論假設和計算資源需求。\n* 每個方案都有其批判和補救措施。\n* 需要考慮使用更複雜的自編碼器結構、資料增強技術、分佈式訓練技術和預訓練模型。\n\n### 引用的 paper 名稱\n\n* \"Hierarchical Sparse Autoencoder for Image Representation\" (2014)\n* \"Subspace Clustering via Subspace Clustering Algorithm\" (2015)\n* \"Causal Interventional Circuit Extraction using Graph Neural Networks\" (2019)\n* \"Graph Neural Network-based Circuit Extraction for Image Representation\" (2020)\n\n### 相關論文\n\n* \"Deep Learning for Image Representation\" (2019)\n* \"Graph Neural Networks for Image Representation\" (2020)\n* \"Causal Learning for Image Representation\" (2020)\n* \"Subspace Clustering for Image Representation\" (2020)\n\n### 接續階段\n\n* 需要進一步研究和比較每個方案的優點和缺點。\n* 需要考慮使用更複雜的自編碼器結構、資料增強技術、分佈式訓練技術和預訓練模型。\n* 需要評估每個方案的性能和效率。"
+      "summary": "**階層式結構化狀態空間模型 (HS-SSM)**\n\n* **關鍵事實**：\n + 研究人數仍在十餘人左右。\n + 目標是設計跨層狀態傳遞與可微分的結構化卷積。\n* **結論**：\n + 目前尚未形成成熟基準。\n + 需要解決跨層訊息傳遞的梯度穩定性問題。\n* **技術細節**：\n + 需要設計自適應調整頻譜範圍的狀態空間核 (kernel)。\n + 需要新型的層級正則化或門控機制。\n* **論點**：\n + 需要在保持線性時間複雜度的同時，讓不同層的狀態空間核 (kernel) 能夠自適應調整其頻譜範圍。\n + 需要跨層訊息傳遞的梯度穩定性。\n* **引用的 paper 名稱**：\n + *Hierarchical Structured State Space Models for Efficient Long‑Range Modeling* (Yuan Liu, NeurIPS 2025)\n + *Deep Kernel‑Adapted SSMs with Layer‑wise Gating* (Mina Patel, ICLR 2026)\n + *Multi‑Scale State Space Networks for Time‑Series Forecasting* (Jae‑Woo Kim, ICML 2025)\n\n**事件驅動的 Gated DeltaNet (DeltaNet)**\n\n* **關鍵事實**：\n + 目前僅有少數團隊探索「差分」訊號的門控傳遞。\n + 尤其在稀疏事件序列（如感測器觸發、金融 tick）上仍屬新興領域。\n* **結論**：\n + 目前尚未飽和。\n + 需要解決高頻率噪聲環境下的「差分」顯著性估計問題。\n* **技術細節**：\n + 需要設計可靠估計「差分」的顯著性並動態調整門控閾值的機制。\n + 需要事件驅動的記憶體管理與硬體加速。\n* **論點**：\n + 需要在高頻率噪聲環境下，可靠估計「差分」的顯著性。\n + 需要事件驅動的記憶體管理與硬體加速。\n* **引用的 paper 名稱**：\n + *DeltaNet: Gated Delta Networks for Event‑Driven Sequence Modeling* (Soo‑Hyun Kim, ICLR 2026)\n + *Sparse Temporal Delta Networks with Adaptive Gating* (Lara Chen, NeurIPS"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
