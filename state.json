@@ -1,6 +1,6 @@
 {
   "date": "2026-06-20",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Causal Video Diffusion (CVD)**：擴散模型產生影片，加入可微分的因果圖結構\n* **Counterfactual Latent Dynamics (CLD)**：潛在動態模型，使用變分自編碼器編碼影片，指導潛在轉移\n* **Intervention-Driven Causal Discovery (ICD)**：隨機虛擬干預產生的影片序列，結構化變分推斷自動發掘高維影片的因果圖\n\n### 2. 模型架構細節\n\n* **輸入**：原始 RGB 影片序列或已抽取的光流/特徵圖\n* **輸出**：未來影片、推斷出的因果圖、干預後的反事實影片\n* **關鍵模組**：Encoder、Causal Graph Module、Diffusion/Transition Decoder、Intervention Engine\n* **訓練目標**：重建損失、因果一致性損失、反事實一致性損失\n\n### 3. 訓練策略\n\n* **資料規模**：Causal-Kinetics、Something-Something V2\n* **Batch size**：32-64 片段\n* **優化器**：AdamW（學習率 1e-4）\n* **Loss 設計**：L_recon + L_causal + L_counter\n\n### 4. 主要benchmark與資料集\n\n* **Causal-Kinetics 2025**：評估指標：Top-1 Video Prediction Accuracy、Causal Consistency Score、Counterfactual Fidelity\n* **Interventional Something-Something V2**：評估指標：Intervention Success Rate\n* **Synthetic Causal Video Suite**：評估指標：結構恢復率（Precision/Recall）\n\n### 5. 方法優劣比較\n\n* **Causal Video Diffusion (CVD)**：優點：直接嵌入因果圖、干預操作簡潔；缺點：擴散步驟多、訓練與推論成本高\n* **Counterfactual Latent Dynamics (CLD)**：優點：潛在空間較小、計算效率好；缺點：潛在空間的解釋性較弱、圖結構不易直接觀察\n* **Intervention-Driven Causal Discovery (ICD)**：優點：自動發掘因果圖、減少人工標註成本；缺點：只在合成影片上驗證、真實影片的噪"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間導向因果學習\n\n* **核心 idea**: 導入時間導向的因果關係學習機制，強化模型對時間序列的因果推理能力。\n* **技術細節**:\n + 輸入流程為原始影片序列\n + 模組設計包含時間導向的因果圖模組\n + 訓練目標為最大化因果一致性損失\n + 損失函數為時間導向的因果一致性損失加上重建損失\n* **與 SOTA 的差異**: 導入時間導向的因果關係學習機制\n* **預期改善的指標與原因**: 預期在 Causal-Kinetics 2025 benchmark 中提升 Top-1 Video Prediction Accuracy\n* **最小可行實驗(MVP)**: 使用 Causal-Kinetics 2025 資料集，模型大小為 10M 參數，單張 GPU 可以驗證\n\n### 方案 2: 層次式干預學習\n\n* **核心 idea**: 導入層次式的干預學習機制，強化模型對不同層次的因果關係的學習能力。\n* **技術細節**:\n + 輸入流程為原始影片序列\n + 模組設計包含層次式的干預學習模組\n + 訓練目標為最大化層次式的干預學習損失\n + 損失函數為層次式的干預學習損失加上重建損失\n* **與 SOTA 的差異**: 導入層次式的干預學習機制\n* **預期改善的指標與原因**: 預期在 Interventional Something-Something V2 benchmark 中提升 Intervention Success Rate\n* **最小可行實驗(MVP)**: 使用 Interventional Something-Something V2 資料集，模型大小為 15M 參數，單張 GPU 可以驗證\n\n### 方案 3: 因果圖嵌入學習\n\n* **核心 idea**: 導入因果圖嵌入學習機制，強化模型對因果圖的嵌入學習能力。\n* **技術細節**:\n + 輸入流程為原始影片序列\n + 模組設計包含因果圖嵌入學習模組\n + 訓練目標為最大化因果圖嵌入學習損失\n + 損失函數為因果圖嵌入學習損失加上重建損失"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
