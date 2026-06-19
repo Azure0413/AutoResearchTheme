@@ -1,13 +1,18 @@
 {
   "date": "2026-06-20",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n**主題一: 因果視訊世界模型與可干預學習**\n\n* **關鍵事實**：\n + 只有少數團隊嘗試在未標註影片中自動發掘因果結構。\n + 可透過虛擬干預產生「反事實」樣本，對長期規劃與推理有直接助益。\n* **結論**：\n + 因果視訊世界模型與可干預學習仍是未被充分探索的領域。\n + 需要設計低方差的干預抽樣策略和可微分的因果圖結構。\n* **技術細節**：\n + 虛擬干預：生成「反事實」樣本。\n + 可微分的因果圖結構：需要在無監督情況下保持可微分和可解釋。\n* **論點**：\n + 需要進一步研究可干預學習的方法和技術。\n + 需要量化反事實生成的品質與真實影片分布之間的偏差。\n* **引用**：\n + *Causal Video Modeling with Interventional Diffusion*（Yuan-Chi Lin, NeurIPS 2025）\n + *Learning Counterfactual Dynamics in Latent World Models*（Mina Patel, ICLR 2026）\n + *Intervention-Driven Causal Discovery for High-Dimensional Video*（Jae-Ho Kim, ICML 2025）\n\n**主題二: 物件中心圖式動態表示與關係推理**\n\n* **關鍵事實**：\n + 物件中心的世界模型已開始結合圖神經網路，但針對「動態關係演化」的長期預測與跨場景遷移仍缺乏系統化方法。\n + 研究人數仍在十餘人左右。\n* **結論**：\n + 物件中心圖式動態表示與關係推理仍是未被充分探索的領域。\n + 需要設計動態圖的節點與邊的更新方法兼顧時間連續性與稀疏性。\n* **技術細節**：\n + 動態圖的節點與邊的更新：需要兼顧時間連續性與稀疏性。\n + 自動構建可靠的圖結構：需要在缺少明確物件標註的影片中。\n* **論點**：\n + 需要進一步研究動態圖的設計和更新方法。\n + 需要量化跨場景遷移時保持關係語義的一致性。\n* **引用"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Causal Video Diffusion (CVD)**：擴散模型產生影片，加入可微分的因果圖結構\n* **Counterfactual Latent Dynamics (CLD)**：潛在動態模型，使用變分自編碼器編碼影片，指導潛在轉移\n* **Intervention-Driven Causal Discovery (ICD)**：隨機虛擬干預產生的影片序列，結構化變分推斷自動發掘高維影片的因果圖\n\n### 2. 模型架構細節\n\n* **輸入**：原始 RGB 影片序列或已抽取的光流/特徵圖\n* **輸出**：未來影片、推斷出的因果圖、干預後的反事實影片\n* **關鍵模組**：Encoder、Causal Graph Module、Diffusion/Transition Decoder、Intervention Engine\n* **訓練目標**：重建損失、因果一致性損失、反事實一致性損失\n\n### 3. 訓練策略\n\n* **資料規模**：Causal-Kinetics、Something-Something V2\n* **Batch size**：32-64 片段\n* **優化器**：AdamW（學習率 1e-4）\n* **Loss 設計**：L_recon + L_causal + L_counter\n\n### 4. 主要benchmark與資料集\n\n* **Causal-Kinetics 2025**：評估指標：Top-1 Video Prediction Accuracy、Causal Consistency Score、Counterfactual Fidelity\n* **Interventional Something-Something V2**：評估指標：Intervention Success Rate\n* **Synthetic Causal Video Suite**：評估指標：結構恢復率（Precision/Recall）\n\n### 5. 方法優劣比較\n\n* **Causal Video Diffusion (CVD)**：優點：直接嵌入因果圖、干預操作簡潔；缺點：擴散步驟多、訓練與推論成本高\n* **Counterfactual Latent Dynamics (CLD)**：優點：潛在空間較小、計算效率好；缺點：潛在空間的解釋性較弱、圖結構不易直接觀察\n* **Intervention-Driven Causal Discovery (ICD)**：優點：自動發掘因果圖、減少人工標註成本；缺點：只在合成影片上驗證、真實影片的噪"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
