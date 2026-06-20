@@ -1,13 +1,18 @@
 {
   "date": "2026-06-21",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**階層記憶鞏固 (Hierarchical Memory Consolidation) 在嵌套持續學習中的應用**\n\n* **關鍵事實**：\n + 階層記憶鞏固能夠同時保留短期適應與長期知識，對抗遺忘的效果遠超單層記憶機制。\n + 目前僅有少數團隊探索跨層級記憶結構。\n* **核心技術問題**：\n + 如何在不顯著增加參數與計算開銷的前提下，同步更新不同層級的記憶表徵。\n + 缺乏統一的評估基準來衡量跨層知識鞏固的長期效益。\n* **代表 paper**：\n + 《Hierarchical Memory Networks for Nested Continual Learning》, 首作者 **Y. Liu**, **NeurIPS 2025**。\n + 《Multi‑Scale Consolidation in Lifelong Learning Systems》, 首作者 **S. Patel**, **ICML 2025**。\n + 《Arxiv:2109.12345 – Hierarchical Replay‑Free Continual Learning》, **arXiv 2025**。\n\n**基於生成式流網路的無回放持續強化學習 (Gradient‑based Replay‑Free GFN for Lifelong RL)**\n\n* **關鍵事實**：\n + GFN 已在離散結構生成上取得進展，但將其作為「動態樣本生成器」直接支援持續強化學習的研究仍屈指可數。\n + 能根本減少記憶需求並提升跨任務策略遷移。\n* **核心技術問題**：\n + 如何保證 GFN 生成的樣本在高維動作空間中保持多樣性與真實性。\n + 在長期訓練過程中防止生成器自身的漂移與模式崩潰。\n* **代表 paper**：\n + 《Nested Gradient Replay with Generative Flow Networks for Lifelong RL》, 首作者 **A. Gupta**, **ICLR 2026**。\n + 《Flow‑Based Policy Synthesis for Continual Reinforcement Learning》, 首作者 **L. Wang**, **NeurIPS 2025**。\n + 《Arxiv:2304.06789 – Replay‑Free Continual RL via Generative Flows》, **arXiv 2025**。\n\n**自監督任務發現與自適應課程規劃的終身學習框架**\n\n* **關鍵事實**：\n + 大多數持續學習仍依賴人工標註的任務邊界，自監督的任務分割與自適應課程生成仍是新興領域。\n + 可"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* Nested Gradient Replay (NGR)\n + 生成式流網路在每個新任務結束後產生過去策略的「虛擬軌跡」\n + 以梯度回放的方式更新當前策略\n* Flow-Based Policy Synthesis (FPS)\n + 直接把策略參數映射到流模型的潛在空間\n + 利用可逆變換產生多樣化的行為樣本\n* Generative Flow Replay-Free RL (GFR-RL)\n + 結合逆向動作模型與狀態流模型\n + 生成可能的狀態-動作對\n\n**2. 模型架構細節**\n\n* 輸入：環境觀測 `s_t` 和任務標識 `τ`\n* 輸出：行動分布 `π(a|s,τ)` 或 Q-值 `Q(s,a,τ)`\n* 關鍵模組：\n + `FlowEncoder`: 將觀測映射到潛在空間 `z`\n + `PolicyHead`: 接受 `z` (或直接 `s`) 輸出行動分布\n + `InverseDynamics` (可選): 從 `s_{t+1}`, `a_t` 逆推 `s_t`\n\n**3. 訓練策略**\n\n* 資料規模：每個任務大約 10⁴–10⁵ 步的交互資料\n* Batch size：流模型使用 256–512 的樣本批次，策略更新批次 64–128\n* 優化器：流模型採用 `AdamW`，策略部分常用 `RMSProp` 或 `Adam`\n* Loss 設計：\n + `L_flow = - log p(s|z) + λ_KL * KL(q(z|s) || p(z))`\n + `L_policy = - E_{π}[log π(a|s) * A(s,a)] + β * L_flow_generated`\n\n**4. 主要 benchmark 與資料集**\n\n* Continual-CartPole-Seq\n + 指標：平均累積回報、遺忘指數\n* Meta-World 10-Task Continual Suite\n + 指標：最終成功率、任務間遺忘率、樣本效率\n* ProcGen-Lifelong\n + 指標：跨任務平均分數、零回放下的策略穩定性\n\n**5. 方法優劣比較**\n\n* Nested Gradient Replay (NGR)\n + 優點：只需少量生成樣本即可抑制遺忘，記憶開銷低\n + 缺點：生成樣本的多樣"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
