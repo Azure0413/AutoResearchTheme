@@ -1,13 +1,18 @@
 {
   "date": "2026-06-24",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：高熵合金 (High-Entropy Alloys, HEA) 的主動學習圖神經網路設計**\n\n* **關鍵事實：**\n + 高熵合金的組成維度極高，資料稀疏，自動化探索仍處於萌芽階段。\n + 目前僅有少數團隊將主動學習與組合化學空間結合。\n* **結論：**\n + 需要設計有效的主動學習方法來估計模型不確定性並指導實驗採樣。\n + 圖神經網路在處理不同元素的化學相容性與相變規則時的表徵泛化能力仍未被驗證。\n* **技術細節：**\n + 需要設計可微分的表面重構環境，使得強化學習代理能在高維原子配置空間中有效探索。\n + 需要正確建模與利用真實實驗回饋的延遲與噪聲。\n* **論點：**\n + 需要結合主動學習與組合化學空間來設計高效的 HEA 設計方法。\n + 需要驗證圖神經網路在處理不同元素的化學相容性與相變規則時的表徵泛化能力。\n* **引用的 paper 名稱：**\n + *Active Learning for High-Entropy Alloy Design with Graph Neural Networks*，第一作者 **Yuan Liu**，NeurIPS 2025。\n + *Uncertainty-aware Graph Transformer for Multi-component Materials*，第一作者 **Mina Patel**，ICLR 2026。\n + *Bayesian Optimization over Compositional Space of HEAs*，第一作者 **Jae-Hyun Kim**，arXiv 2025.0803。\n\n**主題二：反應條件驅動的催化劑表面重構與強化學習**\n\n* **關鍵事實：**\n + 動態表面結構在實際催化條件下會發生重組，現有資料庫多為靜態晶面。\n + 缺乏對條件依賴的時變模型，相關研究人數仍在十餘人左右。\n* **結論：**\n + 需要設計可微分的表面重構環境，使得強化學習代理能在高維原子配置空間中有效探索。\n + 需要正確建模與利用真實實驗回饋的延遲與噪聲。\n* **技術細節：**\n + 需要結合強化學習與表面重構來設計"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Active-Learning GNN (AL-GNN)**: 利用模型不確定性預測合金相圖與機械性質\n* **Uncertainty-aware Graph Transformer (U-GT)**: 全局注意力捕捉多元素間長距離相互作用\n* **Bayesian Optimisation over Compositional Space (BO-HEA)**: 結合高斯過程或深度貝葉斯模型進行預測\n\n### 2. 模型架構細節\n\n* **輸入**: 原子層級圖結構，節點特徵包括元素週期表屬性與局部結構描述子\n* **輸出**: 目標性質的點估計與不確定性估計\n* **關鍵模組**: 節點嵌入層、多層圖卷積/注意力層、不確定性估計模組\n\n### 3. 訓練策略\n\n* **資料規模**: 公開 HEA 資料庫約 2,000-3,000 筆實驗樣本\n* **batch size**: 64-128，視 GPU 記憶體而定\n* **優化器**: AdamW，學習率 1e-3 起始，使用 cosine annealing 於 200 epoch 收斂\n\n### 4. 主要 benchmark 與資料集\n\n* **資料集**: HEA-Open（NeurIPS 2024 釋出的 3,200 筆高熵合金實驗），以及補充的 Materials Project DFT 合金子集\n* **SOTA 評估**: 在 HEA-Open 上報告的 MAE (Mean Absolute Error) 以及 NLL (Negative Log-Likelihood) 作為主要指標\n\n### 5. 方法優劣比較\n\n* **Active-Learning GNN (AL-GNN)**: 設計簡潔，易於與現有 GNN 框架結合，但不確定性估計依賴 Dropout\n* **Uncertainty-aware Graph Transformer (U-GT)**: 全局注意力捕捉遠距離元素交互，但計算成本 O(N²) 隨圖大小快速上升\n* **Bayesian Optimisation over Compositional Space (BO-HEA)**: 直接利用不確定性驅動全局搜尋，但高斯過程在 20+ 維組成空間會出現尺度問題\n\n### 6. 明確的「未解破綻」\n\n* **高維組成空間的尺度問題**: 現有方法在 20 種以上元素的組合時，模型表徵會出現維度"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
