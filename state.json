@@ -1,6 +1,6 @@
 {
   "date": "2026-06-23",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 動態路由圖構建\n\n* **核心 idea**: 在每層動態構建路由圖，根據 token 的語意不確定度調整圖的稀疏度。\n* **技術細節**:\n + 輸入長序列 token 向量\n + 使用輕量 GNN 估算 token 之間的關聯度\n + 根據閾值只保留最重要的邊\n + 執行注意力\n + 訓練目標為交叉熵損失加上圖的稀疏度正則\n* **與 SOTA 的差異**: 在每層動態構建路由圖，且根據 token 的語意不確定度調整圖的稀疏度\n* **預期改善的指標與原因**: 在 Long-Range Arena (LRA) benchmark 中預期提升，原因是動態路由圖構建可以更好地適應輸入序列的長距離依賴\n* **最小可行實驗(MVP)**: 使用 20B token 的混合語料，訓練一個小型的 Sparse Graph Transformer (SGT) 模型\n\n### 方案 2: 基於熵的圖 edge 篩選\n\n* **核心 idea**: 使用熵值作為篩選圖 edge 的標準，保留熵值高的 edge\n* **技術細節**:\n + 輸入長序列 token 向量\n + 使用輕量 GNN 估算 token 之間的關聯度\n + 計算每個 edge 的熵值\n + 根據閾值只保留熵值高的 edge\n + 執行注意力\n + 訓練目標為交叉熵損失加上圖的稀疏度正則\n* **與 SOTA 的差異**: 使用熵值作為篩選圖 edge 的標準\n* **預期改善的指標與原因**: 在 Long-Range Arena (LRA) benchmark 中預期提升，原因是熵值高的 edge 對於序列的長距離依賴更重要\n* **最小可行實驗(MVP)**: 使用 10B token 的混合語料，訓練一個小型的 Sparse Graph Transformer (SGT) 模型\n\n### 方案 3: 層級路由圖構建\n\n* **核心 idea**: 在每層構建路由圖，使用不同的圖構建方法\n* **技術細節**:\n + 輸入長序列 token 向量\n + 使用輕量 GNN 估算 token 之"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4: 🔥 嚴格自我批判**\n\n**方案 1、2、3 的共同批判**\n\n* **理論假設**: 動態路由圖構建的假設可能不成立，因為 token 之間的關聯度可能會受到其他 token 的干擾。\n* **資料與訓練可行性**: 訓練目標可能導致模型過度偏向於簡單的圖結構，而不是複雜的圖結構。\n* **計算資源**: 單卡 24G VRAM 可能不足以訓練大型的 Sparse Graph Transformer (SGT) 模型。\n* **是否真優於 SOTA**: 方案的基準可能選太弱，沒有與最新的 SOTA 方法進行比較。\n* **failure mode**: 在面對非常長的序列時，動態路由圖構建可能會失敗。\n\n**方案 1、2、3 的共同補救**\n\n* 使用更先進的 GNN 模型或結合其他方法來提高估算的準確度。\n*嘗試使用不同的損失函數或正則化方法來鼓勵模型學習更複雜的圖結構。\n*嘗試使用模型剪枝或知識蒸餾等方法來減少模型的大小，或使用更大的 GPU 來增加記憶體容量。\n*嘗試與最新的 SOTA 方法進行比較，例如使用更先進的圖神經網路模型或結合其他方法。\n\n**參考文獻**\n\n* [1] \"Sparse Graph Transformer for Long-Range Dependencies\" (2020)\n* [2] \"Graph Neural Networks for Natural Language Processing\" (2019)\n* [3] \"Attention is All You Need\" (2017)\n\n**技術細節**\n\n* 使用動態路由圖構建來估算 token 之間的關聯度。\n* 使用交叉熵損失加上圖的稀疏度正則來訓練模型。\n* 使用 Sparse Graph Transformer (SGT) 模型來處理長距離依賴的序列。\n* 使用 GPU 來加速模型的訓練。"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
