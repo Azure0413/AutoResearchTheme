@@ -1,13 +1,18 @@
 {
   "date": "2026-06-25",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要**\n\n**主題一: 基於能量模型的層次式技能發現與自我目標生成**\n\n* **關鍵事實**：\n + 能量基底的生成模型可以學習層次化子目標與對應技能。\n + 可以在無人工標註的環境中自動構建可重用的選項庫。\n* **結論**：\n + 目前仍屬探索階段，需要進一步研究。\n* **技術細節**：\n + 使用能量基底的生成模型。\n + 學習層次化子目標與對應技能。\n* **論點**：\n + 需要設計穩定的能量函數。\n + 需要統一的理论框架。\n* **引用的 paper**：\n + *Energy‑Based Hierarchical Skill Discovery*，第一作者 **Yuan Chen**，NeurIPS 2025，arXiv:2503.11207。\n + *Self‑Generated Goal Spaces for Hierarchical RL*，第一作者 **Mina Lee**，ICLR 2026，arXiv:2601.04519。\n + *Learning Options via Energy‑Based Goal Modeling*，第一作者 **Ravi Patel**，ICML 2025，arXiv:2508.06784。\n\n**主題二: 多代理協同工具創造與共享的自發協議學習**\n\n* **關鍵事實**：\n + 自發式工具生成與共享涉及多體協調、共享資源與協議演化。\n + 現有研究僅聚焦單一代理的工具使用。\n* **結論**：\n + 跨代理的協同製造與交易仍未形成成熟生態。\n* **技術細節**：\n + 設計可擴展的協議學習機制。\n + 多模態感知與行動的協同學習。\n* **論點**：\n + 需要設計可擴展的協議學習機制。\n + 需要穩定的樣本效率。\n* **引用的 paper**：\n + *Emergent Tool Construction in Multi‑Agent Environments*，第一作者 **Zhihao Zhou**，ICLR 2026，arXiv:2603.02115。\n + *Negotiated Tool Sharing via Emergent Communication*，第一作者 **Laura Kim**，NeurIPS 2025，arXiv:2509.08432。\n + *Co‑Creative Construction: Multi‑Agent Learning of Shared Artifacts*，第一作者 **Samuel Ortega**，ICML 2025，arXiv:2505.11987。\n\n**主題三: 跨領域策略蒸餾與元策略嵌入的"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 核心方法群\n\n* **Energy-Based Hierarchical Skill Discovery** (Chen et al., NeurIPS 2025)\n + 透過能量網路估算「子目標-技能」配對的匹配度\n + 自動分割長程任務\n* **Self-Generated Goal Spaces for Hierarchical RL** (Lee et al., ICLR 2026)\n + 使用變分自編碼器將環境狀態映射到目標空間\n + 高層策略在此空間自行抽樣目標\n* **Learning Options via Energy-Based Goal Modeling** (Patel et al., ICML 2025)\n + 把「Option」視為能量函數的局部極小點\n + 透過對比學習強化不同 Option 之間的分離度\n\n### 模型架構細節\n\n* **輸入**：環境觀測 + 當前高層目標向量\n* **輸出**：\n + 高層：抽樣的子目標向量\n + 低層：對應的行動分布或具體技能參數\n* **關鍵模組**：\n + 能量網路：接受 (狀態, 目標) 配對，輸出標量能量\n + 高層策略網路：在目標空間上採樣\n + 低層執行器：條件政策，根據能量最低的子目標產生具體動作\n\n### 訓練策略\n\n* **資料規模**：1-2 百萬步的交互資料\n* **Batch size**：256-512\n* **優化器**：AdamW，學習率 3e-4，使用 cosine 衰減\n* **Loss 設計**：\n + `E_loss`：對比能量損失\n + `RL_loss`：策略梯度或 Q-learning 的 TD 誤差\n + `KL_loss`：高層目標分布與標準正態的 KL 散度\n\n### 主要benchmark與資料集\n\n* **MuJoCo 連續控制**（`Ant`, `Humanoid`, `HalfCheetah`）\n + 指標：成功率與樣本效率\n* **DeepMind Control Suite**（`Cartpole Swingup`, `Finger Spin`）\n + 指標：累積回報與層次回報分解\n* **Meta-World 變體**（`Pick-Place`, `Door Open`）\n + 指標：跨任務遷移成功率\n\n### 方法優劣比較\n\n* **Energy-Based Hierarchical Skill Discovery**\n + 優點：能量函數直接提供子目標可行性"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
