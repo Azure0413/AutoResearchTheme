@@ -1,6 +1,6 @@
 {
   "date": "2026-06-25",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n### 核心方法群\n\n* **Energy-Based Hierarchical Skill Discovery** (Chen et al., NeurIPS 2025)\n + 透過能量網路估算「子目標-技能」配對的匹配度\n + 自動分割長程任務\n* **Self-Generated Goal Spaces for Hierarchical RL** (Lee et al., ICLR 2026)\n + 使用變分自編碼器將環境狀態映射到目標空間\n + 高層策略在此空間自行抽樣目標\n* **Learning Options via Energy-Based Goal Modeling** (Patel et al., ICML 2025)\n + 把「Option」視為能量函數的局部極小點\n + 透過對比學習強化不同 Option 之間的分離度\n\n### 模型架構細節\n\n* **輸入**：環境觀測 + 當前高層目標向量\n* **輸出**：\n + 高層：抽樣的子目標向量\n + 低層：對應的行動分布或具體技能參數\n* **關鍵模組**：\n + 能量網路：接受 (狀態, 目標) 配對，輸出標量能量\n + 高層策略網路：在目標空間上採樣\n + 低層執行器：條件政策，根據能量最低的子目標產生具體動作\n\n### 訓練策略\n\n* **資料規模**：1-2 百萬步的交互資料\n* **Batch size**：256-512\n* **優化器**：AdamW，學習率 3e-4，使用 cosine 衰減\n* **Loss 設計**：\n + `E_loss`：對比能量損失\n + `RL_loss`：策略梯度或 Q-learning 的 TD 誤差\n + `KL_loss`：高層目標分布與標準正態的 KL 散度\n\n### 主要benchmark與資料集\n\n* **MuJoCo 連續控制**（`Ant`, `Humanoid`, `HalfCheetah`）\n + 指標：成功率與樣本效率\n* **DeepMind Control Suite**（`Cartpole Swingup`, `Finger Spin`）\n + 指標：累積回報與層次回報分解\n* **Meta-World 變體**（`Pick-Place`, `Door Open`）\n + 指標：跨任務遷移成功率\n\n### 方法優劣比較\n\n* **Energy-Based Hierarchical Skill Discovery**\n + 優點：能量函數直接提供子目標可行性"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1:層次化能量約束**\n\n* **核心 idea**: 將能量基礎的生成模型與層次化目標架構相結合，引入多層能量約束以增強子目標之間的層次關係。\n* **技術細節**:\n + 輸入流程中加入層次化的目標編碼\n + 模組設計包括多層能量網路以實現能量約束\n + 訓練目標為最小化多層能量損失函數\n + 損失函數包括層次化能量項和對比能量項\n* **與 SOTA 的差異**: 增加了多層能量約束，改變了能量損失函數的計算方式\n* **預期改善的指標與原因**: 預期在 MuJoCo 連續控制任務中提升成功率和樣本效率\n* **最小可行實驗(MVP)**: 使用 MuJoCo 的 `Ant` 或 `Humanoid` 任務，模型大小為 2-3 百萬參數\n\n**方案 2:目標空間自編碼**\n\n* **核心 idea**: 將目標空間映射到一個更低維度的子空間中，以減少模型的複雜度和提高學習效率。\n* **技術細節**:\n + 輸入流程中加入目標空間的自編碼步驟\n + 模組設計包括變分自編碼器以實現目標空間的映射\n + 訓練目標為最小化重構誤差和KL 散度\n + 損失函數包括重構項和KL 散度項\n* **與 SOTA 的差異**: 增加了目標空間自編碼步驟，改變了目標空間的表達方式\n* **預期改善的指標與原因**: 預期在 DeepMind Control Suite 的 `Cartpole Swingup` 或 `Finger Spin` 任務中提升累積回報和層次回報分解\n* **最小可行實驗(MVP)**: 使用 DeepMind Control Suite 的 `Cartpole Swingup` 或 `Finger Spin` 任務，模型大小為 1-2 百萬參數\n\n**方案 3:能量基礎的選項學習**\n\n* **核心 idea**: 將能量基礎的生成模型與選項學習相結合，引入能量基礎的選項表示以增強選項之間的區分度。\n* **技術細節**:\n + 輸入"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
