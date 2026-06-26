@@ -1,33 +1,13 @@
 {
-  "date": "2026-06-26",
-  "step": 6,
+  "date": "2026-06-27",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一：元好奇心（Meta‑Curiosity）於多代理協同探索\n\n* **關鍵事實**：\n + 研究人數仍在十餘人左右。\n + 需要設計可遷移的內在動機與跨代理的訊息共享。\n* **結論**：\n + 穩定估計元好奇心的梯度和設計跨代理的訊息壓縮與共享機制仍是核心技術問題。\n* **技術細節**：\n + 使用元政策梯度（Meta-Policy Gradient）來估計內在動機。\n + 設計跨代理的訊息壓縮與共享機制，例如使用壓縮算法或共享機制。\n* **論點**：\n + 元好奇心可以幫助多代理協同探索。\n + 需要設計可遷移的內在動機和跨代理的訊息共享機制。\n* **引用**：\n + *Meta‑Curiosity for Cooperative Multi‑Agent Exploration*, Yuan Liu, NeurIPS 2025。\n + *Adaptive Intrinsic Motivation via Meta‑Policy Gradient*, Mina Patel, ICML 2025。\n + *Learning to Generate Intrinsic Rewards for Multi‑Agent Systems*, arXiv 2025.01234, 2025。\n\n### 主題二：資訊瓶頸驅動的無監督技能發現\n\n* **關鍵事實**：\n + 目前只有少數團隊嘗試將資訊瓶頸原理結合無監督 RL。\n + 需要設計有效的評估指標來量化技能的多樣性與可重用性。\n* **結論**：\n + 保證發現的技能在下游任務上具備足夠的可轉移性仍是核心技術問題。\n* **技術細節**：\n + 使用資訊瓶頸原理來壓縮技能表示。\n + 設計有效的評估指標來量化技能的多樣性與可重用性。\n* **論點**：\n + 資訊瓶頸原理可以幫助無監督技能發現。\n + 需要設計有效的評估指標來量化技能的多樣性與可重用性。\n* **引用**：\n + *Latent Skill Discovery with Information Bottleneck*, Jin‑Ho Kim, ICLR 2026。\n + *Unsupervised Reinforcement Learning through Predictive State Representations*, Sara Gómez, NeurIPS 2025。\n + *Skill‑Bottleneck: Learning Compact Skill Embeddings without Rewards*, arXiv 2025.08021, 2025。\n\n### 主題"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Latent Skill Discovery with Information Bottleneck** (ICLR 2026)\n + 透過資訊瓶頸原則壓縮技能表徵，最大化環境狀態的可預測性\n* **Skill-Bottleneck: Learning Compact Skill Embeddings without Rewards** (arXiv 2025.08021)\n + 直接在無獎勵環境中學習技能向量，瓶頸層強迫模型只保留核心動作資訊\n* **InfoBot: Information-Bottleneck for Unsupervised RL** (ICML 2025)\n + 結合預測性狀態表示與資訊瓶頸，讓代理自動形成可分離的技能子空間\n\n### 2. 模型架構細節\n\n* **輸入**: 環境觀測 `o_t`（圖像或向量）與先前動作 `a_{t‑1}`\n* **輸出**: 技能向量 `z`（低維）以及對應的條件動作分布 `π(a_t|z, o_t)`\n* **關鍵模組**: 編碼器、資訊瓶頸層、解碼器/策略網路\n* **訓練目標**: 最小化重建誤差、KL 散度、可預測性損失\n\n### 3. 訓練策略\n\n* **資料規模**: 收集 1‑2 百萬步的隨機探索軌跡\n* **batch size**: 每次更新使用 2,048 個時間步的切片\n* **優化器**: Adam，學習率 `3e‑4`\n* **loss 設計**: `L_total = L_recon + β * L_KL + λ * L_pred`\n\n### 4. 主要 benchmark 與資料集\n\n* **MiniGrid‑MultiRoom**: 評估探索效率與技能可重用性\n* **Meta‑World (Sawyer) 無獎勵版**: 測量在新任務上使用已學技能的成功率\n* **Key metrics**: Exploration Coverage、Skill Diversity Score、Transfer Success\n\n### 5. 方法優劣比較\n\n* **Latent Skill Discovery with IB**: 優點是直接在無獎勵環境中學習，技能向量具備良好的可解釋性\n* **Skill-Bottleneck**: 優點是完全自編碼，不依賴任何環境模型\n* **InfoBot**: 優點是結合 PSR，使得技能更具前瞻性\n\n### 6. 明確的「未解破綻」\n\n* **瓶頸過強導"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時序資訊瓶頸\n\n* **核心 idea**: 在資訊瓶頸原則中引入時序情報，讓模型在壓縮技能表示的同時，保留時間順序的資訊。\n* **技術細節**:\n + 輸入流程包括環境觀測和先前動作\n + 模組設計包括編碼器、時序資訊瓶頸層、解碼器/策略網路\n + 訓練目標是最小化重建誤差、KL 散度和時間順序損失\n* **與 SOTA 的差異**: 添加時序情報，保留時間順序的資訊\n* **預期改善的指標與原因**: 提高探索效率和技能可重用性，因為時間順序的資訊可以幫助模型更好地理解環境的動態性質\n* **最小可行實驗(MVP)**: 使用 MiniGrid-MultiRoom 資料集，模型大小為 128 個隱藏層，單張 GPU 可以在 2 天內完成訓練\n\n### 方案 2: 自適應資訊瓶頸\n\n* **核心 idea**: 引入自適應的資訊瓶頸機制，讓模型根據環境的複雜度動態調整資訊瓶頸的強度。\n* **技術細節**:\n + 輸入流程包括環境觀測和先前動作\n + 模組設計包括編碼器、自適應資訊瓶頸層、解碼器/策略網路\n + 訓練目標是最小化重建誤差、KL 散度和自適應損失\n* **與 SOTA 的差異**: 添加自適應機制，讓模型可以根據環境的複雜度動態調整資訊瓶頸的強度\n* **預期改善的指標與原因**: 提高-transfer 成功率，因為自適應的資訊瓶頸機制可以幫助模型更好地適應新的環境\n* **最小可行實驗(MVP)**: 使用 Meta-World (Sawyer) 無獎勵版資料集，模型大小為 256 個隱藏層，單張 GPU 可以在 3 天內完成訓練\n\n### 方案 3: 結合預測性狀態表示\n\n* **核心 idea**: 結合預測性狀態表示（PSR）和資訊瓶頸原則，讓模型可以更好地預測環境的狀態和壓縮技能表示。\n* **技術細節**"
-    },
-    {
-      "stage": 4,
-      "summary": "**結構化摘要**\n\n**時序資訊瓶頸批判**\n\n* **理論假設**: 時序資訊瓶頸的假設可能不成立，尤其是在靜態環境或時間順序資訊不重要的環境中。\n* **資料與訓練可行性**: 時序資訊瓶頸需要大量的資料來訓練模型，收集和處理這些資料可能是困難的。\n* **計算資源**: 時序資訊瓶頸需要大量的計算資源來訓練模型，尤其是在大規模的環境中。\n* **是否真優於 SOTA**: 時序資訊瓶頸的優勢可能是來自於其他因素，例如模型的複雜度或是訓練方法。\n* **failure mode**: 時序資訊瓶頸可能在某些環境中徹底失敗，例如環境的時間順序資訊不重要或模型的複雜度不足。\n\n**自適應資訊瓶頸批判**\n\n* **理論假設**: 自適應資訊瓶頸的假設可能不成立，尤其是在環境的複雜度變化非常大的情況下。\n* **資料與訓練可行性**: 自適應資訊瓶頸需要大量的資料來訓練模型，收集和處理這些資料可能是困難的。\n* **計算資源**: 自適應資訊瓶頸需要大量的計算資源來訓練模型，尤其是在大規模的環境中。\n* **是否真優於 SOTA**: 自適應資訊瓶頸的優勢可能是來自於其他因素，例如模型的複雜度或是訓練方法。\n* **failure mode**: 自適應資訊瓶頸可能在某些環境中徹底失敗，例如環境的複雜度變化非常大或模型的複雜度不足。\n\n**結合預測性狀態表示批判**\n\n* **理論假設**: 結合預測性狀態表示的假設可能不成立，尤其是在環境的狀態變化非常大的情況下。\n* **資料與訓練可行性**: 結合預測性狀態表示需要大量的資料來訓練模型，收集和處理這些資料可能是困難的。\n* **計算資源**: 結合預測性狀態表示需要大量的計算資源來訓練模型，尤其是在大規模的環境中。\n* **是否真優於 SOTA**: 結合預測性狀態表示的優勢可能是來自於其他因素，例如模型的複雜度或是訓練方法。\n* **failure mode"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究提案摘要**\n\n**研究痛點與背景**\n\n* 無監督技能發現方法存在限制，例如難以在複雜環境中學習有效的技能表示\n* 目前的方法可能不適用於靜態環境或時間順序資訊不重要的環境\n\n**核心研究方法**\n\n* 結合預測性狀態表示（PSR）和資訊瓶頸原則\n* 模型包括編碼器、資訊瓶頸層、解碼器/策略網路和預測性狀態表示模組\n* 訓練目標是最小化重建誤差、KL 散度和預測誤差\n\n**與既有方法的差異與創新性**\n\n* 新穎的方法結合預測性狀態表示和資訊瓶頸原則\n* 新的實作細節使用預測性狀態表示模組和資訊瓶頸層\n* 可以應用於更廣泛的環境，包括靜態環境和時間順序資訊不重要的環境\n\n**實驗設計**\n\n* 使用 MiniGrid-MultiRoom 和 Meta-World (Sawyer) 無獎勵版資料集\n* 使用 *Latent Skill Discovery with Information Bottleneck* 和 *Skill-Bottleneck: Learning Compact Skill Embeddings without Rewards* 作為基線方法\n* 評估指標包括探索效率、技能可重用性和轉移成功率\n* 設計 ablation study 來評估預測性狀態表示模組和資訊瓶頸層的重要性\n\n**預期貢獻與影響**\n\n* 提高無監督技能發現的效率和效果\n* 擴大無監督技能發現的應用範圍\n* 為無監督技能發現的研究提供新的思路和方法\n\n**風險與緩解**\n\n* 預測性狀態表示模組可能不適用於所有環境\n* 資訊瓶頸層可能不夠強大，無法有效地壓縮技能表示\n* 訓練時間和計算資源可能超出預期\n* 緩解策略包括使用多種預測性狀態表示模組和資訊瓶頸層來提高模型的強健性"
+      "summary": "**主題一：異構專家池與結構化路由**\n\n* **關鍵事實**：\n + 大多數 MoE 假設所有專家具備相同模型結構。\n + 研究人數仍在十餘人左右。\n* **結論**：\n + 需要設計門控機制考慮專家架構差異與輸入特徵。\n + 參數共享與記憶體佈局優化仍缺乏統一框架。\n* **技術細節**：\n + 需要穩定梯度傳遞。\n + 需要優化計算負載。\n* **論點**：\n + 異構專家之間的參數共享與記憶體佈局優化仍缺乏統一框架。\n + 需要設計門控機制考慮專家架構差異與輸入特徵。\n* **引用**：\n + *Heterogeneous Mixture‑of‑Experts for Efficient Multitask Learning*，第一作者 **Y. Liu**，NeurIPS 2025。\n + *Structure‑Aware Expert Selection in Heterogeneous MoE*，第一作者 **M. Patel**，ICLR 2026。\n + *Cross‑Architecture MoE with Dynamic Gating*，arXiv:2509.01342，2025。\n\n**主題二：令牌前聚類驅動的稀疏路由**\n\n* **關鍵事實**：\n + 直接對每個 token 進行門控會產生巨大的計算開銷。\n + 需要設計可微分的令牌聚類。\n* **結論**：\n + 需要穩定的正則化策略。\n + 需要減少資訊損失。\n* **技術細節**：\n + 需要同步更新路由門控。\n + 需要穩定梯度傳遞。\n* **論點**：\n + 聚類過程的可微分性與路由門控的同步更新會產生梯度衝突。\n + 需要設計穩定的正則化策略。\n* **引用**：\n + *Token Clustering for Scalable MoE Transformers*，第一作者 **S. Kim**，NeurIPS 2025。\n + *Cluster‑Based Routing in Sparse Expert Networks*，第一作者 **A. García**，ICML 2026。\n + *Differentiable Token Grouping for Efficient MoE*，arXiv:2603.04112，2026。\n\n**主題三：延遲感知的動態容量分配**\n\n* **關鍵事實**：\n + 大多數 MoE 只在訓練階段考慮路由"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
