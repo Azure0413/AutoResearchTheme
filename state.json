@@ -1,13 +1,18 @@
 {
   "date": "2026-06-28",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**自適應等變圖神經微分方程 (Equivariant Graph Neural ODE)**\n\n* **關鍵事實**：\n + 目前只有少數團隊處理「對稱性會隨時間變化」的動態系統。\n + 等變性與微分方程求解的連續性可大幅提升流體-結構耦合、變形材料等領域的模擬精度。\n* **結論**：\n + 自適應等變圖神經微分方程可動態切換或擴展等變群 G(t)。\n + 等變梯度在自適應時間步長下的高效計算是未解之處。\n* **技術細節**：\n + ODE 整合過程中動態切換或擴展等變群 G(t)。\n + 等變梯度在自適應時間步長下的高效計算。\n + 大規模稀疏圖上保持等變性的記憶與計算成本平衡。\n* **論點**：\n + 等變性與微分方程求解的連續性對模擬精度的影響。\n + 自適應等變圖神經微分方程的潛力與挑戰。\n* **引用的 paper 名稱**：\n + `Adaptive Equivariant Graph Neural ODEs for Variable Symmetry Systems`, Liu et al., NeurIPS 2025\n + `Symmetry-Aware Neural ODEs for Fluid-Structure Interaction`, Patel et al., ICLR 2026\n + `Learning Dynamic Symmetry Groups with Equivariant Neural ODEs`, arXiv:2507.01432, 2025\n\n**從資料中自動發現與學習隱含對稱群**\n\n* **關鍵事實**：\n + 現有等變模型大多假設已知對稱群。\n + 真正能從未標註資料中挖掘出隱含的置換、旋轉或規範對稱的技術仍屈指可數。\n* **結論**：\n + 能從資料中自動發現與學習隱含對稱群的技術可讓幾何深度學習跨足更廣的科學與工程領域。\n* **技術細節**：\n + 參數化未知離散或連續群，並在訓練過程中同時優化表示與群結構。\n + 大規模高維資料中群搜索的計算複雜度。\n + 發現的對稱性在下游任務中的可遷移性與穩定性。\n* **論點**：\n + 等變性與資料中隱含對稱群的關係。\n + 自動發現與"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 主題選擇\n\n* 主題:**自適應等變圖神經微分方程 (Adaptive Equivariant Graph Neural ODEs for Variable Symmetry Systems)**\n* 依據:已有可公開實作的基礎程式碼、動態等變群切換仍缺乏高效梯度與時間步長機制\n\n### 2. 核心方法群\n\n* **Adaptive Equivariant Graph ODE (AE-GODE)**\n + 透過在 ODE 求解過程中插入「等變群切換模組」`SymGroupSwitch`\n + 根據時間或狀態自動選擇當前對稱群 `G(t)`,並以群表示矩陣調整訊息傳遞的權重\n* **Equivariant Adaptive Step-Size Integrator (E-ASDI)**\n + 在常見的 `Dormand-Prince` 或 `RK4` 整合器上加入等變性保證的步長調整規則\n + 確保在變化的對稱群下仍維持誤差界限\n* **Sparse Equivariant Memory Buffer (SE-Mem)**\n + 為大規模稀疏圖設計一個只保存受等變性影響的節點/邊特徵的緩衝區\n + 利用哈希映射快速查找相同軌跡的等變等價類,降低記憶與計算開銷\n\n### 3. 模型架構細節\n\n* **輸入**:稀疏圖 `G = (V, E)`,每個節點有特徵向量 `h_v`,座標 `x_v`\n* **輸出**:隨時間演化的節點狀態 `h_v(t)`,以及可選的對稱群參數 `g(t)`\n* **關鍵模組**:`SymGroupSwitch`, `EquiMessagePass`, `E-ASDI`\n* **訓練目標**:最小化預測狀態與真實動力學的時間序列 MSE,加上等變性正則項\n\n### 4. 訓練策略\n\n* **資料規模**:合成流體結構耦合資料集,每份樣本長度 100–200 時間步\n* **batch size**:8–16 個圖,每個圖內部使用 mini-batch 的節點抽樣\n* **優化器**:AdamW,學習率 1e-3,使用 Cosine Annealing 逐步衰減\n* **loss 設計**:L_total = L_MSE + λ_eq * L_eq,其中 L"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
