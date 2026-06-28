@@ -1,6 +1,6 @@
 {
   "date": "2026-06-29",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n**主題**: 程式碼生成模型中的隱蔽觸發器 (Stealthy Trigger) 逆向設計與防禦\n\n**核心方法群**\n\n1. **Influence-Guided Trigger Synthesis**：透過影響度估計找出對模型輸出變化最敏感的 token 序列，然後以最小化可見度為目標優化觸發器。\n2. **Gradient-Mask Backdoor Removal**：在微調階段對可疑梯度方向施加遮罩，抑制觸發器相關的參數更新，同時保留正常功能。\n3. **Adversarial Prompt Augmentation (APA)**：在訓練資料中加入對抗式的「偽觸發」樣本，使模型學會在見到類似模式時產生安全的中性程式碼，而非惡意片段。\n\n**模型架構細節**\n\n* 輸入：程式碼/自然語言混合的 prompt（例如 `def foo(x):` + 註解），長度上限 512 token。\n* 輸出：自回歸生成的程式碼片段，逐 token 預測。\n* 關鍵模組：\n + 基礎編碼器/解碼器為 Transformer-Decoder（如 `CodeGen-2B`），內建位置編碼。\n + 觸發偵測頭：輕量級二分類頭，接受最後層隱向量，判斷是否含觸發模式。\n + 梯度遮罩層：在微調時動態生成遮罩矩陣，阻斷觸發相關梯度。\n\n**訓練策略**\n\n* 資料規模：使用公開的 `CodeSearchNet`（約 6 M 程式碼片段）與 `GitHub-Python` 子集（約 1 M）作為基礎語料。\n* Batch size：GPU 記憶體允許下 32-64，若使用多卡可擴展至 256。\n* 優化器：`AdamW`，學習率 2e-4，使用線性 warm-up 前 5% 步驟，之後 cosine 衰減。\n\n**主要 benchmark 與資料集**\n\n* Benchmark：`CodeXGLUE – Code Completion`、`CodeBERT-Eval – Vulnerability Detection`，以及自建的 **Stealthy Trigger Testset**（含 5 k 隱蔽觸發樣本）。\n* 關鍵指標：\n + BLEU / CodeBLEU：衡量一般生成品質。\n + Trigger Success Rate (TSR)：觸發成功的"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n**方案 1: 隱蔽觸發器逆向設計中的梯度遮罩優化**\n\n* **關鍵事實**：\n + 使用動態遮罩層來優化隱蔽觸發器的設計\n + 模型輸入為程式碼生成模型的輸出\n + 訓練目標為最小化觸發器的可見度\n* **技術細節**：\n + 使用梯度遮罩層的損失函數加上原模型的損失\n + 模型大小為 100M 參數，單張 GPU 可以在一週內完成驗證\n* **預期改善的指標與原因**：\n + 預期在 Stealthy Trigger Testset 的 Trigger Success Rate (TSR) 指標上會有所提升\n + 因為動態遮罩層可以更好地隱藏觸發器的模式，使得模型更加難以偵測\n\n**方案 2: 基於影響度函數的資料中毒偵測**\n\n* **關鍵事實**：\n + 使用影響度函數來偵測資料中毒\n + 模型輸入為模型的輸出\n + 訓練目標為最小化資料中毒的影響\n* **技術細節**：\n + 使用影響度函數的損失函數加上原模型的損失\n + 模型大小為 50M 參數，單張 GPU 可以在三天內完成驗證\n* **預期改善的指標與原因**：\n + 預期在 Certified Post-Training Data-Poisoning Detection 的指標上會有所提升\n + 因為影響度函數可以更好地偵測到資料中毒的模式，使得模型更加robust\n\n**方案 3: 程式碼生成模型中的隱蔽觸發器防禦**\n\n* **關鍵事實**：\n + 使用對抗式訓練來防禦隱蔽觸發器\n + 模型輸入為程式碼生成模型的輸出\n + 訓練目標為最小化隱蔽觸發器的影響\n* **技術細節**：\n + 使用對抗式訓練的損失函數加上原模型的損失\n + 模型大小為 200M 參數，單張 GPU 可以在兩週內完成驗證\n* **預期改善的指標與原因**：\n + 預期在 CodeXGLUE 的 Code Completion 指標上會有所提升\n + 因為對抗式訓練可以更好"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
