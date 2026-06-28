@@ -1,13 +1,18 @@
 {
   "date": "2026-06-29",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 受影響度函數 (Influence-Based) 的可驗證後訓練資料中毒偵測與修復\n\n* **關鍵事實**:\n + 受影響度函數可用於偵測後訓練資料中毒。\n + 目前研究人員仍在十餘人左右，因為計算影響度具高計算與記憶門檻。\n* **結論**:\n + 可驗證後訓練資料中毒偵測與修復仍是開放問題。\n + 需要發展新穎的方法來近似計算每筆新增資料對最終模型輸出的梯度影響。\n* **技術細節**:\n + 使用受影響度函數來計算每筆新增資料對最終模型輸出的梯度影響。\n + 需要發展新穎的方法來近似計算每筆新增資料對最終模型輸出的梯度影響。\n* **論點**:\n + 受影響度函數可用於偵測後訓練資料中毒。\n + 需要發展新穎的方法來近似計算每筆新增資料對最終模型輸出的梯度影響。\n* **引用的 paper 名稱**:\n + 《Certified Post‑Training Data‑Poisoning Detection via Influence Audits》, 第一作者 **Yuan Liu**, NeurIPS 2025。\n + 《Influence‑Guided Backdoor Removal for Foundation Models》, 第一作者 **Ananya Patel**, ICLR 2026。\n + 《Scalable Influence‑Based Auditing for Large Language Models》, arXiv:2504.11237, 2025。\n\n### 主題二: 程式碼生成模型中的隱蔽觸發器 (Stealthy Trigger) 逆向設計與防禦\n\n* **關鍵事實**:\n + 隱蔽觸發器是程式碼生成模型的後門攻擊。\n + 目前僅有少數團隊聚焦於大型程式碼生成模型的後門攻擊。\n* **結論**:\n + 隱蔽觸發器的逆向設計與防禦仍是開放問題。\n + 需要發展新穎的方法來設計低可見度的觸發序列。\n* **技術細節**:\n + 使用隱蔽觸發器來設計程式碼生成模型的後門攻擊。\n + 需要發展新穎的方法來設計低可見度的觸發序列。\n* **論點**:\n + 隱蔽觸發器是程式碼生成模型的後門攻擊。\n + 需要發展新穎的方法來設計低可見度"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**主題**: 程式碼生成模型中的隱蔽觸發器 (Stealthy Trigger) 逆向設計與防禦\n\n**核心方法群**\n\n1. **Influence-Guided Trigger Synthesis**：透過影響度估計找出對模型輸出變化最敏感的 token 序列，然後以最小化可見度為目標優化觸發器。\n2. **Gradient-Mask Backdoor Removal**：在微調階段對可疑梯度方向施加遮罩，抑制觸發器相關的參數更新，同時保留正常功能。\n3. **Adversarial Prompt Augmentation (APA)**：在訓練資料中加入對抗式的「偽觸發」樣本，使模型學會在見到類似模式時產生安全的中性程式碼，而非惡意片段。\n\n**模型架構細節**\n\n* 輸入：程式碼/自然語言混合的 prompt（例如 `def foo(x):` + 註解），長度上限 512 token。\n* 輸出：自回歸生成的程式碼片段，逐 token 預測。\n* 關鍵模組：\n + 基礎編碼器/解碼器為 Transformer-Decoder（如 `CodeGen-2B`），內建位置編碼。\n + 觸發偵測頭：輕量級二分類頭，接受最後層隱向量，判斷是否含觸發模式。\n + 梯度遮罩層：在微調時動態生成遮罩矩陣，阻斷觸發相關梯度。\n\n**訓練策略**\n\n* 資料規模：使用公開的 `CodeSearchNet`（約 6 M 程式碼片段）與 `GitHub-Python` 子集（約 1 M）作為基礎語料。\n* Batch size：GPU 記憶體允許下 32-64，若使用多卡可擴展至 256。\n* 優化器：`AdamW`，學習率 2e-4，使用線性 warm-up 前 5% 步驟，之後 cosine 衰減。\n\n**主要 benchmark 與資料集**\n\n* Benchmark：`CodeXGLUE – Code Completion`、`CodeBERT-Eval – Vulnerability Detection`，以及自建的 **Stealthy Trigger Testset**（含 5 k 隱蔽觸發樣本）。\n* 關鍵指標：\n + BLEU / CodeBLEU：衡量一般生成品質。\n + Trigger Success Rate (TSR)：觸發成功的"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
