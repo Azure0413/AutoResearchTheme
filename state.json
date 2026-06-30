@@ -1,13 +1,18 @@
 {
   "date": "2026-07-01",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**時間演化稀疏自編碼器與電路追蹤**\n\n* **關鍵事實**：\n + 大多數稀疏自編碼器只在單一訓練階段靜態分析。\n + 研究人數仍在十餘人左右。\n* **結論**：\n + 時間演化稀疏自編碼器有潛力捕捉模型內部電路隨訓練或微調而變化的能力。\n* **技術細節**：\n + 需要在保持高稀疏度的同時，讓編碼器的基底在不同訓練時刻保持可比對的語意對齊。\n + 大規模模型上動態稀疏編碼的計算與記憶開銷仍未被有效控制。\n* **論點**：\n + 需要設計計算上可行的稀疏自編碼器，能夠捕捉模型內部電路的時間演化。\n + 需要研究大規模模型上動態稀疏編碼的計算效率與記憶開銷。\n* **引用的 paper 名稱**：\n + 《Temporal Sparse Autoencoders for Circuit Evolution》, 第一作者 **Y. Liu**, NeurIPS 2025\n + 《Dynamic Mechanistic Probes via Sparse Coding》, 第一作者 **A. Patel**, ICLR 2026\n + 《Evolving Feature Maps with Sparse Autoencoders》, arXiv:2509.03112, 2025\n\n**因果介入驅動的電路發現**\n\n* **關鍵事實**：\n + 傳統電路分析多依賴被動觀測，缺少系統化的因果介入框架。\n + 研究社群仍非常小。\n* **結論**：\n + 因果介入驅動的電路發現有潛力系統化因果介入框架。\n* **技術細節**：\n + 需要設計計算上可行的介入策略，使得單次前向傳播即可估計因果影響。\n + 需要研究介入結果的統計顯著性檢驗在高維激活空間中。\n* **論點**：\n + 需要設計計算上可行的因果介入框架，能夠系統化因果介入。\n + 需要研究介入結果的統計顯著性檢驗在高維激活空間中。\n* **引用的 paper 名稱**：\n + 《Causal Circuit Discovery in Large Language Models》, 第一作者 **S. Kim**, ICML 2025\n + 《Interventional Probes for Mechanistic Interpretability》, 第一"
+    },
+    {
+      "stage": 2,
+      "summary": "**時間演化稀疏自編碼器（Temporal Sparse Autoencoders for Circuit Evolution）**\n\n**核心方法群**\n\n1. **時間切片稀疏編碼（Temporal Slice Sparse Coding）**\n * 抽取模型激活快照\n * 使用 L1 正則化的線性解碼器將高維激活映射至稀疏代碼\n * 在相鄰時間切片間加入相似度正則化以保持語意對齊\n2. **動態基底更新（Dynamic Basis Update）**\n * 以小批量的激活樣本為基礎\n * 利用投影梯度法在每個時間點微調稀疏基底\n3. **稀疏電路追蹤（Sparse Circuit Tracing）**\n * 透過稀疏代碼的非零位置映射回原始神經元\n * 建構「電路圖」\n * 以時間序列的變化率（例如差分稀疏度）捕捉電路的演化趨勢\n\n**模型架構細節**\n\n* **輸入**：目標模型（如 BERT、GPT‑2）在特定層的激活向量\n* **輸出**：稀疏代碼向量\n* **關鍵模組**：\n + **稀疏編碼器**：兩層全連接投影 + L1 正則化\n + **時間對齊模組**：相鄰時間步的代碼相似度損失（如 cosine 相似度）\n + **解碼器**：線性或小型 MLP，用於重建原始激活以計算重建誤差\n\n**訓練策略**\n\n* **資料規模**：在公開的語言模型 checkpoint 上抽取 10‑20 個訓練 epoch 的激活快照\n* **Batch size**：`256`（視 GPU 記憶體而定）\n* **優化器**：AdamW，學習率 `1e-3`，權重衰減 `1e-5`\n* **Loss 設計**：`L_total = λ_recon * L_recon + λ_sparse * L_sparse + λ_time * L_time`\n\n**主要 benchmark 與資料集**\n\n* **Benchmark**：\n + **Circuit Evolution Score (CES)**：衡量同一神經元在不同訓練階段的代碼相似度變化\n + **Reconstruction Fidelity (RF)**：在每個時間點的重建均方誤差\n* **資料集**：\n + **OpenWebText**（用於 GPT‑2 之激活抽取）\n + **WikiText‑103"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
