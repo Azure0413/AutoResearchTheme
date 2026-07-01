@@ -1,13 +1,18 @@
 {
   "date": "2026-07-02",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "以下是 Stage 1 (🔍 探索熱門議題) 內容濃縮為結構化摘要：\n\n**非自治圖神經時序模型 (Non-Autonomous Graph Neural Temporal Models)**\n\n* **關鍵事實**：\n + 非自治圖神經時序模型可以動態調整圖結構和模型參數以適應時變資料。\n + 相關研究仍處於初期階段，缺乏系統性方法和評估基準。\n* **結論**：\n + 非自治圖神經時序模型有突破潛力，但需要設計高效的圖結構更新機制和時序模型參數調整方法。\n* **技術細節**：\n + 核心技術問題：設計高效的圖結構更新機制和時序模型參數調整方法。\n + 未解之處：保證模型的可擴展性和解釋性。\n* **論點**：\n + 需要系統性方法和評估基準來評估非自治圖神經時序模型的有效性。\n* **引用**：\n + `Graph Neural Temporal Models for Time-Varying Graphs` (J. Li, NeurIPS 2025)\n + `Non-Autonomous Graph Neural Networks for Dynamic Graphs` (Y. Zhang, ICLR 2026)\n + `Temporal Graph Neural Networks with Dynamic Graph Structure` (H. Wang, arXiv 2025)\n\n**深度學習模型的可解釋性和可靠性分析 (Interpretability and Reliability Analysis of Deep Learning Models)**\n\n* **關鍵事實**：\n + 深度學習模型的可解釋性和可靠性成為了一個重要的研究方向。\n + 相關研究仍缺乏系統性方法和評估基準。\n* **結論**：\n + 需要設計有效的模型解釋方法和可靠性評估指標。\n* **技術細節**：\n + 核心技術問題：設計有效的模型解釋方法和可靠性評估指標。\n + 未解之處：保證模型的性能和可擴展性。\n* **論點**：\n + 需要系統性方法和評估基準來評估深度學習模型的可解釋性和可靠性。\n* **引用**：\n + `Interpretability and Reliability of Deep Learning Models` (A. Kumar, ICML 2025)\n + `Explainable Deep Learning Models for Computer Vision Tasks` (J. Kim, CVPR 2025)\n + `Reliability Analysis of Deep Learning Models for Safety-Critical Systems` (H. Lee, arXiv 2026)\n\n**元學習基"
+    },
+    {
+      "stage": 2,
+      "summary": "**非自治圖神經時序模型 (Non-Autonomous Graph Neural Temporal Models) 相關方法**\n\n### 核心方法群\n\n* **DyGAT**：時間感知的注意力機制，同時學習節點表徵與邊的時間衰減權重\n* **TG-ODE**：連續時間動力系統，使用神經 ODE 求解器在時間上平滑演化節點特徵\n* **Meta-GR**：元學習方式學習一個圖重排器，根據當前任務的損失梯度動態產生「暫時」的圖連接\n\n### 模型架構細節\n\n* **輸入**：時間序列的節點特徵矩陣、當前圖鄰接矩陣、可選的時間戳或事件標記\n* **輸出**：每個時間步的節點嵌入或全圖的時間序列預測\n* **關鍵模組**：\n + **圖結構更新模組**：DyGAT 使用時間注意力門控、TG-ODE 使用事件驅動的跳變函數、Meta-GR 使用元網路產生臨時鄰接\n + **時序編碼器**：多數方法採用位置編碼或 RNN/Transformer 層將時間資訊注入節點特徵\n + **訊息傳遞層**：標準的 GCN/GraphSAGE 變體，配合動態加權或微分方程求解\n\n### 訓練策略\n\n* **資料規模**：公開動態圖資料集多在數千至數十萬條邊、時間跨度 10⁴–10⁵ 步\n* **Batch size**：多採用時間窗口批次，每個 batch 包含 32–64 個連續時間窗口，每窗口長度 20–50 步\n* **優化器**：Adam 或 AdamW 為主，學習率 1e-3~1e-4，對於 TG-ODE 會額外使用自適應步長 ODE 求解器\n* **Loss 設計**：\n + 基本預測 loss（MSE / BCE）\n + 結構平滑項：鼓勵相鄰時間步的圖變化不過於劇烈（L2 範數）\n + 稀疏正則：對於 Meta-GR 產生的臨時邊加入 L1 懲罰，避免過度連接\n\n### 主要 benchmark 與資料集\n\n* **Wikipedia Temporal Interaction**（WikiTalk）：以時間戳的編輯"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
