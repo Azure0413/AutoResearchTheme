@@ -1,13 +1,18 @@
 {
   "date": "2026-07-04",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**神經符號因果視訊世界模型 (Neuro-Symbolic Causal Video Models)**\n\n* **關鍵事實**：\n + 結合可微分神經影像編碼與可解釋的符號因果圖，學習可推理的因果結構。\n + 現有研究僅在小規模合成環境驗證。\n* **結論**：\n + 有潛力於學習可推理的因果結構，但仍需要進一步研究。\n* **技術細節**：\n + 使用可微分神經影像編碼和可解釋的符號因果圖。\n + 需要解決高維原始影格上同時學習離散符號因果圖與連續視覺特徵的對齊問題。\n* **論點**：\n + 可微分神經影像編碼和可解釋的符號因果圖可以結合使用。\n + 需要進一步研究以驗證在大規模環境下的有效性。\n* **引用的 paper 名稱**：\n + `Neuro-Symbolic Causal Video Prediction`\n + `Symbolic Intervention Networks for Embodied Agents`\n + `Hybrid Causal Graph Neural Process for Video Reasoning`\n\n**動態關係槽驅動的物件中心世界模型**\n\n* **關鍵事實**：\n + 結合圖神經網路，保持可擴展的物件表示。\n + 現有工作仍在探索階段。\n* **結論**：\n + 有潛力於建模隨時間演變的交互圖，但仍需要進一步研究。\n* **技術細節**：\n + 使用動態關係槽和圖神經網路。\n + 需要解決保持槽分配穩定性的同時，允許圖邊緣在不同時間尺度上自適應增減問題。\n* **論點**：\n + 動態關係槽和圖神經網路可以結合使用。\n + 需要進一步研究以驗證在長時間序列下的有效性。\n* **引用的 paper 名稱**：\n + `Dynamic Slot Graphs for Long-Horizon Video Planning`\n + `Scalable Object-Centric Transformers for 10-Second Video Prediction`\n + `Hierarchical Slot Memory for Continual Video Understanding`\n\n**連續時間狀態空間視訊模型**\n\n* **關鍵事實**：\n + 使用可逆神經常微分方程和稀疏時間抽樣，捕捉長期動力學。\n + 現有實驗僅在合成資料集展示。\n* **結論**：\n + 有潛力於捕捉長期動力學，但仍需要進"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 核心方法群\n\n* **Dynamic Slot Graphs for Long-Horizon Video Planning** (NeurIPS 2025)\n + 使用可學習的槽分配器將視覺特徵映射到固定數量的「物件槽」\n + 利用圖神經網路在槽間建立時間可變的關係邊\n* **Scalable Object-Centric Transformers for 10-Second Video Prediction** (ICLR 2026)\n + 把槽表示作為 Transformer 的 token\n + 加入稀疏注意力機制以降低長序列計算成本\n* **Hierarchical Slot Memory for Continual Video Understanding** (ICML 2025)\n + 引入多層次槽記憶體：底層槽捕捉瞬時外觀，上一層槽聚合跨時間的關係資訊\n\n### 模型架構細節\n\n* **輸入**: 連續影格序列（例如 30 fps，長度 2-10 秒）\n* **輸出**: 物件槽向量集合 S_t 和動態關係圖 G_t\n* **關鍵模組**:\n + 槽分配器（可微分的聚類網路）\n + 圖神經更新器（如 Edge-Conditioned GCN）\n + 跨時間槽記憶（門控 LSTM 或 GRU）\n\n### 訓練策略\n\n* **資料規模**: 合成環境（如 CATER-10s）≈ 100k 影片，真實長視頻資料（如 Something-Else）≈ 20k 影片\n* **Batch size**: 每個 GPU 8-12 影片（依顯存調整）\n* **優化器**: AdamW，學習率 1e-4，使用 cosine decay\n* **Loss 設計**: L_total = λ₁·L_recon + λ₂·L_consistency + λ₃·L_relation\n\n### 主要 benchmark 與資料集\n\n* **CATER-10s** (NeurIPS 2024)\n + 評估指標: mIoU，Relation Accuracy，Long-Term Prediction Error\n* **Something-Else** (ICLR 2025)\n + 評估指標: Top-1 Action Forecast Accuracy，Slot Consistency Score\n* **Real-World Robotics Manipulation** (ICML 2026)\n + 評估指標: Success Rate，Planning Horizon Error\n\n### 方法優劣比較\n\n* **Dynamic Slot Graphs (NeurIPS 2025)**\n + 優點: 槽分配器訓練穩定，易於擴展至更多物件\n + 缺點:"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
