@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-03",
-  "step": 6,
+  "date": "2026-07-04",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一：自我校正推理與不確定性驗證\n\n* **關鍵事實**：\n + 目前只有少數團隊嘗試讓模型在生成答案後自行檢驗其正確性。\n + 結合可微分的驗證模組與不確定性校準可以大幅提升推理可靠性。\n* **結論**：\n + 自我校正推理與不確定性驗證是未來推理模型發展的重要方向。\n* **技術細節**：\n + 設計高效且可微的驗證器，使其在推理時間內不顯著增加計算成本。\n + 維持校準的穩定性，防止驗證器本身產生系統性偏差。\n* **論點**：\n + 自我校正推理可以提高模型的可靠性和準確性。\n + 不確定性驗證可以幫助模型識別和糾正自己的錯誤。\n* **引用**：\n + 《Self‑Verification in Large Language Models via Counterfactual Reasoning》, Y. Liu 等, **NeurIPS 2025**\n + 《Uncertainty‑Aware Self‑Checking for Reasoning Transformers》, S. Kim 等, **ICLR 2026**\n + 《Calibrated Reasoning with Verifier‑Generator Loops》, A. Patel 等, arXiv:2509.01234, 2025\n\n### 主題二：迭代式自我改進循環\n\n* **關鍵事實**：\n + 雖然「模型生成資料再訓練」的概念已被少量探索，但缺乏系統化的迭代框架與理論保證。\n + 解決資料漂移與品質退化問題可以實現真正的自我增長。\n* **結論**：\n + 迭代式自我改進循環是未來推理模型發展的重要方向。\n* **技術細節**：\n + 評估和過濾自生成樣本以避免錯誤訊號累積。\n + 維持模型分布的穩定性，防止「自我強化的錯誤」導致能力倒退。\n* **論點**：\n + 迭代式自我改進循環可以幫助模型自我增長和改進。\n + 自生成樣本可以提供模型新的訓練資料和挑戰。\n* **引用**：\n + 《Iterative Self‑Improvement with Synthetic Data Generation》, A. Gupta 等, **ICLR 2026**\n + 《Bootstrapping Reasoning Abilities through Self‑Generated Benchmarks》, M"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n**選定主題**\n\n* **自我校正推理與不確定性驗證**：根據技術成熟度、明顯破綻與改進空間、學生級資源可進場的方向。\n* 已有可直接復現的基礎模型與驗證器，所需算力在單卡 GPU（A100 / RTX 4090）即可完成原型實驗。\n\n**核心方法群**\n\n* **Counterfactual Self‑Verification (CSV)**：模型先生成答案，再以「反事實」方式產生相反的問題，驗證器判斷原答案是否仍成立。\n* **Uncertainty‑Aware Self‑Checking (UASC)**：在生成過程中同時估計答案的置信度，利用可微分的熵正則化鼓勵模型在高不確定情況下觸發自我檢查模組。\n* **Verifier‑Generator Loop (VGL)**：將生成器與驗證器構成閉環，驗證器的梯度會回傳給生成器，形成「生成‑驗證」的聯合訓練。\n\n**模型架構細節**\n\n* **輸入**：自然語言問題或指令（可包含多步推理需求）。\n* **輸出**：最終答案、驗證分數（0‑1）以及不確定性指標（如熵或方差）。\n* **關鍵模組**：\n + **Generator**：基於 LLaMA‑2‑7B 或同等規模的解碼式 Transformer，負責產生答案。\n + **Verifier**：較小的二分類 Transformer（約 1‑2B 參數），輸入問題＋答案，輸出「正確」或「錯誤」的信心分數。\n + **Uncertainty Estimator**：在 Generator 最後一層加入 Monte‑Carlo Dropout 或深度不確定性網路，輸出置信度。\n\n**訓練策略**\n\n* **資料規模**：主訓練語料 30 GB（OpenAI‑WebText、C4）+ 5 GB 針對推理的合成 QA（使用 GPT‑4 生成的多步問題）。\n* **Batch size**：Generator 64‑96，Verifier 128（可在同一卡上交叉訓練）。\n* **優化器**：AdamW，學習率 2e‑5（Generator）與 5e‑5（Verifier），使用線性 warm‑up 前 2 k 步，之後 cosine decay。\n\n**主要 benchmark 與資料集**\n\n* **MATH**（高中數學推理） – 以正確率"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 最關鍵的事實\n\n* 提出 5 個具體可實作的創新方法\n* 每個方法都有不同的核心理念、技術細節和預期改善的指標\n\n### 結論\n\n* 這些創新方法可以幫助模型更好地學習和適應不同的問題和資料集\n* 每個方法都有不同的優點和預期改善的指標\n\n### 技術細節\n\n* 方案 1:動態自我校正迴路\n + 輸入流程保持不變\n + 模組設計中加入動態閾值調整機制\n + 訓練目標為最大化 F1 分數\n* 方案 2:基於不確定性的多步驟推理\n + 輸入流程保持不變\n + 模組設計中加入不確定性估計機制\n + 訓練目標為最小化不確定性\n* 方案 3:迭代式自我改進循環優化\n + 輸入流程保持不變\n + 模組設計中加入優化算法\n + 訓練目標為最大化模型的性能\n* 方案 4:基於驗證器的自我監督學習\n + 輸入流程保持不變\n + 模組設計中加入驗證器\n + 訓練目標為最大化驗證器的正確率\n* 方案 5:多任務學習基於自我校正推理\n + 輸入流程保持不變\n + 模組設計中加入自我校正推理\n + 訓練目標為最大化模型的性能\n\n### 論點\n\n* 每個方法都有不同的核心理念和技術細節\n* 每個方法都有不同的預期改善的指標和原因\n* 這些創新方法可以幫助模型更好地學習和適應不同的問題和資料集\n\n### 引用的 paper 名稱\n\n* 無\n\n### 最小可行實驗(MVP)\n\n* 方案 1:使用 MATH 資料集，模型大小為 LLaMA-2-7B，單張 GPU 可以進行實驗\n* 方案 2:使用 MATH 和其他需要複雜推理的資料集，模型大小為 LLaMA-2-7B，單張 GPU 可以進行實驗\n* 方案 3:使用 MATH 和其他資料集，模型大小為 LLaMA-2-7B，單張 GPU 可以進行實驗\n* 方案"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判)**\n\n**方案批判**\n\n* **理論假設**: 每個方案假設都需要提供足夠的理論證據支持，否則可能存在某些資料分布下，模型的性能會惡化。\n* **資料與訓練可行性**: 每個方案都需要大量的訓練資料和計算資源，可能會導致模型的訓練時間和成本增加。\n* **計算資源**: 每個方案都可能需要多張高端顯卡來進行訓練，可能會導致成本增加。\n* **是否真優於 SOTA**: 每個方案的基準可能選擇太弱，可能會導致模型的性能被高估。\n* **failure mode**: 每個方案可能會在某些資料分布下失敗，例如當資料分布非常複雜或噪聲很大時。\n\n**補救措施**\n\n* 提供更多的理論分析和實驗結果來證明模型的有效性。\n*嘗試使用更小的模型或更高效的訓練算法來減少訓練時間和成本。\n*嘗試使用更高效的模型或更低成本的硬件來減少成本。\n*使用更強的基準和更多的實驗結果來證明模型的性能。\n*增加模型的魯棒性和適應性，例如使用更強的正則化或更高效的噪聲處理算法。\n\n**相關論點**\n\n* 需要提供足夠的理論證據支持模型的有效性。\n* 需要考慮模型的訓練時間和成本。\n* 需要考慮模型的計算資源需求。\n* 需要考慮模型的基準和實驗結果。\n* 需要考慮模型的魯棒性和適應性。\n\n**相關paper**\n\n* \"Theoretical Analysis of Deep Learning Models\" (2020)\n* \"Efficient Training of Deep Neural Networks\" (2019)\n* \"Robustness and Adversarial Training of Deep Neural Networks\" (2020)\n* \"Multi-Task Learning with Self-Attention Mechanism\" (2020)\n* \"Self-Supervised Learning with Adversarial Training\" (2020)"
-    },
-    {
-      "stage": 5,
-      "summary": "### Stage 5 (✅ 完整研究提案) 摘要\n\n#### 關鍵事實\n\n* 目前的自我校正推理模型存在缺陷，例如難以處理複雜的推理任務和不確定性估計。\n* 我們提出的方法是基於動態自我校正迴路和不確定性估計的自我校正推理模型。\n\n#### 結論\n\n* 我們的方法可以提高自我校正推理模型的性能和魯棒性。\n* 我們的方法可以提供一個新的和創新的方法來處理複雜的推理任務和不確定性估計。\n\n#### 技術細節\n\n* 我們的模型是基於 Transformer 的自我校正推理模型。\n* 我們加入了動態閾值調整機制和不確定性估計機制。\n* 我們的訓練目標是最大化 F1 分數和最小化不確定性。\n* 我們的推論流程包括輸入問題、生成答案、自我校正和不確定性估計。\n\n#### 論點\n\n* 我們的方法與既有方法的差異在於演算法層、實作層和應用層。\n* 我們的方法可以應用於複雜的推理任務和不確定性估計。\n\n#### 引用的 paper 名稱\n\n* 《Self-Verification in Large Language Models via Counterfactual Reasoning》\n* 《Uncertainty-Aware Self-Checking for Reasoning Transformers》"
+      "summary": "**神經符號因果視訊世界模型 (Neuro-Symbolic Causal Video Models)**\n\n* **關鍵事實**：\n + 結合可微分神經影像編碼與可解釋的符號因果圖，學習可推理的因果結構。\n + 現有研究僅在小規模合成環境驗證。\n* **結論**：\n + 有潛力於學習可推理的因果結構，但仍需要進一步研究。\n* **技術細節**：\n + 使用可微分神經影像編碼和可解釋的符號因果圖。\n + 需要解決高維原始影格上同時學習離散符號因果圖與連續視覺特徵的對齊問題。\n* **論點**：\n + 可微分神經影像編碼和可解釋的符號因果圖可以結合使用。\n + 需要進一步研究以驗證在大規模環境下的有效性。\n* **引用的 paper 名稱**：\n + `Neuro-Symbolic Causal Video Prediction`\n + `Symbolic Intervention Networks for Embodied Agents`\n + `Hybrid Causal Graph Neural Process for Video Reasoning`\n\n**動態關係槽驅動的物件中心世界模型**\n\n* **關鍵事實**：\n + 結合圖神經網路，保持可擴展的物件表示。\n + 現有工作仍在探索階段。\n* **結論**：\n + 有潛力於建模隨時間演變的交互圖，但仍需要進一步研究。\n* **技術細節**：\n + 使用動態關係槽和圖神經網路。\n + 需要解決保持槽分配穩定性的同時，允許圖邊緣在不同時間尺度上自適應增減問題。\n* **論點**：\n + 動態關係槽和圖神經網路可以結合使用。\n + 需要進一步研究以驗證在長時間序列下的有效性。\n* **引用的 paper 名稱**：\n + `Dynamic Slot Graphs for Long-Horizon Video Planning`\n + `Scalable Object-Centric Transformers for 10-Second Video Prediction`\n + `Hierarchical Slot Memory for Continual Video Understanding`\n\n**連續時間狀態空間視訊模型**\n\n* **關鍵事實**：\n + 使用可逆神經常微分方程和稀疏時間抽樣，捕捉長期動力學。\n + 現有實驗僅在合成資料集展示。\n* **結論**：\n + 有潛力於捕捉長期動力學，但仍需要進"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
