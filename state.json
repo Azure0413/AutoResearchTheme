@@ -1,6 +1,6 @@
 {
   "date": "2026-07-03",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**Stage 4 (🔥 嚴格自我批判)**\n\n**方案批判**\n\n* **理論假設**: 每個方案假設都需要提供足夠的理論證據支持，否則可能存在某些資料分布下，模型的性能會惡化。\n* **資料與訓練可行性**: 每個方案都需要大量的訓練資料和計算資源，可能會導致模型的訓練時間和成本增加。\n* **計算資源**: 每個方案都可能需要多張高端顯卡來進行訓練，可能會導致成本增加。\n* **是否真優於 SOTA**: 每個方案的基準可能選擇太弱，可能會導致模型的性能被高估。\n* **failure mode**: 每個方案可能會在某些資料分布下失敗，例如當資料分布非常複雜或噪聲很大時。\n\n**補救措施**\n\n* 提供更多的理論分析和實驗結果來證明模型的有效性。\n*嘗試使用更小的模型或更高效的訓練算法來減少訓練時間和成本。\n*嘗試使用更高效的模型或更低成本的硬件來減少成本。\n*使用更強的基準和更多的實驗結果來證明模型的性能。\n*增加模型的魯棒性和適應性，例如使用更強的正則化或更高效的噪聲處理算法。\n\n**相關論點**\n\n* 需要提供足夠的理論證據支持模型的有效性。\n* 需要考慮模型的訓練時間和成本。\n* 需要考慮模型的計算資源需求。\n* 需要考慮模型的基準和實驗結果。\n* 需要考慮模型的魯棒性和適應性。\n\n**相關paper**\n\n* \"Theoretical Analysis of Deep Learning Models\" (2020)\n* \"Efficient Training of Deep Neural Networks\" (2019)\n* \"Robustness and Adversarial Training of Deep Neural Networks\" (2020)\n* \"Multi-Task Learning with Self-Attention Mechanism\" (2020)\n* \"Self-Supervised Learning with Adversarial Training\" (2020)"
+    },
+    {
+      "stage": 5,
+      "summary": "### Stage 5 (✅ 完整研究提案) 摘要\n\n#### 關鍵事實\n\n* 目前的自我校正推理模型存在缺陷，例如難以處理複雜的推理任務和不確定性估計。\n* 我們提出的方法是基於動態自我校正迴路和不確定性估計的自我校正推理模型。\n\n#### 結論\n\n* 我們的方法可以提高自我校正推理模型的性能和魯棒性。\n* 我們的方法可以提供一個新的和創新的方法來處理複雜的推理任務和不確定性估計。\n\n#### 技術細節\n\n* 我們的模型是基於 Transformer 的自我校正推理模型。\n* 我們加入了動態閾值調整機制和不確定性估計機制。\n* 我們的訓練目標是最大化 F1 分數和最小化不確定性。\n* 我們的推論流程包括輸入問題、生成答案、自我校正和不確定性估計。\n\n#### 論點\n\n* 我們的方法與既有方法的差異在於演算法層、實作層和應用層。\n* 我們的方法可以應用於複雜的推理任務和不確定性估計。\n\n#### 引用的 paper 名稱\n\n* 《Self-Verification in Large Language Models via Counterfactual Reasoning》\n* 《Uncertainty-Aware Self-Checking for Reasoning Transformers》"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }
