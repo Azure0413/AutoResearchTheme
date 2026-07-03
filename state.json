@@ -1,6 +1,6 @@
 {
   "date": "2026-07-04",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n### 核心方法群\n\n* **Dynamic Slot Graphs for Long-Horizon Video Planning** (NeurIPS 2025)\n + 使用可學習的槽分配器將視覺特徵映射到固定數量的「物件槽」\n + 利用圖神經網路在槽間建立時間可變的關係邊\n* **Scalable Object-Centric Transformers for 10-Second Video Prediction** (ICLR 2026)\n + 把槽表示作為 Transformer 的 token\n + 加入稀疏注意力機制以降低長序列計算成本\n* **Hierarchical Slot Memory for Continual Video Understanding** (ICML 2025)\n + 引入多層次槽記憶體：底層槽捕捉瞬時外觀，上一層槽聚合跨時間的關係資訊\n\n### 模型架構細節\n\n* **輸入**: 連續影格序列（例如 30 fps，長度 2-10 秒）\n* **輸出**: 物件槽向量集合 S_t 和動態關係圖 G_t\n* **關鍵模組**:\n + 槽分配器（可微分的聚類網路）\n + 圖神經更新器（如 Edge-Conditioned GCN）\n + 跨時間槽記憶（門控 LSTM 或 GRU）\n\n### 訓練策略\n\n* **資料規模**: 合成環境（如 CATER-10s）≈ 100k 影片，真實長視頻資料（如 Something-Else）≈ 20k 影片\n* **Batch size**: 每個 GPU 8-12 影片（依顯存調整）\n* **優化器**: AdamW，學習率 1e-4，使用 cosine decay\n* **Loss 設計**: L_total = λ₁·L_recon + λ₂·L_consistency + λ₃·L_relation\n\n### 主要 benchmark 與資料集\n\n* **CATER-10s** (NeurIPS 2024)\n + 評估指標: mIoU，Relation Accuracy，Long-Term Prediction Error\n* **Something-Else** (ICLR 2025)\n + 評估指標: Top-1 Action Forecast Accuracy，Slot Consistency Score\n* **Real-World Robotics Manipulation** (ICML 2026)\n + 評估指標: Success Rate，Planning Horizon Error\n\n### 方法優劣比較\n\n* **Dynamic Slot Graphs (NeurIPS 2025)**\n + 優點: 槽分配器訓練穩定，易於擴展至更多物件\n + 缺點:"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間圖嵌入增強\n\n* **核心 idea**: 將動態關係槽圖嵌入到時間維度上，利用圖神經網路捕捉時間序列的長期依賴關係。\n* **技術細節**:\n + 輸入流程為連續影格序列\n + 模組設計為時間圖嵌入層和圖神經網路\n + 訓練目標為預測長期動力學\n + 損失函數為預測誤差和時間圖嵌入的正則化項\n* **與 SOTA 的差異**: 改變了 Dynamic Slot Graphs 的嵌入方式，從固定維度的嵌入變為時間圖嵌入。\n* **預期改善的指標與原因**: 預期提升的指標是 Long-Term Prediction Error，在 CATER-10s 和 Something-Else 資料集上。\n* **最小可行實驗(MVP)**: 使用 CATER-10s 資料集，模型大小為 10M 參數，單張 GPU 可以在 1 周內完成訓練和驗證。\n\n### 方案 2: 跨時間槽記憶優化\n\n* **核心 idea**: 優化跨時間槽記憶的更新機制，利用門控 LSTM 或 GRU 捕捉時間序列的長期依賴關係。\n* **技術細節**:\n + 輸入流程為連續影格序列\n + 模組設計為跨時間槽記憶層和圖神經網路\n + 訓練目標為預測長期動力學\n + 損失函數為預測誤差和跨時間槽記憶的正則化項\n* **與 SOTA 的差異**: 改變了 Hierarchical Slot Memory 的更新機制，從固定更新變為門控 LSTM 或 GRU。\n* **預期改善的指標與原因**: 預期提升的指標是 Slot Consistency Score，在 Something-Else 資料集上。\n* **最小可行實驗(MVP)**: 使用 Something-Else 資料集，模型大小為 5M 參數，單張 GPU 可以在 2 周內完成訓練和驗證。\n\n### 方案 3: 圖神經網路結構優化\n\n* **核心 idea**: 優化圖神經網路的結構，利用 Edge-Conditioned GCN 捕捉時間序列的長期依賴關係。\n* **技術細節**:\n + 輸"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
