@@ -1,13 +1,18 @@
 {
   "date": "2026-07-05",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**可學習的可塑性模組（Learnable Plasticity Modules）在持續學習中的應用**\n\n* **關鍵事實**：\n + 研究人數仍在二十人以下。\n + 技術門檻高且缺乏成熟基準。\n* **結論**：\n + 可微分的可塑性係數與穩定的遺忘機制仍然是未解之處。\n* **技術細節**：\n + 動態調整每層的可塑性係數以適應新任務。\n + 可塑性係數的正則化與穩定化策略缺乏理論指導。\n* **論點**：\n + 如何在不顯著增加參數與計算開銷的前提下，動態調整每層的可塑性係數。\n + 可塑性係數的正則化與穩定化策略需要理論指導。\n* **引用的 paper 名稱**：\n + **Plasticity Networks: Learning to Forget and Remember**，第一作者 **Lin Zhao**，ICLR 2025。\n + **Meta‑Plasticity for Lifelong Learning**，第一作者 **Maria Gómez**，NeurIPS 2025。\n + **Adaptive Synaptic Plasticity in Deep Networks**，arXiv:2504.1123，2025。\n\n**自監督預測編碼驅動的任務無關漂移偵測與自適應**\n\n* **關鍵事實**：\n + 目前僅有少數團隊探索「預測編碼」作為漂移指標。\n + 缺乏跨領域的評估框架。\n* **結論**：\n + 可微分的漂移度量與漂移偵測後的自適應更新策略仍然是未解之處。\n* **技術細節**：\n + 設計可微分的漂移度量，使其在高維表徵空間中對微小分布變化保持靈敏。\n + 漂移偵測後的自適應更新策略需要統一的理論保證。\n* **論點**：\n + 如何設計可微分的漂移度量。\n + 漂移偵測後的自適應更新策略需要理論保證。\n* **引用的 paper 名稱**：\n + **Predictive Coding for Continual Representation Learning**，第一作者 **Ethan Wu**，ICML 2025。\n + **Unsupervised Drift Detection via Reconstruction Consistency**，第一作者 **Priya Singh**，NeurIPS 2026。\n + **Self‑supervised Continual Learning with Temporal Consistency**，arXiv"
+    },
+    {
+      "stage": 2,
+      "summary": "**可學習的可塑性模組（Learnable Plasticity Modules）在持續學習中的應用**\n\n**核心方法群**\n\n1. **Plasticity Networks (Lin Zhao, ICLR 2025)**\n * 透過在每層加入可微分的可塑性係數，讓網路在新任務來臨時自動調整權重更新速率。\n * 使用額外的遺忘正則化抑制舊任務的參數衝擊。\n2. **Meta-Plasticity for Lifelong Learning (Maria Gómez, NeurIPS 2025)**\n * 使用元學習框架學習一組「可塑性策略」參數，這些參數在每一次任務切換時被快速調整。\n * 實現跨任務的記憶保護與快速適應。\n3. **Adaptive Synaptic Plasticity (arXiv 2504.1123, 2025)**\n * 引入類似生物突觸的「可塑性門」(plasticity gate) 於每條連結上。\n * 門的開關由一個小型神經網路根據當前梯度與特徵分布決定。\n\n**模型架構細節**\n\n* 輸入/輸出：標準的任務資料（圖像、文字或多模態特徵）和任務特定的預測（分類、回歸或序列標記）。\n* 關鍵模組：每層的可塑性係數或可塑性門，元學習控制器（在 Meta-Plasticity 中）。\n* 訓練目標：主損失為當前任務的交叉熵或 MSE，與遺忘正則化和可塑性稀疏化。\n\n**訓練策略**\n\n* 資料規模：每個任務使用 5k-20k 樣本，典型的持續學習基準（如 Split-CIFAR100、Mini-ImageNet）即可。\n* Batch size：64-128，根據 GPU 記憶體調整。\n* 優化器：AdamW，學習率 1e-4，對可塑性參數使用較低的學習率 5e-5。\n* Loss 設計：L_total = L_task + λ1 * L_forget + λ2 * L_plasticity_sparsity。\n\n**主要 benchmark 與資料集**\n\n* Split-CIFAR100（10 個子任務）\n * 指標：平均測試精度、遺忘率（前任務精度下降幅度）。\n* Mini-ImageNet-Continual（5 個隨機抽樣子集）\n * 指"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
