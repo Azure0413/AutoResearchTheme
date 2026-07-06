@@ -1,13 +1,18 @@
 {
   "date": "2026-07-07",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 動態低秩 KV 快取與自適應量化**\n\n* **關鍵事實**：\n + 目前的 KV 快取壓縮大多採用固定的低秩或固定比特寬度。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **結論**：\n + 需要發展能夠根據輸入序列長度與語義變化即時調整的機制。\n + 關鍵技術問題包括調整低秩分解的秩與量化位寬，平衡快取壓縮率與延遲。\n* **技術細節**：\n + 使用動態低秩 KV 快取壓縮。\n + 進行自適應量化。\n* **論點**：\n + 需要考慮輸入序列長度與語義變化。\n + 需要平衡快取壓縮率與延遲。\n* **引用的 paper 名稱**：\n + `Dynamic Low‑Rank KV Cache for Efficient LLM Inference`\n + `Adaptive KV Quantization for Transformer Decoding`\n + `Sparse Cache Pruning with Reinforcement Learning`\n\n**主題二: 不確定性導向的階層式推測解碼**\n\n* **關鍵事實**：\n + 大多數推測解碼仍使用單一固定的提議模型。\n + 研究人數不足二十人。\n* **結論**：\n + 需要發展能夠根據當前 token 的置信度或語境複雜度切換提議模型。\n + 關鍵技術問題包括估算每一步的置信度或不確定性，決策是否切換更大或更小的提議模型。\n* **技術細節**：\n + 使用階層式推測解碼。\n + 進行置信度或不確定性估算。\n* **論點**：\n + 需要考慮當前 token 的置信度或語境複雜度。\n + 需要平衡推理時間與提議模型的切換。\n* **引用的 paper 名稱**：\n + `Confidence‑Guided Speculative Decoding`\n + `Multi‑Stage Speculative Decoding with Adaptive Proposer`\n + `Uncertainty‑Aware Speculative Decoding via Bayesian Proposer`\n\n**主題三: 基於動態圖的 Token 路由與 Sink‑Free 注意力**\n\n* **關鍵事實**：\n + 目前的 sink‑free 注意力多聚焦於固定的稀疏模式。\n + 研究人數少於十五人。\n* **結論**：\n + 需要發展能夠根據語義"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**選擇主題**\n\n* **動態低秩 KV 快取與自適應量化**\n* **符合評選標準**：\n + (a) 已有可直接復現的基礎實作\n + (b) 仍存在「秩/位寬即時調整」與「跨長度/語義分佈的通用性」兩大破綻\n + (c) 所需硬體僅需中等規模 GPU，資料與程式碼均可在公開 repo 取得，適合學生團隊切入\n\n**核心方法群**\n\n* **動態低秩分解 (Dynamic Low‑Rank KV Cache)**\n + 透過在每一步解碼時即時估算 KV 矩陣的奇異值衰減，選擇最小能保留 90% 能量的秩\n + 若序列長度增長或語義變化劇烈，會自動提升秩以避免資訊遺失\n* **自適應量化 (Adaptive KV Quantization)**\n + 依據當前 token 的置信度與注意力分佈，切換 8‑bit、4‑bit或 2‑bit量化策略\n + 置信度低時使用較高位寬以減少量化噪聲，置信度高時則壓縮至更低位寬提升吞吐\n* **增強式快取修剪 (Reinforcement‑Learning Cache Pruning)**\n + 使用小型策略網路根據「快取命中率」與「推理延遲」獎勵，決定哪些 KV 條目可被刪除或合併\n + 策略在離線模擬環境中預訓練，實際推理時僅做前向查詢，開銷極低\n\n**模型架構細節**\n\n* **輸入**：Transformer 解碼器的前一層隱藏狀態、當前 token 的嵌入、以及已緩存的 KV（Key、Value）矩陣\n* **輸出**：更新後的 KV 快取（可能已低秩分解或量化）以及當前層的注意力輸出\n* **關鍵模組**：\n + **秩估算模組**：輕量的全連接層，根據前一層注意力分佈輸出建議秩\n + **位寬選擇器**：根據置信度分數（softmax 溫度）映射至離散位寬集合\n + **RL 修剪器**：小型 LSTM/Transformer"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
