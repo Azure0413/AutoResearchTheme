@@ -1,13 +1,18 @@
 {
   "date": "2026-07-08",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 基於物理約束的固態電池電解質逆向設計\n\n* **關鍵事實**：\n + 仍屬早期探索階段\n + 需要結合第一原理計算與資料驅動模型\n + 資料庫與有效的生成框架尚未形成\n* **結論**：\n + 需要設計嵌入離子遷移路徑的結構約束與彈性穩定性評估的生成模型\n + 主動學習策略在高維組分空間的樣本效率與不確定性估計仍缺乏可靠基準\n* **技術細節**：\n + 使用物理約束的生成模型\n + 嵌入離子遷移路徑的結構約束\n + 使用主動學習策略\n* **論點**：\n + 需要結合第一原理計算與資料驅動模型\n + 需要設計嵌入離子遷移路徑的結構約束與彈性穩定性評估的生成模型\n* **引用**：\n + `Physics-Informed Generative Modeling for Solid Electrolyte Discovery` (Y. Liu, NeurIPS 2025)\n + `Conditional Diffusion for Battery Materials` (S. Kim, ICLR 2026)\n + `Active Learning for Multi-Component Electrolyte Optimization` (arXiv:2509.01234, 2025)\n\n### 主題二: 神經網路量子態在激發態與動力學模擬的突破框架\n\n* **關鍵事實**：\n + 目前大多聚焦於基態能量\n + 對激發態波函數與時間演化的神經網路量子態仍只有少數團隊\n* **結論**：\n + 需要設計同時保證波函數正交性與對稱性的等變架構\n + 時間演化時的誤差累積與可微分變分原理的數值穩定性尚未得到系統化分析\n* **技術細節**：\n + 使用等變架構\n + 保證波函數正交性與對稱性\n + 使用可微分變分原理\n* **論點**：\n + 需要設計同時保證波函數正交性與對稱性的等變架構\n + 需要分析時間演化時的誤差累積與可微分變分原理的數值穩定性\n* **引用**：\n + `Equivariant Neural Quantum States for Excited-State"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Physics-Informed Diffusion (PID)**：使用擴散模型生成晶體結構，加入離子遷移路徑的能量梯度作為約束。\n* **Conditional Energy-Based Model (cEBM)**：透過能量函數直接評估候選結構的離子遷移勢壘與彈性模量。\n* **Active-Learning-Guided Bayesian Optimization (AL-BBO)**：在生成模型與高精度 DFT 計算之間迭代，利用不確定性估計挑選最具資訊價值的樣本進行標註。\n\n**2. 模型架構細節**\n\n* **輸入**：原子種類與比例的條件向量，晶格參數或先驗結構模板。\n* **輸出**：完整的三維晶格座標與晶格常數，並附帶離子遷移通道的拓撲資訊。\n* **關鍵模組**：噪聲調度器、物理約束模組、不確定性估計器。\n* **訓練目標**：重建誤差、物理一致性懲罰、KL 散度。\n\n**3. 訓練策略**\n\n* **資料規模**：公開的固態電解質資料庫約 3,000 條結構，自動化 DFT 計算補足 500–1,000 條高精度離子遷移資料。\n* **Batch size**：典型 64–128，視 GPU 記憶體而定。\n* **優化器**：AdamW（學習率 1e-4），在第 200k 步後使用 cosine decay。\n\n**4. 主要 benchmark 與資料集**\n\n* **Benchmark**：SolidElectrolyte-Benchmark v1.0（由 Battery-ML Consortium 於 2025 年釋出）。\n* **核心指標**：離子遷移能障（eV）、彈性模量（GPa）、結構相容率（與已知晶系的相似度）。\n\n**5. 方法優劣比較**\n\n* **Physics-Informed Diffusion (PID)**：優點：生成樣本多樣性高、物理約束直接嵌入噪聲去除過程；缺點：計算成本較高、對於高離子濃度的複雜多元組分仍易產生不合理結構。\n* **Conditional Energy-Based Model (cEBM)**：優點：能量函數直接優化目標指標、樣本品質更易"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
