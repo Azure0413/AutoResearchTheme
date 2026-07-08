@@ -1,6 +1,6 @@
 {
   "date": "2026-07-09",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Contrastive Trajectory Segmentation (CTS)**：無標籤、訓練速度快、對噪聲軌跡較為魯棒，但切點位置易受窗口長度影響。\n* **Self-Supervised Skill Distillation (SSSD)**：保留端到端梯度、可直接在下游 RL 中微調，但蒸餾過程對教師策略品質敏感。\n* **Energy-Based Skill Trees (EBST)**：能量函數提供自然的層次解釋，但能量正則化超參數難以調校。\n\n### 2. 模型架構細節\n\n* **輸入**：原始狀態序列 *s₀,…,s_T*\n* **輸出**：\n + 切點指標：長度 *T* 的二元向量\n + 技能嵌入：每段子軌跡映射到固定維度向量\n* **關鍵模組**：\n + 時序編碼器（Transformer 或 Temporal ConvNet）\n + 對比投影頭\n + 能量估算器或切點分類器\n + 可微蒸餾網路\n\n### 3. 訓練策略\n\n* **資料規模**：單一環境 10‑20 小時的模擬軌跡\n* **Batch size**：時序批次 256‑512\n* **優化器**：AdamW（學習率 3e‑4）\n* **Loss 設計**：對比損失、切點交叉熵或能量正則化、蒸餾 KL 散度\n\n### 4. 主要 Benchmark 與資料集\n\n* **MuJoCo-Based SkillBench**：包含 8 種機械臂與 4 種行走機器人的長程任務\n* **Key Metrics**：\n + 切點偵測的精確度與召回率（Segmentation F1）\n + 在未見環境中使用蒸餾後的技能樹完成任務的成功率（Skill Transfer Success Rate）\n + 達到 80% 任務完成所需的環境交互步數（Sample Efficiency）\n\n### 5. 方法優劣比較\n\n* **Contrastive Trajectory Segmentation (CTS)**：優點：無標籤、訓練速度快、對噪聲軌跡較為魯棒；缺點：切點位置易受窗口長度影響、在高度非平穩動作（如跳躍）上失效。\n* **Self-Supervised Skill Distillation (SSSD)**：優"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: Contrastive Trajectory Segmentation with Temporal Graph\n\n* **核心 idea**: 使用時序圖結構增強對比學習，捕捉時序依賴關係和長距關係。\n* **技術細節**:\n + 輸入原始狀態序列\n + 時序編碼器和圖神經網路映射序列為圖結構\n + 對比投影頭和能量估算器計算損失\n* **與 SOTA 的差異**: 新增時序圖結構和圖神經網路\n* **預期改善的指標與原因**: 提高 MuJoCo-Based SkillBench 的 Segmentation F1 指標\n* **最小可行實驗(MVP)**: 使用 MuJoCo-Based SkillBench 的機械臂長程任務，中等大小模型，單張 GPU\n\n### 方案 2: Self-Supervised Skill Distillation with Adversarial Training\n\n* **核心 idea**: 使用對抗式訓練增強自監督技能蒸餾的魯棒性和泛化能力。\n* **技術細節**:\n + 輸入原始狀態序列\n + 時序編碼器和蒸餾網路映射序列為技能嵌入\n + 對抗式訓練最小化蒸餾損失和對抗損失\n* **與 SOTA 的差異**: 新增對抗式訓練模組\n* **預期改善的指標與原因**: 提高 MuJoCo-Based SkillBench 的 Skill Transfer Success Rate 指標\n* **最小可行實驗(MVP)**: 使用 MuJoCo-Based SkillBench 的機械臂長程任務，中等大小模型，單張 GPU\n\n### 方案 3: Energy-Based Skill Trees with Temporal Attention\n\n* **核心 idea**: 使用時序注意力機制增強能量基礎技能樹的時序依賴關係和長距關係的捕捉能力。\n* **技術細節**:\n + 輸入原始狀態序列\n + 時序編碼器和能量估算器映射序列為能量函數\n + 時序注意力機制計算能量函數的注意力權重\n* **與 SOTA 的差異**: 新增時序注意力模組\n* **預期改善的指標與原因**: 提高 MuJoCo-Based SkillBench 的 Segmentation F1 指標\n* **最小可行實驗(MVP)**: 使用 MuJoCo-Based SkillBench 的機械臂長程任務，中等大小"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
