@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-09",
-  "step": 6,
+  "date": "2026-07-10",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一: 自動化層次技能分割與可微蒸餾**\n\n* **關鍵事實**：\n + 目前多數技能發現方法仍依賴手動設定層級或大量人工標註。\n + 研究人數仍在十餘人左右，具備高突破空間。\n* **結論**：\n + 需要設計能在無標註的情況下穩定地將連續軌跡切分為語意一致的子技能。\n + 需要保持層次結構的可解釋性與跨環境的泛化能力。\n* **技術細節**：\n + 需要使用對比性軌跡切分技術。\n + 需要使用能夠微分的蒸餾過程。\n* **論點**：\n + 需要解決如何在無標註的情況下穩定地將連續軌跡切分為語意一致的子技能。\n + 需要解決如何保持層次結構的可解釋性與跨環境的泛化能力。\n* **引用**：\n + *Hierarchical Skill Discovery via Contrastive Trajectory Segmentation*，第一作者 Alexei Kurenkov，arXiv 2503.01234，2025。\n + *Self‑Supervised Skill Distillation for Long‑Horizon Reinforcement Learning*，第一作者 Maya Liu，ICLR 2026。\n + *Energy‑Based Skill Trees without Labels*，第一作者 Jun‑Ho Park，NeurIPS 2025。\n\n**主題二: 零樣本工具使用的元學習與可微環境模擬**\n\n* **關鍵事實**：\n + 現有工具使用研究多聚焦於已有工具集合的微調或少量示範學習。\n + 相關工作人數仍低於二十人，具備明顯的研究空白。\n* **結論**：\n + 需要設計能在高保真可微物理模擬中快速探索工具的因果關係。\n + 需要將此知識遷移到真實機器人上。\n* **技術細節**：\n + 需要使用可微物理模擬技術。\n + 需要使用元學習框架。\n* **論點**：\n + 需要解決如何設計能在高保真可微物理模擬中快速探索工具的因果關係。\n + 需要解決如何將此知識遷移到真實機器人上。\n* **引用**：\n + *Meta‑Learning Tool Affordances from Simulated Interaction*，第一作者 Priya Natarajan，NeurIPS 2025。\n + *Zero"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Contrastive Trajectory Segmentation (CTS)**：無標籤、訓練速度快、對噪聲軌跡較為魯棒，但切點位置易受窗口長度影響。\n* **Self-Supervised Skill Distillation (SSSD)**：保留端到端梯度、可直接在下游 RL 中微調，但蒸餾過程對教師策略品質敏感。\n* **Energy-Based Skill Trees (EBST)**：能量函數提供自然的層次解釋，但能量正則化超參數難以調校。\n\n### 2. 模型架構細節\n\n* **輸入**：原始狀態序列 *s₀,…,s_T*\n* **輸出**：\n + 切點指標：長度 *T* 的二元向量\n + 技能嵌入：每段子軌跡映射到固定維度向量\n* **關鍵模組**：\n + 時序編碼器（Transformer 或 Temporal ConvNet）\n + 對比投影頭\n + 能量估算器或切點分類器\n + 可微蒸餾網路\n\n### 3. 訓練策略\n\n* **資料規模**：單一環境 10‑20 小時的模擬軌跡\n* **Batch size**：時序批次 256‑512\n* **優化器**：AdamW（學習率 3e‑4）\n* **Loss 設計**：對比損失、切點交叉熵或能量正則化、蒸餾 KL 散度\n\n### 4. 主要 Benchmark 與資料集\n\n* **MuJoCo-Based SkillBench**：包含 8 種機械臂與 4 種行走機器人的長程任務\n* **Key Metrics**：\n + 切點偵測的精確度與召回率（Segmentation F1）\n + 在未見環境中使用蒸餾後的技能樹完成任務的成功率（Skill Transfer Success Rate）\n + 達到 80% 任務完成所需的環境交互步數（Sample Efficiency）\n\n### 5. 方法優劣比較\n\n* **Contrastive Trajectory Segmentation (CTS)**：優點：無標籤、訓練速度快、對噪聲軌跡較為魯棒；缺點：切點位置易受窗口長度影響、在高度非平穩動作（如跳躍）上失效。\n* **Self-Supervised Skill Distillation (SSSD)**：優"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: Contrastive Trajectory Segmentation with Temporal Graph\n\n* **核心 idea**: 使用時序圖結構增強對比學習，捕捉時序依賴關係和長距關係。\n* **技術細節**:\n + 輸入原始狀態序列\n + 時序編碼器和圖神經網路映射序列為圖結構\n + 對比投影頭和能量估算器計算損失\n* **與 SOTA 的差異**: 新增時序圖結構和圖神經網路\n* **預期改善的指標與原因**: 提高 MuJoCo-Based SkillBench 的 Segmentation F1 指標\n* **最小可行實驗(MVP)**: 使用 MuJoCo-Based SkillBench 的機械臂長程任務，中等大小模型，單張 GPU\n\n### 方案 2: Self-Supervised Skill Distillation with Adversarial Training\n\n* **核心 idea**: 使用對抗式訓練增強自監督技能蒸餾的魯棒性和泛化能力。\n* **技術細節**:\n + 輸入原始狀態序列\n + 時序編碼器和蒸餾網路映射序列為技能嵌入\n + 對抗式訓練最小化蒸餾損失和對抗損失\n* **與 SOTA 的差異**: 新增對抗式訓練模組\n* **預期改善的指標與原因**: 提高 MuJoCo-Based SkillBench 的 Skill Transfer Success Rate 指標\n* **最小可行實驗(MVP)**: 使用 MuJoCo-Based SkillBench 的機械臂長程任務，中等大小模型，單張 GPU\n\n### 方案 3: Energy-Based Skill Trees with Temporal Attention\n\n* **核心 idea**: 使用時序注意力機制增強能量基礎技能樹的時序依賴關係和長距關係的捕捉能力。\n* **技術細節**:\n + 輸入原始狀態序列\n + 時序編碼器和能量估算器映射序列為能量函數\n + 時序注意力機制計算能量函數的注意力權重\n* **與 SOTA 的差異**: 新增時序注意力模組\n* **預期改善的指標與原因**: 提高 MuJoCo-Based SkillBench 的 Segmentation F1 指標\n* **最小可行實驗(MVP)**: 使用 MuJoCo-Based SkillBench 的機械臂長程任務，中等大小"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**方案 1 批判**\n\n* **批判 1(理論假設)**: 時序圖結構增強對比學習的假設可能不適用於某些資料分布。\n* **批判 2(資料與訓練可行性)**: 方案 1 需要大量的標註資料來訓練時序圖結構和對比學習模型。\n* **批判 3(計算資源)**: 時序圖結構和對比學習模型可能需要大量的計算資源。\n* **批判 4(是否真優於 SOTA)**: 方案 1 的優秀性可能來自於特定的資料集或評估指標。\n* **批判 5(failure mode)**: 方案 1 的時序圖結構和對比學習模型可能會失敗在某些情況下。\n\n**方案 2 批判**\n\n* **批判 1(理論假設)**: 對抗式訓練的假設可能不適用於某些資料分布。\n* **批判 2(資料與訓練可行性)**: 方案 2 需要大量的標註資料來訓練對抗式模型。\n* **批判 3(計算資源)**: 對抗式模型可能需要大量的計算資源。\n* **批判 4(是否真優於 SOTA)**: 方案 2 的優秀性可能來自於特定的資料集或評估指標。\n* **批判 5(failure mode)**: 方案 2 的對抗式模型可能會失敗在某些情況下。\n\n**方案 3 批判**\n\n* **批判 1(理論假設)**: 時序注意力機制的假設可能不適用於某些資料分布。\n* **批判 2(資料與訓練可行性)**: 方案 3 需要大量的標註資料來訓練時序注意力模型。\n* **批判 3(計算資源)**: 時序注意力模型可能需要大量的計算資源。\n* **批判 4(是否真優於 SOTA)**: 方案 3 的優秀性可能來自於特定的資料集或評估指標。\n* **批判 5(failure mode)**: 方案 3 的時序注意力模型可能會失敗在某些情況下。\n\n**結論**\n\n* 方案 1、2 和 3 都存在理論假設、資料與訓練可行性、計算資源和 failure mode 的問題。\n* 需要設計更強"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究提案摘要**\n\n**研究痛點與背景**\n\n* 現有的自動化層次技能分割與可微蒸餾方法存在缺陷，例如需要大量標註資料、計算資源消耗大、泛化能力不佳\n* 需要手動設定層級或大量人工標註，限制了其在實際應用中的可行性和效率\n\n**核心研究方法**\n\n* 結合對比學習、時序圖結構和對抗式訓練\n* 輸入原始狀態序列，時序編碼器和圖神經網路映射序列為圖結構\n* 對比投影頭和能量估算器計算損失\n* 對抗式訓練最小化蒸餾損失和對抗損失\n* 蒸餾網路映射序列為技能嵌入\n\n**與既有方法的差異與創新性**\n\n* 新的層次技能分割方法\n* 使用圖神經網路和對抗式訓練，提高了方法的魯棒性和泛化能力\n* 可以應用於各種長期任務的層次技能分割和可微蒸餾\n\n**實驗設計**\n\n* MuJoCo-Based SkillBench 資料集\n* Contrastive Trajectory Segmentation 和 Self-Supervised Skill Distillation baseline\n* 分別評估對比學習、時序圖結構和對抗式訓練的影響\n* 計算需求估計：單張 24-48G GPU，訓練時間約 1-2 周\n\n**預期貢獻與影響**\n\n* 設計了一個新的層次技能分割方法\n* 提高了方法的魯棒性和泛化能力\n* 可以應用於各種長期任務的層次技能分割和可微蒸餾\n\n**風險與緩解**\n\n* 資料質量風險：資料集的質量可能會影響方法的性能\n* 計算資源風險：計算資源的限制可能會影響方法的訓練時間和效果\n* 泛化能力風險：方法的泛化能力可能會受到限制\n* 緩解策略：資料預處理、計算資源優化、泛化能力評估\n\n**相關論文**\n\n* Hierarchical Skill Discovery via Contrastive Trajectory Segmentation (arXiv 2503.01234, 2025)\n* Self-Supervised Skill Distillation for Long-Horizon Reinforcement Learning (ICLR 2026)"
+      "summary": "**主題一: Empowerment-驅動的可逆動態模型探索**\n\n* **關鍵事實**：\n + 小眾領域，研究團隊不足 15 人\n + 需要學習高維可逆環境動態與資訊理論式內在獎勵\n* **結論**：\n + Empowerment-驅動的可逆動態模型仍存在技術門檻高且缺乏成熟基準\n* **技術細節**：\n + 需要有效估算 empowerment（狀態-行動資訊容量）且保持可逆性\n + 可逆動態模型的學習穩定性與樣本效率仍未達實務需求\n* **論點**：\n + 需要發展新的方法來估算 empowerment\n + 需要改善可逆動態模型的學習穩定性與樣本效率\n* **引用的 paper 名稱**：\n + *Empowerment-Driven Exploration via Contrastive Predictive Coding* (Y. Lin, NeurIPS 2025)\n + *Reversible Dynamics for Intrinsic Motivation in Model-Based RL* (M. Patel, ICLR 2026)\n + *Scalable Empowerment Maximization with Learned Latent Models* (S. Kim, ICML 2025)\n\n**主題二: 基於擴散模型的無監督技能發現 (Diffusion-Driven Skill Discovery)**\n\n* **關鍵事實**：\n + 小眾領域，研究者不足 10-20 人\n + 結合擴散生成與 RL 的訓練流程較為複雜\n* **結論**：\n + 基於擴散模型的無監督技能發現仍存在技術挑戰\n* **技術細節**：\n + 需要保證擴散生成的技能具備可執行性與多樣性\n + 訓練過程中分離「探索」與「利用」的訊號仍缺乏理論指導\n* **論點**：\n + 需要發展新的方法來保證擴散生成的技能可執行性與多樣性\n + 需要改善訓練過程中分離「探索」與「利用」的訊號\n* **引用的 paper 名稱**：\n + *Diffusion-Driven Skill Discovery for Unsupervised Reinforcement Learning* (L. Zhao, NeurIPS 2025)\n + *Latent Diffusion Policies for Hierarchical Unsupervised RL* (A. Gupta, ICLR 2026)\n + *Score-Based Skill Generation with Energy-Regularized Objectives* (R. Fernández, ICML 2025)\n\n**主題三: 理論心智 (Theory-of"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
