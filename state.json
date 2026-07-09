@@ -1,13 +1,18 @@
 {
   "date": "2026-07-10",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: Empowerment-驅動的可逆動態模型探索**\n\n* **關鍵事實**：\n + 小眾領域，研究團隊不足 15 人\n + 需要學習高維可逆環境動態與資訊理論式內在獎勵\n* **結論**：\n + Empowerment-驅動的可逆動態模型仍存在技術門檻高且缺乏成熟基準\n* **技術細節**：\n + 需要有效估算 empowerment（狀態-行動資訊容量）且保持可逆性\n + 可逆動態模型的學習穩定性與樣本效率仍未達實務需求\n* **論點**：\n + 需要發展新的方法來估算 empowerment\n + 需要改善可逆動態模型的學習穩定性與樣本效率\n* **引用的 paper 名稱**：\n + *Empowerment-Driven Exploration via Contrastive Predictive Coding* (Y. Lin, NeurIPS 2025)\n + *Reversible Dynamics for Intrinsic Motivation in Model-Based RL* (M. Patel, ICLR 2026)\n + *Scalable Empowerment Maximization with Learned Latent Models* (S. Kim, ICML 2025)\n\n**主題二: 基於擴散模型的無監督技能發現 (Diffusion-Driven Skill Discovery)**\n\n* **關鍵事實**：\n + 小眾領域，研究者不足 10-20 人\n + 結合擴散生成與 RL 的訓練流程較為複雜\n* **結論**：\n + 基於擴散模型的無監督技能發現仍存在技術挑戰\n* **技術細節**：\n + 需要保證擴散生成的技能具備可執行性與多樣性\n + 訓練過程中分離「探索」與「利用」的訊號仍缺乏理論指導\n* **論點**：\n + 需要發展新的方法來保證擴散生成的技能可執行性與多樣性\n + 需要改善訓練過程中分離「探索」與「利用」的訊號\n* **引用的 paper 名稱**：\n + *Diffusion-Driven Skill Discovery for Unsupervised Reinforcement Learning* (L. Zhao, NeurIPS 2025)\n + *Latent Diffusion Policies for Hierarchical Unsupervised RL* (A. Gupta, ICLR 2026)\n + *Score-Based Skill Generation with Energy-Regularized Objectives* (R. Fernández, ICML 2025)\n\n**主題三: 理論心智 (Theory-of"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n- **Contrastive Empowerment Estimation (CEE)**：由 *Lin*（NeurIPS 2025）提出，利用對比預測編碼器估算狀態‑行動資訊容量。\n- **Reversible Dynamics with Intrinsic Motivation (Rev‑IM)**：*Patel*（ICLR 2026）設計可逆的神經微分方程（Neural ODE）作為環境模型，並在隱空間加入 empowerment 最大化的內在獎勵。\n- **Latent Empowerment Maximization (LEM)**：*Kim*（ICML 2025）在高維觀測上先學習一個可逆的潛在動態模型，然後在潛在空間中直接最大化 empowerment。\n\n**2. 模型架構細節**\n\n- **輸入**：原始觀測 `x_t`（圖像、機械手臂關節角或 LiDAR 點雲）以及先前動作 `a_{t‑1}`。\n- **輸出**：可逆動態模型產生的下一狀態預測 `\\hat{x}_{t+1}`，以及 empowerment 評分 `E(s_t)`。\n- **關鍵模組**：\n  - **可逆編碼器/解碼器**：對稱的卷積或圖形神經網路，使 `x_t ↔ z_t` 雙向可逆。\n  - **動態預測器**：基於 Neural ODE 或可逆 Residual Flow，保證正向與反向時間步皆可計算。\n  - **對比或資訊瓶頸頭**：計算 `I(a; s′|s)` 的下界，作為 empowerment 近似。\n\n**3. 訓練策略**\n\n- **資料規模**：公開的可逆模擬環境（如 `Reversible-Maze`、`RoboReversible`）共 1‑2 百萬時間步，或自行收集 10‑20 小時的實機數據。\n- **Batch size**：64‑128 個序列樣本（每個序列長度 20‑50），視 GPU 記憶體而定。\n- **優化器**：AdamW，學習率 3e‑4，使用 cosine decay。\n\n**4. 主要 benchmark 與資料集**\n\n- **Reversible-Maze**（NeurIPS 2025 伴隨資料集）：2‑D 迷宮環境，要求代理在保持可逆性的同時探索全部格子。\n- **RoboReversible**（ICLR 2026 新增）：六自由度機械手臂在桌"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
