@@ -1,6 +1,6 @@
 {
   "date": "2026-07-11",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**Stage 2: 深入相關方法**\n\n### 核心方法群\n\n* **MetaGate (NeurIPS 2025)**: 使用二階元學習優化門控參數，外層 meta-optimizer 直接對路由梯度做近似二階更新。\n* **Task-Aware MoE Routing via Gradient-Based Meta-Optimization (ICLR 2026)**: 引入任務嵌入向量，通過一個小型的 meta-network 產生門控偏置。\n* **Few-Shot Expert Selection with Hypernetworks (arXiv 2025.12)**: 使用超網路根據少量支援樣本生成每個專家的門控權重。\n\n### 模型架構細節\n\n* **輸入**: 主模型的 token 序列和任務描述或支援樣本。\n* **輸出**: 每個 token 的專家分配概率向量（門控向量），再經過加權求和得到 MoE 層的輸出。\n* **關鍵模組**:\n + 門控網路: 可為簡單的線性層、meta-network 或超網路。\n + 專家池: 若干個獨立的 Feed-Forward 或小型 Transformer 子模組。\n + Meta-optimizer: 在外層使用 Adam 或 AdamW，內層使用 SGD/Adam 進行常規訓練。\n* **訓練目標**: 主損失: 下游任務的交叉熵或回歸損失。元損失: 在 meta-training 階段加入路由穩定性正則（如門控熵最小化）或信用分配的二階梯度罰項。\n\n### 訓練策略\n\n* **資料規模**: 以多任務集合作為 meta-training 基礎，約 1–2 百萬樣本。每個新任務僅需 10–100 個支援樣本（few-shot）作為 meta-adaptation。\n* **Batch size**: 內層訓練（專家參數）使用 32–64 個 token 批次。外層 meta-batch 包含 4–8 個不同任務的子批次，以保證梯度多樣性。\n* **優化器**: 內層：AdamW（學習率 1e-4），權重衰減 0.01。外層 meta-optimizer：Adam（學習率 5e-5），使用梯度累積以減少 GPU 記憶體需求。\n* **Loss 設計**: L_total = L_task + λ1 * L_entropy + λ2 * L_credit\n\n### 主要 Benchmark 與資料集\n\n* Few-Shot Language Understanding (FewGLUE"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間遞迴路由優化 (Temporal Recursive Routing Optimization)\n\n* **關鍵事實**:\n + 使用遞迴神經網路優化路由決策\n + 輸入流程為 token 序列和任務描述\n + 模型大小為基於BERT的小型變體\n* **技術細節**:\n + 遞迴神經網路和專家池\n + 交叉熵損失加上路由穩定性正則\n* **論點**:\n + 可以更好地捕捉序列間的依賴關係\n + 可以改善路由準確性和任務性能\n* **引用**:\n + \"Few-Shot Language Understanding (FewGLUE) benchmark\"\n\n### 方案 2: 知識蒸餾基路由 (Knowledge Distillation-based Routing)\n\n* **關鍵事實**:\n + 使用知識蒸餾方法將大型預訓練模型的知識轉移到小型路由模型中\n + 輸入流程為 token 序列和任務描述\n + 模型大小為基於BERT的小型變體\n* **技術細節**:\n + 大型預訓練模型、蒸餾_loss 和路由模型\n + 交叉熵損失加上蒸餾_loss\n* **論點**:\n + 可以利用大型預訓練模型的知識來改善路由模型的性能\n + 可以改善路由準確性和任務性能\n* **引用**:\n + \"Few-Shot Language Understanding (FewGLUE) benchmark\"\n\n### 方案 3: 輪流更新路由 (Alternating Update Routing)\n\n* **關鍵事實**:\n + 使用輪流更新方法更新路由模型和任務模型的參數\n + 輸入流程為 token 序列和任務描述\n + 模型大小為基於BERT的小型變體\n* **技術細節**:\n + 路由模型和任務模型\n + 交叉熵損失加上路由穩定性正則\n* **論點**:\n + 可以更好地協調路由模型和任務模型的參數\n + 可以改善路由準確性和任務性能\n* **引用**:\n + \"Few-Shot Language Understanding (FewGLUE) benchmark\"\n\n### 結論\n\n三個方案都可以改善路由準確性和任務性能，但每個方案都有不同的技術細節和論點。時間遞迴路由優化使用遞"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
