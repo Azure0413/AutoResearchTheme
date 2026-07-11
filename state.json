@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-11",
-  "step": 6,
+  "date": "2026-07-12",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**元路由學習 (Meta‑Routing for MoE)**\n\n* **關鍵事實**：\n + 元路由學習能夠快速調整門控策略，降低跨任務微調成本。\n + 目前僅有極少數團隊嘗試元學習方式。\n* **結論**：\n + 元路由學習有突破潛力，但仍存在核心技術問題。\n* **技術細節**：\n + 需設計穩定的二階近似或梯度正則化。\n + 如何在元訓練階段有效分配信用給每個專家。\n + 超參數對路由效率的敏感度尚未系統化分析。\n* **論點**：\n + 元路由學習能夠提高路由效率和降低跨任務微調成本。\n + 需要解決元優化的穩定性問題和專家漂移問題。\n* **引用的 paper 名稱**：\n + 《MetaGate: Learning to Route Experts with Meta‑Learning》, NeurIPS 2025。\n + 《Task‑Aware MoE Routing via Gradient‑Based Meta‑Optimization》, ICLR 2026。\n + 《Few‑Shot Expert Selection with Hypernetworks》, arXiv 2025.12。\n\n**隱私保護路由 (Privacy‑Preserving MoE Routing)**\n\n* **關鍵事實**：\n + 隱私保護路由在聯邦或個人化部署情境下是新興需求。\n + 目前相關研究人數仍在十餘人以下。\n* **結論**：\n + 隱私保護路由有突破潛力，但仍存在核心技術問題。\n* **技術細節**：\n + 需平衡隱私預算與路由精度。\n + 加密協議的計算與通訊開銷在大規模專家池上仍過高。\n + 隱私噪聲下的負載均衡與專家利用率維持困難。\n* **論點**：\n + 隱私保護路由能夠保護 token‑expert 匹配資訊的隱私。\n + 需要解決加密或差分隱私噪聲導致的門控分布偏移問題。\n* **引用的 paper 名稱**：\n + 《DP‑MoE: Differentially Private Expert Selection for Federated Models》, ICML 2025。\n + 《Secure Gating: Oblivious Routing for Sparse Mixture‑of‑Experts》, ICLR 2026。\n + 《Privacy‑Aware Token‑Expert Matching via Homomorphic Encryption》, arXiv 2025.09。\n\n**硬體感知自適應路由 (Hardware‑Aware Adaptive"
-    },
-    {
-      "stage": 2,
-      "summary": "**Stage 2: 深入相關方法**\n\n### 核心方法群\n\n* **MetaGate (NeurIPS 2025)**: 使用二階元學習優化門控參數，外層 meta-optimizer 直接對路由梯度做近似二階更新。\n* **Task-Aware MoE Routing via Gradient-Based Meta-Optimization (ICLR 2026)**: 引入任務嵌入向量，通過一個小型的 meta-network 產生門控偏置。\n* **Few-Shot Expert Selection with Hypernetworks (arXiv 2025.12)**: 使用超網路根據少量支援樣本生成每個專家的門控權重。\n\n### 模型架構細節\n\n* **輸入**: 主模型的 token 序列和任務描述或支援樣本。\n* **輸出**: 每個 token 的專家分配概率向量（門控向量），再經過加權求和得到 MoE 層的輸出。\n* **關鍵模組**:\n + 門控網路: 可為簡單的線性層、meta-network 或超網路。\n + 專家池: 若干個獨立的 Feed-Forward 或小型 Transformer 子模組。\n + Meta-optimizer: 在外層使用 Adam 或 AdamW，內層使用 SGD/Adam 進行常規訓練。\n* **訓練目標**: 主損失: 下游任務的交叉熵或回歸損失。元損失: 在 meta-training 階段加入路由穩定性正則（如門控熵最小化）或信用分配的二階梯度罰項。\n\n### 訓練策略\n\n* **資料規模**: 以多任務集合作為 meta-training 基礎，約 1–2 百萬樣本。每個新任務僅需 10–100 個支援樣本（few-shot）作為 meta-adaptation。\n* **Batch size**: 內層訓練（專家參數）使用 32–64 個 token 批次。外層 meta-batch 包含 4–8 個不同任務的子批次，以保證梯度多樣性。\n* **優化器**: 內層：AdamW（學習率 1e-4），權重衰減 0.01。外層 meta-optimizer：Adam（學習率 5e-5），使用梯度累積以減少 GPU 記憶體需求。\n* **Loss 設計**: L_total = L_task + λ1 * L_entropy + λ2 * L_credit\n\n### 主要 Benchmark 與資料集\n\n* Few-Shot Language Understanding (FewGLUE"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間遞迴路由優化 (Temporal Recursive Routing Optimization)\n\n* **關鍵事實**:\n + 使用遞迴神經網路優化路由決策\n + 輸入流程為 token 序列和任務描述\n + 模型大小為基於BERT的小型變體\n* **技術細節**:\n + 遞迴神經網路和專家池\n + 交叉熵損失加上路由穩定性正則\n* **論點**:\n + 可以更好地捕捉序列間的依賴關係\n + 可以改善路由準確性和任務性能\n* **引用**:\n + \"Few-Shot Language Understanding (FewGLUE) benchmark\"\n\n### 方案 2: 知識蒸餾基路由 (Knowledge Distillation-based Routing)\n\n* **關鍵事實**:\n + 使用知識蒸餾方法將大型預訓練模型的知識轉移到小型路由模型中\n + 輸入流程為 token 序列和任務描述\n + 模型大小為基於BERT的小型變體\n* **技術細節**:\n + 大型預訓練模型、蒸餾_loss 和路由模型\n + 交叉熵損失加上蒸餾_loss\n* **論點**:\n + 可以利用大型預訓練模型的知識來改善路由模型的性能\n + 可以改善路由準確性和任務性能\n* **引用**:\n + \"Few-Shot Language Understanding (FewGLUE) benchmark\"\n\n### 方案 3: 輪流更新路由 (Alternating Update Routing)\n\n* **關鍵事實**:\n + 使用輪流更新方法更新路由模型和任務模型的參數\n + 輸入流程為 token 序列和任務描述\n + 模型大小為基於BERT的小型變體\n* **技術細節**:\n + 路由模型和任務模型\n + 交叉熵損失加上路由穩定性正則\n* **論點**:\n + 可以更好地協調路由模型和任務模型的參數\n + 可以改善路由準確性和任務性能\n* **引用**:\n + \"Few-Shot Language Understanding (FewGLUE) benchmark\"\n\n### 結論\n\n三個方案都可以改善路由準確性和任務性能，但每個方案都有不同的技術細節和論點。時間遞迴路由優化使用遞"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4: 時間遞迴路由優化、知識蒸餾基路由和輪流更新路由的批判**\n\n### 時間遞迴路由優化\n\n* **批判 1**: 理論假設可能不夠穩定和可預測，導致模型失效。\n* **補救**: 引入更複雜的依賴關係模型，例如使用圖神經網路或注意力機制。\n* **批判 2**: 資料和計算資源需求過高，導致模型訓練不穩定或過度擬合。\n* **補救**: 使用更有效的訓練算法，例如批次歸一化或梯度裁剪。\n* **批判 3**: 計算資源需求過高，導致模型訓練時間過長或需要大量的計算資源。\n* **補救**: 使用更有效的硬件，例如 GPU 或分布式計算。\n* **批判 4**: 基準可能選太弱，或者有 cherry-picking 嫌疑。\n* **補救**: 進行更多的實驗，使用不同的基準和資料集來評估模型的性能。\n* **批判 5**: 模型可能在序列長度較大的情況下失效。\n* **補救**: 引入更複雜的依賴關係模型，或者使用更有效的訓練算法。\n\n### 知識蒸餾基路由\n\n* **批裁 1**: 理論假設可能不夠穩定和可預測，導致模型失效。\n* **補救**: 引入更有效的知識蒸餾方法，例如使用 attention 機制或圖神經網路。\n* **批裁 2**: 資料和計算資源需求過高，導致模型訓練不穩定或過度擬合。\n* **補救**: 使用更有效的訓練算法，例如批次歸一化或梯度裁剪。\n* **批裁 3**: 計算資源需求過高，導致模型訓練時間過長或需要大量的計算資源。\n* **補救**: 使用更有效的硬件，例如 GPU 或分布式計算。\n* **批裁 4**: 基準可能選太弱，或者有 cherry-picking 嫌疑。\n* **補救**: 進行更多的實驗，使用不同的基準和資料集來評估模型的性能。\n* **批裁 5**: 模型可能在大型預訓練模型的情況下失效。\n* **補救**: 引入更有效的知識蒸餾方法"
-    },
-    {
-      "stage": 5,
-      "summary": "**時間遞迴路由優化研究提案摘要**\n\n**最關鍵的事實**\n\n* 現有的路由方法在多任務學習中仍存在問題，如路由決策的準確性和效率。\n* 提出時間遞迴路由優化（Temporal Recursive Routing Optimization）方法，結合遞迴神經網路和元學習的優點。\n* 方法使用小型變體的 BERT 模型，減少計算資源的需求。\n\n**結論**\n\n* 時間遞迴路由優化可以提高路由決策的準確性和效率，減少計算資源的需求。\n* 方法可以應用於多任務學習中，提高了模型的泛化能力和實用性。\n\n**技術細節**\n\n* 遞迴神經網路優化路由決策\n* 輸入流程為 token 序列和任務描述\n* 訓練目標為交叉熵損失加上路由穩定性正則\n* 推論流程為使用優化的路由模型進行預測\n\n**論點**\n\n* 時間遞迴路由優化具有創新性，結合了遞迴神經網路和元學習的優點。\n* 方法可以應用於多任務學習中，提高了路由決策的準確性和效率。\n\n**引用的 paper 名稱**\n\n* 《MetaGate: Learning to Route Experts with Meta-Learning》(NeurIPS 2025)\n* 《Task-Aware MoE Routing via Gradient-Based Meta-Optimization》(ICLR 2026)\n\n**接續階段**\n\n* 實驗設計：設計實驗，評估時間遞迴路由優化的性能。\n* 實驗結果：分析實驗結果，評估時間遞迴路由優化的有效性。\n* 應用：應用時間遞迴路由優化於多任務學習中，評估其泛化能力和實用性。"
+      "summary": "**主題一: 隱式群對稱發現與等變自編碼器**\n\n* **關鍵事實**：\n + 目前只有極少數團隊嘗試從原始觀測資料自動推斷未知的連續對稱群。\n + 解決此問題將大幅提升物理模擬與科學發現的自動化程度。\n* **結論**：\n + 需要發展可微分方式參數化未知的 Lie 群或離散群，使其在訓練過程中同時學習結構與表示。\n + 大規模高維資料上群參數的可辨識性與收斂速度仍未得到系統性分析。\n* **技術細節**：\n + 需要設計可微分方式參數化未知的 Lie 群或離散群。\n + 需要分析大規模高維資料上群參數的可辨識性與收斂速度。\n* **論點**：\n + 等變自編碼器有潛力在未知的連續對稱群中發現新的群對稱。\n + 需要發展新的方法來分析大規模高維資料上群參數的可辨識性與收斂速度。\n* **引用**：\n + 《Discovering Latent Symmetry Groups with Equivariant Autoencoders》, Lin Y. (NeurIPS 2025)\n + 《Implicit Group Discovery in Dynamical Systems》, Patel S. (ICLR 2026)\n + 《Learning Hidden Continuous Symmetries from Data》, arXiv:2509.01234 (2025)\n\n**主題二: 等變圖神經網路於高階組合優化**\n\n* **關鍵事實**：\n + 將幾何等變性嵌入組合優化求解器，可在 Euclidean 或更一般流形上直接利用對稱性減少搜索空間。\n + 相關工作仍在起步階段。\n* **結論**：\n + 需要發展方法將離散的組合約束映射到連續的神經表示。\n + 訓練過程的穩定性與梯度信號在高維幾何空間中往往衰減，需要新型的正則化或對稱保護機制。\n* **技術細節**：\n + 需要設計方法將離散的組合約束映射到連續的神經表示。\n + 需要發展新型的正則化或對稱保護機制。\n* **論點**：\n + 等變圖神經網路有潛力在高階組合優化中提高效率。\n + 需要發展新的方法來分析大規"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
