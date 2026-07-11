@@ -1,6 +1,6 @@
 {
   "date": "2026-07-12",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* 等變自編碼器 (Equivariant Autoencoder, EAE)\n + 嵌入可微分的等變層，讓模型在隱空間中自動對齊資料的對稱變換\n* 隱式群參數化 (Implicit Group Parameterization, IGP)\n + 使用神經網路產生 Lie 群的生成子（generator）矩陣\n* 對稱辨識正則化 (Symmetry Identification Regularizer, SIR)\n + 以資訊瓶頸或最小化群作用下的特徵變異為目標\n\n**2. 模型架構細節**\n\n* 輸入：高維觀測向量或時間序列\n* 輸出：重構的觀測向量以及學得的群參數\n* 關鍵模組：\n + EquivariantEncoder：含等變卷積或線性層，輸出隱向量 `z`\n + GroupGeneratorNet：產生 Lie 代數基 `G_i`\n + EquivariantDecoder：根據推估的群參數對 `z` 施加等變變換，再解碼回原始空間\n\n**3. 訓練策略**\n\n* 資料規模：合成物理模擬資料 10⁴‑10⁵ 個樣本\n* batch size：64‑128\n* 優化器：AdamW，學習率 1e‑3，使用 cosine decay\n* loss 設計：`L_total = L_recon + λ_sym·L_SIR + λ_dyn·L_dyn`\n\n**4. 主要 benchmark 與資料集**\n\n* Synthetic Symmetry Suite (S³)\n + 關鍵指標：Group Recovery Accuracy、Reconstruction Error\n* Dynamical Systems Discovery Benchmark (DSDB)\n + 關鍵指標：Prediction Horizon、Symmetry Consistency Score\n\n**5. 方法優劣比較**\n\n* 等變自編碼器 (EAE)\n + 優點：結構簡單、重構品質高\n + 缺點：對群參數的初始值敏感、收斂速度慢\n* 隱式群參數化 (IGP)\n + 優點：直接學習 Lie 代數基、理論上能表示任意連續群\n + 缺點：生成子矩陣的正交性需額外投影、計算成本增加\n* 對稱辨識正則化 (SIR)\n + 優點：提供明確的辨識信號、提升群參數的可辨識性\n + 缺點：需要手動調整正則"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 層次對稱自編碼器\n\n* **核心 idea**: 結合分層式的等變自編碼器架構，在不同層次上學習不同規模的對稱性。\n* **技術細節**:\n + 輸入流程為高維觀測向量\n + 模組設計包括多層等變自編碼器，每層學習不同尺度的對稱變換\n + 訓練目標是重構觀測向量和學習層次對稱群參數\n + 損失函數為重構誤差加上層次對稱性的正則化項\n* **與 SOTA 的差異**: 增加了分層式的設計，允許在不同抽象層次上學習對稱性。\n* **預期改善的指標與原因**: 預期在 Synthetic Symmetry Suite (S³) 資料集上的群對稱恢復精度和重構誤差會有所提升。\n* **最小可行實驗(MVP)**: 可以使用一個 4 層的分層式等變自編碼器，在 S³ 資料集上進行訓練和驗證。\n\n### 方案 2: 基於自組織映射的群參數初始化\n\n* **核心 idea**: 利用自組織映射（SOM）對群參數進行初始化，以便更好地學習隱式對稱性。\n* **技術細節**:\n + 輸入流程為高維觀測向量\n + 模組設計包括自組織映射模組用於初始化群參數\n + 使用等變自編碼器進行訓練\n + 訓練目標是重構觀測向量和學習群參數\n + 損失函數為重構誤差加上對稱性的正則化項\n* **與 SOTA 的差異**: 在群參數初始化上採用了自組織映射的方法。\n* **預期改善的指標與原因**: 預期在 Dynamical Systems Discovery Benchmark (DSDB) 上的預測視野和對稱性一致性評分會有所提升。\n* **最小可行實驗(MVP)**: 可以使用一個 2D 自組織映射網絡對群參數進行初始化，然後在 DSDB 資料集上進行驗證。\n\n### 方案 3: 輸入空間投影增強的等變自編碼器\n\n* **核心 idea**: 透過對輸入空間進行投影變換，增強等變自編碼器在學習複"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
