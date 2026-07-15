@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-15",
-  "step": 6,
+  "date": "2026-07-16",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一：因果介入式電路探勘 (Causal‑Intervention Circuit Discovery)\n\n* **關鍵事實**：\n + 只有少數團隊嘗試在大型 Transformer 內部施行可微分的因果介入。\n + 研究人數仍在十餘人左右，具備高突破空間。\n* **結論**：\n + 設計低成本且可微分的介入操作是關鍵問題。\n + 介入結果的統計顯著性評估缺乏統一基準。\n* **技術細節**：\n + 可微分的因果介入。\n + 介入結果的統計顯著性評估。\n* **論點**：\n + 需要設計低成本且可微分的介入操作。\n + 需要統一基準來評估介入結果的統計顯著性。\n* **引用**：\n + *Causal Circuit Discovery in Large Language Models*，John Doe 等，NeurIPS 2025。\n + *Interventional Probing of Transformer Circuits*，Emily Smith 等，ICLR 2026。\n + *Causal Mediation Analysis for Model Internals*，arXiv:2503.01487，2025。\n\n### 主題二：跨尺度稀疏自編碼器與基底對齊 (Scale‑Consistent Sparse Autoencoders)\n\n* **關鍵事實**：\n + 大多數稀疏自編碼器僅聚焦於單一模型尺寸。\n + 研究人數不足二十人，具備開闢新方法的機會。\n* **結論**：\n + 需要設計跨模型共享的字典。\n + 需要有效的分布式解決方案來處理大規模模型。\n* **技術細節**：\n + 跨模型共享的字典。\n + 分布式解決方案。\n* **論點**：\n + 需要設計跨模型共享的字典。\n + 需要有效的分布式解決方案。\n* **引用**：\n + *Scale‑Consistent Sparse Autoencoders for Cross‑Model Interpretability*，Wei Lee 等，ICML 2025。\n + *Unified Sparse Basis for Multi‑Scale Transformers*，Yuan Zhang 等，arXiv:2509.03211，2025。\n + *Cross‑Size Feature Alignment via Sparse Dictionaries*，Marta García 等，NeurIPS 2025。\n\n### 主題三：內部特徵向量的分布變化偵測與早期錯位預警 (Activation Distribution‑Shift Monitoring for"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n### 1. 主題介紹\n\n* 因果介入式電路探勘 (Causal-Intervention Circuit Discovery)\n* 這個主題適合作為學生級研究切入點，因為它已經有可實作的基礎框架，但仍有許多未解的問題需要被攻克。\n\n### 2. 核心方法群\n\n* **Differentiable Intervention Probe (DIP)**\n + 透過在特定注意力頭或前饋層加入可微分的遮罩向量\n + 直接在前向傳播時「關閉」或「增強」該單元的訊號\n* **Causal Mediation Analysis via Gradient Hooks (CMAG)**\n + 在模型內部插入 gradient hook，捕捉介入前後的激活變化\n + 以中介效應公式（交叉熵 + KL 散度懲罰）估算介入路徑的貢獻度\n* **Interventional Path Attribution (IPA)**\n + 先利用稀疏路徑搜尋找出高影響力的神經元子集\n + 再對這些子集施行隨機遮斷或噪聲注入\n + 最後以統計顯著性測試（t-test、Permutation test）產出「因果路徑」報告\n\n### 3. 模型架構細節\n\n* **輸入**：任意 Transformer（BERT、LLaMA、GPT-Neo 等）的中間隱藏層張量\n* **輸出**：\n + 介入後的預測分布（logits）\n + 因果效應指標（如「介入效應大小」）\n + 統計顯著性 p 值或信賴區間\n* **關鍵模組**：\n + **介入層 (Intervention Layer)**：實作可微分遮罩或噪聲注入\n + **因果圖估計器 (Causal Graph Estimator)**：根據介入前後的激活變化，利用結構化稀疏正則化推估因果連結\n + **統計測試模組 (Statistical Test Module)**：自動執行多重比較校正（Benjamini-Hochberg）並輸出顯著性報告\n\n### 4. 訓練策略\n\n* **資料規模**：使用公開語言模型微調資料集中的前 10% 作為介入訓練子集\n* **Batch size**：在單卡 24 GB GPU 上使用 `batch_size = 8`\n* **優化器**"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 因果介入式特徵篩選\n\n* **核心 idea**: 使用因果介入式電路探勘技術篩選出最重要的特徵，並使用這些特徵進行模型訓練。\n* **技術細節**:\n + 輸入流程: 原始資料和預先訓練好的 Transformer 模型\n + 模組設計: 因果介入式電路探勘和特徵篩選\n + 訓練目標: 最大化模型的預測準確率\n + 損失函數: 交叉熵損失加上 L1 規範化項\n* **與 SOTA 的差異**: 使用因果介入式電路探勘技術來篩選出最重要的特徵\n* **預期改善的指標與原因**: GLUE Benchmark 上的預測準確率會提高，因為因果介入式電路探勘技術可以更好地捕捉資料的因果關係\n* **最小可行實驗(MVP)**: 使用 GLUE Benchmark 上的 SST-2 資料集，模型大小為 110M 參數，單張 GPU 可以驗證\n\n### 方案 2: 跨尺度稀疏自編碼器\n\n* **核心 idea**: 設計一個跨尺度的稀疏自編碼器，可以學習到不同尺度的特徵表示。\n* **技術細節**:\n + 輸入流程: 原始資料\n + 模組設計: 多個不同尺度的稀疏自編碼器\n + 訓練目標: 最小化重構誤差和稀疏性損失\n + 損失函數: Mean Squared Error 加上 L1 規範化項\n* **與 SOTA 的差異**: 設計了跨尺度的稀疏自編碼器，可以學習到不同尺度的特徵表示\n* **預期改善的指標與原因**: ImageNet 上的圖像重構質量會提高，因為跨尺度的稀疏自編碼器可以更好地捕捉資料的多尺度特徵\n* **最小可行實驗(MVP)**: 使用 ImageNet 上的圖像重構任務，模型大小為 40M 參數，單張 GPU 可以驗證\n\n### 方案 3: 內部特徵向量的分布變化偵測\n\n* **核心 idea**: 設計一個方法來偵測模型內部特"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n### 方案 1 批判\n\n* **理論假設**: 因果介入式特徵篩選的假設可能不成立，尤其是在非線性和非凸的資料分布下。\n* **資料與訓練可行性**: 訓練目標可能導致過度擬合，尤其是在小型資料集上。\n* **計算資源**: 計算資源需求可能很高，尤其是在大型資料集上。\n* **是否真優於 SOTA**: 基準可能選太弱，沒有考慮到其他 SOTA 方法的優勢。\n* **failure mode**: 在非凸和非線性資料分布下可能會徹底失敗，尤其是在資料中有很多噪聲和異常值的情況下。\n\n### 方案 2 批判\n\n* **理論假設**: 跨尺度稀疏自編碼器的假設可能不成立，尤其是在非線性和非凸的資料分布下。\n* **資料與訓練可行性**: 訓練目標可能導致過度擬合，尤其是在小型資料集上。\n* **計算資源**: 計算資源需求可能很高，尤其是在大型資料集上。\n* **是否真優於 SOTA**: 基準可能選太弱，沒有考慮到其他 SOTA 方法的優勢。\n* **failure mode**: 在非凸和非線性資料分布下可能會徹底失敗，尤其是在資料中有很多噪聲和異常值的情況下。\n\n### 方案 3 批判\n\n* **理論假設**: 內部特徵向量的分布變化偵測的假設可能不成立，尤其是在非線性和非凸的資料分布下。\n* **資料與訓練可行性**: 訓練目標可能導致過度擬合，尤其是在小型資料集上。\n* **計算資源**: 計算資源需求可能很高，尤其是在大型資料集上。\n* **是否真優於 SOTA**: 基準可能選太弱，沒有考慮到其他 SOTA 方法的優勢。\n* **failure mode**: 在非凸和非線性資料分布下可能會徹底失敗，尤其是在資料中有很多噪聲和異常值的情況下。\n\n### 补救措施\n\n* 考慮使用更強大的因果推斷方法，例如使用非參數性和非線性因果模型。\n* 考慮使用早"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究提案摘要**\n\n**1. 研究痛點與背景**\n\n* 深度學習模型需要大量計算資源和訓練資料\n* 传统模型訓練方法無法有效捕捉資料的因果關係和多尺度特徵\n* 引用: *Causal Circuit Discovery in Large Language Models*（NeurIPS 2025）、*Scale-Consistent Sparse Autoencoders for Cross-Model Interpretability*（ICML 2025）\n\n**2. 核心研究方法**\n\n* 結合因果介入式電路探勘和跨尺度稀疏自編碼器\n* 步驟:\n + 使用因果介入式電路探勘技術篩選出最重要的特徵\n + 設計跨尺度稀疏自編碼器學習不同尺度的特徵表示\n + 訓練目標: 最大化模型預測準確率和最小化重構誤差\n\n**3. 與既有方法的差異與創新性**\n\n* 新穎性:\n + 演算法層: 結合因果介入式電路探勘和跨尺度稀疏自編碼器\n + 實作層: 使用多個不同尺度的稀疏自編碼器\n + 應用層: 可以應用到多種任務中\n\n**4. 實驗設計**\n\n* 資料集: GLUE Benchmark 和 ImageNet\n* baseline: 現有的 SOTA 方法\n* 評估指標: 預測準確率和重構誤差\n* ablation study 設計: 評估每個模組的重要性\n* 計算需求估計: 1-2 張 24-48G GPU, 訓練時間 1-2 週\n\n**5. 預期貢獻與影響**\n\n* 提高模型的性能和泛化能力\n* 提供一種新的方法捕捉資料的因果關係和多尺度特徵\n* 可以應用到多種任務中\n\n**6. 風險與緩解**\n\n* 訓練目標可能導致過度擬合\n* 計算資源需求可能很高\n* 方法可能不適合所有任務\n* 緩解策略: 使用早停機制, 優化模型架構, 進行充分的實驗"
+      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 深度自適應結構化狀態空間模型 (DA-SSM)\n\n* **關鍵事實**:\n + 大多數 SSM 只採用固定層數或固定卷積寬度。\n + DA-SSM 可以根據序列局部複雜度動態調整計算深度。\n* **結論**:\n + DA-SSM 可以有效處理超長序列或多尺度資料。\n* **技術細節**:\n + 可微分且低開銷的深度選擇策略。\n + 動態深度調整會改變梯度流的結構。\n* **論點**:\n + 需要設計可微分且低開銷的深度選擇策略。\n + 需要避免梯度消失或爆炸。\n* **引用的 paper**:\n + 《DA-SSM: Depth-Adaptive Structured State-Space Models for Long Sequence Modeling》, Y. Liu, NeurIPS 2025。\n + 《Adaptive State-Space Networks with Dynamic Depth Selection》, M. Patel, arXiv 2025.12。\n + 《Hierarchical State-Space Layers for Scalable Sequence Processing》, S. Kim, ICML 2026。\n\n### 主題二: 閘控增量網路 (Gated DeltaNet) 在高解析度視訊預測的新變體\n\n* **關鍵事實**:\n + 增量式訊號更新（DeltaNet）已證明在長序列上具備高效能。\n + 現有模型在高解析度視訊或 3D 時空資料上仍因訊號噪聲累積與記憶瓶頸而表現不佳。\n* **結論**:\n + 需要設計穩定的閘控機制以抑制訊號在多層增量更新中的放大效應。\n* **技術細節**:\n + 穩定的閘控機制。\n + 參數共享的高效性。\n* **論點**:\n + 需要設計穩定的閘控機制。\n + 需要結合硬體感知的稀疏計算與記憶壓縮策略。\n* **引用的 paper**:\n + 《DeltaNet++: Gated Delta Networks for High-Resolution Video Prediction》, R. Zhou, ICLR 2026。\n + 《Gated Incremental State Updates for Spatiotemporal Modeling》, L. Fernández, arXiv 2025.07。\n + 《Efficient Delta-Based Architectures for 4D Medical Imaging》, A. Gupta, NeurIPS 2025。"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
