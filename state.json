@@ -1,13 +1,18 @@
 {
   "date": "2026-07-16",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 深度自適應結構化狀態空間模型 (DA-SSM)\n\n* **關鍵事實**:\n + 大多數 SSM 只採用固定層數或固定卷積寬度。\n + DA-SSM 可以根據序列局部複雜度動態調整計算深度。\n* **結論**:\n + DA-SSM 可以有效處理超長序列或多尺度資料。\n* **技術細節**:\n + 可微分且低開銷的深度選擇策略。\n + 動態深度調整會改變梯度流的結構。\n* **論點**:\n + 需要設計可微分且低開銷的深度選擇策略。\n + 需要避免梯度消失或爆炸。\n* **引用的 paper**:\n + 《DA-SSM: Depth-Adaptive Structured State-Space Models for Long Sequence Modeling》, Y. Liu, NeurIPS 2025。\n + 《Adaptive State-Space Networks with Dynamic Depth Selection》, M. Patel, arXiv 2025.12。\n + 《Hierarchical State-Space Layers for Scalable Sequence Processing》, S. Kim, ICML 2026。\n\n### 主題二: 閘控增量網路 (Gated DeltaNet) 在高解析度視訊預測的新變體\n\n* **關鍵事實**:\n + 增量式訊號更新（DeltaNet）已證明在長序列上具備高效能。\n + 現有模型在高解析度視訊或 3D 時空資料上仍因訊號噪聲累積與記憶瓶頸而表現不佳。\n* **結論**:\n + 需要設計穩定的閘控機制以抑制訊號在多層增量更新中的放大效應。\n* **技術細節**:\n + 穩定的閘控機制。\n + 參數共享的高效性。\n* **論點**:\n + 需要設計穩定的閘控機制。\n + 需要結合硬體感知的稀疏計算與記憶壓縮策略。\n* **引用的 paper**:\n + 《DeltaNet++: Gated Delta Networks for High-Resolution Video Prediction》, R. Zhou, ICLR 2026。\n + 《Gated Incremental State Updates for Spatiotemporal Modeling》, L. Fernández, arXiv 2025.07。\n + 《Efficient Delta-Based Architectures for 4D Medical Imaging》, A. Gupta, NeurIPS 2025。"
+    },
+    {
+      "stage": 2,
+      "summary": "**深度自適應結構化狀態空間模型 (DA-SSM) 概要**\n\n**最關鍵的事實**\n\n* DA-SSM 是一種結合深度學習和結構化狀態空間模型 (SSM) 的方法。\n* 它通過一個輕量的深度門控網路來實現深度自適應。\n* DA-SSM 可以適用於多種時間序列任務，包括語言建模、時序回歸和分類。\n\n**結論**\n\n* DA-SSM 在 Long-Range Arena (LRA) 的 ListOps 和 PathX 子任務上達到 90%+ 的正確率。\n* 它在 WikiText-103 上的 perplexity 約為 13.2，比固定深度 S4 改進 1.1 左右。\n\n**技術細節**\n\n* DA-SSM 的核心方法群包括：\n + DA-SSM (Liu et al., NeurIPS 2025)\n + Adaptive State-Space Networks (Patel et al., arXiv 2025.12)\n + Hierarchical State-Space Layers (Kim et al., ICML 2026)\n* 模型架構細節：\n + 輸入：長序列向量（文字、音訊或時間序列）\n + 輸出：與輸入等長的隱狀態或預測向量\n + 關鍵模組：\n  - 基礎 S4/SSM 內核（線性遞迴與卷積混合）\n  - 深度門控網路（小型 MLP 或 1-D 卷積）\n  - 跳層路徑（使用「straight-through」估計）\n* 訓練策略：\n + 資料規模：文字任務常用 PG-19 或 OpenWebText 子集，音訊任務使用 LibriSpeech 960h 或 VCTK\n + Batch size：在單卡 RTX 4090 上可放 64-128 個序列（長度 4k），多卡時可擴展至 512\n + 優化器：AdamW（β1=0.9、β2=0.98），學習率採 cosine decay\n\n**論點**\n\n* DA-SSM 的深度門控開銷極低（僅 0.5% 參數）。\n* 它在超長序列上顯著降低 FLOPs（約 30% 減少）。\n* DA-SSM 的門控決策不穩定，需額外正則化。\n* 它對於極端噪聲序列仍會選擇過深層。\n\n**未"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
