@@ -1,6 +1,6 @@
 {
   "date": "2026-07-17",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* `RLVR‑Base`：透過形式化子目標驗證每一步的正確性，並將驗證結果作為回饋獎勵給 RL 代理。\n* `Logic‑Guided Policy Search (LGPS)`：在策略搜索階段嵌入一層邏輯約束網路，先用可微分的邏輯編碼器產生候選動作，再由形式驗證器過濾不符合規則的候選。\n* `Verifiable Curriculum RL (VCRL)`：動態生成由簡到難的可驗證子任務，利用自動證明器評估子任務是否已被正確解決。\n\n**2. 模型架構細節**\n\n* **輸入**：環境觀測（圖像、結構化狀態）+ 當前推理上下文（自然語言描述或邏輯式）。\n* **輸出**：離散或連續動作序列，對應於推理步驟的選擇。\n* **關鍵模組**：\n + `Perception Encoder`（ViT 或 CNN）將感知資訊編碼。\n + `Logic Encoder`（圖神經網路）將邏輯子目標嵌入向量空間。\n + `Policy Network`（Transformer‑based）產生動作分佈。\n + `Verifier`（SMT 求解器或可微分邏輯層）在每一步返回二元驗證信號。\n\n**3. 訓練策略**\n\n* **資料規模**：使用 5‑10 萬條合成推理任務，每條任務包含 3‑7 個可驗證子目標。\n* **Batch size**：在單卡 RTX 4090 上常見設定為 256 個環境步驟（約 4‑8 個完整任務）。\n* **優化器**：AdamW（學習率 3e‑4），搭配線性 warm‑up 前 10% 步驟。\n* **Loss 設計**：\n + 主損失為 PPO‑style 的策略梯度損失。\n + 輔助損失為驗證成功率的二元交叉熵，權重 0.2。\n\n**4. 主要 benchmark 與資料集**\n\n* **Logical Reasoning Gym (LR‑Gym)**：2025 年推出的合成推理環境，包含數學證明、圖形推理、程式合成三大子集。\n* **Key Metrics**：\n + `Success Rate`（完整任務全部子目標驗證通過的"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 動態推理圖結構學習\n\n* **核心 idea**: Dynamically learning the graph structure of the reasoning process to improve the model's ability to generalize to unseen tasks.\n* **技術細節**:\n + 輸入流程包括環境觀測和當前推理上下文\n + 使用 graph neural network 來學習推理圖的結構\n + 訓練目標是最大化圖中節點的正確性\n + 損失函數是圖中節點預測誤差的平均平方和\n* **與 SOTA 的差異**: 動態推理圖結構學習改變了傳統的固定推理圖結構\n* **預期改善的指標與原因**: 預期在 Logical Reasoning Gym 的 Success Rate 指標上會有所提升\n* **最小可行實驗(MVP)**: 可以使用 Logical Reasoning Gym 的數學證明子集，模型大小為 100k 參數，單張 Tesla V100 GPU 即可驗證\n\n### 方案 2: 基於反事實推理的強化學習\n\n* **核心 idea**: 使用反事實推理來增強強化學習代理的推理能力和對環境的理解\n* **技術細節**:\n + 輸入流程包括環境觀測和當前推理上下文\n + 使用反事實推理模組來生成反事實場景\n + 訓練目標是最大化代理在反事實場景中的獎勵\n + 損失函數是代理在反事實場景中的累積獎勵差的平均值\n* **與 SOTA 的差異**: 基於反事實推理的強化學習改變了傳統的強化學習方式\n* **預期改善的指標與原因**: 預期在 Logical Reasoning Gym 的 Success Rate 指標上會有所提升\n* **最小可行實驗(MVP)**: 可以使用 Logical Reasoning Gym 的圖形推理子集，模型大小為 50k 參數，單張 RTX 3080 GPU 即可驗證\n\n### 方案 3: 多步驟推理的可微分證明器\n\n* **核心 idea**: 使用可微分證明器來驗證多步驟推理的正確性和有效性\n* **技術細節**:\n + 輸入流程包括環境觀測和當前推理上下文\n + 使用可微分證明器來驗證多步驟推理\n + 訓練目標是最大化"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
