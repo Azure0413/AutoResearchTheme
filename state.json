@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-16",
-  "step": 6,
+  "date": "2026-07-17",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 深度自適應結構化狀態空間模型 (DA-SSM)\n\n* **關鍵事實**:\n + 大多數 SSM 只採用固定層數或固定卷積寬度。\n + DA-SSM 可以根據序列局部複雜度動態調整計算深度。\n* **結論**:\n + DA-SSM 可以有效處理超長序列或多尺度資料。\n* **技術細節**:\n + 可微分且低開銷的深度選擇策略。\n + 動態深度調整會改變梯度流的結構。\n* **論點**:\n + 需要設計可微分且低開銷的深度選擇策略。\n + 需要避免梯度消失或爆炸。\n* **引用的 paper**:\n + 《DA-SSM: Depth-Adaptive Structured State-Space Models for Long Sequence Modeling》, Y. Liu, NeurIPS 2025。\n + 《Adaptive State-Space Networks with Dynamic Depth Selection》, M. Patel, arXiv 2025.12。\n + 《Hierarchical State-Space Layers for Scalable Sequence Processing》, S. Kim, ICML 2026。\n\n### 主題二: 閘控增量網路 (Gated DeltaNet) 在高解析度視訊預測的新變體\n\n* **關鍵事實**:\n + 增量式訊號更新（DeltaNet）已證明在長序列上具備高效能。\n + 現有模型在高解析度視訊或 3D 時空資料上仍因訊號噪聲累積與記憶瓶頸而表現不佳。\n* **結論**:\n + 需要設計穩定的閘控機制以抑制訊號在多層增量更新中的放大效應。\n* **技術細節**:\n + 穩定的閘控機制。\n + 參數共享的高效性。\n* **論點**:\n + 需要設計穩定的閘控機制。\n + 需要結合硬體感知的稀疏計算與記憶壓縮策略。\n* **引用的 paper**:\n + 《DeltaNet++: Gated Delta Networks for High-Resolution Video Prediction》, R. Zhou, ICLR 2026。\n + 《Gated Incremental State Updates for Spatiotemporal Modeling》, L. Fernández, arXiv 2025.07。\n + 《Efficient Delta-Based Architectures for 4D Medical Imaging》, A. Gupta, NeurIPS 2025。"
-    },
-    {
-      "stage": 2,
-      "summary": "**深度自適應結構化狀態空間模型 (DA-SSM) 概要**\n\n**最關鍵的事實**\n\n* DA-SSM 是一種結合深度學習和結構化狀態空間模型 (SSM) 的方法。\n* 它通過一個輕量的深度門控網路來實現深度自適應。\n* DA-SSM 可以適用於多種時間序列任務，包括語言建模、時序回歸和分類。\n\n**結論**\n\n* DA-SSM 在 Long-Range Arena (LRA) 的 ListOps 和 PathX 子任務上達到 90%+ 的正確率。\n* 它在 WikiText-103 上的 perplexity 約為 13.2，比固定深度 S4 改進 1.1 左右。\n\n**技術細節**\n\n* DA-SSM 的核心方法群包括：\n + DA-SSM (Liu et al., NeurIPS 2025)\n + Adaptive State-Space Networks (Patel et al., arXiv 2025.12)\n + Hierarchical State-Space Layers (Kim et al., ICML 2026)\n* 模型架構細節：\n + 輸入：長序列向量（文字、音訊或時間序列）\n + 輸出：與輸入等長的隱狀態或預測向量\n + 關鍵模組：\n  - 基礎 S4/SSM 內核（線性遞迴與卷積混合）\n  - 深度門控網路（小型 MLP 或 1-D 卷積）\n  - 跳層路徑（使用「straight-through」估計）\n* 訓練策略：\n + 資料規模：文字任務常用 PG-19 或 OpenWebText 子集，音訊任務使用 LibriSpeech 960h 或 VCTK\n + Batch size：在單卡 RTX 4090 上可放 64-128 個序列（長度 4k），多卡時可擴展至 512\n + 優化器：AdamW（β1=0.9、β2=0.98），學習率採 cosine decay\n\n**論點**\n\n* DA-SSM 的深度門控開銷極低（僅 0.5% 參數）。\n* 它在超長序列上顯著降低 FLOPs（約 30% 減少）。\n* DA-SSM 的門控決策不穩定，需額外正則化。\n* 它對於極端噪聲序列仍會選擇過深層。\n\n**未"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 自適應深度調整的 Gated DeltaNet\n\n* **核心 idea**: 結合自適應深度調整和閘控機制來改善 Gated DeltaNet 的效能。\n* **技術細節**:\n + 輸入流程保持不變\n + 加入自適應深度調整機制，使用輕量的深度門控網路實現深度自適應\n + 訓練目標為最小化與輸出目標之間的均方差\n + 損失函數為 L2 損失加上深度懲罰項\n* **與 SOTA 的差異**: 加入自適應深度調整機制，允許模型根據序列複雜度動態調整計算深度，改善模型在超長序列上的效能。\n* **預期改善的指標與原因**: 預期在高解析度視訊預測任務中提升 Peak Signal-to-Noise Ratio (PSNR) 指標，因為自適應深度調整機制可以幫助模型更好地處理不同複雜度的序列，減少過度擬合的風險。\n* **最小可行實驗(MVP)**: 使用 UC Merced Land Use Dataset，模型大小為 256 個隱藏單元，單張 RTX 4090 GPU 即可驗證。\n\n### 方案 2: 基於熵率的深度門控機制\n\n* **核心 idea**: 使用熵率作為深度門控機制的信號，實現更有效的深度調整。\n* **技術細節**:\n + 輸入流程保持不變\n + 加入熵率計算模組，使用熵率作為深度門控信號\n + 訓練目標為最小化與輸出目標之間的交叉熵損失\n + 損失函數為交叉熵加上熵率懲罰項\n* **與 SOTA 的差異**: 使用熵率作為信號，允許模型根據序列的不確定性動態調整計算深度，改善模型在不確定性序列上的效能。\n* **預期改善的指標與原因**: 預期在語言建模任務中提升 perplexity 指標，因為熵率信號可以幫助模型更好地處理不確定性序列，減少過度擬合的風險。\n* **最小可行實驗(MVP)**: 使用"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**方案 1 批判**\n\n* **批判 1(理論假設)**: 序列的複雜度估計可能受到多種因素的影響，例如噪聲、缺失值等。\n* **批判 2(資料與訓練可行性)**: 使用的資料集是否足夠大且多樣化，以支撐自適應深度調整的有效性？\n* **批判 3(計算資源)**: 單卡24G VRAM的GPU是否足夠支撐模型的訓練和推理？\n* **批判 4(是否真優於 SOTA)**: 方案中使用的基準是否選擇得太弱？\n* **批判 5(failure mode)**: 在什麼條件下，方案中的自適應深度調整會失敗？\n\n**方案 2 批判**\n\n* **批判 1(理論假設)**: 熵率的估計可能受到多種因素的影響，例如噪聲、缺失值等。\n* **批判 2(資料與訓練可行性)**: 使用的語言建模任務是否足夠大且多樣化，以支撐基於熵率的深度門控機制的有效性？\n* **批判 3(計算資源)**: 單卡24G VRAM的GPU是否足夠支撐模型的訓練和推理？\n* **批判 4(是否真優於 SOTA)**: 方案中使用的基準是否選擇得太弱？\n* **批判 5(failure mode)**: 在什麼條件下，方案中的基於熵率的深度門控機制會失敗？\n\n**補救措施**\n\n* 使用多種複雜度估計方法的ensemble\n* 使用正則化和早停機制的設計\n* 使用模型剪枝和量化等優化技術\n* 使用更強大的基準模型和進行充分的超參數搜索和模型選擇\n* 使用多種熵率估計方法的ensemble和對模型進行正則化和早停機制的設計"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究提案摘要**\n\n**1. 研究痛點與背景**\n\n* 深度學習模型在處理長序列任務時存在挑戰，尤其是在計算資源有限的情況下。\n* 自適應深度調整和閘控機制可以有效改善模型的效能。\n\n**2. 核心研究方法**\n\n* 結合自適應深度調整和閘控機制設計新的模型。\n* 模型架構包括：\n + 輸入長序列資料\n + 自適應深度調整機制動態調整模型的深度\n + 閘控機制控制信息的流動\n + 訓練目標是最小化與輸出目標之間的均方差\n\n**3. 與既有方法的差異與創新性**\n\n* 結合自適應深度調整和閘控機制的創新設計。\n* 使用輕量的深度門控網路實現自適應深度調整。\n* 可以應用於多種長序列任務。\n\n**4. 實驗設計**\n\n* 使用UC Merced Land Use Dataset和WikiText-103等公開資料集。\n* 使用DA-SSM和Gated DeltaNet等現有模型作為基準。\n* 評估指標包括PSNR和perplexity。\n* 設計了多個ablation study實驗。\n\n**5. 預期貢獻與影響**\n\n* 預期可以在長序列任務上取得更好的效能。\n* 可以為長序列任務的模型設計提供新的思路和方法。\n\n**6. 風險與緩解**\n\n* 風險1：自適應深度調整機制可能無法有效地適應不同的序列長度和複雜度。\n* 緩解策略：使用多種自適應深度調整機制的ensemble。\n* 風險2：閘控機制可能會導致信息的丟失和模型的過度簡化。\n* 緩解策略：使用閘控機制的正則化和早停機制。\n\n**相關參考文獻**\n\n* Liu et al. (2025) - DA-SSM\n* Zhou et al. (2026) - Gated DeltaNet"
+      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 測試時計算規模律 (Test-time Compute Scaling Laws)\n\n* **關鍵事實**：\n + 大多數研究聚焦於訓練階段的 FLOP-效能曲線。\n + 實務上企業需要在固定延遲預算下最大化準確度。\n* **結論**：\n + 需要系統性量化推理時的計算資源與效能關係。\n + 需要建立統一的 FLOP-to-latency 映射。\n* **技術細節**：\n + 早退出機制的可靠性驗證。\n + 缺乏大規模實驗基準。\n* **論點**：\n + 需要跨語言、多任務的測試時效能曲線標準化。\n* **引用**：\n + *Scaling Laws for Test-time Compute in Large Language Models*, Jiawei Li 等, NeurIPS 2025。\n + *Inference Frontier: Empirical Trade-offs Between Latency, FLOPs, and Accuracy*, Sofia Martinez 等, ICLR 2026。\n\n### 主題二: 可驗證推理的強化學習框架 (RLVR – Reinforcement Learning with Verifiable Reasoning)\n\n* **關鍵事實**：\n + RLVR 嘗試將推理過程嵌入可形式化驗證的環境。\n + 研究人數仍在十人以下。\n* **結論**：\n + 需要自動生成可驗證的推理子目標。\n + 需要平衡形式驗證器的計算開銷與 RL 迭代速度。\n* **技術細節**：\n + 高維狀態空間中自動生成可驗證的推理子目標。\n + 形式驗證器的計算開銷與 RL 迭代速度之間的平衡。\n* **論點**：\n + 需要通用的基準環境。\n* **引用**：\n + *RLVR: Reinforcement Learning with Verifiable Reasoning for Complex Decision Tasks*, Ananya Gupta 等, ICLR 2026。\n + *Formal-Logic Guided Policy Search for Structured Reasoning*, Marco Rossi 等, arXiv:2603.11207, 2026。\n\n### 主題三: 迴圈式自我提升 (Recursive Self-Improvement) 的可行性與安全性分析\n\n* **關鍵事實**：\n + 真正的迴圈式自我提升仍缺乏系統性研究。\n + 涉及資料品質、偏差累積與安全風險等多重挑戰。\n* **結論**：\n + 需要自動評估由模型自行生成的訓練"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
