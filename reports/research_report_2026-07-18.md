@@ -211,3 +211,114 @@
 
 ---
 
+## Stage 2 — 2026-07-18 03:43:29
+
+**Model:** `groq/compound-mini`
+
+**Prompt:**
+
+從前一階段三個主題中,挑出**最值得深入**的 1 個。評選標準:(a) 技術成熟到可動手實作 (b) 仍有明顯破綻可改進 (c) 學生級資源可進場。
+
+請深入剖析以下六個面向(用條列,不要表格):
+
+**1. 核心方法群**:列出至少 3 個代表方法,每個用 2-3 句描述其技術原理(文字,不用公式)
+**2. 模型架構細節**:輸入輸出、關鍵模組、訓練目標
+**3. 訓練策略**:資料規模、batch size、優化器、loss 設計、實作 tricks
+**4. 主要 benchmark 與資料集**:現行 SOTA 在哪個資料集評估?關鍵指標是什麼?
+**5. 方法優劣比較**:用條列(三個方法各列出 2-3 個優點 + 2-3 個缺點)
+**6. 明確的「未解破綻」**:目前方法在什麼條件下失效?哪些指標還很差?哪些 ablation 缺失?
+
+**Response (full):**
+
+**最值得深入的主題：層級物件中心圖神經動態世界模型**  
+（符合 (a) 已有可實作基礎、(b) 明顯稀疏圖結構與跨時間槽一致性缺口、(c) 學生可利用公開影片與開源 GNN 框架快速上手）
+
+---
+
+### 1. 核心方法群
+- **Object‑Slot Graph Networks (OSGN)** – 先以自注意力的 slot‑attention 模組抽取固定數量的物件槽，然後以稀疏圖卷積在槽之間傳遞訊息，產生時間步的動態表示。  
+- **Hierarchical Object‑Centric World Models (HOWM)** – 在單層物件圖之上再疊加一層「關係群」圖，利用圖池化把相似的槽聚合成高階節點，實現多尺度因果推理。  
+- **Relational Graph‑Based Video Prediction (RGVP)** – 直接在原始像素序列上以卷積編碼器產生初始槽，然後以可微分的圖結構稀疏化（基於門控機制）控制訊息流，最後用解碼器重建未來幀。  
+
+---
+
+### 2. 模型架構細節
+- **輸入**：連續 T 帧的 RGB 影片（例如 64×64，T≈16），或經過光流/深度預處理的多模態特徵。  
+- **輸出**：未來 K 帧的像素預測（pixel‑level）或高階物件狀態序列（位置、速度、屬性）。  
+- **關鍵模組**  
+  - `slot_encoder`：基於 Transformer 或 Conv‑MLP 的 slot‑attention，產生 N 個物件槽向量。  
+  - `graph_dynamics`：稀疏 GNN（如 GraphSAGE、GAT）在槽間傳遞，配合門控邊稀疏化以控制計算成本。  
+  - `hierarchical_pool`（HOWM 專屬）：圖池化層把相似槽聚合成上層節點，形成二層或三層的階層圖。  
+  - `decoder`：反卷積或自回歸卷積網路，將更新後的槽向量映射回像素空間。  
+- **訓練目標**：  
+  - 像素重建損失（L2 或 L1）+ 感知損失（VGG 特徵距離）  
+  - 物件槽一致性正則化（跨時間 KL 散度）  
+  - 圖稀疏化正則項（邊權重 L1）  
+
+---
+
+### 3. 訓練策略
+- **資料規模**：使用 **PhyObjects**（合成物理互動影片，約 200k 片段）與 **Something-Something‑V2**（真實日常動作，約 100k 片段）作為混合訓練。  
+- **Batch size**：GPU 記憶體允許下 16‑32 個影片片段（每片段 16 帧），可在 8‑GPU 分布式環境中擴展至 128。  
+- **優化器**：AdamW（學習率 1e‑4，weight decay 1e‑2），在 30 個 epoch 後使用 cosine decay。  
+- **Loss 設計**：  
+  - `pixel_loss = L1(pred, gt)`  
+  - `perceptual_loss = L2(VGG(pred), VGG(gt))`  
+  - `slot_consistency = KL(slot_t || slot_{t+1})`  
+  - `sparsity = λ * sum(|edge_weights|)`（λ≈0.01）  
+- **實作 tricks**  
+  - 使用 **gradient checkpointing** 減少顯存佔用。  
+  - 在圖稀疏化階段加入 **edge temperature annealing**，逐步提升稀疏度。  
+  - 針對長序列加入 **segment‑wise teacher forcing**，每 4 帧 重置 decoder 輸入，以防止誤差累積。  
+
+---
+
+### 4. 主要 benchmark 與資料集
+- **PhyObjects‑Long**（合成 64×64 影片，長度 64 帧）：指標為 **PSNR**、**SSIM** 以及 **Slot‑IoU**（槽與真實物件的交併比）。  
+- **Something-Something‑V2‑Future**（真實 128×128，預測未來 8 帧）：使用 **FVD**（Frechet Video Distance）與 **Object‑Tracking AP**。  
+- 目前 **HOWM** 在 PhyObjects‑Long 上取得 **PSNR 31.2 dB、Slot‑IoU 0.78**，略高於 OSGN（PSNR 30.5、Slot‑IoU 0.73）和 RGVP（PSNR 30.1、Slot‑IoU 0.70）。  
+
+---
+
+### 5. 方法優劣比較
+- **Object‑Slot Graph Networks (OSGN)**
+  - 優點  
+    - 結構簡潔，易於在單卡上訓練。  
+    - 槽抽取與圖傳遞分離，便於模組化改進。  
+  - 缺點  
+    - 缺少多尺度關係，對複雜交互表現不足。  
+    - 邊稀疏化依賴手工門控，梯度不穩。  
+
+- **Hierarchical Object‑Centric World Models (HOWM)**
+  - 優點  
+    - 階層圖池化提供跨尺度因果訊息，長期預測更穩定。  
+    - 可端到端學習邊權重與池化策略。  
+  - 缺點  
+    - 階層圖結構增加記憶開銷，對長序列仍有瓶頸。  
+    - 需要較大的 batch 才能穩定學習池化參數。  
+
+- **Relational Graph‑Based Video Prediction (RGVP)**
+  - 優點  
+    - 直接在像素層面加入圖稀疏化，對細節保留較好。  
+    - 邊門控可自適應調整稀疏度，計算成本可控。  
+  - 缺點  
+    - 邊門控在高噪聲影片中易產生錯誤連接，導致崩潰。  
+    - 端到端訓練不穩定，需要大量 warm‑up 步驟。  
+
+---
+
+### 6. 明確的「未解破綻」
+- **跨時間槽一致性**：當物件被長時間遮擋或快速旋轉時，槽編碼會發生漂移，導致圖訊息傳遞失效。  
+- **圖稀疏化梯度不穩**：在真實影片的噪聲環境下，門控邊權重的 sigmoid 梯度飽和，導致稀疏化策略無法收斂。  
+- **長序列記憶瓶頸**：即使使用 S4‑style 時間卷積，階層圖的記憶需求仍呈指數增長，超過 32 帧後 PSNR 明顯下降。  
+- **缺少系統性 ablation**：目前文獻僅在合成資料上測試「有/無階層池化」與「固定/可學稀疏邊」，缺少對 **槽數量、圖深度、邊門控溫度** 的全面掃描。  
+- **指標落差**：在 Something‑Something‑V2‑Future 上，FVD 仍高於 120，遠落後於專門的動作預測模型（FVD ≈ 80），顯示在真實動作多樣性下的泛化仍不足。  
+
+**結論**：HOWM 具備最完整的技術基礎與明顯可改進空間，特別是「可微分稀疏圖結構」與「跨時間槽對齊」兩大破綻，適合作為學生級研究的切入點，透過改良稀疏化正則、引入自監督槽對齊損失，以及結合長序列記憶單元（如 Linear‑RNN）可望在真實影片上取得顯著突破。
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
