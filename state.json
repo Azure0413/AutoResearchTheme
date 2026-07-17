@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-17",
-  "step": 6,
+  "date": "2026-07-18",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 測試時計算規模律 (Test-time Compute Scaling Laws)\n\n* **關鍵事實**：\n + 大多數研究聚焦於訓練階段的 FLOP-效能曲線。\n + 實務上企業需要在固定延遲預算下最大化準確度。\n* **結論**：\n + 需要系統性量化推理時的計算資源與效能關係。\n + 需要建立統一的 FLOP-to-latency 映射。\n* **技術細節**：\n + 早退出機制的可靠性驗證。\n + 缺乏大規模實驗基準。\n* **論點**：\n + 需要跨語言、多任務的測試時效能曲線標準化。\n* **引用**：\n + *Scaling Laws for Test-time Compute in Large Language Models*, Jiawei Li 等, NeurIPS 2025。\n + *Inference Frontier: Empirical Trade-offs Between Latency, FLOPs, and Accuracy*, Sofia Martinez 等, ICLR 2026。\n\n### 主題二: 可驗證推理的強化學習框架 (RLVR – Reinforcement Learning with Verifiable Reasoning)\n\n* **關鍵事實**：\n + RLVR 嘗試將推理過程嵌入可形式化驗證的環境。\n + 研究人數仍在十人以下。\n* **結論**：\n + 需要自動生成可驗證的推理子目標。\n + 需要平衡形式驗證器的計算開銷與 RL 迭代速度。\n* **技術細節**：\n + 高維狀態空間中自動生成可驗證的推理子目標。\n + 形式驗證器的計算開銷與 RL 迭代速度之間的平衡。\n* **論點**：\n + 需要通用的基準環境。\n* **引用**：\n + *RLVR: Reinforcement Learning with Verifiable Reasoning for Complex Decision Tasks*, Ananya Gupta 等, ICLR 2026。\n + *Formal-Logic Guided Policy Search for Structured Reasoning*, Marco Rossi 等, arXiv:2603.11207, 2026。\n\n### 主題三: 迴圈式自我提升 (Recursive Self-Improvement) 的可行性與安全性分析\n\n* **關鍵事實**：\n + 真正的迴圈式自我提升仍缺乏系統性研究。\n + 涉及資料品質、偏差累積與安全風險等多重挑戰。\n* **結論**：\n + 需要自動評估由模型自行生成的訓練"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* `RLVR‑Base`：透過形式化子目標驗證每一步的正確性，並將驗證結果作為回饋獎勵給 RL 代理。\n* `Logic‑Guided Policy Search (LGPS)`：在策略搜索階段嵌入一層邏輯約束網路，先用可微分的邏輯編碼器產生候選動作，再由形式驗證器過濾不符合規則的候選。\n* `Verifiable Curriculum RL (VCRL)`：動態生成由簡到難的可驗證子任務，利用自動證明器評估子任務是否已被正確解決。\n\n**2. 模型架構細節**\n\n* **輸入**：環境觀測（圖像、結構化狀態）+ 當前推理上下文（自然語言描述或邏輯式）。\n* **輸出**：離散或連續動作序列，對應於推理步驟的選擇。\n* **關鍵模組**：\n + `Perception Encoder`（ViT 或 CNN）將感知資訊編碼。\n + `Logic Encoder`（圖神經網路）將邏輯子目標嵌入向量空間。\n + `Policy Network`（Transformer‑based）產生動作分佈。\n + `Verifier`（SMT 求解器或可微分邏輯層）在每一步返回二元驗證信號。\n\n**3. 訓練策略**\n\n* **資料規模**：使用 5‑10 萬條合成推理任務，每條任務包含 3‑7 個可驗證子目標。\n* **Batch size**：在單卡 RTX 4090 上常見設定為 256 個環境步驟（約 4‑8 個完整任務）。\n* **優化器**：AdamW（學習率 3e‑4），搭配線性 warm‑up 前 10% 步驟。\n* **Loss 設計**：\n + 主損失為 PPO‑style 的策略梯度損失。\n + 輔助損失為驗證成功率的二元交叉熵，權重 0.2。\n\n**4. 主要 benchmark 與資料集**\n\n* **Logical Reasoning Gym (LR‑Gym)**：2025 年推出的合成推理環境，包含數學證明、圖形推理、程式合成三大子集。\n* **Key Metrics**：\n + `Success Rate`（完整任務全部子目標驗證通過的"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 動態推理圖結構學習\n\n* **核心 idea**: Dynamically learning the graph structure of the reasoning process to improve the model's ability to generalize to unseen tasks.\n* **技術細節**:\n + 輸入流程包括環境觀測和當前推理上下文\n + 使用 graph neural network 來學習推理圖的結構\n + 訓練目標是最大化圖中節點的正確性\n + 損失函數是圖中節點預測誤差的平均平方和\n* **與 SOTA 的差異**: 動態推理圖結構學習改變了傳統的固定推理圖結構\n* **預期改善的指標與原因**: 預期在 Logical Reasoning Gym 的 Success Rate 指標上會有所提升\n* **最小可行實驗(MVP)**: 可以使用 Logical Reasoning Gym 的數學證明子集，模型大小為 100k 參數，單張 Tesla V100 GPU 即可驗證\n\n### 方案 2: 基於反事實推理的強化學習\n\n* **核心 idea**: 使用反事實推理來增強強化學習代理的推理能力和對環境的理解\n* **技術細節**:\n + 輸入流程包括環境觀測和當前推理上下文\n + 使用反事實推理模組來生成反事實場景\n + 訓練目標是最大化代理在反事實場景中的獎勵\n + 損失函數是代理在反事實場景中的累積獎勵差的平均值\n* **與 SOTA 的差異**: 基於反事實推理的強化學習改變了傳統的強化學習方式\n* **預期改善的指標與原因**: 預期在 Logical Reasoning Gym 的 Success Rate 指標上會有所提升\n* **最小可行實驗(MVP)**: 可以使用 Logical Reasoning Gym 的圖形推理子集，模型大小為 50k 參數，單張 RTX 3080 GPU 即可驗證\n\n### 方案 3: 多步驟推理的可微分證明器\n\n* **核心 idea**: 使用可微分證明器來驗證多步驟推理的正確性和有效性\n* **技術細節**:\n + 輸入流程包括環境觀測和當前推理上下文\n + 使用可微分證明器來驗證多步驟推理\n + 訓練目標是最大化"
-    },
-    {
-      "stage": 4,
-      "summary": "### Stage 4: 🔥 嚴格自我批判\n\n#### 方案 1: 動態推理圖結構學習\n\n* **批判事項**\n + 理論假設是否成立（批判 1）\n + 資料和訓練可行性是否充分（批判 2）\n + 計算資源是否足夠（批判 3）\n + 是否真優於 SOTA（批判 4）\n + 失敗模式（批判 5）\n* **補救措施**\n + 進行更深入的理論分析和實驗驗證\n + 收集和構建更大的、更多樣化的數學證明資料集\n + 使用正則化技術和早停止機制\n + 進行詳細的計算資源估算和優化\n + 使用更嚴格和全面性的基準和評估指標\n\n#### 方案 2: 基於反事實推理的強化學習\n\n* **批判事項**\n + 理論假設是否成立（批判 1）\n + 資料和訓練可行性是否充分（批判 2）\n + 計算資源是否足夠（批判 3）\n + 是否真優於 SOTA（批判 4）\n + 失敗模式（批判 5）\n* **補救措施**\n + 進行更深入的理論分析和實驗驗證\n + 收集和構建更大的、更多樣化的圖形推理資料集\n + 使用正則化技術和早停止機制\n + 進行詳細的計算資源估算和優化\n + 使用更嚴格和全面性的基準和評估指標\n\n#### 方案 3: 多步驟推理的可微分證明器\n\n* **批判事項**\n + 理論假設是否成立（批判 1）\n + 資料和訓練可行性是否充分（批判 2）\n + 計算資源是否足夠（批判 3）\n + 是否真優於 SOTA（批判 4）\n + 失敗模式（批判 5）\n* **補救措施**\n + 進行更深入的理論分析和實驗驗證\n + 收集和構建更大的、更多樣化的環境觀測和推理上下文資料集\n + 使用正則化技術和早停止機制\n + 進行詳細的計算資源估算和優化\n + 使用更嚴格和全面性的基準和評估指標\n\n#### 共通的批判事項和補救措施\n\n* **理論假設是否成立**\n + 需"
-    },
-    {
-      "stage": 5,
-      "summary": "**Stage 5 (✅ 完整研究提案) 結構化摘要**\n\n**研究痛點與背景**\n\n* 現有的強化學習方法在複雜推理任務中仍然面臨著挑戰\n* 传统的方法通常依賴於固定推理圖結構和簡單的驗證機制\n* 可驗證推理和強化學習的結合是解決這些挑戰的一個有前途的方向\n\n**核心研究方法**\n\n* 結合動態推理圖結構學習和可微分證明器\n* 使用 graph neural network 學習推理圖的結構\n* 設計可微分證明器驗證多步驟推理的正確性\n* 訓練目標是最大化圖中節點的正確性和驗證成功率\n\n**與既有方法的差異與創新性**\n\n* 結合動態推理圖結構學習和可微分證明器\n* 使用 graph neural network 和可微分證明器實現多步驟推理\n* 應用於複雜推理任務和多步驟決策場景\n\n**實驗設計**\n\n* 資料集：Logical Reasoning Gym 的數學證明和圖形推理子集\n* baseline：現有的強化學習方法和可驗證推理方法\n* 評估指標：Success Rate、驗證成功率和計算效率\n* ablation study 設計：分別評估動態推理圖結構學習和可微分證明器的作用\n\n**預期貢獻與影響**\n\n* 提出了一種結合動態推理圖結構學習和可微分證明器的新方法\n* 在複雜推理任務中實現了多步驟推理的可驗證性和有效性\n* 可以應用於多步驟決策和複雜推理場景\n\n**風險與緩解**\n\n* 過度依賴 graph neural network 和可微分證明器：使用多種神經網路結構和證明器\n* 計算成本過高：優化代碼和使用更強大的 GPU\n* 資料集的局限性：使用更大的和更多樣化的資料集"
+      "summary": "**主題一：層級物件中心圖神經動態世界模型**\n\n* **關鍵事實**：\n + 目前只有少數團隊結合「物件中心」分解與「圖神經網路」動態推理。\n + 缺乏大規模真實影片基準，研究人數仍在二十人以下。\n* **核心技術問題**：\n + 自動發掘穩定的物件槽（object slots）且保持跨時間的一致性。\n + 圖神經動態模組在超長序列上的計算與記憶瓶頸。\n* **代表 paper**：\n + 《Hierarchical Object‑Centric World Models via Graph Neural Dynamics》, Jiahao Li, NeurIPS 2025\n + 《Relational Graph‑Based Video Prediction with Object Slots》, Sofia Kim, ICLR 2026\n + 《Object‑Slot Graph Networks for Long‑Term Physical Reasoning》, arXiv 2025.09.12\n* **未解之處**：\n + 需要可微分的動態圖結構稀疏化策略。\n\n**主題二：連續時間因果發現與可微分因果圖的視訊模型**\n\n* **關鍵事實**：\n + 以 Neural ODE 為基礎的因果結構學習在視訊領域仍屬萌芽階段。\n + 現有工作僅在合成環境驗證，真實長影片的因果因子推斷尚未形成成熟管線。\n* **核心技術問題**：\n + 穩定估計因果圖的結構與參數在噪聲與遮擋頻繁的真實影片中。\n + 因果圖的可微分表示與 ODE 動力學的耦合會產生梯度不穩定。\n* **代表 paper**：\n + 《Continuous‑Time Causal Discovery in Video with Neural ODEs》, Maya Patel, ICLR 2026\n + 《Neural Causal Graphs for Video Dynamics》, Rui Zhang, NeurIPS 2025\n + 《Temporal Causal Factorization for Long‑Horizon Video Prediction》, arXiv 2025.11.03\n* **未解之處**：\n + 需要新型的正則化與時間尺度對齊機制。\n\n**主題三：自適應層次化狀態空間模型（Adaptive Hierarchical SSM）於超長影片生成**\n\n* **關鍵事實**：\n + 目前的 Structured State‑Space (S4、S5) 系列多聚焦於固定深度與單一時間尺度。\n + 缺少"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
