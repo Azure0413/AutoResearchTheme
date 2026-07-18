@@ -1,13 +1,18 @@
 {
   "date": "2026-07-19",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 任務樹結構的嵌套持續學習 (Task-Tree Nested Continual Learning)\n\n* **關鍵事實**:\n + 缺乏自動化方法從無標籤資料中發掘任務之間的層級關係。\n + 任務樹結構可降低遺忘與模型膨脹的雙重壓力。\n* **結論**:\n + 任務樹結構的嵌套持續學習有潛力突破持續學習的瓶頸。\n* **技術細節**:\n + 核心技術問題：如何在缺乏明確任務標籤的情況下可靠構建與更新任務樹結構。\n + 核心技術問題：任務樹的動態調整會產生的計算與記憶開銷缺乏有效的理論界定與實務指標。\n* **論點**:\n + 任務樹結構的嵌套持續學習可以同時降低遺忘與模型膨脹的雙重壓力。\n* **引用**:\n + 《Task-Tree Discovery for Continual Learning》, Wei Liu, NeurIPS 2025。\n + 《Hierarchical Task Embeddings for Meta-Continual Learning》, Min-Jae Kim, ICML 2025。\n + 《Nested Task Graphs Enable Scalable Lifelong Learning》, Sara Patel, arXiv 2025.12。\n\n### 主題二: 進化式模組化網路的持續學習 (Evolutionary Modular Networks for Continual Learning)\n\n* **關鍵事實**:\n + 演化搜索與模組化結構的結合尚未被充分探索。\n + 自動生成或刪除模組可彈性應對新任務，避免固定容量的瓶頸。\n* **結論**:\n + 進化式模組化網路的持續學習有潛力突破持續學習的瓶頸。\n* **技術細節**:\n + 核心技術問題：演化搜索的樣本效率極低，需要設計可微分的代理或啟發式指導模組生成。\n + 核心技術問題：模組之間的接口兼容性與知識共享缺乏統一的表示規範，導致跨任務遷移困難。\n* **論點**:\n + 進化式模組化網路的持續學習可以彈性應對新任務，避免固定容量的瓶頸。\n* **引用**:\n + 《Evolutionary Continual Learning with Dynamic"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Task-Tree Discovery (TTD)**：自動抽取任務層級，形成樹狀結構，每個節點代表一個子任務，父子關係捕捉共享特徵。\n* **Hierarchical Task Embedding (HTE)**：為每個樹節點學習一組低維嵌入，透過雙向圖卷積同時考慮上下游關係，使得新任務的嵌入可在已有樹上快速定位。\n* **Nested Replay Buffer (NRB)**：為每個樹層維護獨立的回放緩衝區，根據層級深度調整抽樣比例，確保高層共享知識不被低層噪聲覆蓋，同時控制記憶開銷。\n\n### 2. 模型架構細節\n\n* **輸入**：連續資料流 `x_t`（可為影像、文字或感測器訊號）與可選的弱監督訊號（例如時間戳、領域標籤）。\n* **輸出**：當前任務的預測 `y_t` 以及任務嵌入向量 `e_t`。\n* **關鍵模組**：\n + `Task-Tree Builder`：基於相似度矩陣的動態聚類模組，產生/更新樹結構。\n + `Hierarchical Encoder`：共享的特徵提取 backbone（如 ViT-tiny）加上樹層專屬的 Adapter。\n + `Nested Replay Manager`：多層回放緩衝區與抽樣策略。\n* **訓練目標**：\n + 主預測損失 `L_pred`（交叉熵或 MSE，視任務而定）。\n + 任務嵌入一致性損失 `L_embed`（使同層任務嵌入相近、跨層保持階層距離）。\n + 回放正則化 `L_replay`（防止遺忘）。\n\n### 3. 訓練策略\n\n* **資料規模**：每個新任務約 1k-5k 樣本；整體持續學習流程可在 10k-50k 樣本的流式資料上完成。\n* **Batch size**：128（對於影像任務）或 256（文字/序列任務），根據 GPU 記憶體自行調整。\n* **優化器**：`AdamW`（學習率 3e-4），使用階層式學習率衰減：根節點較低衰減率，葉"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
