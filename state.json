@@ -1,13 +1,18 @@
 {
   "date": "2026-07-20",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**離散擴散研究的現狀與挑戰**\n\n### 主題一: 離散擴散於化學反應路徑生成\n\n* **關鍵事實**:\n + 離散擴散研究中，多數研究集中於單一分子結構，對於多步反應路徑的生成仍缺乏系統化方法。\n + 研究人數少於十餘人，具備高突破空間。\n* **核心技術問題與未解之處**:\n + 如何在離散圖空間同時保證化學有效性與反應機理的合理性。\n + 逆向去噪過程中缺乏可微分的「反應步驟」抽樣策略。\n + 評估基準尚未統一，缺少大規模真實反應路徑資料集作為測試平台。\n* **代表 paper**:\n + 《GraphDiffusion for Reaction Pathway Generation》, Yuan Liu, NeurIPS 2025\n + 《Discrete Flow Matching on Chemical Reaction Graphs》, Mina Kim, ICLR 2026\n + 《ReactionNet: End‑to‑End Discrete Diffusion for Multi‑step Synthesis》, Arun Patel, arXiv 2025.11\n\n### 主題二: 離散流匹配於程式碼抽象語法樹 (AST) 生成\n\n* **關鍵事實**:\n + 程式碼生成的離散擴散研究仍集中於文字層面的 token 預測，對於結構化的 AST 直接建模的工作極少。\n + 研究社群規模僅有少數團隊，具備明顯的空白。\n* **核心技術問題與未解之處**:\n + 如何設計兼顧語法約束與語意正確性的離散噪聲注入機制。\n + 逆向過程的計算成本高，缺乏有效的「樹形」抽樣加速技巧。\n + 缺少跨語言的通用評估基準，導致方法比較困難。\n* **代表 paper**:\n + 《AST‑Diffusion: Discrete Flow Matching for Structured Code Synthesis》, Jae‑ho Kim, ICLR 2026\n + 《Syntax‑Aware Discrete Diffusion for Program Generation》, Lina Chen, ICML 2025\n + 《CodeFlow: Conditional Discrete Diffusion on Token‑Level Graphs》, Ravi Singh, arXiv 2025.09\n\n### 主題三: 離散擴散於時間序列事件資料的合成與插補\n\n* **關鍵事實**:\n + 時間序"
+    },
+    {
+      "stage": 2,
+      "summary": "**離散流匹配於程式碼抽象語法樹 (AST) 生成**\n\n### 核心方法群\n\n- **`AST‑Diffusion` (ICLR 2026)**：以離散流匹配為核心，將整棵抽象語法樹映射到一個離散噪聲空間，逆向過程透過逐層「節點去噪」恢復語法結構。\n- **`Syntax‑Aware Discrete Diffusion` (ICML 2025)**：引入語法約束的噪聲注入機制，使用圖卷積網路捕捉父子關係。\n- **`CodeFlow` (arXiv 2025.09)**：把程式碼視為 token‑level 的有向圖，結合條件離散擴散與圖注意力層，支援在給定自然語言描述下生成完整程式碼圖。\n\n### 模型架構細節\n\n- **輸入**：\n  - `AST‑Diffusion`：噪聲向量 + 目標語言的語法規則表 (如 BNF)。\n  - `Syntax‑Aware`：原始程式碼的 AST 轉換為節點特徵矩陣 + 位置編碼。\n  - `CodeFlow`：自然語言描述的嵌入 + 初始空圖結構。\n- **輸出**：完整的抽象語法樹，最終可透過語法解析器轉回程式碼文字。\n- **關鍵模組**：\n  - 離散噪聲注入器（根據語法規則產生合法噪聲）。\n  - 多層圖神經網路（GNN）或圖注意力網路，用於節點特徵傳遞。\n  - 逆向去噪解碼器：逐層預測節點類型與子節點連接。\n\n### 訓練策略\n\n- **資料規模**：使用 **CodeSearchNet**（約 6M 程式碼片段）以及 **GitHub‑AST**（自行抽取 2M+ AST）作為訓練集。\n- **Batch size**：256 個 AST（每個 AST 以圖結構批次化），在 8×A100 上可維持 GPU 記憶體 80%。\n- **優化器**：AdamW，學習率 2e-4，使用 cosine decay 與 warm‑up 前 5k 步。\n\n### 主要 benchmark 與資料集\n\n- **Benchmark**：\n  - **CodeXGLUE – Code Generation**（以自然語言描述生成 Python 程式碼）。\n  - **AST‑Eval"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
