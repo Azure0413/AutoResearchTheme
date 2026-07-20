@@ -1,13 +1,18 @@
 {
   "date": "2026-07-21",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 自適應草稿模型的推測式解碼\n\n* **關鍵事實**:\n + 大多數推測式解碼使用固定大小、固定訓練目標的草稿模型。\n + 缺乏根據當前上下文動態調整草稿模型容量與抽樣策略的機制。\n* **結論**:\n + 研究人數仍在十餘人以下，尚未形成成熟基準。\n* **技術細節**:\n + Adaptive Draft Models for Speculative Sampling (Yuan Li, NeurIPS 2025)\n + Context-Aware Speculative Decoding with Dynamic Draft Networks (Mina Patel, ICLR 2026)\n + Learning to Switch Draft Models for Efficient Inference (Joon-Ho Kim, ICML 2025)\n* **論點**:\n + 如何在不顯著增加前向傳播開銷的前提下，根據 token 分布即時選擇或切換草稿模型的結構與參數。\n + 草稿模型的錯誤傳播會影響最終驗證步驟的接受率，缺乏穩定的誤差校正理論與實務校準方法。\n\n### 主題二: 無匯聚點注意力機制\n\n* **關鍵事實**:\n + 典型的自注意力在長序列上會產生「注意力匯聚點」(attention sink) 造成資訊瓶頸。\n + 現有解法多是改變注意力圖形或加長 KV 快取。\n* **結論**:\n + 研究社群仍相對小眾，尚未形成廣泛基準。\n* **技術細節**:\n + Recurrent Memory Compression for Sink-Free Transformers (Hiroshi Tanaka, NeurIPS 2025)\n + Eliminating Attention Sinks with Hierarchical State Summaries (Laura Gómez, ICLR 2026)\n + Dynamic Sink-Free Attention for Ultra-Long Generation (Samir Ahmed, ICML 2025)\n* **論點**:\n + 如何在保持全局資訊可達性的同時，將遞迴壓縮的記憶體狀態與原始 KV 快取同步更新，避免資訊遺失。\n + 壓縮過程的梯度傳遞穩定性與硬體加速支援仍缺乏系統化的分析與實作。\n\n### 主題三: 推理階段的層級代幣路由\n\n* **關鍵事實**:\n + 現有的代幣路由多聚焦於訓練階段的 MoE 專家選擇。\n + 少有"
+    },
+    {
+      "stage": 2,
+      "summary": "**自適應草稿模型的推測式解碼**\n\n**核心方法群**\n\n* **Adaptive Draft Model (ADM)**：使用可變深度的草稿網路作為前置抽樣器，根據當前 token 的熵值動態選擇 2-4 層的子網路。\n* **Context-Aware Speculative Decoding (CASD)**：引入「上下文感知門」判斷句子結構複雜度，若檢測到長距離依賴則切換至更大容量的草稿模型。\n* **Switchable Draft Networks (SDN)**：設計一組預訓練好的草稿模型（小/中/大），使用一個輕量的「選擇器」在每個生成步驟預測最佳模型。\n\n**模型架構細節**\n\n* **輸入**：原始提示 token 序列 + 前一步的隱藏狀態（可選）。\n* **輸出**：草稿模型產生的候選 token 序列（通常 4-8 個），以及「接受率」預測分數。\n* **關鍵模組**：\n + 可變深度草稿網路：由多層 Transformer block 組成，允許在推理時跳過部分層。\n + 上下文感知門 / 選擇器：小型 MLP，輸入當前 token 分布特徵（熵、置信度、位置編碼），輸出模型尺寸或層數的離散決策。\n + 驗證模組：完整的目標 LLM（如 Llama-2-70B）對草稿輸出進行接受測試，使用「接受率門」決定是否直接採納或回退。\n\n**訓練策略**\n\n* **資料規模**：使用 200B token 的通用語料（如 RedPajama V2）做預訓練，然後在 10B token 的指令微調資料上同步訓練草稿與選擇器。\n* **batch size**：預訓練階段 1,024 tokens/卡，微調階段 4,096 tokens/卡（多卡 ZeRO-3）。\n* **優化器**：AdamW，學習率 2e-4（預訓練）→ 5e-5（微調），使用 cosine decay。\n\n**主要 benchmark 與資料集**\n\n* **OpenAI-Eval**：衡量生成品質的 GPT-4 等價分數與接受率。\n* **LongBench-Spec**：報告每秒 token 數 (TOK/s) 與接受率。\n* **MMLU-Spec**：使用正確率與推理"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
