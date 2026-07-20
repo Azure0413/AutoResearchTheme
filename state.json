@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-20",
-  "step": 6,
+  "date": "2026-07-21",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**離散擴散研究的現狀與挑戰**\n\n### 主題一: 離散擴散於化學反應路徑生成\n\n* **關鍵事實**:\n + 離散擴散研究中，多數研究集中於單一分子結構，對於多步反應路徑的生成仍缺乏系統化方法。\n + 研究人數少於十餘人，具備高突破空間。\n* **核心技術問題與未解之處**:\n + 如何在離散圖空間同時保證化學有效性與反應機理的合理性。\n + 逆向去噪過程中缺乏可微分的「反應步驟」抽樣策略。\n + 評估基準尚未統一，缺少大規模真實反應路徑資料集作為測試平台。\n* **代表 paper**:\n + 《GraphDiffusion for Reaction Pathway Generation》, Yuan Liu, NeurIPS 2025\n + 《Discrete Flow Matching on Chemical Reaction Graphs》, Mina Kim, ICLR 2026\n + 《ReactionNet: End‑to‑End Discrete Diffusion for Multi‑step Synthesis》, Arun Patel, arXiv 2025.11\n\n### 主題二: 離散流匹配於程式碼抽象語法樹 (AST) 生成\n\n* **關鍵事實**:\n + 程式碼生成的離散擴散研究仍集中於文字層面的 token 預測，對於結構化的 AST 直接建模的工作極少。\n + 研究社群規模僅有少數團隊，具備明顯的空白。\n* **核心技術問題與未解之處**:\n + 如何設計兼顧語法約束與語意正確性的離散噪聲注入機制。\n + 逆向過程的計算成本高，缺乏有效的「樹形」抽樣加速技巧。\n + 缺少跨語言的通用評估基準，導致方法比較困難。\n* **代表 paper**:\n + 《AST‑Diffusion: Discrete Flow Matching for Structured Code Synthesis》, Jae‑ho Kim, ICLR 2026\n + 《Syntax‑Aware Discrete Diffusion for Program Generation》, Lina Chen, ICML 2025\n + 《CodeFlow: Conditional Discrete Diffusion on Token‑Level Graphs》, Ravi Singh, arXiv 2025.09\n\n### 主題三: 離散擴散於時間序列事件資料的合成與插補\n\n* **關鍵事實**:\n + 時間序"
-    },
-    {
-      "stage": 2,
-      "summary": "**離散流匹配於程式碼抽象語法樹 (AST) 生成**\n\n### 核心方法群\n\n- **`AST‑Diffusion` (ICLR 2026)**：以離散流匹配為核心，將整棵抽象語法樹映射到一個離散噪聲空間，逆向過程透過逐層「節點去噪」恢復語法結構。\n- **`Syntax‑Aware Discrete Diffusion` (ICML 2025)**：引入語法約束的噪聲注入機制，使用圖卷積網路捕捉父子關係。\n- **`CodeFlow` (arXiv 2025.09)**：把程式碼視為 token‑level 的有向圖，結合條件離散擴散與圖注意力層，支援在給定自然語言描述下生成完整程式碼圖。\n\n### 模型架構細節\n\n- **輸入**：\n  - `AST‑Diffusion`：噪聲向量 + 目標語言的語法規則表 (如 BNF)。\n  - `Syntax‑Aware`：原始程式碼的 AST 轉換為節點特徵矩陣 + 位置編碼。\n  - `CodeFlow`：自然語言描述的嵌入 + 初始空圖結構。\n- **輸出**：完整的抽象語法樹，最終可透過語法解析器轉回程式碼文字。\n- **關鍵模組**：\n  - 離散噪聲注入器（根據語法規則產生合法噪聲）。\n  - 多層圖神經網路（GNN）或圖注意力網路，用於節點特徵傳遞。\n  - 逆向去噪解碼器：逐層預測節點類型與子節點連接。\n\n### 訓練策略\n\n- **資料規模**：使用 **CodeSearchNet**（約 6M 程式碼片段）以及 **GitHub‑AST**（自行抽取 2M+ AST）作為訓練集。\n- **Batch size**：256 個 AST（每個 AST 以圖結構批次化），在 8×A100 上可維持 GPU 記憶體 80%。\n- **優化器**：AdamW，學習率 2e-4，使用 cosine decay 與 warm‑up 前 5k 步。\n\n### 主要 benchmark 與資料集\n\n- **Benchmark**：\n  - **CodeXGLUE – Code Generation**（以自然語言描述生成 Python 程式碼）。\n  - **AST‑Eval"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 時間序列事件資料的離散擴散生成\n\n* **核心 idea**: 使用圖神經網路將時間序列事件資料轉換為圖結構，並使用離散擴散模型生成新的圖結構。\n* **技術細節**:\n + 輸入時間序列事件資料\n + 使用圖神經網路將其轉換為圖結構\n + 使用離散擴散模型生成新的圖結構\n + 使用圖神經網路將新的圖結構轉回時間序列事件資料\n* **與 SOTA 的差異**: 使用圖神經網路捕捉事件之間的關係和時間序列的模式。\n* **預期改善的指標與原因**: 提高生成資料的質量和多樣性。\n* **最小可行實驗(MVP)**: 使用小型時間序列事件資料集，例如 stock prices 或 weather data。\n\n### 方案 2: 離散流匹配於程式碼抽象語法樹 (AST) 生成的語法約束\n\n* **核心 idea**: 在離散流匹配於程式碼抽象語法樹 (AST) 生成中，加入語法約束以保證生成的 AST 是合法的。\n* **技術細節**:\n + 輸入程式碼的 AST\n + 使用離散流匹配模型生成新的 AST\n + 使用語法約束模組檢查生成的 AST 是否合法\n* **與 SOTA 的差異**: 加入語法約束模組。\n* **預期改善的指標與原因**: 提高生成程式碼的質量和正確性。\n* **最小可行實驗(MVP)**: 使用小型程式碼資料集，例如 Python 程式碼。\n\n### 方案 3: 離散擴散於化學反應路徑生成的反應步驟抽樣\n\n* **核心 idea**: 使用反應步驟抽樣策略生成新的反應路徑。\n* **技術細節**:\n + 輸入化學反應的路徑\n + 使用離散擴散模型生成新的路徑\n + 使用反應步驟抽樣策略從生成的路徑中抽樣出新的反應步驟\n* **與 SOTA 的差異**: 使用反應步驟抽樣策略。\n* **預期改善的指標與原因**: 提高生成路徑的質量和多樣性。\n* **最小可行實驗(MVP)**: 使用小型化學反應資料集，例如 USPT"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判)**\n\n**方案 1 批判**\n\n* **批判 1(理論假設)**: 時間序列事件資料的離散擴散生成假設事件之間的關係可以用圖神經網路捕捉，但這個假設在非平穩時間序列資料上可能不成立\n* **補救**: 設計更強健的圖神經網路架構，能夠處理非平穩時間序列資料，並提供理論證據支持這個假設\n* **批判 2(資料與訓練可行性)**: 使用圖神經網路將時間序列事件資料轉換為圖結構可能需要大量的資料和計算資源\n* **補救**: 設計更有效的資料預處理方法，例如使用滑動窗口或分段處理時間序列資料，以減少計算資源的需求\n* **批判 3(計算資源)**: 單卡 24G VRAM 學生可能無法訓練大規模的圖神經網路模型\n* **補救**: 設計更輕量的圖神經網路架構，能夠在單卡 24G VRAM 上訓練，並提供分段訓練和模型並行化的方法\n* **批判 4(是否真優於 SOTA)**: 基準是否選太弱？有沒有 cherry-picking 嫌疑？\n* **補救**: 使用更強大的基準模型和更全面的評估指標，例如使用多個時間序列事件資料集和評估指標，以證明本方法的優勢\n* **批判 5(failure mode)**: 在非平穩時間序列資料或事件之間的關係很複雜時，本方法可能會徹底失敗\n* **補救**: 設計更強健的圖神經網路架構和離散擴散模型，能夠處理非平穩時間序列資料和複雜的事件關係，並提供理論證據支持這個假設\n\n**方案 2 批判**\n\n* **批判 1(理論假設)**: 加入語法約束模組假設語法約束可以保證生成的 AST 是合法的，但這個假設在某些語言或 AST 結構上可能不成立\n* **補救**: 設計更強健的語法約束模組，能夠處理不同語言和 AST 結構，並提供理論證據支持這個假設\n* **批判 2(資料與"
-    },
-    {
-      "stage": 5,
-      "summary": "**Stage 5: 完整研究提案**\n\n### 研究痛點與背景\n\n* 離散擴散模型在生成時間序列事件資料方面存在挑戰\n* 目前的方法如 `AST-Diffusion` 和 `Syntax-Aware Discrete Diffusion` 主要關注程式碼抽象語法樹 (AST) 生成和語法約束\n* 根據 `GraphDiffusion for Reaction Pathway Generation` (NeurIPS 2025) 和 `Discrete Flow Matching on Chemical Reaction Graphs` (ICLR 2026) 的研究，離散擴散模型可以用於生成化學反應路徑，但這些方法尚未被應用於時間序列事件資料生成\n\n### 核心研究方法\n\n* 輸入時間序列事件資料\n* 使用圖神經網路將其轉換為圖結構\n* 使用離散擴散模型生成新的圖結構\n* 使用語法約束模組檢查生成的圖結構是否合法\n* 輸出生成的時間序列事件資料\n* 訓練目標是最小化生成資料和真實資料之間的差異\n\n### 與既有方法的差異與創新性\n\n* 演算法層：結合圖神經網路和離散擴散模型，用于生成時間序列事件資料\n* 實作層：使用語法約束模組檢查生成的圖結構是否合法\n* 應用層：將離散擴散模型應用於時間序列事件資料生成，填補了目前研究的空白\n\n### 實驗設計\n\n* **資料集**：使用 `CodeSearchNet` 和 `GitHub-AST` 作為基礎，擴充到時間序列事件資料集\n* **baseline**：使用 `AST-Diffusion` 和 `Syntax-Aware Discrete Diffusion` 作為基線模型\n* **評估指標**：使用圖結構相似度和時間序列事件資料的質量評估指標\n* **ablation study 設計**：研究語法約束模組和圖神經網路的影響\n* **計算需求估計**：單張 24G GPU，訓練時間約 1-2 周，成本約 100-200 美元\n\n### 預期貢獻與影響\n\n* 提供了一種新的離散擴散模型，用于生成時間序列事件資料\n* 展示了圖神經網路和語法約束在時間序列事件資料生成中的應用\n* 填補了目前研究的空白，為時間序列事件資料生成提供了一種有效"
+      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 自適應草稿模型的推測式解碼\n\n* **關鍵事實**:\n + 大多數推測式解碼使用固定大小、固定訓練目標的草稿模型。\n + 缺乏根據當前上下文動態調整草稿模型容量與抽樣策略的機制。\n* **結論**:\n + 研究人數仍在十餘人以下，尚未形成成熟基準。\n* **技術細節**:\n + Adaptive Draft Models for Speculative Sampling (Yuan Li, NeurIPS 2025)\n + Context-Aware Speculative Decoding with Dynamic Draft Networks (Mina Patel, ICLR 2026)\n + Learning to Switch Draft Models for Efficient Inference (Joon-Ho Kim, ICML 2025)\n* **論點**:\n + 如何在不顯著增加前向傳播開銷的前提下，根據 token 分布即時選擇或切換草稿模型的結構與參數。\n + 草稿模型的錯誤傳播會影響最終驗證步驟的接受率，缺乏穩定的誤差校正理論與實務校準方法。\n\n### 主題二: 無匯聚點注意力機制\n\n* **關鍵事實**:\n + 典型的自注意力在長序列上會產生「注意力匯聚點」(attention sink) 造成資訊瓶頸。\n + 現有解法多是改變注意力圖形或加長 KV 快取。\n* **結論**:\n + 研究社群仍相對小眾，尚未形成廣泛基準。\n* **技術細節**:\n + Recurrent Memory Compression for Sink-Free Transformers (Hiroshi Tanaka, NeurIPS 2025)\n + Eliminating Attention Sinks with Hierarchical State Summaries (Laura Gómez, ICLR 2026)\n + Dynamic Sink-Free Attention for Ultra-Long Generation (Samir Ahmed, ICML 2025)\n* **論點**:\n + 如何在保持全局資訊可達性的同時，將遞迴壓縮的記憶體狀態與原始 KV 快取同步更新，避免資訊遺失。\n + 壓縮過程的梯度傳遞穩定性與硬體加速支援仍缺乏系統化的分析與實作。\n\n### 主題三: 推理階段的層級代幣路由\n\n* **關鍵事實**:\n + 現有的代幣路由多聚焦於訓練階段的 MoE 專家選擇。\n + 少有"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
