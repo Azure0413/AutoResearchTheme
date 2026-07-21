@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-07-07",
-    "stage1_topics": "**主題一: 動態低秩 KV 快取與自適應量化**\n\n* **關鍵事實**：\n + 目前的 KV 快取壓縮大多採用固定的低秩或固定比特寬度。\n + 研究人數仍在十餘人左右，尚未形成成熟基準。\n* **結論**：\n + 需要發展能夠根據輸入序列長度與語義變化即時調整的機制。\n + 關鍵技術問題包括調整低秩分解的秩與量化位寬，平衡快取壓縮率與延遲。\n* **技術細節**：\n + 使用動態低秩 KV 快取壓縮。\n + 進行自適應量化。\n* **論點**：\n + 需要考慮輸入序列長度與語義變化。\n + 需要平衡快取壓縮率與延遲。\n* **引用的 paper 名稱**：\n + `Dynamic Low‑Rank KV Cache for Efficient LLM Inference`\n + `Adaptive KV Quantization for Transformer Decoding`\n +",
-    "final_proposal": "**研究提案摘要**\n\n### 研究痛點與背景\n\n* Transformer 模型在長序列和語義複雜任務中存在效率和準確性問題\n* 传统的 KV 快取和推測解碼方法存在固定的秩和量化位寬，無法根據語義變化和序列長度進行調整\n\n### 核心研究方法\n\n* 結合動態低秩 KV 快取和自適應量化技術\n* 根據語義變化和序列長度調整 KV 矩陣的秩和量化位寬\n* 使用動態低秩分解和自適應量化技術更新 KV 快取\n* 訓練目標是最小化交叉熵損失加上 KL 散度懲罰項\n\n### 與既有方法的差異與創新性\n\n* 演算法層：提出了一個可以根據語義變化和序列長度調整 KV 矩陣秩和量化位寬的機制\n* 實作層：使"
-  },
-  {
     "date": "2026-07-08",
     "stage1_topics": "**Stage 1: 探索熱門議題**\n\n### 主題一: 基於物理約束的固態電池電解質逆向設計\n\n* **關鍵事實**：\n + 仍屬早期探索階段\n + 需要結合第一原理計算與資料驅動模型\n + 資料庫與有效的生成框架尚未形成\n* **結論**：\n + 需要設計嵌入離子遷移路徑的結構約束與彈性穩定性評估的生成模型\n + 主動學習策略在高維組分空間的樣本效率與不確定性估計仍缺乏可靠基準\n* **技術細節**：\n + 使用物理約束的生成模型\n + 嵌入離子遷移路徑的結構約束\n + 使用主動學習策略\n* **論點**：\n + 需要結合第一原理計算與資料驅動模型\n + 需要設計嵌入離子遷移路徑的結構約束與彈性穩定性評估的生成模型\n* **引用**：\n + `Physics-Informed Generative Modeling for Solid Electrolyte Discovery` (",
     "final_proposal": "**研究提案摘要**\n\n**研究痛點與背景**\n\n* 固態電解質設計與開發對新型電池發展至關重要\n* 現有方法計算成本高、準確性不夠好\n* 引用 `Physics-Informed Generative Modeling for Solid Electrolyte Discovery` 和 `Conditional Diffusion for Battery Materials` 這兩篇論文\n\n**核心研究方法**\n\n* 結合物理知識和機器學習技術設計和優化固態電解質\n* 使用基於物理的生成模型，結合離子遷移路徑和時間演化模擬\n* 訓練目標：最小化重建誤差和物理約束懲罰項\n* 推論流程：使用生"
@@ -68,5 +63,10 @@
     "date": "2026-07-20",
     "stage1_topics": "**離散擴散研究的現狀與挑戰**\n\n### 主題一: 離散擴散於化學反應路徑生成\n\n* **關鍵事實**:\n + 離散擴散研究中，多數研究集中於單一分子結構，對於多步反應路徑的生成仍缺乏系統化方法。\n + 研究人數少於十餘人，具備高突破空間。\n* **核心技術問題與未解之處**:\n + 如何在離散圖空間同時保證化學有效性與反應機理的合理性。\n + 逆向去噪過程中缺乏可微分的「反應步驟」抽樣策略。\n + 評估基準尚未統一，缺少大規模真實反應路徑資料集作為測試平台。\n* **代表 paper**:\n + 《GraphDiffusion for Reaction Pathway Generation》, Yuan Liu, NeurIPS 2025\n + 《Discrete Flow Matching on Chemical Reaction Graphs》, Mina Kim, ICLR 20",
     "final_proposal": "**Stage 5: 完整研究提案**\n\n### 研究痛點與背景\n\n* 離散擴散模型在生成時間序列事件資料方面存在挑戰\n* 目前的方法如 `AST-Diffusion` 和 `Syntax-Aware Discrete Diffusion` 主要關注程式碼抽象語法樹 (AST) 生成和語法約束\n* 根據 `GraphDiffusion for Reaction Pathway Generation` (NeurIPS 2025) 和 `Discrete Flow Matching on Chemical Reaction Graphs` (ICLR 2026) 的研究，離散擴散模型可以用於生成"
+  },
+  {
+    "date": "2026-07-21",
+    "stage1_topics": "**Stage 1: 探索熱門議題**\n\n### 主題一: 自適應草稿模型的推測式解碼\n\n* **關鍵事實**:\n + 大多數推測式解碼使用固定大小、固定訓練目標的草稿模型。\n + 缺乏根據當前上下文動態調整草稿模型容量與抽樣策略的機制。\n* **結論**:\n + 研究人數仍在十餘人以下，尚未形成成熟基準。\n* **技術細節**:\n + Adaptive Draft Models for Speculative Sampling (Yuan Li, NeurIPS 2025)\n + Context-Aware Speculative Decoding with Dynamic Draft Networks (Mina Patel, ICLR 2026)\n + Learning to Switch Draft Models for Efficient Inference (Joon-Ho K",
+    "final_proposal": "**結構化摘要**\n\n### 研究痛點與背景\n\n* 目前的自適應草稿模型存在記憶體占用和計算成本高、錯誤傳播問題等局限性\n* 最近的研究如 \"自適應草稿模型的遞迴壓縮\" (Yuan Li, NeurIPS 2025) 和 \"基於 token 分布的草稿模型選擇\" (Mina Patel, ICLR 2026) 提出了改進方法，但仍有不足之處\n\n### 核心研究方法\n\n* 提出一種新的自適應草稿模型，結合遞迴壓縮和基於 token 分布的草稿模型選擇\n* 訓練一個基於 token 分布的草稿模型選擇器\n* 使用遞迴壓縮機制壓縮草稿模型\n* 訓練一個自適應草稿模型，結合遞迴壓縮和基於 token "
   }
 ]
