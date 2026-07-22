@@ -1,13 +1,18 @@
 {
   "date": "2026-07-23",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 基於預測資訊最大化的自我監督層級技能發現**\n\n* **關鍵事實**：\n + 目前大多數技能發現仍仰賴外部獎勵或手動層級設定。\n + 利用純粹的預測資訊自動形成層級結構的研究仍在萌芽階段。\n* **結論**：\n + 預測資訊最大化的自我監督層級技能發現仍是未解之處。\n + 需要發展有效估算預測資訊的方法和層級技能的自動分割與語意一致性評估指標。\n* **技術細節**：\n + 需要在高維觀測空間中有效估算預測資訊並保持梯度穩定。\n + 需要發展跨環境泛化時的正則化方案。\n* **論點**：\n + 預測資訊最大化的自我監督層級技能發現可以自動形成層級結構。\n + 需要發展有效的方法和評估指標。\n* **引用**：\n + 《Predictive Information Skill Discovery》, Lin Wei, NeurIPS 2025\n + 《Contrastive Predictive Coding for Hierarchical Reinforcement Learning》, María Gómez, ICML 2025\n + 《InfoBot: Information-Bottleneck for Latent Skill Learning》, Hiroshi Tanaka, arXiv 2025.07.12\n\n**主題二: 圖神經政策蒸餾於多代理協同任務**\n\n* **關鍵事實**：\n + 多代理系統的政策蒸餾仍主要聚焦於單一代理或簡單合作情境。\n + 利用圖神經網路捕捉代理間交互結構並一次性蒸餾成單一模型的工作僅有少數小組在探索。\n* **結論**：\n + 圖神經政策蒸餾於多代理協同任務仍是未解之處。\n + 需要發展方法保留代理間的動態通信訊號和大規模圖結構的稀疏化。\n* **技術細節**：\n + 需要在蒸餾過程中保留代理間的動態通信訊號。\n + 需要發展大規模圖結構的稀疏化與記憶效率的演算法。\n* **論點**：\n + 圖神經政策蒸餾於多代理協同任務可以捕捉代理間交互結構。\n + 需要發展有效的方法和評估指標。\n* **引用**：\n + 《GraphDistill: Distilling"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 主題介紹\n\n* 選定主題: 基於預測資訊最大化的自我監督層級技能發現\n* 目前可實作的基礎方法, 仍有資訊估算與層級劃分缺口\n\n### 2. 核心方法群\n\n* **Predictive-Info Skill Discovery (PISD)**: Lin Wei 等, NeurIPS 2025\n + 透過最大化未來觀測與當前表示之互資訊來驅動技能的自我分割\n + 使用變分上界估計資訊量, 以資訊瓶頸正則化避免過度擬合\n* **Contrastive Predictive Coding for Hierarchical RL (CPC-HRL)**: María Gómez 等, ICML 2025\n + 以對比式預測編碼器學習長期時間步的表示\n + 將不同時間尺度的表示分層, 在每層上以離散化策略抽取子技能\n* **InfoBot: Information-Bottleneck for Latent Skill Learning**: Hiroshi Tanaka, arXiv 2025.07.12\n + 在策略網路中插入資訊瓶頸層, 強制隱變量僅保留對未來回報有貢獻的資訊\n\n### 3. 模型架構細節\n\n* **輸入**: 原始感測向量 (圖像, 關節角度或狀態向量) `s_t`, 以及可選的歷史窗口 `s_{t−k:t}`\n* **輸出**:\n + `z_l`: 第 `l` 層的隱表示 (latent skill), 用於下游策略\n + `π(a|s, z)`: 條件策略, 根據當前層級的技能向量選擇動作\n* **關鍵模組**:\n + **資訊估算器** (Variational Info-Estimator) 負責近似互資訊上界\n + **層級分割器** (Hierarchical Splitter) 根據資訊增益自動決定是否產生新層\n + **資訊瓶頸層** (Info-Bottleneck) 在每層加入 KL 正則化, 限制資訊流\n\n### 4. 訓練策略\n\n* **資料規模**: 在公開的連續控制基準 (如 `Meta-World`, `DM-Control`) 上收集 1-2 百萬時間步的無標籤軌跡\n* **Batch size**: `512` 個時間段, 每段長度 `τ ="
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
