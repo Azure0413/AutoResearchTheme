@@ -1,13 +1,18 @@
 {
   "date": "2026-07-24",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 資訊瓶頸驅動的跨代理好奇心與新興溝通\n\n* **關鍵事實**：\n + 只有少數團隊在多代理環境中結合資訊瓶頸原理與內在好奇心。\n + 研究人數估計不到 12 人，缺乏系統化的基準。\n* **結論**：\n + 資訊瓶頸驅動的跨代理好奇心與新興溝通仍是未解之處。\n* **技術細節**：\n + 估算資訊瓶頸的壓縮率並將其轉化為可微分的內在獎勵。\n + 跨代理的好奇心信號如何協同產生穩定且可解釋的通訊協定。\n* **論點**：\n + 如何在高維觀測空間中有效估算資訊瓶頸的壓縮率。\n + 跨代理的好奇心信號如何協同產生穩定且可解釋的通訊協定。\n* **引用的 paper 名稱**：\n + 《Bottleneck Curiosity for Cooperative Multi‑Agent Reinforcement Learning》, ICLR 2025\n + 《Meta‑Information Gain for Multi‑Agent Exploration》, NeurIPS 2025\n + 《Adaptive Predictive Coding for Emergent Language》, arXiv 2025.03\n\n### 主題二: 潛在動態分群的無監督階層技能發現\n\n* **關鍵事實**：\n + 無監督 RL 仍以單一層次的技能抽取為主。\n + 利用潛在動態的聚類來自動形成層級結構的工作極少，全球研究團隊約 10 人左右。\n* **結論**：\n + 潛在動態分群的無監督階層技能發現仍是未解之處。\n* **技術細節**：\n + 設計穩定的動態嵌入與聚類流程。\n + 量度與驗證自動產生的層級結構的可遷移性與可重用性。\n* **論點**：\n + 如何在不依賴外部獎勵的情況下設計穩定的動態嵌入與聚類流程。\n + 如何量度與驗證自動產生的層級結構的可遷移性與可重用性。\n* **引用的 paper 名稱**：\n + 《Latent Partition Reinforcement Learning》, ICML 2026\n + 《Self‑Supervised State Abstraction for Skill Discovery》, NeurIPS 202"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Bottleneck Curiosity**：透過可微分的資訊瓶頸壓縮率作為內在獎勵，鼓勵代理在共享觀測中找出高資訊量的訊號。\n* **Meta‑Information Gain**：以元學習方式估計跨代理訊息增益，動態調整探索策略，使代理在未知環境中快速形成協同語言。\n* **Adaptive Predictive Coding**：結合預測編碼與自適應噪聲抑制，讓代理在通訊頻寬受限時仍能維持語意一致性，產生穩定的 emergent language。\n\n**2. 模型架構細節**\n\n* **輸入**：每個代理的局部觀測 `obs_i`（圖像、向量）＋上一時間步的接收訊息 `msg_{i}^{t‑1}`。\n* **輸出**：本時間步的行動 `act_i` 與要廣播的訊息 `msg_i^{t}`（固定長度向量）。\n* **關鍵模組**：\n + `Encoder`：將 `obs_i` 轉為共享嵌入。\n + `Bottleneck Module`：計算資訊壓縮率，輸出內在獎勵 `r_curiosity`。\n + `Message Generator`：基於共享嵌入與前訊息產生 `msg_i^{t}`。\n + `Meta‑Gain Estimator`：估算訊息對其他代理的資訊增益，用於調整訊息頻率。\n\n**3. 訓練策略**\n\n* **資料規模**：在多代理模擬環境中跑 2 M 步，約 10 GB 觀測與訊息記錄。\n* **Batch size**：每次更新使用 256 個時間步的多代理切片（每個切片包含所有代理的同步狀態）。\n* **優化器**：`AdamW`，學習率 3e‑4，使用線性 warm‑up 前 10k 步，之後 cosine decay。\n\n**4. 主要 benchmark 與資料集**\n\n* **Cooperative‑Navigation (MPE)**：評估平均到達目標的步數與成功率。\n* **Multi‑Room‑Escape**：測量跨房間協同解謎所需的訊息交換次數與最終通關率。\n* **Key‑Door‑Task (自建)**：以訊息頻寬限制的情境測試 emergent language 的壓縮效率。\n\n**5. 方法優劣比較**\n\n*"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
