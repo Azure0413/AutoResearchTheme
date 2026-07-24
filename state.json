@@ -1,13 +1,18 @@
 {
   "date": "2026-07-25",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**動態深度稀疏專家路由 (Adaptive-Depth MoE)**\n\n* **關鍵事實**：\n + 目前只有少數研究探索「每個 token 可自行決定要通過多少層專家」的機制。\n + 可在保持效能的同時大幅降低推理 FLOPs。\n* **結論**：\n + 設計可微分且計算開銷極低的深度控制器至關重要。\n + 需要解決「深度不均衡」導致的專家負載偏斜，以及在多層路由時的梯度傳遞衰減問題。\n* **技術細節**：\n + 設計深度控制器的方法：可使用神經網路或其他機器學習方法。\n + 解決深度不均衡的方法：可使用梯度平衡或其他方法。\n* **論點**：\n + 動態深度稀疏專家路由可以提高模型效能和降低推理 FLOPs。\n + 需要設計可微分且計算開銷極低的深度控制器。\n* **參考 paper**：\n + 《Adaptive Depth Routing for Mixture-of-Experts Transformers》, Lin 等, NeurIPS 2025\n + 《Depth-Aware Token Routing in Sparse Expert Networks》, Zhao & Li, ICML 2026\n + 《Dynamic Expert Depth Selection via Reinforcement Learning》, arXiv:2507.04321, 2025\n\n**異構專家池與結構化路由 (Heterogeneous Expert Pools with Structured Routing)**\n\n* **關鍵事實**：\n + 大多數 MoE 仍採用同質的前饋層作為專家。\n + 將卷積、循環、注意力等不同架構納入同一池，可同時捕捉局部與全局資訊。\n* **結論**：\n + 異構專家池可以提高模型效能和捕捉更多資訊。\n + 需要設計方法來編碼專家的類型資訊和處理異構專家之間的梯度傳播。\n* **技術細節**：\n + 編碼專家的類型資訊的方法：可使用門控向量或其他方法。\n + 處理異構專家之間的梯度傳播的方法：可使用梯度平衡或其他方法。\n* **論點**：\n + 異構專家池可以提高模型效能和捕捉更多資訊。\n + 需要設計方法來編碼專家的類型資訊和處理異構專家之間的梯度傳播。\n* **參考 paper**：\n + 《"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**選定主題：動態深度稀疏專家路由（Adaptive‑Depth MoE）**\n\n### 核心方法群\n\n* **Depth‑Controlled MoE (DC‑MoE)**：透過輕量的深度控制器為每個 token 預測要通過的專家層數。\n* **Depth‑Aware Token Routing (DAT‑R)**：結合 token‑level 注意力分數與層級罰項，讓路由決策同時考慮當前層的負載與未來層的預期收益。\n* **Reinforcement‑Learning Expert Depth (RL‑ED)**：把深度選擇視為序列決策問題，使用離線策略梯度訓練一個小型 LSTM 控制器。\n\n### 模型架構細節\n\n* **輸入**：標準 token 序列 (B × L × D)。\n* **輸出**：每層專家處理後的隱藏表示，最終經過一層普通前饋得到預測。\n* **關鍵模組**：\n + 深度控制器：輕量 MLP / LSTM，接受 token 表示與全局統計，輸出「層數門檻」或「停層概率」。\n + 專家池：固定數量的前饋專家 (FFN) 或卷積/注意力混合專家（視實驗而定）。\n + 路由器：在每層根據控制器指示挑選 top‑k 專家，使用 Gumbel‑Softmax 或硬選擇。\n\n### 訓練策略\n\n* **資料規模**：公開語料庫如 C4 或英文 Wikipedia 皆可使用子集進行原型驗證。\n* **Batch size**：在單卡 A100 上 64‑128 個序列；若使用多卡分布式，可擴展至 512。\n* **優化器**：AdamW，學習率 1e‑4，使用線性 warm‑up 前 10 k 步，之後 cosine decay。\n\n### 主要 benchmark 與資料集\n\n* **語言模型**：WikiText‑103、OpenWebText，指標為 perplexity。\n* **序列標註**：CoNLL‑2003 NER、GLUE 中的 SST‑2、MNLI，指標為 accuracy / F1。\n* **效率測試**：使用 MLPerf‑Inference 中的 BERT‑Base 推理測試，報告平均 FLOPs、延遲與吞吐量。\n\n### 未解破綻\n\n* **深度不均衡仍嚴重**：在高變異度的"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
