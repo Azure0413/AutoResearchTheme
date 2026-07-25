@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-07-12",
-    "stage1_topics": "**主題一: 隱式群對稱發現與等變自編碼器**\n\n* **關鍵事實**：\n + 目前只有極少數團隊嘗試從原始觀測資料自動推斷未知的連續對稱群。\n + 解決此問題將大幅提升物理模擬與科學發現的自動化程度。\n* **結論**：\n + 需要發展可微分方式參數化未知的 Lie 群或離散群，使其在訓練過程中同時學習結構與表示。\n + 大規模高維資料上群參數的可辨識性與收斂速度仍未得到系統性分析。\n* **技術細節**：\n + 需要設計可微分方式參數化未知的 Lie 群或離散群。\n + 需要分析大規模高維資料上群參數的可辨識性與收斂速度。\n* **論點**：\n + 等變自編碼器有潛力在未知的連續對稱群中發現新的群對稱。\n + 需要發展新的方法來分析大規模高維資料上群參數的可辨識性與收斂速度。\n* **引用**：\n + 《Discovering Latent Symmetry Groups with E",
-    "final_proposal": "**Stage 5: 完整研究提案**\n\n### 研究痛點與背景\n\n* 現有對稱性學習方法存在缺陷，例如需要大量資料和計算資源\n* 現有方法假設對稱性是已知的或可以被簡單地學習\n* 根據最近的研究，如《Discovering Latent Symmetry Groups with Equivariant Autoencoders》(NeurIPS 2025)和《Implicit Group Discovery in Dynamical Systems》(ICLR 2026)，對稱性學習在物理模擬和科學發現中的重要性\n\n### 核心研究方法\n\n* 結合層次對稱自編碼器和基於自組織映射的群參數初始"
-  },
-  {
     "date": "2026-07-13",
     "stage1_topics": "**Stage 1: 探索熱門議題**\n\n### 主題一: 從因果圖推斷的後訓練資料中毒定位\n\n* **關鍵事實**：\n + 只有少數團隊嘗試將因果推斷與模型微調結合。\n + 計算成本與圖結構建構仍未形成成熟工具。\n* **結論**：\n + 有高度突破空間。\n + 需要設計可擴展的圖推斷演算法。\n* **技術細節**：\n + 重建因果圖的可辨識性。\n + 針對大規模 Transformer 的圖推斷演算法。\n* **論點**：\n + 需要在不完全觀測的訓練記錄下重建因果圖。\n + 需要設計可擴展的圖推斷演算法。\n* **引用**：\n + *Causal Attribution for Post‑Training Data Poisoning*（Y. Liu, NeurIPS 2025）\n + *Counterfactual Influence Estimation in Large Lan",
     "final_proposal": "**研究提案摘要**\n\n**1. 研究痛點與背景**\n\n* 模型微調方法忽略訓練資料中的因果關係，導致模型過度適應或中毒\n* 根據 *Causal Attribution for Post‑Training Data Poisoning* 和 *Counterfactual Influence Estimation in Large Language Models* 研究，建模訓練資料中的因果關係可以提高模型的魯棒性和抗適應性\n\n**2. 核心研究方法**\n\n* 結合時序因果圖重建和對抗性訓練\n* 步驟：\n + 使用圖神經網路學習訓練資料中的因果關係\n + 設計對抗性訓練框架，使用交叉熵損失和"
@@ -68,5 +63,10 @@
     "date": "2026-07-25",
     "stage1_topics": "**動態深度稀疏專家路由 (Adaptive-Depth MoE)**\n\n* **關鍵事實**：\n + 目前只有少數研究探索「每個 token 可自行決定要通過多少層專家」的機制。\n + 可在保持效能的同時大幅降低推理 FLOPs。\n* **結論**：\n + 設計可微分且計算開銷極低的深度控制器至關重要。\n + 需要解決「深度不均衡」導致的專家負載偏斜，以及在多層路由時的梯度傳遞衰減問題。\n* **技術細節**：\n + 設計深度控制器的方法：可使用神經網路或其他機器學習方法。\n + 解決深度不均衡的方法：可使用梯度平衡或其他方法。\n* **論點**：\n + 動態深度稀疏專家路由可以提高模型效能和降低推理 FLOPs。\n + 需要設計可微分且計算開銷極低的深度控制器。\n* **參考 paper**：\n + 《Adaptive Depth Routing for Mixture-of-Expe",
     "final_proposal": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n### 1. 研究痛點與背景\n\n* 目前的動態深度稀疏專家路由方法存在深度不均衡和梯度傳遞衰減等問題\n* 需要進一步的改進和優化\n* 參考《Adaptive Depth Routing for Mixture-of-Experts Transformers》和《Depth-Aware Token Routing in Sparse Expert Networks》等論文\n\n### 2. 核心研究方法\n\n* 提出了一種新的動態深度遞歸路由方法，結合了圖神經網路和注意力機制\n* 演算法步驟：\n + 輸入 token 序列，模組設計為多層遞歸路由"
+  },
+  {
+    "date": "2026-07-26",
+    "stage1_topics": "**學習可微分的曲率與度量以支援非歐氏等變圖神經網路**\n\n* **關鍵事實**：\n + 真實科學圖（如分子、天體結構）常隱含變曲率的流形。\n + 大多數現有等變 GNN 假設固定的幾何空間（歐氏或超球面）。\n* **結論**：\n + 需要一個能夠學習度量與等變訊息傳遞的系統。\n + 需要解決如何在微分可分的方式下參數化黎曼度量，使其在梯度下降中保持正定性。\n* **技術細節**：\n + 需要新穩定化技巧來解決曲率學習與訊息傳遞的耦合會產生梯度不穩定。\n + 需要大規模基準測試不同曲率假設對下游任務的影響。\n* **論點**：\n + 需要結合黎曼幾何和等變 GNN 來解決這個問題。\n + 需要設計一個能夠學習曲率和度量的模型。\n* **引用**：\n + 《Learning Curved Spaces for Equivariant Graph Neural Networks》, 第一作者 ",
+    "final_proposal": "**Stage 5 結構化摘要**\n\n### 1. 研究痛點與背景\n\n* 真實世界的圖結構具有複雜的曲率和度量\n* 現有的 GNNs 在處理具有複雜幾何結構的圖時表現不佳\n* 引用《Learning Curved Spaces for Equivariant Graph Neural Networks》和《Hyperbolic Equivariant Graph Neural Networks with Learnable Curvature》兩篇 paper 支撐了這個論點\n\n### 2. 核心研究方法\n\n* 設計一個可以學習曲率和度量的圖神經網路\n* 使用小型神經網路學習黎曼度量張量\n* "
   }
 ]
