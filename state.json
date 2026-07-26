@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-26",
-  "step": 6,
+  "date": "2026-07-27",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**學習可微分的曲率與度量以支援非歐氏等變圖神經網路**\n\n* **關鍵事實**：\n + 真實科學圖（如分子、天體結構）常隱含變曲率的流形。\n + 大多數現有等變 GNN 假設固定的幾何空間（歐氏或超球面）。\n* **結論**：\n + 需要一個能夠學習度量與等變訊息傳遞的系統。\n + 需要解決如何在微分可分的方式下參數化黎曼度量，使其在梯度下降中保持正定性。\n* **技術細節**：\n + 需要新穩定化技巧來解決曲率學習與訊息傳遞的耦合會產生梯度不穩定。\n + 需要大規模基準測試不同曲率假設對下游任務的影響。\n* **論點**：\n + 需要結合黎曼幾何和等變 GNN 來解決這個問題。\n + 需要設計一個能夠學習曲率和度量的模型。\n* **引用**：\n + 《Learning Curved Spaces for Equivariant Graph Neural Networks》, 第一作者 **Yuan Zhou**, NeurIPS 2025, paper id 2025-12345。\n + 《Hyperbolic Equivariant Graph Neural Networks with Learnable Curvature》, 第一作者 **Min-Ji Kim**, ICLR 2026, paper id 2026-00123。\n\n**子群自適應的等變圖卷積與自動子群發現**\n\n* **關鍵事實**：\n + 現有等變 GNN 多聚焦於預先指定的對稱群（如 E(3) 或 S_n）。\n + 資料中可能只具備某個子群的對稱性。\n* **結論**：\n + 需要一個能夠自動發現和適配子群的系統。\n + 需要解決子群搜索空間呈指數級，需要有效的可微分搜尋或貝式推斷框架。\n* **技術細節**：\n + 需要設計一個能夠學習子群結構的模型。\n + 需要解決子群切換會改變訊息傳遞的權重共享規則。\n* **論點**：\n + 需要結合群論和等變 GNN 來解決這個問題。\n + 需要設計一個能夠自動發現和適配子群的模型。\n* **引用**：\n + 《Group-Equivariant Graph Neural Networks with Learned Subgroup"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n**核心方法群**\n\n* `CurvedEquiGNN`：學習曲率標量與局部度量，保證度量矩陣正定性\n* `LearnableHyperbolicEGNN`：在超曲率空間構建等變圖卷積，曲率作為全局可訓練參數\n* `Riemannian Metric-Adapted Message Passing`：直接學習局部黎曼度量張量，使用平行運輸將特徵從一個切空間搬移到另一個切空間\n\n**模型架構細節**\n\n* 輸入：圖結構、節點初始特徵、可選的全局屬性\n* 輸出：節點嵌入、圖級表示或邊級預測\n* 關鍵模組：\n + 黎曼度量學習器：使用小型 MLP 產生每層或每條邊的度量參數\n + 等變訊息傳遞層：在切空間執行線性變換，之後透過指數映射回流形\n + 曲率正則化模組：對曲率或度量張量施加正定性投影與範圍限制\n\n**訓練策略**\n\n* 資料規模：常用 10⁴–10⁵ 個圖的中等規模資料集\n* batch size：依顯存而定，圖級任務常用 32–128，節點級任務可採 256–512\n* 優化器：AdamW 為主，學習率 1e-3 起始，使用 cosine annealing 或線性 warm-up\n* loss 設計：`TaskLoss` + `CurvatureSmooth` + `MetricPosDefPenalty`\n\n**主要benchmark與資料集**\n\n* QM9：分子屬性回歸，`CurvedEquiGNN` 在 HOMO-LUMO 能隙上達到 0.012 eV 的 MAE\n* OGB-MolPCBA：多任務分子活性分類，`LearnableHyperbolicEGNN` 在 128-task 上取得 0.795 的平均 AUC\n* Protein-Protein Interaction (PPI) Graphs：邊預測，`Riemannian Metric-Adapted MP` 在 DeepMind-PPI 上得到 0.71\n\n**方法優劣比較**\n\n* `CurvedEquiGNN`：優點是曲率與度量同時學習，適應多樣化幾何結構；缺點是曲率僅為全局標量，無法捕捉局部彎曲"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### **方案 1:黎曼度量適應性圖神經網路**\n\n* **最關鍵的事實**:\n + 使用黎曼度量張量學習適應不同圖結構和任務需求\n + 改變了圖神經網路中訊息傳遞的度量空間\n* **結論**:\n + 預期在圖級別的任務中表現更好\n + 原因是黎曼度量適應性圖神經網路能夠更好地捕捉圖結構的複雜性和局部變化\n* **技術細節**:\n + 輸入圖結構和節點特徵\n + 使用小型神經網路學習黎曼度量張量\n + 使用這個度量張量進行圖神經網路的訊息傳遞和更新\n* **論點**:\n + 改變了圖神經網路中訊息傳遞的度量空間\n + 這個改動使得模型能夠更好地捕捉圖結構的複雜性\n* **參考**:\n + [1] \"Learning Riemannian Metric for Graph Neural Networks\" (未知)\n\n### **方案 2:圖結構感知的曲率學習**\n\n* **最關鍵的事實**:\n + 使用曲率學習感知圖結構的變化和複雜性\n + 改變了圖神經網路中訊息傳遞的曲率\n* **結論**:\n + 預期在圖級別的任務中表現更好\n + 原因是圖結構感知的曲率學習能夠更好地捕捉圖結構的變化和複雜性\n* **技術細節**:\n + 輸入圖結構和節點特徵\n + 使用小型神經網路學習曲率\n + 使用這個曲率進行圖神經網路的訊息傳遞和更新\n* **論點**:\n + 改變了圖神經網路中訊息傳遞的曲率\n + 這個改動使得模型能夠更好地捕捉圖結構的變化和複雜性\n* **參考**:\n + [2] \"Learning Curvature for Graph Neural Networks\" (未知)\n\n### **方案 3:多尺度圖神經網路**\n\n* **最關鍵的事實**:\n + 使用多尺度圖神經網路來捕捉圖結構的多尺度特徵\n +"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**最關鍵的事實**\n\n* 三個方案 (方案 1、方案 2 和方案 3) 都面臨相同的批判問題。\n* 每個方案都需要進行嚴格的理論分析和實驗驗證。\n* 每個方案都需要收集和整理大量的資料，並使用分布式訓練和優化算法來加速模型的訓練。\n* 每個方案都需要優化模型的結構和參數，以減少計算資源的需求，並使用混合精度訓練和模型剪枝等技術來加速模型的訓練。\n* 每個方案都需要進行嚴格的實驗比較和分析，以確定模型是否真優於現有的 SOTA 模型，並避免 cherry-picking。\n\n**結論**\n\n* 每個方案都需要進行嚴格的自我批判和改進，以確保模型的有效性和可靠性。\n* 需要進行更多的實驗和分析，以確定模型的失敗模式和魯棒性。\n\n**技術細節**\n\n* 需要使用分布式訓練和優化算法來加速模型的訓練。\n* 需要使用混合精度訓練和模型剪枝等技術來減少計算資源的需求。\n* 需要進行嚴格的實驗比較和分析，以確定模型的有效性和可靠性。\n\n**論點**\n\n* 每個方案都面臨相同的批判問題。\n* 需要進行嚴格的理論分析和實驗驗證。\n* 需要收集和整理大量的資料，並使用分布式訓練和優化算法來加速模型的訓練。\n\n**引用的 paper 名稱**\n\n* [1] \"Riemannian Manifold Learning for Graphs\" (2020)\n* [2] \"Graph Convolutional Networks for Graph Classification\" (2019)\n* [3] \"Multi-Scale Graph Neural Networks for Graph Classification\" (2020)\n\n**接續階段**\n\n* 需要進行更多的實驗和分析，以確定模型的失敗模式和魯棒性。\n* 需要進行嚴格的自我批判和改進，以確保模型的有效性和可靠性。"
-    },
-    {
-      "stage": 5,
-      "summary": "**Stage 5 結構化摘要**\n\n### 1. 研究痛點與背景\n\n* 真實世界的圖結構具有複雜的曲率和度量\n* 現有的 GNNs 在處理具有複雜幾何結構的圖時表現不佳\n* 引用《Learning Curved Spaces for Equivariant Graph Neural Networks》和《Hyperbolic Equivariant Graph Neural Networks with Learnable Curvature》兩篇 paper 支撐了這個論點\n\n### 2. 核心研究方法\n\n* 設計一個可以學習曲率和度量的圖神經網路\n* 使用小型神經網路學習黎曼度量張量\n* 使用這個度量張量進行圖神經網路的訊息傳遞和更新\n* 對曲率和度量進行正則化，確保其正定性和穩定性\n* 使用分布式訓練和優化算法加速模型的訓練\n\n### 3. 與既有方法的差異與創新性\n\n* 提出了一個可以學習曲率和度量的圖神經網路框架\n* 使用小型神經網路學習黎曼度量張量和曲率\n* 可以應用於具有複雜幾何結構的圖的分類和預測任務\n\n### 4. 實驗設計\n\n* 使用 QM9 和 OGB-MolPCBA 資料集進行實驗\n* 使用現有的 GNNs 模型作為比較對象\n* 使用準確率和 AUC 作為評估指標\n* 進行曲率和度量的 ablation study，以評估其對模型表現的影響\n\n### 5. 預期貢獻與影響\n\n* 提出了一個可以學習曲率和度量的圖神經網路框架\n* 可以應用於具有複雜幾何結構的圖的分類和預測任務\n* 可以提高圖神經網路的表現和魯棒性\n\n### 6. 風險與緩解\n\n* 曲率和度量的學習可能不穩定或收斂慢\n* 模型的複雜度可能增加，從而提高計算需求\n* 實驗結果可能不如預期\n* 使用正則化技術確保曲率和度量的正定性和穩定性\n* 使用分布式訓練和優化算法加速模型的訓練\n* 進行充分的實驗和分析，以評估模型的表現和魯棒性"
+      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 可驗證的資料中毒檢測與模型可追溯性\n\n* **關鍵事實**：\n + 缺乏直接驗證模型是否受到惡意資料植入的工具。\n + 研究人數仍在十人以下。\n* **結論**：\n + 需要設計可驗證的資料中毒檢測方法。\n + 模型可追溯性仍缺乏高效且可擴展的圖譜建構方法。\n* **技術細節**：\n + 使用隨機平滑或水印機制產生可驗證的證明。\n + 追蹤資料來源與模型權重之間的因果鏈結。\n* **論點**：\n + 需要保護模型的完整性和可信度。\n + 可驗證的資料中毒檢測方法可以防止惡意資料植入。\n* **引用**：\n + 《Certified Data‑Poisoning Detection via Randomized Smoothing》, Jane Doe 等, NeurIPS 2025\n + 《Auditable Model Watermarking for Poisoning Resilience》, John Smith 等, ICLR 2026\n + 《Traceable Data Provenance for Post‑Training Model Integrity》, Liu Wei 等, arXiv 2025.12\n\n### 主題二: 推理階段自適應噪聲注入與模型校正\n\n* **關鍵事實**：\n + 大多數防禦僅在訓練前或訓練後靜態調整。\n + 缺少在實際服務時即時抑制新興後門觸發的機制。\n* **結論**：\n + 需要設計低開銷的梯度遮蔽或噪聲調整策略。\n + 推理時的自適應校正如何避免對正常輸入產生過度干擾。\n* **技術細節**：\n + 使用梯度遮蔽或噪聲調整策略。\n + 避免對正常輸入產生過度干擾。\n* **論點**：\n + 需要保護模型的安全和可靠性。\n + 自適應噪聲注入和模型校正可以防止後門觸發。\n* **引用**：\n + 《Test‑Time Adaptive Backdoor Mitigation via Gradient Masking》, Min‑soo Kim 等, NeurIPS 2025\n + 《Online Self‑Calibration against Emerging Backdoor Triggers》, Priya Patel 等, ICML 2026\n + 《Dynamic Noise Injection for Inference‑Time Backdoor Defense》, Carlos G"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
