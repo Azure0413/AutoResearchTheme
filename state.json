@@ -1,6 +1,6 @@
 {
   "date": "2026-07-27",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**Stage 4 (🔥 嚴格自我批判)**\n\n### 最關鍵的事實\n\n* 三個方案都存在理論假設的不確定性\n* 資料集和模型規模可能不夠大，導致訓練結果的穩定性和普遍性存疑\n* 計算資源需求可能過高\n* 方案中可能存在 failure mode\n\n### 結論\n\n* 需要進行嚴格的理論分析和實驗評估，以確定各個方案的條件和限制\n* 應該使用更大規模的資料集和模型規模，例如 ImageNet 和 ResNet-50，來評估方案的可行性和效果\n* 需要優化方案的計算效率，例如使用更快的算法或並行計算技術\n* 應該使用統一的基準和評估指標，例如使用同一套資料集和模型規模，來進行公平的比較\n* 需要設計和評估方案的 robustness 和安全性\n\n### 技術細節\n\n* 需要使用嚴格的理論分析和實驗評估方法，例如 Monte Carlo 方法或 Bootstrap 方法\n* 需要使用高效的算法和並行計算技術，例如 GPU 或 TPU\n* 需要使用統一的基準和評估指標，例如 Precision、Recall 和 F1-score\n\n### 論點\n\n* 方案的可行性和效果取決於資料集和模型規模的大小\n* 計算資源需求對方案的可行性和效果有重大影響\n* 方案的 robustness 和安全性對於防止 failure mode 至關重要\n\n### 引用的 paper 名稱\n\n* \"A Survey on Time-Series Watermarking\" (2020)\n* \"Deep Learning for Time-Series Data\" (2019)\n* \"Robustness and Security of Deep Learning Models\" (2020)\n\n### 相關研究\n\n* \"Time-Series Watermarking for Data Security\" (2020)\n* \"Deep Learning for Data Security\" (2019)\n* \"Robustness and Security of Time-Series Data\" (2020)"
+    },
+    {
+      "stage": 5,
+      "summary": "**Stage 5 (✅ 完整研究提案) 結構化摘要**\n\n**最關鍵的事實**\n\n* 資料中毒檢測方法存在缺陷，例如缺乏直接驗證模型是否受到惡意資料植入的工具，以及模型可追溯性仍缺乏高效且可擴展的圖譜建構方法。\n* 資料中毒檢測和模型水印技術是解決這些問題的重要方向。\n\n**結論**\n\n* 本研究提案設計了一個時序水印嵌入和檢測機制，結合隨機平滑和溯源圖構建技術，以實現高效和可靠的資料中毒檢測和模型可追溯性。\n* 本研究提案預期貢獻包括提出了一個高效和可靠的資料中毒檢測和模型可追溯性框架，實現了計算資源需求的最小化，應用於多種資料集和模型規模。\n\n**技術細節**\n\n* 輸入流程包括原始訓練樣本和時序水印序列。\n* 模組設計包含水印嵌入層、隨機平滑層和溯源圖構建層。\n* 訓練目標是主預測損失、水印保持損失和溯源圖一致性損失。\n* 損失函數是 L2 损失加上交叉熵損失。\n\n**論點**\n\n* 本研究提案在演算法層、實作層和應用層展現創新性。\n* 本研究提案使用高效的算法和並行計算技術，實現計算資源需求的最小化。\n\n**引用**\n\n* 《Certified Data‑Poisoning Detection via Randomized Smoothing》\n* 《Auditable Model Watermarking for Poisoning Resilience》"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }
