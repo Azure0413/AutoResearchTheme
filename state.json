@@ -1,6 +1,6 @@
 {
   "date": "2026-07-28",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**安全導向的隨機神經微分方程控制器 (Safety-Driven Stochastic Neural ODE Controllers)**\n\n**關鍵事實**\n\n* 2026 年 ICLR 和 2025 年 NeurIPS 出現原型\n* 技術成熟度足以在校園實驗室內實作\n* 需要安全屏障函數離散化、梯度穩定性和即時求解效能等技術\n* 資源友好（小型機器人平台、開源 SDE 數值套件）\n\n**結論**\n\n* 可以使用隨機安全屏障函數、可微分離散化控制器和雙層優化框架來實現安全導向的控制器\n* 需要開發高效可微分的變步長 stochastic integrator、設計梯度正則化的 barrier 層和在多噪聲環境下的魯棒性 ablation\n\n**技術細節**\n\n* **輸入**: 當前觀測向量 `x_t` 和目標指令 `u_ref`\n* **輸出**: 控制指令 `u_t` 和安全屏障值 `b_t`\n* **關鍵模組**: `NeuralSDEEncoder`、`SafetyBarrierLayer` 和 `DiscreteSolver`\n* **訓練目標**: 最小化控制誤差和安全懲罰項\n\n**訓練策略**\n\n* **資料規模**: 10-20 小時的隨機軌跡\n* **Batch size**: 每次 256 步的時間窗\n* **優化器**: `AdamW` 學習率 1e-3\n* **Loss 設計**: `L_control = mean squared error(position, target)` 和 `L_safety = mean(-log(barrier + epsilon))`\n\n**主要 benchmark 和資料集**\n\n* **仿真平台**: `SafetyGym` 和 `Mujoco` 的安全任務變體\n* **實體平台**: 低成本四輪機器人 `TurtleBot3` 搭配雷射和 IMU\n* **關鍵指標**: 安全違規率、任務成功率和控制能耗\n\n**未解破綻**\n\n* 離散化安全保證的鬆弛\n* 梯度爆炸和數值不穩\n* 即時性不足\n* 缺乏系統性 ablation\n* 安全指標的可解釋性"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n###方案 1: 隨機安全屏障優化\n\n* **核心 idea**: 設計一種新的隨機安全屏障函數，結合了可微分的離散化控制器和雙層優化框架。\n* **技術細節**:\n + 輸入流程包括當前觀測向量和目標指令\n + 模組設計包括 `NeuralSDEEncoder`、`SafetyBarrierLayer` 和 `DiscreteSolver`\n + 訓練目標是最小化控制誤差和安全懲罰項\n + 搭配損失函數 `L_control = mean squared error(position, target)` 和 `L_safety = mean(-log(barrier + epsilon))`\n* **與 SOTA 的差異**: 提出的隨機安全屏障函數可以在離散化控制器中保證安全約束的嚴格性\n* **預期改善的指標與原因**: 在 `SafetyGym` 和 `Mujoco` 的安全任務變體中，預期可以提高安全違規率和任務成功率\n* **最小可行實驗(MVP)**: 可以使用 `TurtleBot3` 低成本四輪機器人平台和安全任務變體的模擬環境進行驗證\n\n###方案 2: 梯度正則化安全屏障\n\n* **核心 idea**: 提出了一種新的梯度正則化方法，結合了安全屏障函數和可微分的離散化控制器。\n* **技術細節**:\n + 輸入流程包括當前觀測向量和目標指令\n + 模組設計包括 `NeuralSDEEncoder`、`SafetyBarrierLayer` 和 `DiscreteSolver`\n + 訓練目標是最小化控制誤差和安全懲罰項\n + 搭配損失函數 `L_control = mean squared error(position, target)` 和 `L_safety = mean(-log(barrier + epsilon))`\n + 加入梯度正則化項 `L_reg = mean(grad(barrier))`\n* **與 SOTA 的差異**: 提出的梯度正則化方法可以有效地減少梯度爆炸和數值不穩\n* **預期改善的指標與原因**: 在 `SafetyGym` 和 `Mujoco` 的安全任務變體中，預期可以提高安全違規率和任務成功率\n* **最小可行實驗(MVP)**: 可以使用 `TurtleBot3` 低成本四輪機器人平台和安全任務變體的模擬環境進行驗證"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
