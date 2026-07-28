@@ -1,13 +1,18 @@
 {
   "date": "2026-07-29",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n**主題一: 稀疏自編碼器驅動的概念電路映射**\n\n* **關鍵事實**：\n + 研究人數仍在十餘人以下\n + 缺乏成熟工具自動化從巨量激活中抽取可解釋的稀疏基底\n + 可直接對齊概念與電路，具備高突破潛力\n* **結論**：\n + 需要設計稀疏自編碼器保證抽取的基向量對下游概念的可讀性與可操作性\n + 需要系統性評估稀疏自編碼器在不同層、不同模型規模間的穩定性與遷移性\n* **技術細節**：\n + 稀疏自編碼器\n + 激活抽取\n + 基底映射\n* **論點**：\n + 需要發展新工具和方法來自動化稀疏基底的抽取\n + 需要評估稀疏自編碼器的穩定性和遷移性\n* **參考文獻**：\n + 《Sparse Concept Probes in Large Language Models》, Alex Wang, NeurIPS 2025\n + 《AutoSparse: Learning Sparse Autoencoders for Mechanistic Interpretability》, Maya Gupta, ICLR 2026\n + 《Concept Bottleneck Autoencoders for Transformers》, Yoon Kim, arXiv 2025.12\n\n**主題二: 激活圖與圖神經網路的電路抽取**\n\n* **關鍵事實**：\n + 目前僅有少數團隊嘗試把模型內部的激活視為圖結構並以 GNN 進行子電路搜尋\n + 研究人數仍在二十人以下\n + 尚未形成標準基準\n* **結論**：\n + 需要設計高維激活空間中構建既保真又可縮放的圖表示\n + 需要評估 GNN 在捕捉跨層、跨頭的長程依賴時的表達能力與梯度傳遞\n* **技術細節**：\n + 激活圖\n + GNN\n + 圖表示\n* **論點**：\n + 需要發展新方法來構建高維激活空間中的圖表示\n + 需要評估 GNN 的表達能力和梯度傳遞\n* **參考文獻**：\n + 《Activation Graph Mining for Circuit Discovery》, David Bau, NeurIPS 2025\n + 《"
+    },
+    {
+      "stage": 2,
+      "summary": "**稀疏自編碼器驅動的概念電路映射**\n\n### 核心方法群\n\n* **Sparse Concept Probes (SCP)**: 在固定層的激活上訓練稀疏線性探針，直接找出與語意概念高度相關的少數神經元。\n* **AutoSparse** (Gupta 等, ICLR 2026): 使用自編碼器結合 L1 正則化與稀疏門控，學習一組稀疏基向量，使得原始激活可被少量基底重構，同時保留概念可解釋性。\n* **Concept Bottleneck Autoencoders (CBAE)** (Kim 等, arXiv 2025.12): 在自編碼器的瓶頸層強制以概念向量作為中介，透過概念分類損失引導瓶頸表徵同時具備壓縮與語意可讀性。\n\n### 模型架構細節\n\n* **輸入**: 選定層的激活張量，形狀為 `[batch, seq_len, hidden_dim]`。\n* **輸出**: 稀疏基向量集合 `B ∈ ℝ^{k×hidden_dim}`（`k` 為基底數）以及對應的稀疏係數矩陣 `S ∈ ℝ^{batch×seq_len×k}`。\n* **關鍵模組**:\n + `Encoder`: 將激活映射到稀疏係數空間，內含門控層與 L1 正則化。\n + `Decoder`: 用 `B·S` 重建激活，計算重建誤差。\n + `Concept Classifier`（CBAE）或 `Probe Head`（SCP）：將稀疏係數映射到概念標籤，用於概念對齊。\n* **訓練目標**:\n + 重建誤差（如均方誤差）\n + 稀疏正則（L1 或硬門控）\n + 概念對齊損失（交叉熵或二元交叉熵）\n\n### 訓練策略\n\n* **資料規模**: 從公開模型（如 LLaMA‑2‑13B）抽取 10‑100M 句子的激活；常見做法是隨機抽樣 1‑2% 的語料作為訓練集。\n* **Batch size**: GPU 記憶體允許下使用 `batch = 256`（每批 256 個序列），序列長度固定為 128。\n* **優化器**: `AdamW`，學習率 1e‑4，權重衰減"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
