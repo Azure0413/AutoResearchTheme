@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-28",
-  "step": 6,
+  "date": "2026-07-29",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**安全導向的隨機神經微分方程控制器 (Safety-Driven Stochastic Neural ODE Controllers)**\n\n* **關鍵事實**：\n + 研究人數仍在十餘人以下\n + 需要同時處理不確定性、可驗證的安全邊界與即時控制\n* **結論**：\n + 市場與學術需求尚未飽和\n + 需要解決離散化過程中保證隨機安全屏障函數的嚴格性與梯度爆炸問題\n* **技術細節**：\n + 需要設計可微分的安全約束與實時求解的計算開銷統一框架\n + 需要研究如何在離散化過程中保證隨機安全屏障函數的嚴格性\n* **論點**：\n + 需要結合隨機控制理論與可微分模型的安全約束\n + 需要解決安全約束的可微分化與實時求解的計算開銷問題\n* **引用的 paper 名稱**：\n + 《Stochastic Control Neural ODEs with Safety Constraints》, Y. Liu, ICLR 2026\n + 《Neural SDE Controllers for Robotics under Uncertainty》, A. Gupta, NeurIPS 2025\n + 《Probabilistic Reachability via Neural SDEs》, J. Kim, arXiv 2025.12\n\n**結構保留的神經哈密頓隨機微分方程於長期物理模擬 (Structure-Preserving Neural Hamiltonian SDEs for Long-Term Physics Simulation)**\n\n* **關鍵事實**：\n + 目前僅有少數團隊探索在高維流體與分子系統中同時保留能量、動量與隨機擾動的結構\n + 相關研究人數不足二十人\n* **結論**：\n + 具備突破性潛力\n + 需要解決辛結構與可變時間步長的數值穩定性問題\n* **技術細節**：\n + 需要設計辛結構與可變時間步長的數值穩定性統一框架\n + 需要研究如何在隨機時間積分時同時滿足辛結構\n* **論點**：\n + 需要結合隨機時間積分與辛結構\n + 需要解決高維系統的噪聲建模與物理守恆律的耦合問題\n* **引用的 paper 名稱**：\n + 《Neural Stochastic Hamiltonian Systems for Turbulent Flow》, M. Patel, ICLR 202"
-    },
-    {
-      "stage": 2,
-      "summary": "**安全導向的隨機神經微分方程控制器 (Safety-Driven Stochastic Neural ODE Controllers)**\n\n**關鍵事實**\n\n* 2026 年 ICLR 和 2025 年 NeurIPS 出現原型\n* 技術成熟度足以在校園實驗室內實作\n* 需要安全屏障函數離散化、梯度穩定性和即時求解效能等技術\n* 資源友好（小型機器人平台、開源 SDE 數值套件）\n\n**結論**\n\n* 可以使用隨機安全屏障函數、可微分離散化控制器和雙層優化框架來實現安全導向的控制器\n* 需要開發高效可微分的變步長 stochastic integrator、設計梯度正則化的 barrier 層和在多噪聲環境下的魯棒性 ablation\n\n**技術細節**\n\n* **輸入**: 當前觀測向量 `x_t` 和目標指令 `u_ref`\n* **輸出**: 控制指令 `u_t` 和安全屏障值 `b_t`\n* **關鍵模組**: `NeuralSDEEncoder`、`SafetyBarrierLayer` 和 `DiscreteSolver`\n* **訓練目標**: 最小化控制誤差和安全懲罰項\n\n**訓練策略**\n\n* **資料規模**: 10-20 小時的隨機軌跡\n* **Batch size**: 每次 256 步的時間窗\n* **優化器**: `AdamW` 學習率 1e-3\n* **Loss 設計**: `L_control = mean squared error(position, target)` 和 `L_safety = mean(-log(barrier + epsilon))`\n\n**主要 benchmark 和資料集**\n\n* **仿真平台**: `SafetyGym` 和 `Mujoco` 的安全任務變體\n* **實體平台**: 低成本四輪機器人 `TurtleBot3` 搭配雷射和 IMU\n* **關鍵指標**: 安全違規率、任務成功率和控制能耗\n\n**未解破綻**\n\n* 離散化安全保證的鬆弛\n* 梯度爆炸和數值不穩\n* 即時性不足\n* 缺乏系統性 ablation\n* 安全指標的可解釋性"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n###方案 1: 隨機安全屏障優化\n\n* **核心 idea**: 設計一種新的隨機安全屏障函數，結合了可微分的離散化控制器和雙層優化框架。\n* **技術細節**:\n + 輸入流程包括當前觀測向量和目標指令\n + 模組設計包括 `NeuralSDEEncoder`、`SafetyBarrierLayer` 和 `DiscreteSolver`\n + 訓練目標是最小化控制誤差和安全懲罰項\n + 搭配損失函數 `L_control = mean squared error(position, target)` 和 `L_safety = mean(-log(barrier + epsilon))`\n* **與 SOTA 的差異**: 提出的隨機安全屏障函數可以在離散化控制器中保證安全約束的嚴格性\n* **預期改善的指標與原因**: 在 `SafetyGym` 和 `Mujoco` 的安全任務變體中，預期可以提高安全違規率和任務成功率\n* **最小可行實驗(MVP)**: 可以使用 `TurtleBot3` 低成本四輪機器人平台和安全任務變體的模擬環境進行驗證\n\n###方案 2: 梯度正則化安全屏障\n\n* **核心 idea**: 提出了一種新的梯度正則化方法，結合了安全屏障函數和可微分的離散化控制器。\n* **技術細節**:\n + 輸入流程包括當前觀測向量和目標指令\n + 模組設計包括 `NeuralSDEEncoder`、`SafetyBarrierLayer` 和 `DiscreteSolver`\n + 訓練目標是最小化控制誤差和安全懲罰項\n + 搭配損失函數 `L_control = mean squared error(position, target)` 和 `L_safety = mean(-log(barrier + epsilon))`\n + 加入梯度正則化項 `L_reg = mean(grad(barrier))`\n* **與 SOTA 的差異**: 提出的梯度正則化方法可以有效地減少梯度爆炸和數值不穩\n* **預期改善的指標與原因**: 在 `SafetyGym` 和 `Mujoco` 的安全任務變體中，預期可以提高安全違規率和任務成功率\n* **最小可行實驗(MVP)**: 可以使用 `TurtleBot3` 低成本四輪機器人平台和安全任務變體的模擬環境進行驗證"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**最關鍵的事實:**\n\n* 隨機安全屏障和梯度正則化安全屏障的理論假設可能不夠嚴格。\n* 訓練資料可能不夠豐富，尤其是在安全關鍵的場景中。\n* 訓練模型可能需要大量的計算資源。\n* 基準模型可能選擇不夠強，或者評估指標不夠全面。\n\n**結論:**\n\n* 需要進行嚴格的理論分析和設計更強健的安全屏障函數和梯度正則化方法。\n* 需要設計更有效的資料增強和模擬方法。\n* 需要設計更有效的模型架構和優化方法。\n* 需要選擇更強的基準模型和評估指標。\n\n**技術細節:**\n\n* 使用正則化方法或早停法來防止過度擬合或欠擬合的問題。\n* 使用分佈式學習或模型剪枝方法來減少計算資源的需求。\n* 使用生成式模型或強化學習方法來生成更多的訓練資料和模擬場景。\n\n**論點:**\n\n* 需要對安全屏障函數和梯度正則化方法進行嚴格的理論分析和設計。\n* 需要對資料增強和模擬方法進行設計和實現。\n* 需要對模型架構和優化方法進行設計和實現。\n\n**引用的 paper 名稱:**\n\n* 無指定的 paper 名稱。\n\n**延伸:**\n\n* 需要對安全屏障函數和梯度正則化方法進行更深入的研究和實現。\n* 需要對資料增強和模擬方法進行更多的實驗和評估。\n* 需要對模型架構和優化方法進行更多的實驗和評估。"
-    },
-    {
-      "stage": 5,
-      "summary": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n**最關鍵的事實**\n\n* 安全導向的隨機神經微分方程控制器是一個重要的研究領域，但目前的方法仍然存在缺陷。\n* 我們提出的方法結合了隨機安全屏障函數和梯度正則化方法，目的是設計一個可以保證安全約束的嚴格性和減少梯度爆炸的控制器。\n\n**結論**\n\n* 我們的方法可以提供一個安全保證的控制系統，具有科學價值和工程應用價值。\n* 我們的方法是新的和創新的，可以應用於各種需要安全保證的控制系統中。\n\n**技術細節**\n\n* 我們使用了 `NeuralSDEEncoder`、`SafetyBarrierLayer` 和 `DiscreteSolver` 等模組。\n* 我們的方法使用了損失函數 `L_control = mean squared error(position, target)` 和 `L_safety = mean(-log(barrier + epsilon))`。\n* 我們的實驗設計使用了 `SafetyGym` 和 `Mujoco` 的安全任務變體。\n\n**論點**\n\n* 我們的方法可以提供一個安全保證的控制系統。\n* 我們的方法是新的和創新的，可以應用於各種需要安全保證的控制系統中。\n\n**引用的 paper 名稱**\n\n* Y. Liu 等人，《Stochastic Control Neural ODEs with Safety Constraints》(ICLR 2026)\n* A. Gupta 等人，《Neural SDE Controllers for Robotics under Uncertainty》(NeurIPS 2025)\n\n**實驗設計**\n\n* 資料集：使用 `SafetyGym` 和 `Mujoco` 的安全任務變體\n* baseline：使用現有的安全導向的隨機神經微分方程控制器\n* 評估指標：安全違規率、任務成功率和控制能耗\n* ablation study 設計：研究隨機安全屏障函數和梯度正則化方法的影響\n* 計算需求估計：1-2 張 24-48G GPU，訓練時間約 1-2 周"
+      "summary": "**Stage 1: 探索熱門議題**\n\n**主題一: 稀疏自編碼器驅動的概念電路映射**\n\n* **關鍵事實**：\n + 研究人數仍在十餘人以下\n + 缺乏成熟工具自動化從巨量激活中抽取可解釋的稀疏基底\n + 可直接對齊概念與電路，具備高突破潛力\n* **結論**：\n + 需要設計稀疏自編碼器保證抽取的基向量對下游概念的可讀性與可操作性\n + 需要系統性評估稀疏自編碼器在不同層、不同模型規模間的穩定性與遷移性\n* **技術細節**：\n + 稀疏自編碼器\n + 激活抽取\n + 基底映射\n* **論點**：\n + 需要發展新工具和方法來自動化稀疏基底的抽取\n + 需要評估稀疏自編碼器的穩定性和遷移性\n* **參考文獻**：\n + 《Sparse Concept Probes in Large Language Models》, Alex Wang, NeurIPS 2025\n + 《AutoSparse: Learning Sparse Autoencoders for Mechanistic Interpretability》, Maya Gupta, ICLR 2026\n + 《Concept Bottleneck Autoencoders for Transformers》, Yoon Kim, arXiv 2025.12\n\n**主題二: 激活圖與圖神經網路的電路抽取**\n\n* **關鍵事實**：\n + 目前僅有少數團隊嘗試把模型內部的激活視為圖結構並以 GNN 進行子電路搜尋\n + 研究人數仍在二十人以下\n + 尚未形成標準基準\n* **結論**：\n + 需要設計高維激活空間中構建既保真又可縮放的圖表示\n + 需要評估 GNN 在捕捉跨層、跨頭的長程依賴時的表達能力與梯度傳遞\n* **技術細節**：\n + 激活圖\n + GNN\n + 圖表示\n* **論點**：\n + 需要發展新方法來構建高維激活空間中的圖表示\n + 需要評估 GNN 的表達能力和梯度傳遞\n* **參考文獻**：\n + 《Activation Graph Mining for Circuit Discovery》, David Bau, NeurIPS 2025\n + 《"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
