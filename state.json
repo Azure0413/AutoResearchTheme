@@ -1,13 +1,18 @@
 {
   "date": "2026-07-31",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 推理階段的自我校驗與不確定性校準\n\n* **關鍵事實**:\n + 少數團隊在推理時加入自我驗證回饋，能即時偵測與修正錯誤。\n + 提升模型自我改進的可行性具有關鍵作用。\n* **結論**:\n + 自我校驗與不確定性校準對模型性能提升具有重要作用。\n* **技術細節**:\n + 設計高效的自我校驗模組與不確定性估計器。\n + 需要可靠的信心門檻機制。\n* **論點**:\n + 自我校驗能即時偵測與修正錯誤。\n + 不確定性校準能提高模型的可靠性。\n* **引用**:\n + 《Self‑Check: Test‑Time Self‑Verification for Language Models》, Jia‑Wei Lin, NeurIPS 2025\n + 《Confidence‑Aware Inference for Large Language Models》, Mina Patel, ICLR 2026\n + 《Iterative Self‑Refinement via Monte‑Carlo Dropout at Inference》, Ryo Tanaka, arXiv 2025.0803\n\n### 主題二: 可微分推理圖與資源自適應結構化推理\n\n* **關鍵事實**:\n + 可微分推理圖能根據子問題的難度分配不同層數或專家。\n + 這種方法能突破傳統固定深度的 FLOP 限制。\n* **結論**:\n + 可微分推理圖能提高模型的效率。\n* **技術細節**:\n + 設計可微分且低開銷的路徑選擇控制器。\n + 解決路徑切換帶來的梯度斷裂與記憶體碎片化。\n* **論點**:\n + 可微分推理圖能根據子問題的難度分配資源。\n + 這種方法能提高模型的效率。\n* **引用**:\n + 《Dynamic Inference Graphs for Efficient Reasoning》, Eun‑Ji Kim, ICML 2025\n + 《Resource‑Aware Structured Reasoning Networks》, Carlos Mendes, NeurIPS 2025\n + 《Adaptive Path Selection in Transformer Inference》, Yuan‑Chi Hsu, arXiv 2026.0211\n\n### 主題三: 迴圈式自我改進的理論極限與可證明增益\n\n* **關鍵事實**:\n + 自我改進被"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Dynamic Inference Graphs (Kim 2025)**：可微分路徑選擇器，決定是否跳過或激活子模組。\n* **Resource-Aware Structured Reasoning (Mendes 2025)**：引入資源門與專家池，動態調整計算預算和選擇子網路。\n* **Adaptive Path Selection (Hsu 2026)**：使用路徑預測器預測是否需要執行 Transformer block，產生不確定性分數作為門控信心門檻。\n\n### 2. 模型架構細節\n\n* **輸入**：標準 token 序列（可加上位置編碼）\n* **輸出**：任務特定的 logits（分類、生成或回歸）\n* **關鍵模組**：\n + `GateController`：小型 MLP，接受當前 hidden state，輸出每層的二元門控機率。\n + `ExpertPool`：若干專家子網路（例如 2-4 層的局部 Transformer），在門控為 1 時被激活。\n + `PathSampler`（可選）：在訓練時使用 Gumbel-Softmax 近似離散抽樣，保持可微分。\n\n### 3. 訓練策略\n\n* **資料規模**：以公開的語言理解/推理資料集為主，常見規模在 1-5 億 token。\n* **Batch size**：單卡 32-64，若使用多卡可累積梯度至 256。\n* **優化器**：`AdamW`，學習率 1e-4，使用 cosine decay。\n* **Loss 設計**：`L_total = L_task + λ_resource * L_resource + λ_entropy * L_entropy`\n\n### 4. 主要 benchmark 與資料集\n\n* **GLUE / SuperGLUE**：測量自然語言理解的準確率，同時報告平均 FLOPs 減少比例。\n* **DROP**：關鍵指標為 Exact Match 與 F1，並以推理時間作為資源指標。\n* **MathQA**：評估模型在數學推理上的正確率，特別關注在「長序列」題目上是否能自適應減少層數。\n\n### 5. 方法優劣比較\n\n* **Dynamic Inference Graphs (Kim 2025)**：優點：完全可微分，訓練端與推理端一致。缺點：門控 MLP 較大，增加基礎模型參數量。\n*"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
