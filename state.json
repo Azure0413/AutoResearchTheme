@@ -1,6 +1,6 @@
 {
   "date": "2026-08-01",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **CausalVAE for Video Prediction**：變分自編碼器學習影片隱向量，結合結構化因果圖。\n* **Counterfactual Video World Models via Neural Causal Graphs**：引入可微分神經因果圖模組，支持反事實干預。\n* **Learning Structured Causal Graphs from Unlabeled Video Streams**：雙階段學習，先用自監督視訊預測取得隱向量，再恢復因果結構。\n\n### 2. 模型架構細節\n\n* **輸入**：連續的原始影片片段（16-32幀）。\n* **輸出**：未來幀的像素預測與對應的隱向量序列，同時回傳因果圖的鄰接矩陣。\n* **關鍵模組**：\n + 視訊編碼器：3-D卷積或時間卷積網路。\n + 因果圖推斷器：稀疏注意力層或可微分圖結構學習器。\n + 生成解碼器：條件解碼器（如PixelCNN/Transformer）。\n\n### 3. 訓練策略\n\n* **資料規模**：公開的合成因果影片資料集（CausalVideo-Synth）與小規模真實長影片（CARLA-Causal）。\n* **Batch size**：8-16片段，每片段16幀。\n* **優化器**：AdamW，學習率1e-4，使用cosine decay。\n\n### 4. 主要benchmark與資料集\n\n* **CausalVideo-Synth**：合成3-D物體在隨機因果規則下的交互，評估指標為Pixel-MSE、LPIPS和Structure Hamming Distance。\n* **CARLA-Causal**：真實駕駛模擬影片，包含交通燈、行人等因果因素，指標同上，另加入Intervention Success Rate。\n\n### 5. 方法優劣比較\n\n* **CausalVAE (Chen2025)**：結構簡潔，但因果圖僅在隱向量層面學習，缺乏對實體物件的對應。\n* **Patel2026 (Counterfactual Video World Models)**：支援反事實干預，但圖結構學習需額外的正則化超參數，調校成本高。\n* **García2025 (Learning Structured Causal Graphs)**：雙階段學習降低了因果圖與隱向量的相"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 因果隱變量分解\n\n* **核心 idea**: 在 CausalVAE 基礎上引入分解式隱變量結構，區分因果關係中固有的、動態的和靜態的隱變量。\n* **技術細節**:\n + 輸入影片序列經過 3D 卷積編碼器，得到初始隱變量。\n + 分解成靜態因果關係、動態因果過程和隨機噪聲。\n + 訓練目標是最小化重構誤差和因果圖的結構Hamming距離，同時加入正則化項促進分解式隱變量的獨立性。\n* **與 SOTA 的差異**: 改動了 CausalVAE 中的隱變量結構，加入了分解式的設計。\n* **預期改善的指標與原因**: 預期在 CausalVideo-Synth 和 CARLA-Causal 資料集上的 Pixel-MSE 和 LPIPS 指標會有所提升。\n* **最小可行實驗(MVP)**: 使用 CausalVideo-Synth 的子集，模型大小為基本的 CausalVAE，單張 GPU 可以在幾個小時內完成訓練和驗證。\n\n### 方案 2: 反事實干預強化學習\n\n* **核心 idea**: 結合反事實思維和強化學習框架，讓模型學習在多種反事實情況下的最佳動作策略。\n* **技術細節**:\n + 建立一個環境模擬器，可以根據給定的因果圖和初始狀態生成序列。\n + 使用 Q-learning 結合反事實干預，獎勵函數設計為最大化成功干預的次數。\n + 訓練目標是學習一個能夠適應不同反事實情況的強化學習代理。\n* **與 SOTA 的差異**: 引入了反事實思維和強化學習框架。\n* **預期改善的指標與原因**: 預期在 Intervention Success Rate 指標上會有所提升。\n* **最小可行實驗(MVP)**: 使用簡單的模擬環境，模型大小為基本的 Q-learning，單張 GPU 可以在短時間內完成訓練和驗證。\n\n### 方案 3: 圖神經網路引導的因果發現\n\n* **核心 idea**: 使用圖神經網路來引導因果發現過程，自動學習因果關係"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
