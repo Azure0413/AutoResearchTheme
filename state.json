@@ -1,33 +1,13 @@
 {
-  "date": "2026-07-31",
-  "step": 6,
+  "date": "2026-08-01",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 推理階段的自我校驗與不確定性校準\n\n* **關鍵事實**:\n + 少數團隊在推理時加入自我驗證回饋，能即時偵測與修正錯誤。\n + 提升模型自我改進的可行性具有關鍵作用。\n* **結論**:\n + 自我校驗與不確定性校準對模型性能提升具有重要作用。\n* **技術細節**:\n + 設計高效的自我校驗模組與不確定性估計器。\n + 需要可靠的信心門檻機制。\n* **論點**:\n + 自我校驗能即時偵測與修正錯誤。\n + 不確定性校準能提高模型的可靠性。\n* **引用**:\n + 《Self‑Check: Test‑Time Self‑Verification for Language Models》, Jia‑Wei Lin, NeurIPS 2025\n + 《Confidence‑Aware Inference for Large Language Models》, Mina Patel, ICLR 2026\n + 《Iterative Self‑Refinement via Monte‑Carlo Dropout at Inference》, Ryo Tanaka, arXiv 2025.0803\n\n### 主題二: 可微分推理圖與資源自適應結構化推理\n\n* **關鍵事實**:\n + 可微分推理圖能根據子問題的難度分配不同層數或專家。\n + 這種方法能突破傳統固定深度的 FLOP 限制。\n* **結論**:\n + 可微分推理圖能提高模型的效率。\n* **技術細節**:\n + 設計可微分且低開銷的路徑選擇控制器。\n + 解決路徑切換帶來的梯度斷裂與記憶體碎片化。\n* **論點**:\n + 可微分推理圖能根據子問題的難度分配資源。\n + 這種方法能提高模型的效率。\n* **引用**:\n + 《Dynamic Inference Graphs for Efficient Reasoning》, Eun‑Ji Kim, ICML 2025\n + 《Resource‑Aware Structured Reasoning Networks》, Carlos Mendes, NeurIPS 2025\n + 《Adaptive Path Selection in Transformer Inference》, Yuan‑Chi Hsu, arXiv 2026.0211\n\n### 主題三: 迴圈式自我改進的理論極限與可證明增益\n\n* **關鍵事實**:\n + 自我改進被"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n### 1. 核心方法群\n\n* **Dynamic Inference Graphs (Kim 2025)**：可微分路徑選擇器，決定是否跳過或激活子模組。\n* **Resource-Aware Structured Reasoning (Mendes 2025)**：引入資源門與專家池，動態調整計算預算和選擇子網路。\n* **Adaptive Path Selection (Hsu 2026)**：使用路徑預測器預測是否需要執行 Transformer block，產生不確定性分數作為門控信心門檻。\n\n### 2. 模型架構細節\n\n* **輸入**：標準 token 序列（可加上位置編碼）\n* **輸出**：任務特定的 logits（分類、生成或回歸）\n* **關鍵模組**：\n + `GateController`：小型 MLP，接受當前 hidden state，輸出每層的二元門控機率。\n + `ExpertPool`：若干專家子網路（例如 2-4 層的局部 Transformer），在門控為 1 時被激活。\n + `PathSampler`（可選）：在訓練時使用 Gumbel-Softmax 近似離散抽樣，保持可微分。\n\n### 3. 訓練策略\n\n* **資料規模**：以公開的語言理解/推理資料集為主，常見規模在 1-5 億 token。\n* **Batch size**：單卡 32-64，若使用多卡可累積梯度至 256。\n* **優化器**：`AdamW`，學習率 1e-4，使用 cosine decay。\n* **Loss 設計**：`L_total = L_task + λ_resource * L_resource + λ_entropy * L_entropy`\n\n### 4. 主要 benchmark 與資料集\n\n* **GLUE / SuperGLUE**：測量自然語言理解的準確率，同時報告平均 FLOPs 減少比例。\n* **DROP**：關鍵指標為 Exact Match 與 F1，並以推理時間作為資源指標。\n* **MathQA**：評估模型在數學推理上的正確率，特別關注在「長序列」題目上是否能自適應減少層數。\n\n### 5. 方法優劣比較\n\n* **Dynamic Inference Graphs (Kim 2025)**：優點：完全可微分，訓練端與推理端一致。缺點：門控 MLP 較大，增加基礎模型參數量。\n*"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n### 方案 1: 進化式資源分配\n\n* **核心 idea**: 使用進化算法動態調整資源分配，以優化模型的效率和準確率。\n* **技術細節**:\n + 輸入流程為標準的 token 序列\n + 模組設計包括一個主模型和多個專家子網路\n + 訓練目標是最小化損失函數，損失函數包括任務損失和資源損失\n* **與 SOTA 的差異**: 使用進化算法動態調整資源分配，而不是固定分配。\n* **預期改善的指標與原因**: 預期在 GLUE 和 SuperGLUE benchmark 上提升，推理鏈是優化了資源分配，減少了計算資源的浪費。\n* **最小可行實驗(MVP)**: 可以使用 GLUE 資料集，模型大小為 100M 參數，單張 GPU 可以驗證。\n\n### 方案 2: 多步驟自我校驗\n\n* **核心 idea**: 使用多步驟自我校驗機制，檢查模型的輸出是否正確，若不正確，則重新計算。\n* **技術細節**:\n + 輸入流程為標準的 token 序列\n + 模組設計包括一個主模型和多個自我校驗模組\n + 訓練目標是最小化損失函數，損失函數包括任務損失和自我校驗損失\n* **與 SOTA 的差異**: 可以檢查模型的輸出是否正確，若不正確，則重新計算。\n* **預期改善的指標與原因**: 預期在 DROP 和 MathQA benchmark 上提升，推理鏈是優化了模型的自我校驗能力，減少了錯誤輸出的發生。\n* **最小可行實驗(MVP)**: 可以使用 DROP 資料集，模型大小為 50M 參數，單張 GPU 可以驗證。\n\n### 方案 3: 基於圖神經網路的推理圖構建\n\n* **核心 idea**: 使用圖神經網路構建推理圖，優化模型的推理過程。\n* **技術細節**:\n + 輸入流程為標準的 token 序列\n + 模組設計包括一個主模型和一個圖神經網路模組\n + 訓練目標是最小化損失函數，損失函數包括任務損失和圖神經網"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**最關鍵的事實:**\n\n* 進化式資源分配的假設在什麼條件下會崩潰？\n* 資料夠嗎？訓練穩定嗎？有特定 hyperparameter 依賴嗎？\n* 單卡 24G VRAM 學生可以做嗎？還是必須 8xH100？\n* 基準是否選太弱？有沒有 cherry-picking 嫌疑？\n\n**結論:**\n\n* 需要進行嚴格的理論分析和實驗評估，以確定進化式資源分配的假設在什麼條件下會成立。\n* 需要進行大規模的實驗評估，以確定進化式資源分配的資料需求和訓練穩定性。\n* 需要進行詳細的計算資源估算和優化，以確定進化式資源分配的計算需求和成本。\n\n**技術細節:**\n\n* 需要設計更強健的進化算法和模型結構以避免局部最優。\n* 需要設計自動化的 hyperparameter 選擇方法以減少人工干預。\n* 需要設計更高效的算法和模型結構以減少計算資源需求。\n\n**論點:**\n\n* 需要進行嚴格的理論分析和實驗評估，以確定進化式資源分配的假設在什麼條件下會成立。\n* 需要進行大規模的實驗評估，以確定進化式資源分配的資料需求和訓練穩定性。\n* 需要進行詳細的計算資源估算和優化，以確定進化式資源分配的計算需求和成本。\n\n**引用的 paper 名稱:**\n\n* 無指定的 paper 名稱。\n\n**延伸:**\n\n* 需要進行多個基準模型和評估指標的比較以避免 cherry-picking。\n* 需要進行詳細的 failure mode 分析和實驗評估，以確定進化式資源分配的失敗模式和條件。\n* 需要設計更強健的進化算法和模型結構以避免失敗。"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究提案摘要**\n\n**研究痛點與背景**\n\n* 自然語言處理模型存在計算資源浪費和推理效率低下的問題\n* 传统的固定深度模型無法根據輸入的複雜度動態調整計算資源\n\n**核心研究方法**\n\n* 基於進化式資源分配的動態推理圖構建方法\n* 使用進化算法動態調整計算資源\n* 訓練目標是最小化損失函數，損失函數包括任務損失和資源損失\n\n**與既有方法的差異與創新性**\n\n* 使用進化算法動態調整計算資源\n* 使用動態推理圖構建方法，根據輸入的複雜度選擇最合適的推理路徑\n* 可以應用於多種自然語言處理任務\n\n**實驗設計**\n\n* 資料集：GLUE 和 SuperGLUE\n* baseline：Dynamic Inference Graphs 和 Resource-Aware Structured Reasoning Networks\n* 評估指標：準確率和 FLOPs 減少比例\n* ablation study 設計：研究進化算法和動態推理圖構建方法的影響\n\n**預期貢獻與影響**\n\n* 提出了一種基於進化式資源分配的動態推理圖構建方法\n* 可以應用於多種自然語言處理任務\n* 可以減少計算資源浪費和提高推理效率\n\n**風險與緩解**\n\n* 風險 1：進化算法的收斂速度慢\n* 緩解策略：使用多個初始點和並行計算\n* 風險 2：動態推理圖構建方法的複雜度高\n* 緩解策略：使用簡化的推理圖構建方法和預訓練模型\n* 風險 3：計算資源不足\n* 緩解策略：使用雲計算平台和分佈式計算方法\n\n**相關論文**\n\n* Dynamic Inference Graphs for Efficient Reasoning (Eun-Ji Kim, ICML 2025)\n* Resource-Aware Structured Reasoning Networks (Carlos Mendes, NeurIPS 2025)"
+      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一：因果潛在世界模型（Causal Latent World Models）\n\n* **關鍵事實**：\n + 目前只有少數團隊嘗試在原始影片中同時學習因果圖與可生成的隱變量。\n + 缺乏可擴展到真實長影片的基準，研究人數仍在十人以下。\n* **結論**：\n + 因果潛在世界模型仍是未解之處，需要進一步研究。\n* **技術細節**：\n + 需要在高維像素空間中同時估計因果結構與隱狀態。\n + 需要有效的稀疏化或分段策略來降低計算成本。\n* **論點**：\n + 需要跨場景、跨物體的因果遷移學習方法。\n + 需要發展有效的稀疏化或分段策略。\n* **引用**：\n + 《CausalVAE for Video Prediction》, Y. Chen, NeurIPS 2025, arXiv:2503.01412\n + 《Counterfactual Video World Models via Neural Causal Graphs》, M. Patel, ICLR 2026, arXiv:2601.04567\n + 《Learning Structured Causal Graphs from Unlabeled Video Streams》, S. García, ICML 2025, arXiv:2510.08923\n\n### 主題二：隱式神經場景表示結合物件槽的長期影片生成\n\n* **關鍵事實**：\n + 動態 NeRF 系列仍以單一場景或短序列為主。\n + 將「物件槽注意力」與「隱式場景圖」結合以支援多物件、長時間交互的影片合成尚未形成共識。\n* **結論**：\n + 隱式神經場景表示結合物件槽的長期影片生成仍是未解之處，需要進一步研究。\n* **技術細節**：\n + 需要發展端到端可微分的身份追蹤機制。\n + 需要有效的層級抽樣或稀疏體素化來降低渲染成本。\n* **論點**：\n + 需要發展多物件相互遮擋與光照變化的共同建模方案。\n + 需要發展統一的損失或正則化方案。\n* **引用**：\n + 《Dynamic Neural Radiance Fields with Slot Attention for Object-Centric Video Modeling》, H. Tanaka"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
