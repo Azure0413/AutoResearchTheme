@@ -1,13 +1,18 @@
 {
   "date": "2026-08-04",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：可學習 KV 快取壓縮與動態裁剪**\n\n* **關鍵事實**：\n + 現有的 KV 快取壓縮方法多採用固定量化或簡單剪枝，缺乏動態調整壓縮率的機制。\n + 長序列應用（如檔案搜尋、程式碼補全）未被有效加速。\n* **結論**：\n + 可學習 KV 快取壓縮與動態裁剪有潛力提高效率。\n* **技術細節**：\n + 學習可微分的壓縮映射。\n + 動態裁剪需要即時估算每個 token 的重要性。\n* **論點**：\n + 現有的方法未能有效處理長序列應用。\n + 可學習 KV 快取壓縮與動態裁剪可以提供更好的效率。\n* **引用的 paper**：\n + `CacheQuant: Learned Quantization for KV Memory in Transformers` (NeurIPS 2025)\n + `Dynamic Cache Pruning for Long‑Context LLMs` (ICML 2025)\n + `Entropy‑Aware KV Compression via Adaptive Huffman Coding` (arXiv 2025.11.03)\n\n**主題二：多階段推測式解碼與自適應草稿範圍**\n\n* **關鍵事實**：\n + 大多數推測式解碼只使用單一固定深度的草稿模型。\n + 未探索「一次產生多個草稿階段」或根據即時信心調整草稿長度的策略。\n* **結論**：\n + 多階段推測式解碼與自適應草稿範圍有潛力提高效率。\n* **技術細節**：\n + 草稿模型的信心門檻如何在不增加額外前向傳播成本的前提下精確估計。\n + 多階段草稿的誤差累積會導致最終輸出偏離真實分布。\n* **論點**：\n + 現有的方法未能有效處理多階段推測式解碼。\n + 多階段推測式解碼與自適應草稿範圍可以提供更好的效率。\n* **引用的 paper**：\n + `Speculative Decoding with Adaptive Draft Horizons` (ICLR 2026)\n + `Reinforced Speculative Sampling for Efficient LLM Generation` (arXiv 2025.04.19)\n + `Hierarchical Draft Models for Low‑Latency Text Generation` (NeurIPS 2025)\n\n**主題三：無注意力瓶頸的 Token Routing 設計**\n\n* **關鍵事實**："
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 關鍵事實\n\n* 可學習 KV 快取壓縮與動態裁剪是目前研究的熱點。\n* 有多個方法可實現這一目標，包括 CacheQuant、Dynamic Cache Pruning、Entropy-Aware KV Compression via Adaptive Huffman Coding 和 Adaptive KV Sparsity Controller。\n* 這些方法都有其優點和缺點，需要根據具體情況進行選擇和組合。\n\n### 結論\n\n* 可學習 KV 快取壓縮與動態裁剪在技術成熟度與研究空白上最具平衡。\n* 這一領域有多個可探索的改進方向，包括跨層稀疏、門檻自學、硬體加速解碼等。\n\n### 技術細節\n\n* CacheQuant：可微分的量化函數將 KV 內存映射到低位元表示，訓練時同時最小化語意損失與量化誤差。\n* Dynamic Cache Pruning：為每個 token 計算即時重要性分數，根據預設門檻動態刪除低貢獻的 KV 條目。\n* Entropy-Aware KV Compression via Adaptive Huffman Coding：先估算 KV 向量的熵分佈，使用自適應霍夫曼編碼產生變長碼字。\n* Adaptive KV Sparsity Controller：引入一個小型控制器網路，根據當前上下文長度與模型層深度輸出稀疏掩碼。\n\n### 論點\n\n* 可學習 KV 快取壓縮與動態裁剪是目前研究的熱點。\n* 這一領域有多個可探索的改進方向，包括跨層稀疏、門檻自學、硬體加速解碼等。\n* CacheQuant、Dynamic Cache Pruning、Entropy-Aware KV Compression via Adaptive Huffman Coding 和 Adaptive KV Sparsity Controller 都是可行的方法，但各有其優點和缺點。\n\n### 引用的 paper 名稱\n\n* CacheQuant：NeurIPS 2025\n* Dynamic Cache Pruning：ICML 2025\n* Entropy-Aware KV Compression via Adaptive Huffman Coding：arXiv 2025.11.03\n* Adaptive KV Sparsity Controller：ICLR 2026"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
