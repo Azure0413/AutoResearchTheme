@@ -1,13 +1,18 @@
 {
   "date": "2026-08-05",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 基於圖同構不變性的拓撲材料自動化篩選**\n\n* **關鍵事實**：\n + 目前僅有少數團隊結合晶體對稱性與圖神經網路直接預測拓撲不變量。\n + 資料標註成本高且理論框架尚未成熟。\n* **結論**：\n + 需要發展可靠的方法來嚴格保證晶格點群與時間反演對稱的等變性。\n + 需要結合標註稀缺的拓撲相位資料與不確定性估計的統一方法。\n* **技術細節**：\n + 需要發展可擴展的計算效率方法。\n + 需要研究標註稀缺的拓撲相位資料與不確定性估計的結合方式。\n* **論點**：\n + 需要結合晶體對稱性與圖神經網路來預測拓撲不變量。\n + 需要發展可靠的方法來嚴格保證晶格點群與時間反演對稱的等變性。\n* **引用的 paper 名稱**：\n + `Symmetry-aware Graph Neural Networks for Topological Material Discovery`\n + `Equivariant Neural Networks for Predicting Topological Invariants`\n + `Learning Topological Phase Diagrams from Limited Data`\n\n**主題二: 高熵合金的可微分熱力學模型與機器學習勢能面**\n\n* **關鍵事實**：\n + 高熵合金組成空間極度高維，傳統第一性原理計算成本爆炸。\n + 現有的機器學習勢能面大多針對二元或三元系統，對多元系統的熱力學一致性仍缺乏驗證。\n* **結論**：\n + 需要發展可微分熱力學模型來滿足能量、力與自由能的熱力學一致性。\n + 需要結合主動學習策略來提高樣本選取效率與不確定性度量。\n* **技術細節**：\n + 需要發展可微分熱力學模型來滿足能量、力與自由能的熱力學一致性。\n + 需要研究主動學習策略在高維組成空間的樣本選取效率與不確定性度量。\n* **論點**：\n + 需要發展可微分熱力學模型來滿足能量、力與自由能的熱力學一致性。\n + 需要結合主動學習策略來"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Symmetry-aware Graph Neural Network (S-GNN)**\n + 利用點群與時間反演的線性表示作為訊息傳遞的變換矩陣\n + 保證每一次卷積在對稱操作下保持不變\n* **Equivariant Energy-Based Model (E-EBM)**\n + 將拓撲不變量視為能量函數的最低點\n + 透過梯度流在對稱空間中搜尋\n* **Active-Learning Uncertainty-Guided Sampling (AL-UGS)**\n + 結合蒙特卡羅 dropout 與資訊增益指標\n + 動態挑選最具資訊量的晶格結構以降低標註成本\n\n**2. 模型架構細節**\n\n* **輸入**: 晶體結構的原子座標、元素類型、晶格向量\n* **輸出**: 目標拓撲不變量或機率分布\n* **關鍵模組**\n + `EquivariantMessagePassing`: 在每層訊息傳遞中插入對稱投影矩陣\n + `EnergyHead`: 將圖嵌入映射到標量能量\n + `UncertaintyEstimator`: 使用多次前向 dropout 產生分布式預測\n\n**3. 訓練策略**\n\n* **資料規模**: 使用約 10,000 筆已標註拓撲相位的結構\n* **batch size**: 在單卡 RTX 4090 上 64-128\n* **優化器**: `AdamW`，學習率 1e-3\n* **loss 設計**: 主損失為交叉熵或均方誤差，加入對稱正則化項和不確定性正則化項\n\n**4. 主要 benchmark 與資料集**\n\n* **Benchmark**: `TopoBench-2025`\n* **關鍵指標**: Top-1 Accuracy、Mean Absolute Error (MAE)、Uncertainty Calibration Error、Sample Efficiency\n\n**5. 方法優劣比較**\n\n* **S-GNN**\n + 優點: 完全保證點群等變性、訓練穩定\n + 缺點: 僅能處理離散拓撲指標、需手動編寫對稱操作矩陣\n* **E-EBM**\n + 優點: 能同時預測離散與連續拓撲量、在少樣本情況下仍能利用能量梯度提供額外訊號\n + 缺點: 訓練不"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
