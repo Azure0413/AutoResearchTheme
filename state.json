@@ -1,13 +1,18 @@
 {
   "date": "2026-08-08",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**階層式異質專家 MoE 路由**\n\n* **關鍵事實**：\n + 目前只有少數團隊研究階層式異質專家 MoE 路由。\n + 研究人數仍在十人以下，缺乏系統化的效能與公平性基準。\n* **結論**：\n + 需要設計可微分的路由可調整不同層級、不同容量專家的負載平衡。\n + 需要理論指引異質專家間的參數共享與知識傳遞機制。\n* **技術細節**：\n + 需要同步調整不同層級、不同容量專家的負載平衡。\n + 需要設計理論指引異質專家間的參數共享與知識傳遞機制。\n* **論點**：\n + 需要考慮路由可微分性和負載平衡的問題。\n + 需要考慮異質專家間的參數共享與知識傳遞機制。\n* **引用的 paper 名稱**：\n + *Hierarchical Heterogeneous Mixture‑of‑Experts*，第一作者 **Jiawei Li**，NeurIPS 2025。\n + *Capacity‑Balanced Routing for Multi‑Scale MoE*，第一作者 **Sara Kwon**，arXiv 2025.12。\n + *Learning Adaptive Expert Granularity in Hierarchical MoE*，第一作者 **Tom Nguyen**，ICML 2026。\n\n**強化學習驅動的自適應 Token 路由**\n\n* **關鍵事實**：\n + 目前僅有零星的 RL‑based 嘗試研究強化學習驅動的自適應 Token 路由。\n + 研究社群規模仍在十人以下，缺少跨任務的通用評測。\n* **結論**：\n + 需要設計低方差且可擴展的獎勵信號，使路由策略在長序列上仍能有效學習。\n + 需要在高並行度硬體上實現 RL‑policy 的即時推理。\n* **技術細節**：\n + 需要設計低方差且可擴展的獎勵信號。\n + 需要在高並行度硬體上實現 RL‑policy 的即時推理。\n* **論點**：\n + 需要考慮路由策略在長序列上仍能有效學習。\n + 需要考慮在高並行度硬體上實現 RL‑policy 的即時推理。\n* **引用的 paper 名稱**：\n +"
+    },
+    {
+      "stage": 2,
+      "summary": "**階層式異質專家 MoE 路由核心方法群**\n\n* **Hierarchical Heterogeneous MoE** (Jiawei Li, NeurIPS 2025)\n + 多層 MoE 結構，將「大」專家放在高層、 「小」專家放在低層\n + 使用可微分的層級門控來分配 token\n* **Capacity-Balanced Routing for Multi-Scale MoE** (Sara Kwon, arXiv 2025.12)\n + 引入全局容量正則化，使每個層級的專家在每個 batch 中的使用率接近目標值\n + 透過動態調整門控溫度降低負載不均\n* **Learning Adaptive Expert Granularity in Hierarchical MoE** (Tom Nguyen, ICML 2026)\n + 以 meta-learning 方式學習「粒度參數」——決定 token 應該在多少層級上被路由\n + 在訓練過程中自動調整專家數量與大小的比例\n\n**模型架構細節**\n\n* **輸入**：標準序列（文字、序列化特徵）或多模態嵌入，長度可達 4k token\n* **輸出**：與基礎 Transformer 相同的隱向量序列，用於下游任務（分類、生成等）\n* **關鍵模組**\n + `hierarchical_router`：每層都有獨立的門控網路，輸入 token 表徵與層級編碼，產生「專家選擇分布」\n + `expert_pool`：在每層包含多個異質專家，容量從幾千參數到上百萬不等\n + `knowledge_sharing_layer`：在相鄰層之間加入跨層參數共享（例如共享前置投影矩陣），促進知識傳遞\n\n**訓練策略**\n\n* **資料規模**：公開語料 200 B token（如 RedPajama 1.2 T token 子集）或領域特化的 10 B token\n* **batch size**：每張 GPU 8k token，使用梯度累積達到等效 64k token\n* **優化器**：`AdamW`，學習率 2e-4，使用 cosine decay 與 warm-up 前 2k 步\n* **loss 設計**：`total_loss = task_loss + λ₁ * capacity_balance_loss + λ₂ * granularity_regularizer`\n\n**主要 benchmark 與資料集**\n\n* **OpenWebText-2**（約 10 B token）用於長文本生成，指標"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }

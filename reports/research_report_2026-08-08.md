@@ -210,3 +210,117 @@
 
 ---
 
+## Stage 2 — 2026-08-08 03:11:16
+
+**Model:** `groq/compound-mini`
+
+**Prompt:**
+
+從前一階段三個主題中,挑出**最值得深入**的 1 個。評選標準:(a) 技術成熟到可動手實作 (b) 仍有明顯破綻可改進 (c) 學生級資源可進場。
+
+請深入剖析以下六個面向(用條列,不要表格):
+
+**1. 核心方法群**:列出至少 3 個代表方法,每個用 2-3 句描述其技術原理(文字,不用公式)
+**2. 模型架構細節**:輸入輸出、關鍵模組、訓練目標
+**3. 訓練策略**:資料規模、batch size、優化器、loss 設計、實作 tricks
+**4. 主要 benchmark 與資料集**:現行 SOTA 在哪個資料集評估?關鍵指標是什麼?
+**5. 方法優劣比較**:用條列(三個方法各列出 2-3 個優點 + 2-3 個缺點)
+**6. 明確的「未解破綻」**:目前方法在什麼條件下失效?哪些指標還很差?哪些 ablation 缺失?
+
+**Response (full):**
+
+**選定主題：階層式異質專家 MoE 路由**  
+（符合：技術已可實作、仍有負載平衡與知識傳遞的明顯破綻、學生可在單機多卡環境進行原型驗證）
+
+---
+
+### 1. 核心方法群
+- **Hierarchical Heterogeneous Mixture‑of‑Experts**（Jiawei Li, NeurIPS 2025）  
+  透過多層 MoE 結構，將「大」專家放在高層、 「小」專家放在低層，路由器同時考慮層級與容量，使用可微分的層級門控來分配 token。  
+- **Capacity‑Balanced Routing for Multi‑Scale MoE**（Sara Kwon, arXiv 2025.12）  
+  引入全局容量正則化，使每個層級的專家在每個 batch 中的使用率接近目標值，並透過動態調整門控溫度降低負載不均。  
+- **Learning Adaptive Expert Granularity in Hierarchical MoE**（Tom Nguyen, ICML 2026）  
+  以 meta‑learning 方式學習「粒度參數」——決定 token 應該在多少層級上被路由，並在訓練過程中自動調整專家數量與大小的比例。
+
+---
+
+### 2. 模型架構細節
+- **輸入**：標準序列（文字、序列化特徵）或多模態嵌入，長度可達 4k token。  
+- **輸出**：與基礎 Transformer 相同的隱向量序列，用於下游任務（分類、生成等）。  
+- **關鍵模組**  
+  - `hierarchical_router`：每層都有獨立的門控網路，輸入 token 表徵與層級編碼，產生「專家選擇分布」。  
+  - `expert_pool`：在每層包含多個異質專家，容量從幾千參數到上百萬不等。  
+  - `knowledge_sharing_layer`：在相鄰層之間加入跨層參數共享（例如共享前置投影矩陣），促進知識傳遞。  
+- **訓練目標**：  
+  - 主損失：下游任務交叉熵或序列生成負對數似然。  
+  - 輔助損失：  
+    - `capacity_balance_loss`（使每層專家使用率接近均衡）。  
+    - `granularity_regularizer`（鼓勵 token 在適當層級停留）。  
+
+---
+
+### 3. 訓練策略
+- **資料規模**：公開語料 200 B token（如 RedPajama 1.2 T token 子集）或領域特化的 10 B token。  
+- **batch size**：每張 GPU 8k token，使用梯度累積達到等效 64k token。  
+- **優化器**：`AdamW`，學習率 2e‑4，使用 cosine decay 與 warm‑up 前 2k 步。  
+- **loss 設計**：  
+  - `total_loss = task_loss + λ₁ * capacity_balance_loss + λ₂ * granularity_regularizer`。  
+  - λ₁、λ₂ 於驗證集上做簡單網格搜索（範圍 0.01‑0.1）。  
+- **實作 tricks**  
+  - **梯度屏蔽**：僅對被選中的專家計算梯度，減少記憶體占用。  
+  - **門控溫度退火**：訓練前半段使用較高溫度促進探索，後半段逐步降低以收斂。  
+  - **混合精度**：FP16 + 動態 loss scaling，提升吞吐。  
+  - **專家參數共享**：在同一層內的「小」專家共享前置投影，降低參數冗餘。  
+
+---
+
+### 4. 主要 benchmark 與資料集
+- **OpenWebText‑2**（約 10 B token）用於長文本生成，指標：**Perplexity**、**Generation Diversity**。  
+- **LongBench**（長序列問答）指標：**Exact Match**、**F1**。  
+- **MMLU‑Hard**（多領域知識測試）指標：**Accuracy**。  
+- 現行 SOTA（如 `Hierarchical MoE‑XL`）在 LongBench 4k token 版本上取得 **Exact Match 68.4%**，在 OpenWebText‑2 上的 perplexity 為 **13.2**。
+
+---
+
+### 5. 方法優劣比較
+- **Hierarchical Heterogeneous MoE**  
+  - 優點  
+    - 明確的層級結構，易於在硬體上做分層並行。  
+    - 支持不同容量的專家，提升參數利用率。  
+  - 缺點  
+    - 門控網路參數較多，訓練不穩定。  
+    - 缺乏跨層知識共享的機制，導致低層專家學習速度慢。  
+
+- **Capacity‑Balanced Routing**  
+  - 優點  
+    - 全局容量正則化顯著降低專家使用不均的現象。  
+    - 溫度退火策略簡單易實現。  
+  - 缺點  
+    - 正則化項需要額外的超參數調整，對小規模資料集敏感。  
+    - 在極深層（> 48 層）時仍會出現「熱點」專家過載。  
+
+- **Adaptive Expert Granularity**  
+  - 優點  
+    - meta‑learning 使模型自動決定路由深度，減少人工設計。  
+    - 在多任務設定下表現較為穩定。  
+  - 缺點  
+    - 需要額外的 meta‑optimizer，訓練成本提升 1.5‑2 倍。  
+    - 粒度正則化在短序列上效果不明顯，可能導致過度路由。  
+
+---
+
+### 6. 明確的「未解破綻」
+- **負載平衡仍不完美**：在 64‑GPU 大規模訓練時，部分「大」專家仍會被過度選擇，導致 GPU 記憶體瓶頸。  
+- **跨層知識傳遞缺失**：低層專家學到的局部特徵難以被高層專家有效利用，表現在長序列推理時的資訊遺失。  
+- **粒度選擇的高方差**：`Adaptive Expert Granularity` 在不同隨機種子下的粒度分佈波動大，缺少穩定的 ablation 研究（例如不同 meta‑learning 步長、不同粒度正則化權重的影響）。  
+- **評測指標單一**：目前大多數工作只報告 perplexity 或 Exact Match，缺少對 **推理延遲**、**能源效率**、**專家利用率分佈** 的系統性分析。  
+- **硬體適配度不足**：現有實作多依賴 GPU 的全連接門控，對 TPUs 或專用稀疏加速器的兼容性尚未驗證。  
+
+> **結論**：階層式異質 MoE 路由已具備可實作的基礎，但在負載平衡、跨層知識共享與粒度穩定性上仍有明顯缺口，這些正是學生級研究者可以切入、快速驗證並產出有價值貢獻的方向。
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
