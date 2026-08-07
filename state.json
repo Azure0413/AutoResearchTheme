@@ -1,13 +1,18 @@
 {
   "date": "2026-08-07",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要**\n\n**主題一：以預測資訊最大化為驅動的連續控制好奇心探索**\n\n* **關鍵事實**：\n + 研究人數仍在十人以下。\n + 缺乏成熟基準。\n* **結論**：\n + 預測資訊最大化是連續控制好奇心探索的有效方法。\n* **技術細節**：\n + 使用潛在動態模型學習穩定的潛在動態模型。\n + 使用內在獎勵與外部任務獎勵的平衡機制。\n* **論點**：\n + 高維觀測下，如何學到可微分且不發散的潛在動態模型。\n + 內在獎勵與外部任務獎勵的平衡機制缺乏理論指引。\n* **引用的 paper 名稱**：\n + `Predictive Information Maximization for Exploration in Continuous Environments`\n + `Latent World Model Curiosity (LWM‑C)`\n + `InfoMax Exploration with Learned State Representations`\n\n**主題二：資訊理論驅動的層次化無監督技能發現**\n\n* **關鍵事實**：\n + 研究人數估計不到 15 人。\n + 缺乏系統化的技能分割與評估框架。\n* **結論**：\n + 互資訊與層次化策略結合可以自動產生可重用的技能庫。\n* **技術細節**：\n + 使用互資訊自動產生可重用的技能庫。\n + 使用層次化策略自動產生可重用的技能庫。\n* **論點**：\n + 如何自動決定技能的抽象層級與分割點。\n + 缺少可比較的跨環境技能通用性測試。\n* **引用的 paper 名稱**：\n + `Partitioned Mutual Information for Unsupervised Skill Discovery`\n + `Hierarchical Unsupervised Skill Learning via Contrastive Predictive Coding`\n + `Structured Latent Spaces for Skill Discovery`\n\n**主題三：生成模型引導的離線‑到‑線探索與不確定性驅動 RL**\n\n* **關鍵事實**：\n + 離線資料驅動的探索仍屬新興領域。\n + 市場需求高但競爭尚未飽和。\n* **結論**：\n + 生成模型引導的離線‑到‑線探索與不確定性驅動 RL 是有效的方法。\n* **技術細節**：\n + 使用生成模型預測未知狀態。\n + 使用不確定性作為探索信號。\n* **論點**：\n + 如何"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**選定主題**: 生成模型引導的離線‑到‑線探索與不確定性驅動 RL\n\n**核心方法群**\n\n* `Generative‑Model‑Guided Offline‑to‑Online RL` (NeurIPS 2025)\n + 使用變分自編碼器 (VAE) 或擴散模型在離線資料上學習環境的生成分布\n + 在線上階段以生成的未見狀態作為探索信號，引導策略向高資訊區域前進\n* `Uncertainty‑Aware Policy Transfer via Diffusion Models` (ICLR 2026)\n + 建構多樣本擴散模型產生多種可能的未來軌跡\n + 利用模型輸出的方差作為不確定性指標，將其加權到策略的探索獎勵上\n* `Ensemble‑Based Offline Model‑Based Exploration` (ICML 2025)\n + 透過多個獨立的動態模型組成 ensemble\n + 計算預測均值與方差，方差作為探索驅動的內在獎勵\n\n**模型架構細節**\n\n* **輸入**: 觀測向量 `o_t`（可能包含圖像、機械狀態），以及動作 `a_t`\n* **輸出**: \n + 生成模型：預測下一觀測 `\\hat o_{t+1}` 或完整軌跡的分布\n + 策略網路：給定 `o_t` 輸出動作分布 `π(a_t|o_t)`\n* **關鍵模組**：\n + 生成模型（VAE / Diffusion / Ensemble Dynamics）負責學習環境的隱式轉移分布\n + 不確定性估算器：從生成模型的多樣本或方差中抽取不確定性指標 `U_t`\n + 探索獎勵模組：將 `U_t` 與外部任務獎勵 `R_t` 加權合併，形成總獎勵 `R'_t = R_t + λ·U_t`\n\n**訓練策略**\n\n* **資料規模**: 離線資料集通常在 10⁴–10⁶ 個 transition\n* **Batch size**: 生成模型訓練常用 256–1024；策略更新使用 512–2048\n* **優化器**: AdamW（β₁=0.9, β₂=0.999, weight decay 1e‑4）是通用選擇\n* **Loss 設計**：\n + 生成模型：重建 loss + KL 散度"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
