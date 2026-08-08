@@ -1,13 +1,18 @@
 {
   "date": "2026-08-09",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**自適應混合群等變學習（Adaptive Mixed‑Group Equivariance）**\n\n* **關鍵事實**：\n + 大多數現有等變模型只假設單一全局對稱群。\n + 在實際資料中，同一樣本的不同子結構可能遵守不同或多重群。\n* **結論**：\n + 需要發展可學習的自適應混合群等變模型。\n + 模型應能夠在可微分框架下同時學習多個群的表示並自動選擇局部最適群。\n* **技術細節**：\n + 需要設計群間參數共享與正則化的理論指引。\n + 需要避免群選擇的 combinatorial 爆炸。\n* **論點**：\n + 等變模型的局限性。\n + 自適應混合群等變模型的潛力。\n* **引用**：\n + 《Adaptive Mixed‑Group Equivariance for Heterogeneous Data》, Lin Zhao, NeurIPS 2025\n + 《Mixture of Symmetry Groups in Graph Neural Networks》, Priya Patel, ICLR 2026\n + 《Learning Symmetry‑Aware Representations via Group Flow》, arXiv:2509.04123, 2025年12月\n\n**等變符號‑神經混合推理於自動定理證明（Equivariant Neural‑Symbolic Reasoning for Automated Theorem Proving）**\n\n* **關鍵事實**：\n + 將群論的等變性嵌入神經符號系統以保證推理步驟在對稱變換下不變。\n + 仍是極少數團隊探索的領域。\n* **結論**：\n + 需要設計等變的邏輯操作使其在群作用下閉合。\n + 需要協同學習神經模組的可解釋性與符號證明的可驗證性。\n* **技術細節**：\n + 需要大規模定理庫的群結構自動抽取。\n + 需要設計等變的邏輯操作。\n* **論點**：\n + 等變符號‑神經混合推理的潛力。\n + 自動定理證明的挑戰。\n* **引用**：\n + 《Equivariant Neural Theorem Prover》, Yuki Tanaka, ICML 2025\n + 《Group‑Theoretic Neural‑Symbolic Reasoning》, Marco Rossi, ICLR 2026\n + 《Symmetry‑Preserving Neural Logic Machines》, arXiv:2603.01847, 2026年3月\n\n**非歐"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 主題選擇**\n\n* 主題：自適應混合群等變模型 (Adaptive Mixed-Group Equivariance)\n* 理由：技術已經在 NeurIPS 2025 和 ICLR 2026 具備可實作的原型，仍有群選擇與參數共享的明顯瓶頸。\n\n**2. 核心方法群**\n\n* **Group-Flow 參數化**\n + 透過可微分的流式變換將離散對稱群映射到連續參數空間。\n + 讓模型在訓練時自動調整每個子群的變換矩陣。\n* **混合群注意力 (Mixed-Group Attention)**\n + 在圖神經網路的訊息傳遞階段，同時計算多個群的等變注意力權重。\n + 用一個可學習的門控向量在不同群之間做加權合併。\n* **群正則化與稀疏選擇**\n + 引入群稀疏正則促使模型在每個局部區域只保留少數最相關的對稱群。\n + 避免 combinatorial 爆炸，同時保留可微分性。\n\n**3. 模型架構細節**\n\n* **輸入**: 結構化資料 (如分子圖、點雲或社交網路) + 可選的幾何坐標。\n* **輸出**: 任務相關的向量表示或標籤 (分類、回歸、節點預測等)。\n* **關鍵模組**\n + `group_encoder`: 將每個候選群的生成矩陣編碼成固定長度向量。\n + `mixed_group_layer`: 實作混合群注意力與訊息傳遞，接受來自 `group_encoder` 的門控訊號。\n + `group_flow` 模組: 在訓練過程中微調每個群的參數，使其適應局部結構。\n\n**4. 訓練策略**\n\n* **資料規模**: 以公開的結構化資料集為主，典型規模在 10⁴–10⁵ 個樣本。\n* **batch size**: 視 GPU 記憶體而定，常見 32–128。\n* **優化器**: `AdamW` 搭配 cosine decay learning rate，初始 lr 設為 1e-3。\n* **loss 設計**\n + `task_loss` (交叉熵或 MSE)\n + `group_sparse_loss` (L1 於門控向量)\n + `group_consistency_loss` (同一子圖在"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
