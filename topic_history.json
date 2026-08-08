@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-07-25",
-    "stage1_topics": "**動態深度稀疏專家路由 (Adaptive-Depth MoE)**\n\n* **關鍵事實**：\n + 目前只有少數研究探索「每個 token 可自行決定要通過多少層專家」的機制。\n + 可在保持效能的同時大幅降低推理 FLOPs。\n* **結論**：\n + 設計可微分且計算開銷極低的深度控制器至關重要。\n + 需要解決「深度不均衡」導致的專家負載偏斜，以及在多層路由時的梯度傳遞衰減問題。\n* **技術細節**：\n + 設計深度控制器的方法：可使用神經網路或其他機器學習方法。\n + 解決深度不均衡的方法：可使用梯度平衡或其他方法。\n* **論點**：\n + 動態深度稀疏專家路由可以提高模型效能和降低推理 FLOPs。\n + 需要設計可微分且計算開銷極低的深度控制器。\n* **參考 paper**：\n + 《Adaptive Depth Routing for Mixture-of-Expe",
-    "final_proposal": "**Stage 5 (✅ 完整研究提案) 摘要**\n\n### 1. 研究痛點與背景\n\n* 目前的動態深度稀疏專家路由方法存在深度不均衡和梯度傳遞衰減等問題\n* 需要進一步的改進和優化\n* 參考《Adaptive Depth Routing for Mixture-of-Experts Transformers》和《Depth-Aware Token Routing in Sparse Expert Networks》等論文\n\n### 2. 核心研究方法\n\n* 提出了一種新的動態深度遞歸路由方法，結合了圖神經網路和注意力機制\n* 演算法步驟：\n + 輸入 token 序列，模組設計為多層遞歸路由"
-  },
-  {
     "date": "2026-07-26",
     "stage1_topics": "**學習可微分的曲率與度量以支援非歐氏等變圖神經網路**\n\n* **關鍵事實**：\n + 真實科學圖（如分子、天體結構）常隱含變曲率的流形。\n + 大多數現有等變 GNN 假設固定的幾何空間（歐氏或超球面）。\n* **結論**：\n + 需要一個能夠學習度量與等變訊息傳遞的系統。\n + 需要解決如何在微分可分的方式下參數化黎曼度量，使其在梯度下降中保持正定性。\n* **技術細節**：\n + 需要新穩定化技巧來解決曲率學習與訊息傳遞的耦合會產生梯度不穩定。\n + 需要大規模基準測試不同曲率假設對下游任務的影響。\n* **論點**：\n + 需要結合黎曼幾何和等變 GNN 來解決這個問題。\n + 需要設計一個能夠學習曲率和度量的模型。\n* **引用**：\n + 《Learning Curved Spaces for Equivariant Graph Neural Networks》, 第一作者 ",
     "final_proposal": "**Stage 5 結構化摘要**\n\n### 1. 研究痛點與背景\n\n* 真實世界的圖結構具有複雜的曲率和度量\n* 現有的 GNNs 在處理具有複雜幾何結構的圖時表現不佳\n* 引用《Learning Curved Spaces for Equivariant Graph Neural Networks》和《Hyperbolic Equivariant Graph Neural Networks with Learnable Curvature》兩篇 paper 支撐了這個論點\n\n### 2. 核心研究方法\n\n* 設計一個可以學習曲率和度量的圖神經網路\n* 使用小型神經網路學習黎曼度量張量\n* "
@@ -68,5 +63,10 @@
     "date": "2026-08-08",
     "stage1_topics": "**階層式異質專家 MoE 路由**\n\n* **關鍵事實**：\n + 目前只有少數團隊研究階層式異質專家 MoE 路由。\n + 研究人數仍在十人以下，缺乏系統化的效能與公平性基準。\n* **結論**：\n + 需要設計可微分的路由可調整不同層級、不同容量專家的負載平衡。\n + 需要理論指引異質專家間的參數共享與知識傳遞機制。\n* **技術細節**：\n + 需要同步調整不同層級、不同容量專家的負載平衡。\n + 需要設計理論指引異質專家間的參數共享與知識傳遞機制。\n* **論點**：\n + 需要考慮路由可微分性和負載平衡的問題。\n + 需要考慮異質專家間的參數共享與知識傳遞機制。\n* **引用的 paper 名稱**：\n + *Hierarchical Heterogeneous Mixture‑of‑Experts*，第一作者 **Jiawei Li**，NeurIPS 2025。\n + *C",
     "final_proposal": "**Stage 5 (✅ 完整研究提案) 結構化摘要**\n\n**1. 研究痛點與背景**\n\n- 目前的階層式異質專家 MoE 路由方法存在缺陷：\n + 路由權重設置過於簡單\n + 無法充分適應不同層級和專家的需求\n + 缺乏對於長尾分布的資料的考慮\n- 參考論文：Hierarchical Heterogeneous Mixture‑of‑Experts（Jiawei Li, NeurIPS 2025）、Capacity‑Balanced Routing for Multi‑Scale MoE（Sara Kwon, arXiv 2025.12）\n\n**2. 核心研究方法**\n\n- 引入動態路由權"
+  },
+  {
+    "date": "2026-08-09",
+    "stage1_topics": "**自適應混合群等變學習（Adaptive Mixed‑Group Equivariance）**\n\n* **關鍵事實**：\n + 大多數現有等變模型只假設單一全局對稱群。\n + 在實際資料中，同一樣本的不同子結構可能遵守不同或多重群。\n* **結論**：\n + 需要發展可學習的自適應混合群等變模型。\n + 模型應能夠在可微分框架下同時學習多個群的表示並自動選擇局部最適群。\n* **技術細節**：\n + 需要設計群間參數共享與正則化的理論指引。\n + 需要避免群選擇的 combinatorial 爆炸。\n* **論點**：\n + 等變模型的局限性。\n + 自適應混合群等變模型的潛力。\n* **引用**：\n + 《Adaptive Mixed‑Group Equivariance for Heterogeneous Data》, Lin Zhao, NeurIPS 2025\n + 《Mixt",
+    "final_proposal": "**Stage 5: 完整研究提案**\n\n**1. 研究痛點與背景**\n\n* 現有對稱群學習方法局限性：無法有效捕捉複雜資料中的多尺度對稱性\n* 最近研究：《Adaptive Mixed-Group Equivariance for Heterogeneous Data》(Lin Zhao, NeurIPS 2025)、《Mixture of Symmetry Groups in Graph Neural Networks》(Priya Patel, ICLR 2026)\n\n**2. 核心研究方法**\n\n* 多尺度對稱群學習（Multi-Scale Symmetry Group Learnin"
   }
 ]
