@@ -1,13 +1,18 @@
 {
   "date": "2026-08-10",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 動態模型指紋與可驗證的後訓練資料中毒偵測\n\n* **關鍵事實**:\n + 大多數防禦僅在訓練前或訓練中檢測，中訓練後模型指紋的變化尚未被系統化。\n + 可驗證的指紋能在部署階段即時證明模型未被污染。\n* **結論**:\n + 需要持續更新與驗證模型指紋，避免高階對抗偽造指紋的攻擊。\n* **技術細節**:\n + 使用動態模型指紋來檢測後訓練資料中毒。\n + 可驗證的指紋能在部署階段即時證明模型未被污染。\n* **論點**:\n + 需要發展有效的方法來持續更新與驗證模型指紋。\n + 需要研究指紋與真實資料中毒之間的因果關係。\n* **引用的 paper 名稱**:\n + 《Certified Model Fingerprints for Post‑Training Data Poisoning Detection》, Y. C. Lin, arXiv:2503.01427, 2025。\n + 《Dynamic Influence‑Based Fingerprinting for Neural Networks》, M. Gómez, NeurIPS 2025, 2025。\n + 《Zero‑Knowledge Verification of Model Integrity via Randomized Hashing》, H. Tanaka, ICLR 2026, 2026。\n\n### 主題二: 隱蔽結構觸發的神經網路後門與 emergent misalignment 機制\n\n* **關鍵事實**:\n + 近期觀測到模型在權重子空間的微小變化即可激活隱蔽行為。\n + 研究人數少於十人。\n* **結論**:\n + 需要發展有效的子網路抽取與可視化工具。\n + 需要研究防禦策略對於未知的隱蔽結構觸發的通用性。\n* **技術細節**:\n + 使用隱蔽結構觸發來檢測神經網路後門。\n + 需要研究防禦策略對於未知的隱蔽結構觸發的通用性。\n* **論點**:\n + 需要發展有效的子網路抽取與可視化工具。\n + 需要研究防禦策略對於未知的隱蔽結構觸發的通用性。\n* **引用的 paper 名稱**:"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Certified Model Fingerprints (CMF)**：使用隨機哈希映射生成唯一指紋向量，能夠偵測後訓練資料中毒。\n* **Dynamic Influence-Based Fingerprinting (DIF)**：計算每筆測試樣本對模型參數的影響度，能夠捕捉細微的中毒痕跡。\n* **Zero-Knowledge Model Integrity Verification (ZK-MIV)**：使用零知識證明協議驗證模型的指紋，能夠確認指紋未被竄改。\n\n**2. 模型架構細節**\n\n* **輸入**：原始模型參數或權重快照、隨機種子\n* **輸出**：固定長度的指紋向量或零知識證明的驗證訊息\n* **關鍵模組**：\n + `FingerprintGenerator`：實作隨機哈希或Influence計算\n + `Verifier`：比對指紋或驗證零知識證明\n + `UpdateScheduler`（DIF）：負責在每次微調後重新計算指紋\n\n**3. 訓練策略**\n\n* **資料規模**：使用公開的ImageNet-1k或CIFAR-10/100作為基礎模型的訓練資料\n* **Batch size**：指紋生成階段通常以全模型為單位，無需mini-batch\n* **優化器**：對於Proof Generator採用Adam（β1=0.9，β2=0.999），學習率1e-4，餘下流程皆為無梯度操作\n* **Loss設計**：\n + CMF：`L = L_crossentropy(fingerprint_original, fingerprint_current) + λ * L_KL(hash_distribution)`\n + ZK-MIV：`L = L_proof_validity + μ * L_regularization`\n\n**4. 主要benchmark與資料集**\n\n* **Benchmark**：\n + `Post-Training Poison Detection (PTPD)`：在ImageNet-1k、CIFAR-10/100、Tiny-ImageNet上測試偵測率與誤報率\n + `Cross-Model Fingerprint Transfer (CMFT)`：評估指紋在不同模型架構（ResNet-50、ViT-B/16、EfficientNet-B3）間的穩定性\n* **關鍵指標**：\n + **偵測召回率 (Recall)**：≥ 92%為目標\n + **誤報率 (False Positive Rate)**：≤ 3%\n + **跨模型相似度下降率"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
