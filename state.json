@@ -1,33 +1,13 @@
 {
-  "date": "2026-08-10",
-  "step": 6,
+  "date": "2026-08-11",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 動態模型指紋與可驗證的後訓練資料中毒偵測\n\n* **關鍵事實**:\n + 大多數防禦僅在訓練前或訓練中檢測，中訓練後模型指紋的變化尚未被系統化。\n + 可驗證的指紋能在部署階段即時證明模型未被污染。\n* **結論**:\n + 需要持續更新與驗證模型指紋，避免高階對抗偽造指紋的攻擊。\n* **技術細節**:\n + 使用動態模型指紋來檢測後訓練資料中毒。\n + 可驗證的指紋能在部署階段即時證明模型未被污染。\n* **論點**:\n + 需要發展有效的方法來持續更新與驗證模型指紋。\n + 需要研究指紋與真實資料中毒之間的因果關係。\n* **引用的 paper 名稱**:\n + 《Certified Model Fingerprints for Post‑Training Data Poisoning Detection》, Y. C. Lin, arXiv:2503.01427, 2025。\n + 《Dynamic Influence‑Based Fingerprinting for Neural Networks》, M. Gómez, NeurIPS 2025, 2025。\n + 《Zero‑Knowledge Verification of Model Integrity via Randomized Hashing》, H. Tanaka, ICLR 2026, 2026。\n\n### 主題二: 隱蔽結構觸發的神經網路後門與 emergent misalignment 機制\n\n* **關鍵事實**:\n + 近期觀測到模型在權重子空間的微小變化即可激活隱蔽行為。\n + 研究人數少於十人。\n* **結論**:\n + 需要發展有效的子網路抽取與可視化工具。\n + 需要研究防禦策略對於未知的隱蔽結構觸發的通用性。\n* **技術細節**:\n + 使用隱蔽結構觸發來檢測神經網路後門。\n + 需要研究防禦策略對於未知的隱蔽結構觸發的通用性。\n* **論點**:\n + 需要發展有效的子網路抽取與可視化工具。\n + 需要研究防禦策略對於未知的隱蔽結構觸發的通用性。\n* **引用的 paper 名稱**:"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要**\n\n**1. 核心方法群**\n\n* **Certified Model Fingerprints (CMF)**：使用隨機哈希映射生成唯一指紋向量，能夠偵測後訓練資料中毒。\n* **Dynamic Influence-Based Fingerprinting (DIF)**：計算每筆測試樣本對模型參數的影響度，能夠捕捉細微的中毒痕跡。\n* **Zero-Knowledge Model Integrity Verification (ZK-MIV)**：使用零知識證明協議驗證模型的指紋，能夠確認指紋未被竄改。\n\n**2. 模型架構細節**\n\n* **輸入**：原始模型參數或權重快照、隨機種子\n* **輸出**：固定長度的指紋向量或零知識證明的驗證訊息\n* **關鍵模組**：\n + `FingerprintGenerator`：實作隨機哈希或Influence計算\n + `Verifier`：比對指紋或驗證零知識證明\n + `UpdateScheduler`（DIF）：負責在每次微調後重新計算指紋\n\n**3. 訓練策略**\n\n* **資料規模**：使用公開的ImageNet-1k或CIFAR-10/100作為基礎模型的訓練資料\n* **Batch size**：指紋生成階段通常以全模型為單位，無需mini-batch\n* **優化器**：對於Proof Generator採用Adam（β1=0.9，β2=0.999），學習率1e-4，餘下流程皆為無梯度操作\n* **Loss設計**：\n + CMF：`L = L_crossentropy(fingerprint_original, fingerprint_current) + λ * L_KL(hash_distribution)`\n + ZK-MIV：`L = L_proof_validity + μ * L_regularization`\n\n**4. 主要benchmark與資料集**\n\n* **Benchmark**：\n + `Post-Training Poison Detection (PTPD)`：在ImageNet-1k、CIFAR-10/100、Tiny-ImageNet上測試偵測率與誤報率\n + `Cross-Model Fingerprint Transfer (CMFT)`：評估指紋在不同模型架構（ResNet-50、ViT-B/16、EfficientNet-B3）間的穩定性\n* **關鍵指標**：\n + **偵測召回率 (Recall)**：≥ 92%為目標\n + **誤報率 (False Positive Rate)**：≤ 3%\n + **跨模型相似度下降率"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n以下是三個具體可實作的創新方法：\n\n### 方案 1: 動態指紋更新與驗證\n\n* **核心 idea**: 使用動態指紋更新機制與零知識證明協議來驗證模型指紋的完整性。\n* **技術細節**:\n + 輸入流程為模型參數與隨機種子\n + 模組設計包括指紋生成器、驗證器與更新調度器\n + 訓練目標是最小化指紋更新的損失\n + 損失函數為交叉熵損失加上 KL 散度懲罰項\n* **與 SOTA 的差異**: 加入了動態指紋更新機制，提高了模型指紋的時效性。\n* **預期改善的指標與原因**: 提高偵測召回率 (Recall) 和誤報率 (False Positive Rate)，原因是動態指紋更新機制可以更好地捕捉模型參數的變化。\n* **最小可行實驗 (MVP)**: 可以使用 CIFAR-10 資料集、ResNet-50 模型和單張 GPU 來驗證。\n\n### 方案 2: 隱蔽結構觸發的神經網路後門檢測\n\n* **核心 idea**: 使用隱蔽結構觸發的方法來檢測神經網路後門。\n* **技術細節**:\n + 輸入流程為模型參數與輸入資料\n + 模組設計包括隱蔽結構觸發器、後門檢測器與驗證器\n + 訓練目標是最小化後門檢測的損失\n + 損失函數為交叉熵損失加上 L1 正則化項\n* **與 SOTA 的差異**: 使用隱蔽結構觸發的方法來檢測後門，提高了檢測的準確性。\n* **預期改善的指標與原因**: 提高後門檢測的準確性，原因是隱蔽結構觸發的方法可以更好地捕捉模型參數的變化。\n* **最小可行實驗 (MVP)**: 可以使用 ImageNet-1k 資料集、ViT-B/16 模型和單張 GPU 來驗證。\n\n### 方案 3: 零知識證明協議的模型指紋驗證\n\n* **核心 idea**: 使用零知識證明協"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 摘要**\n\n**最關鍵的事實:**\n\n* 三個方案 (方案 1、方案 2、方案 3) 都面臨著理論假設、資料與訓練可行性、計算資源和基準選擇等問題。\n* 每個方案都需要進行嚴格的理論分析和實驗驗證，以確定其有效性和穩定性。\n\n**結論:**\n\n* 三個方案都需要進一步的研究和驗證，以確保其有效性和穩定性。\n* 需要進行計算資源的估算和優化，以確定每個方案的計算成本和效率。\n\n**技術細節:**\n\n* 需要使用無標註資料或半監督學習的方法來減少標註資料的需求。\n* 需要進行 failure mode 的分析和實驗驗證，以確定每個方案的穩定性和有效性。\n\n**論點:**\n\n* 每個方案都需要進行嚴格的理論分析和實驗驗證。\n* 需要進行計算資源的估算和優化。\n* 需要使用無標註資料或半監督學習的方法來減少標註資料的需求。\n\n**引用的 paper 名稱:**\n\n* 無\n\n**補救措施:**\n\n* 需要進行嚴格的理論分析和實驗驗證。\n* 需要進行計算資源的估算和優化。\n* 需要使用無標註資料或半監督學習的方法來減少標註資料的需求。\n* 需要進行 failure mode 的分析和實驗驗證。"
-    },
-    {
-      "stage": 5,
-      "summary": "### 結構化摘要\n\n#### 研究痛點與背景\n\n* 模型指紋技術存在缺陷：難以捕捉模型參數的動態變化、容易受到高階對抗偽造指紋的攻擊\n* 《Certified Model Fingerprints for Post‑Training Data Poisoning Detection》和《Dynamic Influence‑Based Fingerprinting for Neural Networks》論文指出傳統模型指紋技術無法有效檢測後訓練資料中毒和模型參數的變化\n\n#### 核心研究方法\n\n* 提出動態指紋更新和驗證方法：結合隨機哈希映射和零知識證明協議\n* 步驟：\n\t+ 初始化模型參數和隨機種子\n\t+ 計算模型指紋並存儲在安全的資料庫中\n\t+ 在每次模型更新後，重新計算指紋並與存儲的指紋進行比較\n\t+ 如果指紋發生變化，啟動零知識證明協議驗證指紋的完整性\n\t+ 如果驗證失敗，觸發警報並進行進一步的分析\n\n#### 與既有方法的差異與創新性\n\n* 演算法層：提出動態指紋更新和驗證方法\n* 實作層：使用安全的資料庫和加密技術保護模型指紋和驗證結果\n* 應用層：可應用於各種深度學習模型和資料集，提供通用的模型指紋驗證方法\n\n#### 實驗設計\n\n* 資料集：使用 ImageNet-1k 和 CIFAR-10 資料集進行實驗\n* baseline：使用傳統的模型指紋技術和零知識證明協議作為基線\n* 評估指標：使用偵測召回率、誤報率和驗證時間作為評估指標\n* ablation study 設計：進行多個 ablation study 實驗，以評估不同參數和設定對於模型性能的影響\n\n#### 預期貢獻與影響\n\n* 科學價值：提出動態指紋更新和驗證方法，解決傳統模型指紋技術的缺陷\n* 工程應用：可應用於各種深度學習模型和資料集，提供通用的模型指紋驗證方法\n* 為何 reviewer 會給高分：本研究提案具有創新性、實用性和科學價值，預計會對深度學習領域產生重要影響\n\n#### 風險與緩解\n\n* 風"
+      "summary": "**主題一：風險感知的隨機控制神經 SDE 策略梯度**\n\n* **關鍵事實**：\n + 研究人數仍在十人以下。\n + 大多數現有工作只聚焦於安全屏障或最小化期望成本。\n* **結論**：\n + 缺乏針對風險度量（如 CVaR、方差）直接在神經 SDE 中嵌入的系統化方法。\n* **技術細節**：\n + 隨機微分方程的隱式求解過程中估算梯度與風險指標。\n + 風險度量的可微分近似與時間離散化之間的相容性尚未得到理論保證。\n* **論點**：\n + 需要設計在隨機控制神經 SDE 中嵌入風險度量的系統化方法。\n* **引用的 paper 名稱**：\n + Risk‑Sensitive Neural SDE Controllers\n + Stochastic Differential Policy Optimization\n + Neural SDEs for Safe Reinforcement Learning under Uncertainty\n\n**主題二：自適應時間步長的連續正規化流（CNF）於不規則取樣高維科學資料**\n\n* **關鍵事實**：\n + 目前僅有少數團隊探索固定時間步長的 CNF。\n + 對於天文觀測、氣候模擬等不規則時間戳的高維資料缺乏有效的密度估計與樣本生成方案。\n* **結論**：\n + 需要設計在動態調整時間步長時仍保持流的可逆性與 Jacobian 計算的穩定性。\n* **技術細節**：\n + 需要設計在高維稀疏觀測下有效估計分布的局部光滑度以指導時間步長選擇。\n* **論點**：\n + 需要設計自適應時間步長的 CNF 以適應不規則時間戳的高維資料。\n* **引用的 paper 名稱**：\n + Adaptive Neural ODE Flows for Irregular Data\n + Time‑Adaptive Continuous Normalizing Flows\n + Scalable CNFs with Stochastic Time Integration\n\n**主題三：物理約束的神經 SDE 用於湍流流體模擬與不確定性量化**\n\n* **關鍵事實**：\n + 湍流模擬的傳統 CFD 需要巨量計算資源。\n + 現有神經 PDE/ODE 方法多聚焦於決定性方程。\n* **結論**：\n + 需要設計在隨機微分方程"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
