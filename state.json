@@ -1,13 +1,18 @@
 {
   "date": "2026-08-11",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：風險感知的隨機控制神經 SDE 策略梯度**\n\n* **關鍵事實**：\n + 研究人數仍在十人以下。\n + 大多數現有工作只聚焦於安全屏障或最小化期望成本。\n* **結論**：\n + 缺乏針對風險度量（如 CVaR、方差）直接在神經 SDE 中嵌入的系統化方法。\n* **技術細節**：\n + 隨機微分方程的隱式求解過程中估算梯度與風險指標。\n + 風險度量的可微分近似與時間離散化之間的相容性尚未得到理論保證。\n* **論點**：\n + 需要設計在隨機控制神經 SDE 中嵌入風險度量的系統化方法。\n* **引用的 paper 名稱**：\n + Risk‑Sensitive Neural SDE Controllers\n + Stochastic Differential Policy Optimization\n + Neural SDEs for Safe Reinforcement Learning under Uncertainty\n\n**主題二：自適應時間步長的連續正規化流（CNF）於不規則取樣高維科學資料**\n\n* **關鍵事實**：\n + 目前僅有少數團隊探索固定時間步長的 CNF。\n + 對於天文觀測、氣候模擬等不規則時間戳的高維資料缺乏有效的密度估計與樣本生成方案。\n* **結論**：\n + 需要設計在動態調整時間步長時仍保持流的可逆性與 Jacobian 計算的穩定性。\n* **技術細節**：\n + 需要設計在高維稀疏觀測下有效估計分布的局部光滑度以指導時間步長選擇。\n* **論點**：\n + 需要設計自適應時間步長的 CNF 以適應不規則時間戳的高維資料。\n* **引用的 paper 名稱**：\n + Adaptive Neural ODE Flows for Irregular Data\n + Time‑Adaptive Continuous Normalizing Flows\n + Scalable CNFs with Stochastic Time Integration\n\n**主題三：物理約束的神經 SDE 用於湍流流體模擬與不確定性量化**\n\n* **關鍵事實**：\n + 湍流模擬的傳統 CFD 需要巨量計算資源。\n + 現有神經 PDE/ODE 方法多聚焦於決定性方程。\n* **結論**：\n + 需要設計在隨機微分方程"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n### 關鍵事實\n\n* 自適應時間步長的連續正規化流（CNF）可應用於不規則高維科學資料。\n* 三個核心方法群：Adaptive Neural ODE Flows、Time-Adaptive Continuous Normalizing Flows、Scalable CNFs with Stochastic Time Integration。\n* 每個方法群的優點和缺點。\n\n### 結論\n\n* 自適應時間步長的 CNF 在不規則高維科學資料上具備可實作性與明顯研究空白。\n* 學生可以先在合成資料上驗證步長控制與 Jacobian 近似的穩定性，然後逐步遷移至天文或氣候真實資料。\n\n### 技術細節\n\n* 輸入：不規則時間戳的高維向量序列 `x_t`。\n* 輸出：對應於標準均勻時間網格的隱變量 `z`，或直接生成新樣本的逆向流 `x̂`.\n* 關鍵模組：\n + `f_θ(t, z)`: 時間依賴的向量場。\n + 步長控制器 `g_φ(z)`: 輸出局部誤差估計或時間密度指標。\n + Jacobian 估算器：使用「對數行列式累加」或「隨機追蹤」技巧保持可逆性。\n* 訓練目標：最大化對數似然 `log p(x)`（正向流）或最小化重建誤差（逆向流），同時加入步長正則化 `L_step` 以避免過度細化。\n\n### 論點\n\n* 步長控制器的學習目標是最小化驗證誤差，卻缺少對 ODE 積分誤差的上界證明。\n* 缺乏理論收斂保證。\n* 缺少跨領域 ablation。\n* 指標不足。\n\n### 引用的 paper 名稱\n\n* Adaptive Neural ODE Flows for Irregular Data (NeurIPS 2025)\n* Time-Adaptive Continuous Normalizing Flows (ICLR 2026)\n* Scalable CNFs with Stochastic Time Integration (ICML 2025)"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
