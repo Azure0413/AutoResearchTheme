@@ -1,13 +1,18 @@
 {
   "date": "2026-08-13",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 高階狀態空間模型 (Higher‑Order SSM) 的可變階次與自適應離散化**\n\n* **關鍵事實**：\n + 大多數 SSM 仍停留在一階線性微分方程，缺乏對高階動態特徵的捕捉。\n + 高階模型可在不增加序列長度的情況下提升長程依賴表徵。\n* **結論**：\n + 高階狀態空間模型具有突破潛力，但仍有許多技術問題待解決。\n* **技術細節**：\n + 穩定估計高階微分係數的方法。\n + 可微分的離散化策略。\n + 高階結構的參數共享與正則化機制。\n* **論點**：\n + 高階狀態空間模型可以捕捉更複雜的動態特徵。\n + 可變階次和自適應離散化可以提高模型的效率和表達力。\n* **參考文獻**：\n + 《Higher‑Order State Space Models for Long Sequence Modeling》, Y. Liu, NeurIPS 2025\n + 《Learnable Discretization for Continuous‑Time SSMs》, A. Patel, ICLR 2026\n + 《Adaptive Order Selection in State‑Space Networks》, M. Zhou, arXiv 2025.11.03\n\n**主題二: 結構化稀疏門控 (Sparse Gated DeltaNet) 在序列建模中的效能與可訓練性**\n\n* **關鍵事實**：\n + 稀疏門控結構允許模型在每一步僅激活子集神經元，理論上可大幅降低算力與記憶需求。\n + 目前僅有少數團隊探索結構化稀疏模式，尚未形成成熟的訓練框架。\n* **結論**：\n + 結構化稀疏門控具有突破潛力，但仍有許多技術問題待解決。\n* **技術細節**：\n + 稀疏門控的梯度傳遞在深層網路中容易出現「死門」現象。\n + 設計硬體友好的稀疏模式。\n + 稀疏結構的自適應調整與任務轉移之間的相互影響。\n* **論點**：\n + 結構化稀疏門控可以大幅降低算力與記憶需求。\n + 可自適應調整稀疏結構以適應不同任務。\n* **參考文獻"
+    },
+    {
+      "stage": 2,
+      "summary": "**Higher-Order State-Space Models (HO-SSM) 的研究方向**\n\n**關鍵事實**\n\n* HO-SSM 是一個研究方向，旨在改進傳統一階狀態空間模型的表達力和穩定性。\n* HO-SSM 使用二階或三階線性微分方程取代傳統一階 SSM，透過額外的導數狀態捕捉更長程的相位資訊。\n* HO-SSM 可以在離散化時保留高階動態特徵。\n\n**結論**\n\n* HO-SSM 是一個值得深入研究的方向，因為它可以在固定序列長度下捕捉更遠的依賴，參數共享機制減少額外參數開銷。\n* HO-SSM 的缺點是高階矩陣指數計算成本較高，在噪聲較大的序列上易出現數值不穩定。\n\n**技術細節**\n\n* HO-SSM 使用高階狀態方程模組，包含 `order` 個狀態向量 `s^{(k)}_t`，每個階次都有獨立的線性轉換矩陣。\n* HO-SSM 使用可學離散化層，參數化的時間步長 `Δt`，使用雙線性或隱式 Euler 方法實作。\n* HO-SSM 使用階次門控網路，根據當前隱藏狀態產生門控向量 `g_t`，選擇啟用哪個階次的動態。\n\n**論點**\n\n* HO-SSM 可以在固定序列長度下捕捉更遠的依賴。\n* HO-SSM 參數共享機制減少額外參數開銷。\n* HO-SSM 的缺點是高階矩陣指數計算成本較高，在噪聲較大的序列上易出現數值不穩定。\n\n**引用的 paper 名稱**\n\n* 《Higher-Order State Space Models for Long Sequence Modeling》 (NeurIPS 2025)\n* 《Learnable Discretization for Continuous-Time SSMs》 (ICLR 2026)\n* 《Adaptive Order Selection in State-Space Networks》 (arXiv 2025.11.03)"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
