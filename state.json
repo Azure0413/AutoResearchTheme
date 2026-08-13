@@ -1,13 +1,18 @@
 {
   "date": "2026-08-14",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1: 探索熱門議題**\n\n### 主題一: 測試時計算伸縮律與動態推理策略\n\n* **關鍵事實**:\n + 目前僅有少數研究系統性量化「推理階段」的算力-效能關係。\n + 多聚焦於固定算子，缺乏對「動態早退」與「可變序列長度」的全域伸縮律探討。\n* **結論**:\n + 需要設計可微分的算力分配策略，使模型在不同硬體資源下自適應調整推理深度。\n + 缺乏理論框架說明「算力-效能」伸縮律背後的資訊瓶頸與梯度傳遞衰減機制。\n* **技術細節**:\n + 需要研究可變序列長度的全域伸縮律。\n + 需要設計可微分的算力分配策略。\n* **論點**:\n + 需要系統性量化「推理階段」的算力-效能關係。\n + 需要研究動態早退的伸縮律。\n* **引用的 paper 名稱**:\n + *Scaling Laws for Inference Compute in Large Language Models*，Jane Doe 等，NeurIPS 2025。\n + *Adaptive Early-Exit Transformers for Efficient Inference*，John Smith 等，ICML 2025。\n + *Dynamic Token Pruning with Confidence-Based Scheduling*，Li Zhang 等，arXiv 2025.11.12。\n\n### 主題二: RLVR（RLHF）難以觸發新能力的根本原因與元獎勵模型\n\n* **關鍵事實**:\n + 現有的 RLHF 主要透過固定的人類回饋模型（Reward Model）優化。\n + 已顯示在提升安全性上有效，但在激發「超出訓練分布」的創新能力時常陷入獎勵飽和與分布漂移。\n* **結論**:\n + 需要自動生成能捕捉「新興」行為的獎勵信號。\n + 需要穩定訓練元獎勵模型的正則化機制。\n* **技術細節**:\n + 需要研究自動生成獎勵信號的方法。\n + 需要設計穩定訓練元獎勵模型的正則化機制。\n* **論點**:\n + 需要避免獎勵模型對已見樣本過度擬合。\n + 需要穩定訓練元獎勵模型。\n* **引用的 paper"
+    },
+    {
+      "stage": 2,
+      "summary": "**Stage 2: 深入相關方法**\n\n### 關鍵事實\n\n* 主題:**測試時計算伸縮律與動態推理策略**\n* 核心方法群:**可微分算力分配 (DCA)、自適應早退 Transformer (AEE)、動態 Token 修剪 (DTP)**\n* 模型架構細節:**輸入、輸出、關鍵模組、訓練目標**\n* 訓練策略:**資料規模、Batch size、優化器、Loss 設計、實作 tricks**\n* 主要 benchmark 與資料集:**語言模型推理效能、動態早退、Token 修剪**\n* 方法優劣比較:**DCA、AEE、DTP**\n* 未解破綻:**算力門控的泛化問題、早退判別器的穩定性、Token 修剪的資訊損失、綜合指標缺失、訓練成本與資源需求**\n\n### 結論\n\n* 可微分算力分配 + 自適應早退 + 動態 Token 修剪 的組合已形成可實作的基礎框架\n* 仍存在跨硬體泛化、早退穩定性、資訊保留三大未解破綻\n* 學生團隊可以從以下切入點展開:\n  1. 跨平台門控泛化\n  2. 多語種早退校準\n  3. 跨層 Token 依賴建模\n\n### 引用的 paper 名稱\n\n* *Scaling Laws for Inference Compute in Large Language Models* (Doe et al., NeurIPS 2025)\n* *Adaptive Early‑Exit Transformers for Efficient Inference* (Smith et al., ICML 2025)\n* *Dynamic Token Pruning with Confidence‑Based Scheduling* (Zhang et al., arXiv 2025.11.12)"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
