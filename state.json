@@ -1,13 +1,18 @@
 {
   "date": "2026-08-15",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**階層式物件中心世界模型與關係動力學**\n\n* **關鍵事實**：\n + 研究人數仍在十人以下，因為要同時解決「物件分割、層次關係建模」與「長期時間依賴」三個挑戰。\n + 缺乏完整基準與可擴展的訓練流程。\n* **結論**：\n + 需要設計可在層次化的 slot 表徵中自動發現稀疏交互圖，同時保持可微分的端到端訓練。\n + 長影片中記憶壓縮與時間一致性的平衡尚未有穩定的演算法。\n* **技術細節**：\n + 使用 Relational Graph Transformers 等技術來建模層次關係。\n + 對長期時間依賴的處理仍缺乏穩定的方法。\n* **論點**：\n + 需要結合物件分割、層次關係建模和長期時間依賴的技術來建造階層式物件中心世界模型。\n + 需要設計可在高維隱向量上執行的干預策略，且不依賴人工標註的因果圖。\n* **引用的 paper 名稱**：\n + 「Hierarchical Object‑Centric Video Prediction via Relational Graph Transformers」\n + 「Slot‑Graph Dynamics for Long‑Term Video Forecasting」\n + 「Compositional Object‑Centric World Models with Sparse Interaction Networks」\n\n**主動式因果發現於隱式影片空間**\n\n* **關鍵事實**：\n + 目前僅有少數團隊嘗試在純視訊資料中以「干預」方式學習因果結構。\n + 缺乏可重複的實驗平台與跨域驗證，研究人數仍低於二十人。\n* **結論**：\n + 需要設計可在高維隱向量上執行的干預策略，且不依賴人工標註的因果圖。\n + 因果圖的符號化表示與神經網路的隱表示之間的對齊仍缺乏理論指引。\n* **技術細節**：\n + 使用干預策略來學習因果結構。\n + 對因果圖的符號化表示與神經網路的隱表示之間的對齊仍缺乏穩定的方法。\n* **論點**：\n + 需要結合主動式因果發現和隱式影片空間的技術來建造可靠的因果模型。\n + 需要設計可在高"
+    },
+    {
+      "stage": 2,
+      "summary": "**階層式物件中心世界模型與關係動力學**\n\n### 核心方法群\n\n* **Relational Graph Transformer (RGT)**：以圖形結構表示物件間稀疏交互，將每個物件的 slot 向量作為節點，透過多頭注意力在圖上傳遞訊息，捕捉層次關係與動力學。\n* **Slot-Graph Dynamics (SGD)**：結合 slot attention 產生物件表徵，並以可微分的稀疏圖生成器自動推斷交互邊，使用時間卷積網路預測邊的演化。\n* **Compositional Object-Centric World Model (COC-WM)**：採用分層圖卷積：底層圖描述局部接觸，上一層圖聚合子圖形成高階關係，並以變分自編碼器壓縮長期記憶。\n\n### 模型架構細節\n\n* **輸入**：連續影片片段（例如 8-16 帧），每帧提供 RGB 圖像與可選的光流或深度圖。\n* **輸出**：未來 N 帧的像素預測、物件位置/姿態軌跡、以及層次關係圖（邊的存在機率與類型）。\n* **關鍵模組**：\n + *Slot Encoder*：基於 slot attention，將每帧分割成 K 個物件槽。\n + *Sparse Interaction Graph Generator*：使用可微分的邊稀疏化機制（如 Gumbel-Softmax）產生物件間交互圖。\n + *Relational Graph Transformer*：在圖上執行多層注意力，更新每個槽的動態表徵。\n + *Temporal Memory Module*：採用可逆卷積或線性時間記憶（Linear Transformer）壓縮長期依賴。\n\n### 訓練策略\n\n* **資料規模**：使用 5k-10k 片段的合成物理模擬資料（如 PHYRE-2、CLEVR-Video）以及 1k-2k 真實長影片（Kinetics-400 子集、Something-Something V2）。\n* **Batch size**：每張卡 4-8 片段（視顯存而定），多卡同步梯度累積相當於 32-64。\n* **優化器**：AdamW，學習率 1e-4，使用 cosine decay 與 warm-up 前 5% 迭代。\n* **Loss 設計**：\n + 主損失 = 像素重建 + 位置回歸"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
