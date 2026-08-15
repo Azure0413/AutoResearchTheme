@@ -1,13 +1,18 @@
 {
   "date": "2026-08-16",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**神經演化驅動的稀疏結構持續學習**\n\n* **關鍵事實**：\n + 只有少數團隊結合 Neuroevolution 與持續學習。\n + 利用稀疏基因-表型映射在新任務出現時自動演化子網路。\n* **結論**：\n + 可以避免參數膨脹且減少遺忘。\n + 可以實現持續學習。\n* **技術細節**：\n + 稀疏化策略的搜索空間極大。\n + 缺少有效的啟發式或梯度‑指導的搜索方法。\n* **論點**：\n + 需要在演化過程中同時保證舊任務的性能不被破壞。\n + 需要缺乏可微分的演化‑遺忘平衡指標。\n* **參考文獻**：\n + *Neuroevolutionary Continual Learning with Sparse Connectivity*，Patel，ICML 2026。\n + *Evolving Sparse Modular Networks for Lifelong Reinforcement Learning*，Wang，NeurIPS 2025。\n + *Sparse Evolutionary Training for Continual Vision Tasks*，Gómez，arXiv 2025.11。\n\n**自監督資訊瓶頸驅動的元持續學習**\n\n* **關鍵事實**：\n + 資訊瓶頸正被用來抽取與任務無關的核心表徵。\n + 近期有研究將其與元學習結合。\n* **結論**：\n + 可以讓模型在少量新樣本上快速適應。\n + 不需要額外記憶機制。\n* **技術細節**：\n + 需要在保持資訊瓶頸壓縮率的同時，避免對新任務的表徵過度削弱。\n + 缺乏動態調整瓶頸容量的機制。\n* **論點**：\n + 需要更健全的理論保證。\n + 需要更穩定的自監督目標。\n* **參考文獻**：\n + *Meta‑Continual Learning through Information Bottleneck*，Kim，ICLR 2026。\n + *Self‑Supervised Bottleneck for Lifelong Representation Learning*，Rossi，NeurIPS 2025。\n + *Information‑Theoretic Regularization for Continual Skill Acquisition*，Singh，arXiv 2025.08。\n\n**圖結構自適應子圖回放的分層記憶整合**\n\n* **關鍵事實**：\n + 將圖神經網路的子圖作為回"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要**\n\n**選定主題**: 圖結構自適應子圖回放的分層記憶整合\n\n**核心方法群**:\n\n1. **Subgraph Replay (SR)**: 回放具代表性的子圖，防止舊任務的結構資訊被遺忘。\n2. **Hierarchical Memory Bank (HMB)**: 分層存放回放子圖，低層保存局部結構，高層保存全局模式。\n3. **Adaptive Subgraph Selector (ASS)**: 使用可微分的子圖選擇器根據當前任務的梯度訊號調整子圖抽樣分布。\n\n**模型架構細節**:\n\n1. **輸入**: 一批圖 `G = {V, E}`, 每個節點有特徵向量 `x_v`, 邊可能帶有權重。\n2. **輸出**: 任務特定的預測，同時產生一組「記憶向量」供回放使用。\n3. **關鍵模組**:\n * `GNN Encoder`: 產生節點嵌入。\n * `Subgraph Pooler`: 根據 `ASS` 產生的子圖掩碼，聚合子圖嵌入形成子圖表徵。\n * `Hierarchical Memory Bank`: 由多層 `MemorySlot` 組成，每層保存固定數量的子圖表徵與對應的圖結構資訊。\n * `Task Decoder`: 根據當前任務類型使用線性層或 MLP 輸出結果。\n\n**訓練策略**:\n\n1. **資料規模**: 每個任務使用 1,000–5,000 個圖，子圖回放數量固定為 200–500 個。\n2. **Batch size**: 圖批次大小 32，子圖回放批次大小 64。\n3. **優化器**: AdamW，學習率 1e-3，權重衰減 1e-4。\n4. **Loss 設計**: `L_total = L_task + λ1 * L_mem + λ2 * L_sel`，其中 `λ1≈0.5`、`λ2≈0.1` 為常用超參。\n\n**主要 benchmark 與資料集**:\n\n1. **OGB‑MolPCBA**: 測量平均 ROC‑AUC。\n2. **ZINC**: 測量 MAE。\n3. **Cora / PubMed**: 測量整體準確率與遺忘率。\n4. **TUDataset**: 測量每個任務的 F1 分數與最終平均精度。\n\n**方法優劣比較**:\n\n1. **Subgraph"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
