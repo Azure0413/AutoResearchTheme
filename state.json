@@ -1,6 +1,6 @@
 {
   "date": "2026-08-17",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**離散擴散於蛋白質設計（RotamerDiff 系列）**\n\n### 最關鍵的事實\n\n* RotamerDiff 系列以 rotamer（側鏈角度）離散圖為狀態空間，透過離散時間馬可夫鏈在圖上執行前向噪聲與逆向去噪。\n* 三個方法：RotamerDiff、Graph Flow Matching、Energy-Guided Diffusion，各有優點和缺點。\n* 目前 SOTA 的折疊成功率（foldability）為 70% 以上，RMSD（原子座標均方根差）小於 1.5 Å。\n\n### 結論\n\n* RotamerDiff 系列提供了最成熟且可在普通 GPU（如 RTX 3080）上實作的基礎框架。\n* 在抽樣效率、全局能量指導與多樣性評估上仍有明顯突破空間。\n\n### 技術細節\n\n* **輸入**：蛋白質主鏈骨架座標 + 可選的功能位點標記；對於 rotamer 圖，輸入為每個殘基的離散 rotamer 編號向量。\n* **輸出**：完整的 side-chain rotamer 配置（離散編號）或對應的原子座標（在 Graph Flow Matching 中）。\n* **關鍵模組**：\n + `RotamerGCN`：圖卷積層負責捕捉殘基間的空間相依性。\n + `DiffusionScheduler`：控制離散噪聲的時間表（從無噪聲到完全隨機）。\n + `EnergyGuidanceNet`（僅在 Energy-Guided 版本）：輸入當前 rotamer 配置，輸出能量梯度作為指導。\n\n### 論點\n\n* 抽樣效率：在高維 rotamer 空間（> 150 種）時，純離散擴散仍需上百步才能收斂，計算成本不符合學生資源的限制。\n* 全局能量評估：現有方法多以局部 rotamer 能量為指導，缺乏對整體折疊自由能的可微分評估，導致部分生成結構在全局上不穩定。\n* 指標不足：設計多樣性（diversity）指標常被忽略，SOTA 多聚焦於單一最佳結構。\n\n### 引用的 paper 名稱\n\n* RotamerDiff：NeurIPS 2025\n* Graph Flow Matching：ICLR 2026\n* Energy-Guided Diffusion：arXiv 2025.03"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3: 提出創新方法**\n\n**方案 1: RotamerDiff with Hierarchical Energy Guidance**\n\n* **核心 idea**: 增加階層式的能量評估網絡，評估多級別的分子結構能量\n* **技術細節**:\n + 輸入流程保持不變\n + 增加階層式的能量評估網絡\n + 訓練目標是最小化全局能量損失函數\n* **與 SOTA 的差異**: 增加階層式的能量評估網絡\n* **預期改善的指標與原因**: 預期在 RMSD 和折疊成功率的 benchmark 上提升\n* **最小可行實驗(MVP)**: 使用蛋白質設計的基準資料集，如 CASP，使用中等規模的模型，如 8 層的 Transformers\n\n**方案 2: Graph Flow Matching with Reinforcement Learning**\n\n* **核心 idea**: 結合強化學習技術，學習出更好的能量評估策略\n* **技術細節**:\n + 輸入流程保持不變\n + 增加強化學習模組\n + 訓練目標是最大化累積獎勵\n* **與 SOTA 的差異**: 增加強化學習模組\n* **預期改善的指標與原因**: 預期在 RMSD 和折疊成功率的 benchmark 上提升\n* **最小可行實驗(MVP)**: 使用蛋白質設計的基準資料集，如 CASP，使用中等規模的模型，如 8 層的 Transformers\n\n**方案 3: RotamerDiff with Multi-Task Learning**\n\n* **核心 idea**: 將 RotamerDiff 中的能量評估和結構生成過程視為多任務學習過程\n* **技術細節**:\n + 輸入流程保持不變\n + 增加多任務學習模組\n + 訓練目標是最小化多任務損失函數\n* **與 SOTA 的差異**: 增加多任務學習模組\n* **預期改善的指標與原因**: 預期在 RMSD 和折疊成功率的 benchmark 上提升\n* **最小可行實驗(MVP)**: 使用蛋白質設計的基準資料集，如 CASP，使用中等規模的模型，如 8 層的 Transformers\n\n**共同點**:\n\n* 三個方案都增加了新的能量評估機制\n* 三個方案都預期在 RMSD 和折疊成功率的 benchmark 上提升\n* 三"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
