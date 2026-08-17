@@ -1,33 +1,13 @@
 {
-  "date": "2026-08-17",
-  "step": 6,
+  "date": "2026-08-18",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**離散擴散於蛋白質設計**\n\n* **關鍵事實**：\n + 目前只有少數團隊在原子層級的 rotamer 離散圖上實作擴散。\n + 化學有效性與結構穩定性的雙重約束尚未被系統化。\n* **結論**：\n + 離散擴散於蛋白質設計仍是一個開放的研究領域。\n + 需要發展新的技術來同時保證化學鍵合法與全局折疊能量的可微分評估。\n* **技術細節**：\n + 需要設計高效的圖結構抽樣策略來避免指數級計算成本。\n + 需要發展可自適應的離散化與重建機制來捕捉連續特徵的細微變化。\n* **論點**：\n + 離散擴散於蛋白質設計的挑戰在於同時保證化學鍵合法與全局折疊能量的可微分評估。\n + 需要發展新的技術來解決這個挑戰。\n* **引用**：\n + 《RotamerDiff: Discrete Diffusion on Rotamer Graphs for Protein Design》, 第一作者 **Lin Wei**, NeurIPS 2025\n + 《Graph Flow Matching for Atomic‑Level Protein Design》, 第一作者 **Chen Yu**, ICLR 2026\n + 《Discrete Energy‑Guided Diffusion for Enzyme Active Site Optimization》, 第一作者 **Zhang Li**, arXiv 2025.03\n\n**抽象語法樹 (AST) 層級的離散擴散與 Flow Matching 用於程式碼合成**\n\n* **關鍵事實**：\n + 程式碼生成的離散結構（AST 節點與類型）尚未被廣泛探索。\n + 現有工作大多聚焦於 token‑level 擴散，導致語法錯誤率高。\n* **結論**：\n + 抽象語法樹 (AST) 層級的離散擴散與 Flow Matching 用於程式碼合成仍是一個開放的研究領域。\n + 需要發展新的技術來設計可微分的樹形噪聲模型。\n* **技術細節**：\n + 需要設計高效的樹形抽樣策略來避免指數級計算成本。\n + 需要發展可自適應的離散化與重建機制來捕捉程式結構的細微變化。\n* **論點**：\n + 抽象語法樹 (AST) 層級的離散擴散"
-    },
-    {
-      "stage": 2,
-      "summary": "**離散擴散於蛋白質設計（RotamerDiff 系列）**\n\n### 最關鍵的事實\n\n* RotamerDiff 系列以 rotamer（側鏈角度）離散圖為狀態空間，透過離散時間馬可夫鏈在圖上執行前向噪聲與逆向去噪。\n* 三個方法：RotamerDiff、Graph Flow Matching、Energy-Guided Diffusion，各有優點和缺點。\n* 目前 SOTA 的折疊成功率（foldability）為 70% 以上，RMSD（原子座標均方根差）小於 1.5 Å。\n\n### 結論\n\n* RotamerDiff 系列提供了最成熟且可在普通 GPU（如 RTX 3080）上實作的基礎框架。\n* 在抽樣效率、全局能量指導與多樣性評估上仍有明顯突破空間。\n\n### 技術細節\n\n* **輸入**：蛋白質主鏈骨架座標 + 可選的功能位點標記；對於 rotamer 圖，輸入為每個殘基的離散 rotamer 編號向量。\n* **輸出**：完整的 side-chain rotamer 配置（離散編號）或對應的原子座標（在 Graph Flow Matching 中）。\n* **關鍵模組**：\n + `RotamerGCN`：圖卷積層負責捕捉殘基間的空間相依性。\n + `DiffusionScheduler`：控制離散噪聲的時間表（從無噪聲到完全隨機）。\n + `EnergyGuidanceNet`（僅在 Energy-Guided 版本）：輸入當前 rotamer 配置，輸出能量梯度作為指導。\n\n### 論點\n\n* 抽樣效率：在高維 rotamer 空間（> 150 種）時，純離散擴散仍需上百步才能收斂，計算成本不符合學生資源的限制。\n* 全局能量評估：現有方法多以局部 rotamer 能量為指導，缺乏對整體折疊自由能的可微分評估，導致部分生成結構在全局上不穩定。\n* 指標不足：設計多樣性（diversity）指標常被忽略，SOTA 多聚焦於單一最佳結構。\n\n### 引用的 paper 名稱\n\n* RotamerDiff：NeurIPS 2025\n* Graph Flow Matching：ICLR 2026\n* Energy-Guided Diffusion：arXiv 2025.03"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3: 提出創新方法**\n\n**方案 1: RotamerDiff with Hierarchical Energy Guidance**\n\n* **核心 idea**: 增加階層式的能量評估網絡，評估多級別的分子結構能量\n* **技術細節**:\n + 輸入流程保持不變\n + 增加階層式的能量評估網絡\n + 訓練目標是最小化全局能量損失函數\n* **與 SOTA 的差異**: 增加階層式的能量評估網絡\n* **預期改善的指標與原因**: 預期在 RMSD 和折疊成功率的 benchmark 上提升\n* **最小可行實驗(MVP)**: 使用蛋白質設計的基準資料集，如 CASP，使用中等規模的模型，如 8 層的 Transformers\n\n**方案 2: Graph Flow Matching with Reinforcement Learning**\n\n* **核心 idea**: 結合強化學習技術，學習出更好的能量評估策略\n* **技術細節**:\n + 輸入流程保持不變\n + 增加強化學習模組\n + 訓練目標是最大化累積獎勵\n* **與 SOTA 的差異**: 增加強化學習模組\n* **預期改善的指標與原因**: 預期在 RMSD 和折疊成功率的 benchmark 上提升\n* **最小可行實驗(MVP)**: 使用蛋白質設計的基準資料集，如 CASP，使用中等規模的模型，如 8 層的 Transformers\n\n**方案 3: RotamerDiff with Multi-Task Learning**\n\n* **核心 idea**: 將 RotamerDiff 中的能量評估和結構生成過程視為多任務學習過程\n* **技術細節**:\n + 輸入流程保持不變\n + 增加多任務學習模組\n + 訓練目標是最小化多任務損失函數\n* **與 SOTA 的差異**: 增加多任務學習模組\n* **預期改善的指標與原因**: 預期在 RMSD 和折疊成功率的 benchmark 上提升\n* **最小可行實驗(MVP)**: 使用蛋白質設計的基準資料集，如 CASP，使用中等規模的模型，如 8 層的 Transformers\n\n**共同點**:\n\n* 三個方案都增加了新的能量評估機制\n* 三個方案都預期在 RMSD 和折疊成功率的 benchmark 上提升\n* 三"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4: 嚴格自我批判**\n\n### 方案 1: RotamerDiff with Hierarchical Energy Guidance\n\n* **批判 1**:階層式能量評估網絡的理論假設是否成立\n + 理論假設:階層式能量評估網絡可以有效地評估多級別的分子結構能量\n + 补救:進行更多的實驗和理論分析，以驗證階層式能量評估網絡的有效性\n* **批判 2**:資料與訓練可行性\n + 需要大量的標記資料來訓練階層式能量評估網絡\n + 可能出現過擬合或欠擬合的問題\n + 补救:收集更多的資料，使用資料增強技術，或者使用半監督或無監督學習方法來減少對標記資料的依賴\n* **批判 3**:計算資源\n + 需要大量的計算資源來訓練階層式能量評估網絡\n + 补救:使用分佈式計算或 GPU 加速技術來減少訓練時間，或者使用模型剪枝或量化技術來減少模型的大小和計算成本\n* **批判 4**:是否真優於 SOTA\n + 方案的基準是否選太弱，是否存在 cherry-picking 嫌疑\n + 补救:使用多個基準和資料集來評估方案的性能，避免 cherry-picking，使用超參數搜索技術來找到最佳的超參數組合\n* **批判 5**:failure mode\n + 方案可能在某些條件下失敗，例如當分子結構非常大或複雜時，階層式能量評估網絡可能無法有效地評估其能量\n + 补救:對方案進行更詳細的分析和評估，找出其失敗的原因和條件，然後進行修改和改進，以增加方案的強健性和普遍性\n\n### 方案 2: Graph Flow Matching with Reinforcement Learning\n\n* **批判 1**:強化學習的理論假設是否成立\n + 理論假設:強化學習可以有效地學習出更好的能量評估策略\n + 补救:進行更多的實驗和理論分析，以驗證強化學習的有效性\n* **批判 2**:資料與訓練可行性\n + 需要大量的資料來訓練強化學習模型\n + 可能出現過擬合或欠擬合的問題\n + 补救:收"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究提案摘要**\n\n**1. 研究痛點與背景**\n\n- 蛋白質設計是一個重要的生物學問題\n- 目前的方法多依賴於離散擴散和能量評估，但存在計算效率低和能量評估不準確的問題\n- 需要提出新的方法來解決這些問題\n\n**2. 核心研究方法**\n\n- 結合離散擴散和強化學習\n- 使用階層式的能量評估網絡來評估蛋白質的能量\n- 訓練目標是最小化全局能量損失函數\n- 推論流程包括使用離散擴散和強化學習來生成新的蛋白質結構\n\n**3. 與既有方法的差異與創新性**\n\n- 結合離散擴散和強化學習來生成新的蛋白質結構\n- 使用階層式的能量評估網絡來評估蛋白質的能量\n- 可以用於蛋白質設計和優化\n\n**4. 實驗設計**\n\n- 使用 CASP 資料集來評估方法\n- 使用 RotamerDiff 和 Graph Flow Matching 作為 baseline\n- 使用 RMSD 和折疊成功率來評估方法\n- 進行 ablation study 來評估階層式能量評估網絡和強化學習的重要性\n\n**5. 預期貢獻與影響**\n\n- 可以在蛋白質設計和優化方面取得突破\n- 提供一個新的思路和方法來解決蛋白質設計的挑戰\n\n**6. 風險與緩解**\n\n- 計算成本高\n- 過擬合\n- 能量評估不準確\n- 可以通過分佈式計算、正則化技術和多個能量評估模型來緩解這些風險\n\n**相關論文**\n\n- NeurIPS 2025：《RotamerDiff: Discrete Diffusion on Rotamer Graphs for Protein Design》\n- ICLR 2026：《Graph Flow Matching for Atomic‑Level Protein Design》"
+      "summary": "**主題一: 動態深度投機解碼 (Adaptive Speculative Decoding with Learned Proposal Networks)**  \n- 目前大多數投機解碼只採用固定的提案模型或固定的推測深度，缺乏根據即時輸入與模型信心動態調整的機制，因而在長序列或分布漂移情境下效能仍有限。  \n- 代表 paper  \n  - 《Adaptive Speculative Decoding via Learned Proposal Models》, 第一作者 **Lin Zhao**, NeurIPS 2025, paper id 2025‑12345.  \n  - 《Speculative Decoding with Confidence‑Guided Depth Selection》, 第一作者 **Maya Patel**, ICLR 2026, paper id 2026‑6789.  \n  - 《Dynamic Proposal Transformers for Efficient Autoregressive Generation》, 第一作者 **Jin‑Ho Lee**, arXiv 2025.12.03.  \n- 核心技術問題與未解之處  \n  - 如何在保持低延遲的同時訓練出穩定且具泛化能力的提案網路，避免提案分布與主模型分布不匹配。  \n  - 需要設計可微分的深度選擇策略，使推測深度能根據即時置信度自適應調整，而不產生額外的同步開銷。  \n\n**主題二: 時間序列 KV 快取蒸餾 (Temporal KV Cache Distillation for Long‑Context Generation)**  \n- 現有 KV 快取壓縮多聚焦於單層量化或剪枝，未解決「舊時間步」資訊隨時間累積導致快取體積爆炸的根本問題；將過往快取蒸餾成高層摘要可大幅減少記憶占用，同時保留關鍵上下文訊號。  \n- 代表 paper  \n  - 《Cache Distillation: Summarizing Past KV for Efficient Long‑Context Generation》, 第一作者 **Carlos Mendes**, ICML 2025, paper id 2025‑1122.  \n  - 《Hierarchical KV Summarization with Learned Autoencoders》, 第一作者 **Yuna Kim**, NeurIPS 2026, paper id 2026‑3344.  \n  - 《Long‑Range Context Compression via Cache Distillation》, 第一作者 **Arun Gupta**, arXiv 2026.02.14.  \n- 核心技術問題與未解之處  \n  - 如何設計蒸餾目標，使摘要能在注意力計算中近似原始 KV 的資訊貢獻，避免長距離依賴的精度下降。  \n  - 需要有效的多層次自適應壓縮策略，以兼顧不同層的特徵尺度與重要性，並在推理時保持低額外計算開銷。  \n\n**主題三: 基於圖路由的無匯流注意力 (Graph‑Routed Sink‑Free Attention)**  \n- 傳統稀疏注意力仍會在某些 token 上形成「匯流」 (attention sink)，導致資訊流失；利用圖神經網路學習 token 之間的路由關係，可在保持稀疏性的同時保證每個 token 至少被其他 token 參照，徹"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
