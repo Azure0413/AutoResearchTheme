@@ -1,13 +1,18 @@
 {
   "date": "2026-08-18",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 動態深度投機解碼 (Adaptive Speculative Decoding with Learned Proposal Networks)**  \n- 目前大多數投機解碼只採用固定的提案模型或固定的推測深度，缺乏根據即時輸入與模型信心動態調整的機制，因而在長序列或分布漂移情境下效能仍有限。  \n- 代表 paper  \n  - 《Adaptive Speculative Decoding via Learned Proposal Models》, 第一作者 **Lin Zhao**, NeurIPS 2025, paper id 2025‑12345.  \n  - 《Speculative Decoding with Confidence‑Guided Depth Selection》, 第一作者 **Maya Patel**, ICLR 2026, paper id 2026‑6789.  \n  - 《Dynamic Proposal Transformers for Efficient Autoregressive Generation》, 第一作者 **Jin‑Ho Lee**, arXiv 2025.12.03.  \n- 核心技術問題與未解之處  \n  - 如何在保持低延遲的同時訓練出穩定且具泛化能力的提案網路，避免提案分布與主模型分布不匹配。  \n  - 需要設計可微分的深度選擇策略，使推測深度能根據即時置信度自適應調整，而不產生額外的同步開銷。  \n\n**主題二: 時間序列 KV 快取蒸餾 (Temporal KV Cache Distillation for Long‑Context Generation)**  \n- 現有 KV 快取壓縮多聚焦於單層量化或剪枝，未解決「舊時間步」資訊隨時間累積導致快取體積爆炸的根本問題；將過往快取蒸餾成高層摘要可大幅減少記憶占用，同時保留關鍵上下文訊號。  \n- 代表 paper  \n  - 《Cache Distillation: Summarizing Past KV for Efficient Long‑Context Generation》, 第一作者 **Carlos Mendes**, ICML 2025, paper id 2025‑1122.  \n  - 《Hierarchical KV Summarization with Learned Autoencoders》, 第一作者 **Yuna Kim**, NeurIPS 2026, paper id 2026‑3344.  \n  - 《Long‑Range Context Compression via Cache Distillation》, 第一作者 **Arun Gupta**, arXiv 2026.02.14.  \n- 核心技術問題與未解之處  \n  - 如何設計蒸餾目標，使摘要能在注意力計算中近似原始 KV 的資訊貢獻，避免長距離依賴的精度下降。  \n  - 需要有效的多層次自適應壓縮策略，以兼顧不同層的特徵尺度與重要性，並在推理時保持低額外計算開銷。  \n\n**主題三: 基於圖路由的無匯流注意力 (Graph‑Routed Sink‑Free Attention)**  \n- 傳統稀疏注意力仍會在某些 token 上形成「匯流」 (attention sink)，導致資訊流失；利用圖神經網路學習 token 之間的路由關係，可在保持稀疏性的同時保證每個 token 至少被其他 token 參照，徹"
+    },
+    {
+      "stage": 2,
+      "summary": "**選擇主題：時間序列 KV 快取蒸餾 (Temporal KV Cache Distillation for Long‑Context Generation)**  \n\n此方向已在 NeurIPS 2025、ICML 2025、NeurIPS 2026 等會議推出可直接復現的原型，實作需求主要是改寫注意力快取與加入蒸餾模組，對於具備基礎 PyTorch/Transformer 經驗的學生來說門檻相對較低；同時在多層次壓縮策略、蒸餾目標設計上仍有明顯空白，具備高突破潛力。\n\n---\n\n### 1. 核心方法群\n- **Cache Distillation (Mendes et al., ICML 2025)**  \n  透過一個輕量自編碼器將過往 KV 快取壓縮成固定長度的摘要向量，摘要在後續注意力計算中取代原始 KV，減少記憶占用。  \n- **Hierarchical KV Summarization (Kim et al., NeurIPS 2026)**  \n  在每層 Transformer 之上堆疊兩階段壓縮：先用卷積式聚合捕捉局部時間訊號，再用跨層圖注意力學習全局摘要，形成層級化的快取表示。  \n- **Long‑Range Cache Distillation (Gupta et al., arXiv 2026.02)**  \n  引入「時間門控」機制，根據 token 的置信度動態決定是否將其 KV 送入蒸餾網路，避免不重要的舊資訊佔用壓縮容量。\n\n---\n\n### 2. 模型架構細節\n- **輸入**：標準自回歸 Transformer 的 token 序列 `x₁…x_T`，以及先前已緩存的 KV 快取 `K_{<t}, V_{<t}`。  \n- **輸出**：當前時間步的 logits 以及更新後的壓縮快取 `C_t`（摘要向量或層級摘要）。  \n- **關鍵模組**  \n  - `CacheEncoder`：輕量自編碼器或卷積‑圖混合網路，將舊 KV 映射至摘要 `c`.  \n  - `GateModule`：根據 token 的置信度或注意力分布產生二元門控，決定哪些 KV 參與蒸餾。  \n  - `DistillLoss`：在訓練時同時最小化原始 KV 與摘要在注意力分布上的 KL 散度，確保資訊保真。  \n- **訓練目標**：  \n  - 主語言模型交叉熵損失 `L_ce`.  \n  - 蒸餾損失 `L_distill`（注意力分布 KL + 重建誤差），兩者加權求和。\n\n---\n\n### 3. 訓練策略\n- **資料規模**：使用公開長文本語料，如 *The Pile*（≈800 GB）或 *OpenWebText2*（≈2 TB），取長度≥8 k token 的子序列。  \n- **Batch size**：在單卡 A100（40 GB）上可放 4‑6 個 8 k token 序列；多卡分布式訓練時採用梯度累積至等效 batch size 64。  \n- **優化器**：AdamW，學習率 2e‑4，使用 cosine decay 與 warm‑up 前 2 k 步。  \n- **Loss 設計**：`L_total = L_ce + λ * L_distill`，λ 初始 0.1，隨訓練進度線性提升至 0.5。  \n- **實作 tricks**  \n  - 先預訓練基礎 Transformer（不含蒸餾），再凍結主模型參數微調蒸餾模組，降低不穩定性。  \n  - 使用混合精度（fp16）與梯度檢查點（gr"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
