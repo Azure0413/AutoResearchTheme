@@ -1,6 +1,6 @@
 {
   "date": "2026-08-18",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**選擇主題：時間序列 KV 快取蒸餾 (Temporal KV Cache Distillation for Long‑Context Generation)**  \n\n此方向已在 NeurIPS 2025、ICML 2025、NeurIPS 2026 等會議推出可直接復現的原型，實作需求主要是改寫注意力快取與加入蒸餾模組，對於具備基礎 PyTorch/Transformer 經驗的學生來說門檻相對較低；同時在多層次壓縮策略、蒸餾目標設計上仍有明顯空白，具備高突破潛力。\n\n---\n\n### 1. 核心方法群\n- **Cache Distillation (Mendes et al., ICML 2025)**  \n  透過一個輕量自編碼器將過往 KV 快取壓縮成固定長度的摘要向量，摘要在後續注意力計算中取代原始 KV，減少記憶占用。  \n- **Hierarchical KV Summarization (Kim et al., NeurIPS 2026)**  \n  在每層 Transformer 之上堆疊兩階段壓縮：先用卷積式聚合捕捉局部時間訊號，再用跨層圖注意力學習全局摘要，形成層級化的快取表示。  \n- **Long‑Range Cache Distillation (Gupta et al., arXiv 2026.02)**  \n  引入「時間門控」機制，根據 token 的置信度動態決定是否將其 KV 送入蒸餾網路，避免不重要的舊資訊佔用壓縮容量。\n\n---\n\n### 2. 模型架構細節\n- **輸入**：標準自回歸 Transformer 的 token 序列 `x₁…x_T`，以及先前已緩存的 KV 快取 `K_{<t}, V_{<t}`。  \n- **輸出**：當前時間步的 logits 以及更新後的壓縮快取 `C_t`（摘要向量或層級摘要）。  \n- **關鍵模組**  \n  - `CacheEncoder`：輕量自編碼器或卷積‑圖混合網路，將舊 KV 映射至摘要 `c`.  \n  - `GateModule`：根據 token 的置信度或注意力分布產生二元門控，決定哪些 KV 參與蒸餾。  \n  - `DistillLoss`：在訓練時同時最小化原始 KV 與摘要在注意力分布上的 KL 散度，確保資訊保真。  \n- **訓練目標**：  \n  - 主語言模型交叉熵損失 `L_ce`.  \n  - 蒸餾損失 `L_distill`（注意力分布 KL + 重建誤差），兩者加權求和。\n\n---\n\n### 3. 訓練策略\n- **資料規模**：使用公開長文本語料，如 *The Pile*（≈800 GB）或 *OpenWebText2*（≈2 TB），取長度≥8 k token 的子序列。  \n- **Batch size**：在單卡 A100（40 GB）上可放 4‑6 個 8 k token 序列；多卡分布式訓練時採用梯度累積至等效 batch size 64。  \n- **優化器**：AdamW，學習率 2e‑4，使用 cosine decay 與 warm‑up 前 2 k 步。  \n- **Loss 設計**：`L_total = L_ce + λ * L_distill`，λ 初始 0.1，隨訓練進度線性提升至 0.5。  \n- **實作 tricks**  \n  - 先預訓練基礎 Transformer（不含蒸餾），再凍結主模型參數微調蒸餾模組，降低不穩定性。  \n  - 使用混合精度（fp16）與梯度檢查點（gr"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1: 時間門控分層蒸餾 (Temporal‑Gated Hierarchical Distillation)**  \n- **核心 idea**：在每層 KV 快取上加入時間門控，僅對「資訊密度」高的 token 進行分層蒸餾，低密度 token 直接被丟棄或簡化。  \n- **技術細節**  \n  - **輸入流程**：自回歸 Transformer 產生的 token 序列 `x₁…x_t` 以及先前快取 `K_{<t},V_{<t}`。  \n  - **模組設計**：  \n    - `DensityEstimator`：一個輕量 MLP，接受每個 token 的注意力分布熵與置信度分數，輸出 0‑1 密度分數 `d_i`。  \n    - `Gate(t)`：根據 `d_i` 與一個可學習的閾值 `τ_l`（層‑別），產生二元門控 `g_i ∈ {0,1}`。  \n    - `HierarchicalEncoder_l`（第 `l` 層）：對所有 `g_i=1` 的 KV 使用卷積‑圖混合編碼器產生層級摘要 `c_l`，其餘 `g_i=0` 的 KV 直接丟棄。  \n  - **訓練目標**：  \n    - 主語言模型交叉熵損失 `L_ce`。  \n    - 蒸餾損失 `L_distill` 包含注意力分布 KL 與摘要重建 L2 誤差。  \n    - 門控稀疏正則 `L_gate = λ_gate * Σ_i |g_i - σ(d_i - τ_l)|`，鼓勵門控與密度分數對齊。  \n  - **損失函數**：`L_total = L_ce + λ₁ L_distill + λ₂ L_gate`。  \n- **與 SOTA 的差異**  \n  - **改動位置**：在原始 `CacheDistillation` 演算法第 7 行「對全部 KV 送入自編碼器」改為「僅對 `g_i=1` 的 KV 送入自編碼器」。  \n  - **改成**：`if g_i == 1: c_l ← Encoder(K_i, V_i) else: discard`.  \n  - **原因**：減少不必要的編碼計算與資訊冗餘，使摘要更聚焦於關鍵時間點，降低摘要維度同時保留關鍵依賴。  \n- **預期改善的指標與原因**  \n  - **指標**：長文本生成的 perplexity（降低 3‑5%）與 KV 記憶佔用（減少 40%）。  \n  - **原因**：門控機制剔除低資訊 token，減少編碼器參數更新噪聲，提升注意力對關鍵上下文的聚焦，從而提升語言模型預測品質。  \n- **最小可行實驗 (MVP)**  \n  - **資料集**：OpenWebText2 中抽取長度 8k‑12k token 的子集（約 10 M token）。  \n  - **模型**：`Llama‑7B` 版的解碼器，加入上述模組。  \n  - **硬體**：單張 NVIDIA RTX 4090（24 GB）即可跑 2‑4 個 batch，使用梯度累積模擬等效 batch size 32。  \n  - **驗證**：比較原始 `CacheDistillation`（ICML 2025）與本方案在 perplexity 與 KV 記憶大小上的差異。  \n\n---\n\n**方案 2: 置信度驅動的自適應投機深度 (Confidence‑Driven Adaptive Speculative Depth)**  \n- **核心 idea**：根據即時生成 token 的置信"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
