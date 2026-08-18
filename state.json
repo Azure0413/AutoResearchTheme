@@ -1,6 +1,6 @@
 {
   "date": "2026-08-19",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**選定主題：多相流體模擬的自適應物理導向神經算子**  \n（因為已有可取得的 CFD 資料、開源框架成熟，且在動態網格、守恆性方面仍有明顯缺口，適合學生以中等規模資源自行實作與改進）\n\n---\n\n### 1. 核心方法群\n- **Adaptive Mesh Neural Operator (AMNO)**  \n  透過可微分的網格細化模組，將傳統神經算子（如 Fourier Neural Operator）映射到動態生成的非結構化網格上，實現局部解析度提升。  \n- **Physics‑Informed Neural Operator with Dynamic Refinement (PINODR)**  \n  在損失函數中加入守恆律（質量、動量）與界面張力的微分約束，並在訓練過程中根據誤差指標自動插入或刪除網格節點。  \n- **Hybrid GNN‑FNO Multiphase Solver (HGFS)**  \n  結合圖神經網路處理不規則界面拓撲，與 Fourier Neural Operator 處理遠距離耦合，兩者交叉迭代以同時捕捉小尺度氣泡破裂與大尺度湍流結構。\n\n---\n\n### 2. 模型架構細節\n- **輸入**  \n  - 初始流場張量（速度、壓力、相體積分數）  \n  - 幾何資訊（固壁、固相界面）以節點座標或隱式函數表示  \n- **輸出**  \n  - 時間步進後的流場張量與相體積分數  \n- **關鍵模組**  \n  - `MeshRefineNet`：根據局部梯度或殘差產生細化指令，輸出新網格拓撲。  \n  - `OperatorCore`：主體神經算子（FNO、GNN 或混合），接受非結構化網格特徵並產生場的映射。  \n  - `PhysicsConstraint`：計算守恆律與界面張力的微分誤差，回饋給損失。  \n- **訓練目標**  \n  - 最小化預測場與真實 CFD 解的 L2 差異，同時加入物理約束項以強化守恆性與界面正確性。\n\n---\n\n### 3. 訓練策略\n- **資料規模**  \n  - 典型使用 5,000–10,000 個多相流模擬樣本（可由 OpenFOAM、Basilisk 產生），每個樣本包含 50–200 個時間步。  \n- **batch size**  \n  - 受限於 GPU 記憶體，常見設定為 4–8 個樣本（每個樣本內部採用時間子批次）。  \n- **優化器**  \n  - `AdamW`（學習率 1e-4，weight decay 1e-5），在 30 個 epoch 後使用 cosine decay。  \n- **loss 設計**  \n  - `L_data = L2(pred, true)`  \n  - `L_phys = λ_mass·|∇·u| + λ_momentum·|∂(ρu)/∂t + ∇·(ρuu) - ∇p| + λ_surface·|κ·n - σ|`  \n  - 總損失 `L = L_data + L_phys`，λ 係數在前 5 個 epoch 逐步提升。  \n- **實作 tricks**  \n  - 使用混合精度（AMP）降低記憶體占用。  \n  - 在 `MeshRefineNet` 中加入 Gumbel‑Softmax 近似，使離散細化決策可微分。  \n  - 針對相體積分數使用平衡交叉熵，以防止少數氣泡相被忽略。  \n\n---\n\n### 4. 主要 benchmark 與資料集\n- **Benchmark**：`Multiphas"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1：誤差預測驅動的自適應網格細化 (Error‑Predictive Mesh Refinement, EPMR)**  \n- **核心 idea**：用一個輕量的誤差預測子網路直接估計每個單元的局部截斷誤差，取代傳統的梯度或殘差門檻，僅在預測誤差超過設定阈值時才細化網格。  \n- **技術細節**  \n  - **輸入流程**：原始流場張量 (`velocity`, `pressure`, `phase_fraction`) 先經過基礎特徵提取器 `FeatureEncoder`，得到每個網格節點的特徵向量 `h_i`。  \n  - **模組設計**：  \n    - `ErrorPredictor`：兩層 MLP，輸入 `h_i`，輸出標量 `e_i`（預測的局部誤差）。  \n    - `MeshRefineNet`：在 `forward` 的第 3 行，原本的判斷式 `if grad_norm_i > τ:` 改為 `if e_i > τ:`，其中 `τ` 為可學習的全局阈值。  \n    - `OperatorCore`（保持不變）負責在細化後的非結構化網格上執行神經算子。  \n  - **訓練目標**：同時最小化場預測的 L2 損失與誤差預測的回歸損失（均方誤差），後者使用高階 CFD 解的真實局部誤差作為監督。  \n  - **損失函數**：`L = L_data + λ_err·L_err + L_phys`，其中 `L_err` 為 `ErrorPredictor` 的回歸損失，`L_phys` 為既有的守恆律項。  \n- **與 SOTA 的差異**  \n  - **改動位置**：`MeshRefineNet.forward` 第 3 行的細化判斷條件。  \n  - **改成**：從「梯度阈值」改為「學習的誤差阈值」。  \n  - **影響**：誤差預測直接對齊 CFD 真實誤差分布，避免在平滑區域過度細化，從而減少不必要的計算量，同時在高誤差區域提升解析度，提高整體 L2 精度。  \n- **預期改善的指標與原因**  \n  - **指標**：在 `BubbleRise-2D` 基準上，預期 L2 誤差下降 12%~18%，平均網格節點數減少約 22%。  \n  - **原因**：誤差預測使細化策略更具針對性，減少了梯度噪聲導致的過度細化，提升了資源利用效率。  \n- **最小可行實驗 (MVP)**  \n  - **資料集**：OpenFOAM 產生的 2,000 筆 2D 氣泡上升模擬，每筆 50 個時間步。  \n  - **模型規模**：`ErrorPredictor` 兩層 64 隱藏單元，`OperatorCore` 使用 3 層 FNO。  \n  - **硬體需求**：單張 RTX‑4090（24 GB）即可在 8‑12 小時內完成訓練，驗證細化率與誤差指標。  \n\n---\n\n**方案 2：頻譜‑圖混合神經算子 (Hybrid Spectral‑Graph Neural Operator, HSGNO)**  \n- **核心 idea**：在規則子域使用頻譜卷積捕捉遠距離耦合，在不規則介面子域使用圖神經網路捕捉拓撲變化，兩者在同一時間步內交叉迭代融合。  \n- **技術細節**  \n  - **輸入流程**：先將整體非結構化網格分割為「平滑子域」與「介面子域」兩類，分別產生 `grid_regular` 與 `graph_interface`。  \n  - **模組設計**：  \n    - `Spec"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
