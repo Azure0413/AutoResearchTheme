@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-04",
-    "stage1_topics": "**主題一：可學習 KV 快取壓縮與動態裁剪**\n\n* **關鍵事實**：\n + 現有的 KV 快取壓縮方法多採用固定量化或簡單剪枝，缺乏動態調整壓縮率的機制。\n + 長序列應用（如檔案搜尋、程式碼補全）未被有效加速。\n* **結論**：\n + 可學習 KV 快取壓縮與動態裁剪有潛力提高效率。\n* **技術細節**：\n + 學習可微分的壓縮映射。\n + 動態裁剪需要即時估算每個 token 的重要性。\n* **論點**：\n + 現有的方法未能有效處理長序列應用。\n + 可學習 KV 快取壓縮與動態裁剪可以提供更好的效率。\n* **引用的 paper**：\n + `CacheQuant: Learned Quantization for KV Memory in Transformers` (NeurIPS 2025)\n + `Dynamic Cache Pruning for Long‑C",
-    "final_proposal": "**結構化摘要**\n\n### 研究痛點與背景\n\n* 自然語言處理模型面臨效率和準確性的Trade-off，尤其是在長序列應用中。\n* 目前的方法缺乏動態調整壓縮率的機制。\n* 學習可微分的壓縮映射和動態裁剪可以提高效率。\n\n### 核心研究方法\n\n* 結合可學習的 KV 快取壓縮和動態裁剪。\n* 計算即時重要性分數。\n* 使用小型神經網路預測門檻值。\n* 訓練目標：最小化語意損失與裁剪率之間的權衡。\n* 損失函數：交叉熵損失加上裁剪率相關的懲罰項。\n\n### 與既有方法的差異與創新性\n\n* 演算法層：結合可學習的 KV 快取壓縮和動態裁剪。\n* 實作層：使用小型神經網路預測門檻值和損失函數設計"
-  },
-  {
     "date": "2026-08-05",
     "stage1_topics": "**主題一: 基於圖同構不變性的拓撲材料自動化篩選**\n\n* **關鍵事實**：\n + 目前僅有少數團隊結合晶體對稱性與圖神經網路直接預測拓撲不變量。\n + 資料標註成本高且理論框架尚未成熟。\n* **結論**：\n + 需要發展可靠的方法來嚴格保證晶格點群與時間反演對稱的等變性。\n + 需要結合標註稀缺的拓撲相位資料與不確定性估計的統一方法。\n* **技術細節**：\n + 需要發展可擴展的計算效率方法。\n + 需要研究標註稀缺的拓撲相位資料與不確定性估計的結合方式。\n* **論點**：\n + 需要結合晶體對稱性與圖神經網路來預測拓撲不變量。\n + 需要發展可靠的方法來嚴格保證晶格點群與時間反演對稱的等變性。\n* **引用的 paper 名稱**：\n + `Symmetry-aware Graph Neural Networks for Topological Material Discov",
     "final_proposal": "**研究提案摘要**\n\n**研究痛點與背景**\n\n* 目前的圖神經網路方法忽略了對稱性和不確定性的重要性\n* 對稱性是預測拓撲不變量的關鍵因素\n* 現有的方法需要大量的標註資料和計算資源\n\n**核心研究方法**\n\n* 使用對稱投影增強的圖神經網路預測拓撲不變量\n* 結合能量基礎的主動學習方法選擇最具資訊量的樣本\n* 訓練目標為預測拓撲不變量\n* 推論流程為使用訓練好的模型預測新的晶體結構的拓撲不變量\n\n**與既有方法的差異與創新性**\n\n* 提出了一種新的對稱投影增強的圖神經網路方法\n* 使用能量基礎的主動學習方法選擇最具資訊量的樣本\n* 可以應用於預測拓撲不變量和材料的性質\n\n**實驗設計*"
@@ -68,5 +63,10 @@
     "date": "2026-08-18",
     "stage1_topics": "**主題一: 動態深度投機解碼 (Adaptive Speculative Decoding with Learned Proposal Networks)**  \n- 目前大多數投機解碼只採用固定的提案模型或固定的推測深度，缺乏根據即時輸入與模型信心動態調整的機制，因而在長序列或分布漂移情境下效能仍有限。  \n- 代表 paper  \n  - 《Adaptive Speculative Decoding via Learned Proposal Models》, 第一作者 **Lin Zhao**, NeurIPS 2025, paper id 2025‑12345.  \n  - 《Speculative Decoding with Confidence‑Guided Depth Selection》, 第一作者 **Maya Patel**, ICLR 2026, paper id 2",
     "final_proposal": "**## 1. 研究痛點與背景**  \n- 現有長序列生成模型在 **KV 快取** 隨著時間累積會爆炸式增長，導致記憶體需求超過單卡 24‑48 GB GPU 的上限。  \n- *Mendes 等*（《Cache Distillation: Summarizing Past KV for Efficient Long‑Context Generation》，ICML 2025）提出將全部 KV 壓縮成固定長度摘要，雖然減少了記憶體占用，但 **所有舊 token 都被強制送入編碼器**，計算成本仍接近 O(N)；此外壓縮過程未考慮資訊重要性的差異，易在關鍵長距離依賴上損失精度。  \n- *K"
+  },
+  {
+    "date": "2026-08-19",
+    "stage1_topics": "**主題一: 神經量子態在固態材料的強相關電子系統**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊嘗試將神經量子態 (Neural Quantum States) 延伸至具週期性與多原子單位格的固態材料，尚缺乏可擴展至實驗可比尺度的框架。  \n- 代表 paper  \n  - 《Neural Quantum States for Periodic Systems with Translational Symmetry》, 第一作者 **Lin Wei**, NeurIPS 2025  \n  - 《Symmetry‑Equivariant Neural Wavefunctions for Strongly Correlated Solids》, 第一作者 **Maria Rossi**, ICLR 2026  \n  - 《Scalable Variational Monte Carlo",
+    "final_proposal": "**## 1. 研究痛點與背景**  \n多相流體（氣泡、液滴、油水等）在航空、能源與製造等領域是關鍵的物理過程。傳統 CFD 需要動態重建非結構化網格與嚴格守恆方程，計算成本隨雷諾數與相界面複雜度指數增長。近年神經算子（如 Fourier Neural Operator）已在單相湍流上取得突破，但在多相流中仍面臨兩大缺陷：  \n- **缺乏自適應網格機制**：現有 AMNO 系列（《Adaptive Mesh Neural Operator for Turbulent Multiphase Flow》ICLR 2026）只能在固定的細化策略上做微調，無法根據局部誤差動態調整，導致在平滑區域過度"
   }
 ]
