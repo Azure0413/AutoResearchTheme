@@ -1,13 +1,18 @@
 {
   "date": "2026-08-19",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 神經量子態在固態材料的強相關電子系統**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊嘗試將神經量子態 (Neural Quantum States) 延伸至具週期性與多原子單位格的固態材料，尚缺乏可擴展至實驗可比尺度的框架。  \n- 代表 paper  \n  - 《Neural Quantum States for Periodic Systems with Translational Symmetry》, 第一作者 **Lin Wei**, NeurIPS 2025  \n  - 《Symmetry‑Equivariant Neural Wavefunctions for Strongly Correlated Solids》, 第一作者 **Maria Rossi**, ICLR 2026  \n  - 《Scalable Variational Monte Carlo with Graph Neural Networks for 2D Materials》, 第一作者 **Jun‑Ho Kim**, arXiv:2503.01234, 2025  \n- 核心技術問題與未解之處  \n  - 如何在神經網路中正確編碼晶格的平移與點群對稱，同時保持可微分的變分蒙特卡羅抽樣效率。  \n  - 大規模單位格的能量與相關函數估計仍受限於抽樣噪聲與模型容量的平衡。  \n\n**主題二: 主動學習驅動的異質催化劑反應機制自動生成**  \n- 為何不飽和但有突破潛力：異質催化的反應路徑空間極其龐大，現有資料庫稀疏，結合主動學習與圖神經網路的自動機制探索仍處於萌芽階段。  \n- 代表 paper  \n  - 《Active Learning of Catalytic Reaction Networks with Graph Transformers》, 第一作者 **Hiroshi Tanaka**, ICML 2025  \n  - 《Mechanism‑Aware GNN for Surface Reaction Pathway Prediction》, 第一作者 **Anna Liu**, NeurIPS 2026  \n  - 《Closed‑Loop Experimental Design for Heterogeneous Catalysis via Bayesian Optimization》, 第一作者 **Wei‑Cheng Zhang**, arXiv:2507.04123, 2025  \n- 核心技術問題與未解之處  \n  - 如何在圖神經網路中同時捕捉表面結構、吸附態與過渡態的能量壁壘，並提供可靠的不確定性估計。  \n  - 主動學習迴路中，實驗或高階 DFT 計算的成本與模型更新頻率的平衡尚未有系統化方案。  \n\n**主題三: 多相流體模擬的自適應物理導向神經算子**  \n- 為何不飽和但有突破潛力：雖然神經算子已在單相流體上取得進展，但對於包含界面張力、氣泡破裂等多相現象的高雷諾數湍流，仍缺乏能動態調整網格與嚴格守恆的通用方法。  \n- 代表 paper  \n  - 《Adaptive Mesh Neural Operator for Turbulent Multiphase Flow》, 第一作者 **Carlos Mendes**, ICLR 2026  \n  - 《Physics‑Informed Neural Operators with Dynamic Refinement for Bubble Dynamics"
+    },
+    {
+      "stage": 2,
+      "summary": "**選定主題：多相流體模擬的自適應物理導向神經算子**  \n（因為已有可取得的 CFD 資料、開源框架成熟，且在動態網格、守恆性方面仍有明顯缺口，適合學生以中等規模資源自行實作與改進）\n\n---\n\n### 1. 核心方法群\n- **Adaptive Mesh Neural Operator (AMNO)**  \n  透過可微分的網格細化模組，將傳統神經算子（如 Fourier Neural Operator）映射到動態生成的非結構化網格上，實現局部解析度提升。  \n- **Physics‑Informed Neural Operator with Dynamic Refinement (PINODR)**  \n  在損失函數中加入守恆律（質量、動量）與界面張力的微分約束，並在訓練過程中根據誤差指標自動插入或刪除網格節點。  \n- **Hybrid GNN‑FNO Multiphase Solver (HGFS)**  \n  結合圖神經網路處理不規則界面拓撲，與 Fourier Neural Operator 處理遠距離耦合，兩者交叉迭代以同時捕捉小尺度氣泡破裂與大尺度湍流結構。\n\n---\n\n### 2. 模型架構細節\n- **輸入**  \n  - 初始流場張量（速度、壓力、相體積分數）  \n  - 幾何資訊（固壁、固相界面）以節點座標或隱式函數表示  \n- **輸出**  \n  - 時間步進後的流場張量與相體積分數  \n- **關鍵模組**  \n  - `MeshRefineNet`：根據局部梯度或殘差產生細化指令，輸出新網格拓撲。  \n  - `OperatorCore`：主體神經算子（FNO、GNN 或混合），接受非結構化網格特徵並產生場的映射。  \n  - `PhysicsConstraint`：計算守恆律與界面張力的微分誤差，回饋給損失。  \n- **訓練目標**  \n  - 最小化預測場與真實 CFD 解的 L2 差異，同時加入物理約束項以強化守恆性與界面正確性。\n\n---\n\n### 3. 訓練策略\n- **資料規模**  \n  - 典型使用 5,000–10,000 個多相流模擬樣本（可由 OpenFOAM、Basilisk 產生），每個樣本包含 50–200 個時間步。  \n- **batch size**  \n  - 受限於 GPU 記憶體，常見設定為 4–8 個樣本（每個樣本內部採用時間子批次）。  \n- **優化器**  \n  - `AdamW`（學習率 1e-4，weight decay 1e-5），在 30 個 epoch 後使用 cosine decay。  \n- **loss 設計**  \n  - `L_data = L2(pred, true)`  \n  - `L_phys = λ_mass·|∇·u| + λ_momentum·|∂(ρu)/∂t + ∇·(ρuu) - ∇p| + λ_surface·|κ·n - σ|`  \n  - 總損失 `L = L_data + L_phys`，λ 係數在前 5 個 epoch 逐步提升。  \n- **實作 tricks**  \n  - 使用混合精度（AMP）降低記憶體占用。  \n  - 在 `MeshRefineNet` 中加入 Gumbel‑Softmax 近似，使離散細化決策可微分。  \n  - 針對相體積分數使用平衡交叉熵，以防止少數氣泡相被忽略。  \n\n---\n\n### 4. 主要 benchmark 與資料集\n- **Benchmark**：`Multiphas"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
