@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-05",
-    "stage1_topics": "**主題一: 基於圖同構不變性的拓撲材料自動化篩選**\n\n* **關鍵事實**：\n + 目前僅有少數團隊結合晶體對稱性與圖神經網路直接預測拓撲不變量。\n + 資料標註成本高且理論框架尚未成熟。\n* **結論**：\n + 需要發展可靠的方法來嚴格保證晶格點群與時間反演對稱的等變性。\n + 需要結合標註稀缺的拓撲相位資料與不確定性估計的統一方法。\n* **技術細節**：\n + 需要發展可擴展的計算效率方法。\n + 需要研究標註稀缺的拓撲相位資料與不確定性估計的結合方式。\n* **論點**：\n + 需要結合晶體對稱性與圖神經網路來預測拓撲不變量。\n + 需要發展可靠的方法來嚴格保證晶格點群與時間反演對稱的等變性。\n* **引用的 paper 名稱**：\n + `Symmetry-aware Graph Neural Networks for Topological Material Discov",
-    "final_proposal": "**研究提案摘要**\n\n**研究痛點與背景**\n\n* 目前的圖神經網路方法忽略了對稱性和不確定性的重要性\n* 對稱性是預測拓撲不變量的關鍵因素\n* 現有的方法需要大量的標註資料和計算資源\n\n**核心研究方法**\n\n* 使用對稱投影增強的圖神經網路預測拓撲不變量\n* 結合能量基礎的主動學習方法選擇最具資訊量的樣本\n* 訓練目標為預測拓撲不變量\n* 推論流程為使用訓練好的模型預測新的晶體結構的拓撲不變量\n\n**與既有方法的差異與創新性**\n\n* 提出了一種新的對稱投影增強的圖神經網路方法\n* 使用能量基礎的主動學習方法選擇最具資訊量的樣本\n* 可以應用於預測拓撲不變量和材料的性質\n\n**實驗設計*"
-  },
-  {
     "date": "2026-08-06",
     "stage1_topics": "**主題一: 具備自發語言的跨代理工具協作學習**\n\n* **關鍵事實**：\n + 目前僅有少數團隊在多代理環境中同時學習「工具使用」與「語言協調」的雙重能力。\n + 研究人數仍在十人以下，且缺乏系統化的基準與評測。\n* **結論**：\n + 設計可微分的「工具抽象」表示是核心技術問題。\n + 保持語言訊號的穩定性與可解釋性仍缺乏有效的正則化方法。\n* **技術細節**：\n + 需要設計可微分的工具抽象表示。\n + 需要有效的正則化方法。\n* **論點**：\n + 跨代理工具協作學習的重要性。\n + 目前的研究缺陷。\n* **引用**：\n + *Emergent Tool‑Use Communication in Multi‑Agent Reinforcement Learning* (NeurIPS 2025)\n + *Learning Grounded Communication fo",
     "final_proposal": "**Stage 5: 完整研究提案**\n\n**關鍵事實**\n\n* 跨代理工具協作學習是一個重要的研究領域\n* 目前的方法存在工具抽象表示的學習和語言一致性的保證問題\n* 分層工具抽象學習和圖形神經網路的工具關係學習是新穎的方法\n\n**結論**\n\n* 我們提出的方法可以幫助代理學習工具抽象表示和工具關係\n* 我們的方法可以應用於跨代理工具協作學習的各種場景\n* 我們的方法可以幫助我們更好地理解跨代理工具協作學習的機制\n\n**技術細節**\n\n* 分層工具抽象編碼器: 訓練代理學習不同層級的工具屬性\n* 圖形神經網路: 學習工具之間的關係\n* 語言生成器: 根據工具抽象表示和工具關係生成語言\n* 評"
@@ -68,5 +63,10 @@
     "date": "2026-08-19",
     "stage1_topics": "**主題一: 神經量子態在固態材料的強相關電子系統**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊嘗試將神經量子態 (Neural Quantum States) 延伸至具週期性與多原子單位格的固態材料，尚缺乏可擴展至實驗可比尺度的框架。  \n- 代表 paper  \n  - 《Neural Quantum States for Periodic Systems with Translational Symmetry》, 第一作者 **Lin Wei**, NeurIPS 2025  \n  - 《Symmetry‑Equivariant Neural Wavefunctions for Strongly Correlated Solids》, 第一作者 **Maria Rossi**, ICLR 2026  \n  - 《Scalable Variational Monte Carlo",
     "final_proposal": "**## 1. 研究痛點與背景**  \n多相流體（氣泡、液滴、油水等）在航空、能源與製造等領域是關鍵的物理過程。傳統 CFD 需要動態重建非結構化網格與嚴格守恆方程，計算成本隨雷諾數與相界面複雜度指數增長。近年神經算子（如 Fourier Neural Operator）已在單相湍流上取得突破，但在多相流中仍面臨兩大缺陷：  \n- **缺乏自適應網格機制**：現有 AMNO 系列（《Adaptive Mesh Neural Operator for Turbulent Multiphase Flow》ICLR 2026）只能在固定的細化策略上做微調，無法根據局部誤差動態調整，導致在平滑區域過度"
+  },
+  {
+    "date": "2026-08-20",
+    "stage1_topics": "**主題一: 自我監督的程序化技能發現與組合**  \n- 為何不飽和但有突破潛力：目前只有零星工作嘗試在無標註環境中自動發掘可重複使用的「程序化」技能，且缺乏系統化的技能組合機制，使得長期開放式任務的學習仍受限。  \n- 代表 paper  \n  - 《Procedural Skill Discovery via Predictive World Models》, 第一作者 **Yuan Liu**, NeurIPS 2025  \n  - 《Compositional Skill Graphs for Reinforcement Learning》, 第一作者 **Anita Patel**, ICLR 2026  \n  - 《Unsupervised Action Segmentation for Open‑Ended Agents》, arXiv:2509.01432, 2025  \n",
+    "final_proposal": "**## 1. 研究痛點與背景**  \n- **重要性**：在開放式機器人與虛擬代理任務中，工具的自動設計與即時使用是突破長期自主性的關鍵。若代理只能使用預先定義好的工具，將無法應對環境變化或未知任務。  \n- **現有缺陷**：  \n  - 《Differentiable Physics‑Based Tool Synthesis for Agents》 (Kim 2025) 只能在單一連續向量空間中搜尋工具，缺乏結構化的類型選擇，導致搜尋效率低下。  \n  - 《Zero‑Shot Tool Invention via Latent Program Induction》 (Zhou 2026"
   }
 ]
