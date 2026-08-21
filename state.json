@@ -1,13 +1,18 @@
 {
   "date": "2026-08-22",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：持續學習與動態專家增減的 MoE 架構**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊探索在同一模型生命週期內自動加入或移除專家，以應對新任務或概念漂移，研究人數仍在十人以下，缺乏系統化的評測基準。  \n- 代表 paper  \n  - 《Dynamic Expert Expansion for Continual Mixture‑of‑Experts», 第一作者 **Jia‑Wei Chen**, arXiv:2504.01873, 2025  \n  - 《Lifelong MoE: Adaptive Expert Pruning and Growth via Gradient‑Based Signals», 第一作者 **Mina Patel**, ICLR 2026, 2026  \n  - 《Continual MoE with Task‑Aware Expert Allocation», 第一作者 **Luca Rossi**, NeurIPS 2025, 2025  \n- 核心技術問題與未解之處  \n  - 如何設計可微分且低開銷的專家增減機制，使模型在不破壞已學知識的前提下快速適應新任務。  \n  - 需要理論保證新增或刪除的專家不會導致路由不平衡或梯度消失，並且在資源受限的部署環境中保持即時性。\n\n**主題二：結合不確定性估計的 Token‑Level 路由**  \n- 為何不飽和但有突破潛力：大多數現有 MoE 只依賴硬性分數或門控值決定 token 分配，缺乏對路由決策不確定性的量化，導致在噪聲或分布漂移情況下效能不穩定，相關工作仍屈指可數。  \n- 代表 paper  \n  - 《Uncertainty‑Aware Token Routing for Sparse Mixture‑of‑Experts», 第一作者 **Yuan‑Ting Liu**, ICLR 2026, 2026  \n  - 《Bayesian Gating Networks for MoE Token Selection», 第一作者 **Anika Singh**, ICML 2025, 2025  \n  - 《Confidence‑Driven Adaptive Routing in Large‑Scale MoE Transformers», 第一作者 **Hao Zhang**, arXiv:2511.04512, 2025  \n- 核心技術問題與未解之處  \n  - 如何在保持路由計算成本低的同時，引入可靠的不確定性估計（如變分推斷或深度高斯過程）。  \n  - 必須設計與訓練目標相容的正則化，使模型在高不確定性 token 上自動回退至較密集的子網，避免性能退化。\n\n**主題三：以延遲與能源為目標的自適應路由強化學習**  \n- 為何不飽和但有突破潛力：現有 MoE 研究多聚焦於準確率或參數效率，少有同時考量硬體延遲、能源消耗與模型效能的路由策略，相關工作仍處於萌芽階段。  \n- 代表 paper  \n  - 《Latency‑Aware Adaptive Routing for Mixture‑of‑Experts Transformers», 第一作者 **Ethan Kim**, NeurIPS 2025, 2025  \n  - 《Energy‑Constrained MoE Routing via Multi‑Objective Reinforcement Learning», 第一作者 **Sofia Garcí"
+    },
+    {
+      "stage": 2,
+      "summary": "**選定主題：結合不確定性估計的 Token‑Level 路由**  \n\n此方向在 2025‑2026 年已出現數篇具體實作（ICLR 2026、ICML 2025、arXiv 2025），技術已可在校園 GPU 叢集上復現；同時路由不確定性的量化與利用仍有明顯缺口，且所需資源（數十萬 token、單卡 24GB）符合學生級研究條件。\n\n---\n\n### 1. 核心方法群  \n- **Uncertainty‑Aware Token Routing (UATR)** – 透過變分推斷為每個 token 產生門控分布，利用分布的方差作為不確定性指標，當方差超過門檻時將 token 交給較密集的子網。  \n- **Bayesian Gating Network (BGN)** – 在傳統路由網路上加入一層貝葉斯線性層，使用 Monte‑Carlo Dropout 近似後驗，根據樣本間的預測散度估算不確定性，並在訓練時加入 KL 正則化以防止過度散布。  \n- **Confidence‑Driven Adaptive Routing (CDAR)** – 先用普通的 softmax 門控得到初始路由分數，然後根據 token 的置信度（最高 softmax 機率）調整路由權重；低置信度 token 會被路由到「備援」專家或回退至全模型。  \n\n---\n\n### 2. 模型架構細節  \n- **輸入**：標準 Transformer token 序列（例如 BERT‑base 的 768 維向量）。  \n- **關鍵模組**  \n  - `gate_net`：產生每個 token 的專家選擇分數，加入不確定性估計層（變分分布或 Dropout）。  \n  - `expert_pool`：多個稀疏專家（每個為小型 Feed‑Forward 網路），支援動態啟用/停用。  \n  - `fallback_module`：在不確定性過高時使用的密集子網，通常為一層較大的 FFN。  \n- **輸出**：經過選定專家或備援子網處理後的 token 表示，送回後續 Transformer 層。  \n- **訓練目標**：  \n  - 主損失為下游任務交叉熵（或回歸 MSE）。  \n  - 加上 **不確定性正則項**（變分 KL 或 Dropout KL），鼓勵門控分布保持適度熵。  \n  - 另有 **路由平衡損失**，防止少數專家被過度使用。  \n\n---\n\n### 3. 訓練策略  \n- **資料規模**：以大規模語料（如 C4、The Pile）預訓練 100M‑300M token，然後在下游任務（GLUE、SQuAD）微調。  \n- **batch size**：單卡 24GB 訓練時常用 `batch_size = 256`（每卡），使用梯度累積至等效 1024。  \n- **優化器**：AdamW，學習率 1e‑4，使用 cosine decay。  \n- **loss 設計**：`total_loss = task_loss + λ1 * uncertainty_kl + λ2 * routing_balance`，λ1、λ2 於驗證集上微調（常見設定 λ1=0.1、λ2=0.05）。  \n- **實作 tricks**  \n  - 在 `gate_net` 前加入 LayerNorm，穩定變分參數。  \n  - 使用 **top‑k**（k=2）門控選擇，減少稀疏計算開銷。  \n  - 針對不確定性估計的 Monte‑Carlo Dropout，僅"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
