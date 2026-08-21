@@ -461,3 +461,119 @@
 
 ---
 
+## Stage 5 — 2026-08-22 03:53:25
+
+**Model:** `groq/compound-mini`
+
+**Prompt:**
+
+綜合前四階段,整合出**一個最完善、最值得執行**的研究提案。選擇標準:(a) 技術可行 (b) 創新性高 (c) 計算成本可控(單張 24-48G GPU 可開工)。
+
+**輸出格式**(嚴格遵守,不要 LaTeX、不要表格):
+
+## 1. 研究痛點與背景
+(為何重要?目前方法的具體缺陷?引用 1-2 篇 paper 支撐論點)
+
+## 2. 核心研究方法
+(一段 paragraph 說明 idea,再用條列列出 step-by-step 演算法、訓練目標、推論流程)
+
+## 3. 與既有方法的差異與創新性
+(條列至少 3 個層級的新穎性:演算法層、實作層、應用層)
+
+## 4. 實驗設計
+- **資料集**:
+- **baseline**:
+- **評估指標**:
+- **ablation study 設計**:
+- **計算需求估計**(GPU 數量 × 時間 × 成本):
+
+## 5. 預期貢獻與影響
+(科學價值 + 工程應用 + 為何 reviewer 會給高分)
+
+## 6. 風險與緩解
+(誠實列出 2-3 個最大風險與應對策略)
+
+**Response (full):**
+
+**## 1. 研究痛點與背景**  
+- **重要性**：隨著大型混合專家模型（Mixture‑of‑Experts, MoE）在語言與視訊領域的參數規模突破千億，如何在保持高效推理的同時保證模型在概念漂移、噪聲與資源受限環境下的穩定性成為關鍵。  
+- **現有缺陷**：  
+  - 大多數 MoE 只依賴單一門控分數決定 token 分配，缺乏對路由決策不確定性的量化，導致在分布漂移時出現「路由崩潰」現象。  
+  - 目前的動態專家增減（如《Dynamic Expert Expansion for Continual MoE》arXiv:2504.01873、《Lifelong MoE》ICLR 2026）僅使用梯度信號作為觸發條件，未考慮不確定性資訊，容易在噪聲資料上過度擴張或過度裁剪。  
+- **支撐文獻**：  
+  - 《Uncertainty‑Aware Token Routing for Sparse Mixture‑of‑Experts》ICLR 2026，首次將變分不確定性引入門控，但僅作為路由門檻，未結合動態容量調整。  
+  - 《Energy‑Constrained MoE Routing via Multi‑Objective Reinforcement Learning》NeurIPS 2025，示範了多目標路由，但未處理不確定性與容量自適應的交互。  
+
+**## 2. 核心研究方法**  
+本提案提出 **Variational Uncertainty‑Driven Expert Growth (VUDGE)**：在門控層同時估計不確定性與變分門檻，根據不確定性驅動專家自動新增或刪除，並在推論時根據不確定性自適應調整路由硬度，以同時兼顧效能、記憶體與能源。  
+
+- **演算法步驟**  
+  1. **變分門控**：`gate_net` 輸出每個 token 的均值 `mu` 與方差 `sigma2`（使用線性層 + 參數化方差），透過 re‑parameterization 抽樣得到門控向量 `g = mu + sqrt(sigma2) * epsilon`。  
+  2. **不確定性指標**：以 `sigma2` 作為 token‑level 不確定性；若 `sigma2 > tau_high`，視為高不確定性；若 `sigma2 < tau_low`，視為低不確定性。  
+  3. **容量調整**：  
+     - **新增**：對於高不確定性 token，若其所屬專家使用率在最近 `W` 步低於 `rho_prune`，則從候補專家池中挑選最相似的專家（參考其參數 L2 距離）複製並激活。  
+     - **刪除**：對於低不確定性且長期未被使用的專家，執行參數凍結並從活躍池移除。  
+  4. **自適應溫度**：在推論階段，根據 `sigma2` 動態調整門控 softmax 的溫度 `temp = 1 + alpha * sigma2`，高不確定性 token 的溫度提升，使其路由分布更平滑，進而回退至備援密集子網。  
+  5. **正則化**：  
+     - 變分 KL 正則項限制 `sigma2` 不過大。  
+     - 容量正則 `lambda_cap * (num_active_experts - target_capacity)^2` 鼓勵模型在預算內維持穩定專家數。  
+     - 路由平衡損失防止單一專家被過度使用。  
+
+- **訓練目標**  
+  `total_loss = task_loss + lambda_kl * KL_variational + lambda_cap * capacity_penalty + lambda_bal * routing_balance`  
+  其中 `task_loss` 為下游任務交叉熵或回歸 MSE。  
+
+- **推論流程**  
+  1. 輸入 token 序列 → `gate_net` 產生 `mu, sigma2`。  
+  2. 計算 `temp` 並以 `softmax(g / temp)` 取得路由分數。  
+  3. 依據分數與 `sigma2` 判斷是否使用專家或回退至備援子網。  
+  4. 合併專家輸出 → 後續 Transformer 層。  
+
+**## 3. 與既有方法的差異與創新性**  
+- **演算法層**：同時結合變分不確定性估計與動態專家增減，首次讓「不確定性」直接驅動容量調整，而非僅作為路由門檻。  
+- **實作層**：提出「分層門控」策略：先用輕量 deterministic gate 做粗選，僅對被選 token 執行變分抽樣，將額外計算成本控制在 1.5 倍以內，適合單卡 24‑48 GB GPU。  
+- **應用層**：在推論時引入自適應溫度，使模型在噪聲或概念漂移情境下自動回退至密集子網，提升魯棒性，特別適用於邊緣裝置與即時服務。  
+
+**## 4. 實驗設計**  
+- **資料集**:  
+  - 預訓練語料：C4 前 200 B token（抽樣 100 M token 作為預訓練子集）。  
+  - 微調任務：GLUE（MNLI、QQP、RTE）、Long Range Arena（LRA）、以及概念漂移測試集（Synthetic Drift Suite, 2025）。  
+- **baseline**:  
+  - 標準 Switch‑Transformer（8 專家、top‑2）。  
+  - 《Dynamic Expert Expansion for Continual MoE》arXiv:2504.01873。  
+  - 《Uncertainty‑Aware Token Routing for Sparse MoE》ICLR 2026（僅不確定性門檻，無容量調整）。  
+- **評估指標**:  
+  - 任務準確率 / F1（GLUE、LRA）。  
+  - 記憶體峰值（GB）。  
+  - 推論延遲（ms / token）。  
+  - 能源消耗（W·h，使用 NVIDIA‑Smi 估算）。  
+  - 在概念漂移測試集上的性能衰減率。  
+- **ablation study 設計**:  
+  - 移除變分門控，只保留 deterministic gate。  
+  - 固定 `tau_high / tau_low` 為常數，不使用自適應溫度。  
+  - 去除容量正則，觀察專家數變化與效能。  
+  - 比較「分層門控」與「全變分門控」的顯存與速度。  
+- **計算需求估計**:  
+  - 單卡 RTX 4090（24 GB）預訓練 100 M token 需要約 48 小時，成本約 0.8 USD/小時 → 約 38 USD。  
+  - 微調每個下游任務 12 小時，四個任務共 48 小時，成本約 38 USD。  
+  - 總計約 76 USD，全部在單張 GPU 上即可完成。  
+
+**## 5. 預期貢獻與影響**  
+- **科學價值**：提供第一套以不確定性驅動的自適應容量 MoE 框架，填補「不確定性」與「動態專家管理」之間的理論與實踐空白。  
+- **工程應用**：模型在資源受限的邊緣設備上能自動縮減專家數，降低記憶體與能源消耗，同時在噪聲或概念漂移時保持穩定服務品質。  
+- **審稿優勢**：創新點明確、技術可行、實驗設計完整且成本低，符合 NeurIPS/ICLR 近期對「高效且可靠」模型的評分偏好，預期能獲得高分與實驗驗證。  
+
+**## 6. 風險與緩解**  
+- **風險 1**：變分抽樣導致顯存激增，超出單卡限制。  
+  - **緩解**：採用分層門控，只對 top‑k 被選 token 執行變分抽樣；使用 DeepSpeed ZeRO‑3 進一步分割參數。  
+- **風險 2**：不確定性門檻 `tau_high / tau_low` 在不同任務上不穩定，可能導致過度新增或過度裁剪。  
+  - **緩解**：在訓練初期使用小批次驗證集自適應調整門檻，並加入滑動窗口平滑機制限制門檻變化速率。  
+- **風險 3**：在極長序列或高噪聲輸入下，變分方差被放大，引發專家池快速膨脹。  
+  - **緩解**：設定「增長速率上限」與「專家壽命」限制，每個 epoch 最多新增 2 個專家，並對新增專家使用參數正則化防止過度擬合。  
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
