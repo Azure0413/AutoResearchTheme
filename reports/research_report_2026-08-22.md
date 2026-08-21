@@ -297,3 +297,121 @@
 
 ---
 
+## Stage 3 — 2026-08-22 02:52:18
+
+**Model:** `groq/compound-mini`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1: Variational Expert Growth (VEG)**  
+- **核心 idea**：以變分門控同時驅動專家新增與刪除，使 MoE 在單一訓練週期內自動調整容量。  
+- **技術細節**  
+  - **輸入流程**：標準 token 序列 → `gate_net` 產生每個 token 的門控均值 `μ` 與方差 `σ²`（變分參數）。  
+  - **模組設計**：  
+    - `gate_net` 輸出 `μ`、`σ²`，再以 re‑parameter化技巧抽樣 `g = μ + σ·ε`（ε 為標準正態噪聲）。  
+    - `expert_pool` 包含「候補專家」集合，初始權重為隨機。  
+    - `growth_controller` 監測抽樣門檻 `|g| > τ_grow` 時，觸發 **新增**：從候補集合挑選最相似的專家並複製其參數；若 `|g| < τ_prune` 且該專家在最近 `W` 步內使用率低於 `ρ`，則 **刪除**。  
+  - **訓練目標**：  
+    - 主任務交叉熵損失。  
+    - 變分 KL 正則項，使 `σ²` 不至於過大。  
+    - **容量正則**：`λ_cap * (num_active_experts - target_capacity)²`，鼓勵模型維持在目標專家數。  
+  - **損失函數**：`total = task_loss + λ_kl * KL + λ_cap * capacity_penalty`。  
+- **與 SOTA 的差異**  
+  - **改動位置**：在原始 MoE 之 `gate_logits = linear(x)`（第 12 行）改為 `μ, σ² = linear_variational(x)`，再抽樣得到 `g`（第 13 行）。  
+  - **為何影響**：變分門控提供不確定性資訊，使模型在高不確定性 token 上自動擴增專家容量，避免因容量不足導致的表現下降，同時在低使用率時自動裁剪，降低記憶體佔用。  
+- **預期改善的指標與原因**  
+  - **參數效率**：在 GLUE 中相同參數量下提升 1.5%~2% 的平均分數，因為模型能在需要時臨時擴展。  
+  - **記憶體峰值**：在長序列任務（Long Range Arena）上減少 20% 記憶體使用，因為不活躍專家被即時刪除。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：GLUE 子集（MNLI、QQP）+ Long Range Arena。  
+  - **模型規模**：`base‑MoE`（約 120M 參數，8 個專家，每專家 2M）。  
+  - **硬體**：單張 RTX 4090（24 GB）即可跑 8‑GPU 等效的 1‑step 梯度累積。  
+  - **驗證**：比較 VEG 與《Dynamic Expert Expansion for Continual MoE》（arXiv:2504.01873）在相同 FLOPs 下的準確率與記憶體曲線。  
+
+---
+
+**方案 2: Bayesian Uncertainty Gating with Adaptive Temperature (BUG‑AT)**  
+- **核心 idea**：在門控 softmax 前加入 token‑層自適應溫度，根據貝葉斯不確定性調整路由「硬度」，讓高不確定性 token 更傾向於回退至密集子網。  
+- **技術細節**  
+  - **輸入流程**：token 向量 → `gate_net` 產生原始門控分數 `s`.  
+  - **模組設計**：  
+    - `uncertainty_head` 為單層 Bayesian Linear（使用 Monte‑Carlo Dropout）輸出方差估計 `var`.  
+    - `temp_net` 將 `var` 映射到正實數溫度 `τ = softplus(w·var + b)`.  
+    - 最終門控分數 `p = softmax(s / τ)`.  
+    - 若 `τ` 超過預設上限，則 token 直接送至 `fallback_dense`（一層較大 FFN）。  
+  - **訓練目標**：  
+    - 任務交叉熵。  
+    - Dropout KL 正則（鼓勵合理的方差分布）。  
+    - **溫度平滑項**：`λ_temp * (τ - τ_target)²`，防止溫度過度波動。  
+  - **損失函數**：`total = task_loss + λ_kl * dropout_KL + λ_temp * temp_penalty`。  
+- **與 SOTA 的差異**  
+  - **改動位置**：在原始 MoE 之 `p = softmax(gate_logits)`（第 9 行）改為 `τ = temp_net(var)`（第 10 行）再 `p = softmax(gate_logits / τ)`（第 11 行）。  
+  - **為何影響**：自適應溫度根據不確定性動態調整路由分布的「鋒利度」，高不確定性 token 的分布更平坦，減少單一專家負載，降低錯誤放大效應，同時保留低不確定性 token 的專家專精度。  
+- **預期改善的指標與原因**  
+  - **魯棒性**：在噪聲注入測試（GLUE + 隨機字詞置換）中錯誤率下降約 12%。  
+  - **延遲**：在實時推理基準（MLPerf Inference Tiny）上平均推理時間減少 8%，因為不確定 token 直接走密集路徑，省去多專家調度開銷。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：GLUE (MNLI) + 噪聲版 GLUE（隨機遮蓋 15% token）。  
+  - **模型規模**：`MoE‑Base`（6 層、8 專家、每專家 1.5M 參數）。  
+  - **硬體**：單張 RTX 4090，batch size 128。  
+  - **驗證**：對比 BUG‑AT 與《Uncertainty‑Aware Token Routing for Sparse MoE》（ICLR 2026）在噪聲測試下的準確率與平均延遲。  
+
+---
+
+**方案 3: Multi‑Objective RL Router with Energy‑Latency Proxy (MORL‑EL)**  
+- **核心 idea**：使用多目標強化學習訓練路由策略，同時最小化預測誤差、硬體延遲與能源消耗的代理指標。  
+- **技術細節**  
+  - **輸入流程**：每個 token 的表示 `h` 與當前硬體狀態向量 `s_hw`（包括 GPU 使用率、功耗估計）拼接成狀態 `s`.  
+  - **模組設計**：  
+    - `router_policy` 為小型 LSTM（2 層）輸出離散路由動作 `a`（選擇 1‑2 個專家或回退）。  
+    - `energy_proxy`：根據專家 FLOPs 與預估功耗表查表得到能耗估計 `e(a)`.  
+    - `latency_proxy`：根據當前 GPU 負載與專家佇列長度估算延遲 `l(a)`.  
+    - `reward = - (α * task_error + β * e(a) + γ * l(a))`，其中 `task_error` 為即時交叉熵損失。  
+  - **訓練目標**：使用 Proximal Policy Optimization（PPO）最大化上述 reward，並在每個 mini‑batch 中同步更新主模型的參數（共享梯度）。  
+  - **損失函數**：PPO 目標 + 主任務交叉熵（作為基線），兩者交替優化。  
+- **與 SOTA 的差異**  
+  - **改動位置**：在原始 MoE 之 `gate_logits = linear(x)`（第 7 行）被 `router_policy(state)` 取代（第 8 行），且路由決策不再僅依賴分數，而是由策略網路輸出。  
+  - **為何影響**：引入多目標 RL 使路由不僅考慮預測精度，還能顧及實際硬體成本，從而在能源受限或延遲敏感的部署環境中自適應調整專家使用頻率，提升整體效能/能比。  
+- **預期改善的指標與原因**  
+  - **能源效率**：在 ImageNet‑1k 的稀疏推理測試中，總功耗降低約 18%，因為策略會在高負載時自動切換至較少專家的路徑。  
+  - **延遲**：在 T4 GPU 上的實時翻譯任務（WMT‑14）平均端到端延遲下降 15%，源於路由策略根據即時負載選擇更快的子網。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：WMT‑14 英‑德（翻譯）+ 能源測量腳本（NVIDIA‑Smi 讀取功耗）。  
+  - **模型規模**：`MoE‑Transformer`（6 層、12 專家、每專家 2M 參數）。  
+  - **硬體**：單張 RTX 4090，使用 PyTorch‑RLlib 實作 PPO。  
+  - **驗證**：與《Energy‑Constrained MoE Routing via Multi‑Objective Reinforcement Learning》（NeurIPS 2025）比較在相同 FLOPs 下的 BLEU、功耗與延遲。  
+
+---
+
+**方案 4: Confidence‑Conditioned Expert Pruning (CCEP)**  
+- **核心 idea**：在推理階段根據 token 的置信度動態關閉低貢獻專家，減少計算量且不影響高置信度 token 的表現。  
+- **技術細節**  
+  - **輸入流程**：token 序列 → `gate_net` 產生原始門控分數 `s`.  
+  - **模組設計**：  
+    - 計算每個 token 的置信度
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
