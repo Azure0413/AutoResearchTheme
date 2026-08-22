@@ -282,3 +282,110 @@
 
 ---
 
+## Stage 3 — 2026-08-23 02:46:05
+
+**Model:** `groq/compound-mini`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1: Curvature‑Adaptive Riemannian Batch Normalization**  
+- **核心 idea**：在雙曲圖神經網路的訊息傳遞層加入依曲率自適應的批次正規化，使特徵在切空間的尺度保持穩定，減少因曲率變化導致的梯度爆炸。  
+- **技術細節**  
+  - **輸入流程**：節點特徵先經 `log_map` 投射到切空間，得到歐氏向量 `z_i`。  
+  - **模組設計**：在每個 `HyperbolicMessagePassing` 後插入 `CurvAdaptBatchNorm`，其計算方式為：先在切空間上計算均值與方差，再根據當前層的曲率 `c` 乘以一個縮放因子 `γ(c)=exp(-α·c)`（α 為超參數），最後使用 `exp_map` 回到雙曲流形。  
+  - **訓練目標**：與原始任務相同（節點分類、鏈接預測等），額外的正則化僅是保持曲率在合理範圍內（如 `c∈[0.1, 5]`）。  
+  - **損失函數**：基本交叉熵 + `λ_curv·|c−c_target|`（懲罰曲率偏離目標），不加入額外項。  
+- **與 SOTA 的差異**  
+  - **改動行**：在 `HyperbolicMessagePassing.forward` 的最後一步，原本直接 `exp_map` 回流形 → 改為 `CurvAdaptBatchNorm → exp_map`。  
+  - **為何影響指標**：曲率自適應的縮放因子讓特徵在高曲率層不會被過度放大，保持梯度的均衡分布，從而提升收斂速度與最終的驗證準確率。  
+- **預期改善的指標與原因**  
+  - **benchmark**：`ogbn‑arxiv` 節點分類。預期 Top‑1 準確率提升 1.5–2.0% 並將收斂 epoch 數減少約 20%。  
+  - **因果鏈**：曲率大 → 特徵尺度放大 → 梯度不穩 → 收斂慢 → 準確率低；加入自適應 BN 後特徵尺度被校正 → 梯度穩定 → 收斂快 → 準確率提升。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：`Cora`（2708 節點）與 `PubMed`（19717 節點）。  
+  - **模型規模**：2 層 `HyperbolicMessagePassing` + `CurvAdaptBatchNorm`，隱藏維度 64。  
+  - **硬體需求**：單張 RTX 3080 可在 5 分鐘內完成 200 epoch 訓練，驗證改進。  
+
+---
+
+**方案 2: Spectral Hyperbolic Convolution via Lorentzian Eigenbasis**  
+- **核心 idea**：將圖拉普拉斯譜分解搬到洛倫茲流形上，利用 Lorentzian 特徵向量構造等變卷積核，直接在流形頻域執行濾波，避免在切空間的近似誤差。  
+- **技術細節**  
+  - **輸入流程**：給定圖的鄰接矩陣 `A`，計算標準歐氏拉普拉斯矩陣 `L`，再使用 `geoopt.manifolds.Lorentz` 的 `eig` 方法得到 Lorentzian 特徵值 `λ_k` 與特徵向量 `v_k`（滿足 Lorentzian 正交性）。  
+  - **模組設計**：`LorentzSpectralConv` 內部實作 `forward(x)`：  
+    1. 把節點特徵 `x` 投射到切空間 `log_map`。  
+    2. 在 Lorentzian 基底上做頻域濾波：`x̂ = Σ_k g(λ_k)·⟨v_k, x⟩·v_k`，其中 `g` 為可學習的濾波函數（如 Chebyshev 多項式）。  
+    3. `exp_map` 回到雙曲流形。  
+  - **訓練目標**：同原始任務，僅在頻域加入 L2 正則化於濾波係數。  
+  - **損失函數**：交叉熵 + `λ_spec·∑_k g(λ_k)^2`（防止過度放大高頻）。  
+- **與 SOTA 的差異**  
+  - **改動行**：在 `HyperbolicMessagePassing` 中的訊息聚合步驟 `msg = Σ_{j∈N(i)} φ(x_i, x_j)` → 改為 `msg = LorentzSpectralConv(x)`。  
+  - **為何影響指標**：頻域濾波直接在流形上保證等變性，減少切空間近似帶來的誤差，特別在高階結構（如社群層次）上能捕捉更精細的頻譜特徵，提升分類與鏈接預測的 AUC。  
+- **預期改善的指標與原因**  
+  - **benchmark**：`ogbn‑products`（圖分類）。預期 ROC‑AUC 提升約 2.3%。  
+  - **因果鏈**：切空間近似 → 頻譜失真 → 特徵表徵不足 → AUC 下降；使用 Lorentzian 譜濾波 → 保持等變性與頻譜完整 → 表徵更豐富 → AUC 提升。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：`ZINC`（分子圖）作為圖回歸測試，或 `ogbn‑products`。  
+  - **模型規模**：單層 `LorentzSpectralConv` + 全局池化，隱藏維度 128。  
+  - **硬體需求**：單張 RTX 3060 可在 10 分鐘內完成 100 epoch，觀測 AUC 改善。  
+
+---
+
+**方案 3: Hierarchical Poincaré Pooling with Learnable Curvature Scheduler**  
+- **核心 idea**：在圖級別任務中引入層級化池化，並讓每一層的曲率參數隨訓練自適應調整，讓高層抽象表示在更低曲率（較平坦）空間中聚合，降低資訊損失。  
+- **技術細節**  
+  - **輸入流程**：節點特徵先經 `log_map` 投射，經過若干層 `HyperbolicMessagePassing`。  
+  - **模組設計**：  
+    1. **ClusterAssign**：使用 K‑中心點在切空間上做聚類，得到每層的超節點分配。  
+    2. **PoincarePool**：對每個超節點的成員點先 `log_map` 到切空間，計算幾何中心，然後 `exp_map` 回到雙曲流形。  
+    3. **CurvatureScheduler**：在每層加入可學習的標量 `c_l`（層 l 的曲率），使用梯度更新，並在每層結束後用 `proj` 投影保證 `c_l` 落在預設範圍。  
+  - **訓練目標**：圖分類的交叉熵 + 曲率平滑正則 `λ_smooth·Σ_l (c_l−c_{l−1})^2`（鼓勵相鄰層曲率變化平緩）。  
+  - **損失函數**：交叉熵 + 曲率平滑項 + `λ_curv·|c_L−c_target|`（最終層曲率接近目標值）。  
+- **與 SOTA 的差異**  
+  - **改動行**：在 `global_pool` 前加入 `HierarchicalPoincarePool`，原本的 `global_mean_pool` → 改為 `HierarchicalPoincarePool` 並同時更新 `c_l`。  
+  - **為何影響指標**：固定曲率會在高層抽象時過度壓縮資訊，導致圖級表示退化；可學習的曲率讓高層在較低曲率（較平坦）空間中聚合，保持資訊密度，提升圖分類的精度。  
+- **預期改善的指標與原因**  
+  - **benchmark**：`ogbg‑molpcba`（分子屬性預測）。預期平均精度提升 1.8% 並降低過擬合跡象（驗證 loss 波動減少）。  
+  - **因果鏈**：固定高曲率 → 高層特徵過度壓縮 → 表徵不足 → 精度下降；曲率自適應 → 高層在較平坦空間聚合 → 信息保留 → 精度提升。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：`ZINC`（圖回歸）或 `ogbg‑molpcba` 的子集（前 10k 條）。  
+  - **模型規模**：3 層 `HyperbolicMessagePassing` + `HierarchicalPoincarePool`（每層聚 2 倍節點），隱藏維度 64。  
+  - **硬體需求**：單張 RTX 3070 可在 8 分鐘內完成 150 epoch，觀測 MAE/ROC‑AUC 改善。  
+
+---
+
+**方案 4: Mixed‑Precision Riemannian Optimizer with Tangent‑Space Gradient Clipping**  
+- **核心 idea**：結合混合精度訓練與在切空間上進行梯度裁剪的 Riemannian 優化器，減少雙曲流形上因數值不穩導致的梯度爆炸，同時提升 GPU 計算吞吐。  
+- **技術細節**  
+  - **輸入流程**：模型參數包括雙曲嵌入 `θ`（在 `PoincareBall` 上）與普通線性層權重。  
+  - **模組設計**：實作 `RiemannianAdamMixed`，步驟如下：  
+    1. 前向與反向使用 AMP（自動混合精度），保留 `float16` 計算。  
+    2. 在每次梯度更新前，先把雙曲參數的梯度 `g` 用 `log_map` 投射到切空間，得到切向梯度 `g_t`.  
+    3. 對 `g_t` 執行 L2 梯度裁剪（阈值 `τ`），裁剪後再 `exp_map` 回到流形，作為更新方向。  
+
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+

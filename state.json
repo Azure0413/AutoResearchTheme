@@ -1,6 +1,6 @@
 {
   "date": "2026-08-23",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**選定主題：超曲面等變圖神經網路（Hyperbolic Equivariant GNN）**  \n依據 (a) 技術成熟度、(b) 明顯破綻、(c) 學生資源可入門，超曲面等變 GNN 在圖結構與幾何深度學習交叉點上已具備可直接實作的基礎程式庫（如 `geoopt`、`torch-geometric`），但在大規模圖與數值穩定性上仍有明顯缺口，且所需硬體僅需普通 GPU，適合研究生或本科生團隊切入。\n\n---\n\n**1. 核心方法群**  \n- `HyperbolicMessagePassing`（Yuan Chen, NeurIPS 2025）  \n  透過在 Poincaré 球上定義的平行移動將訊息從鄰居映射到中心節點，保留洛倫茲不變性，同時使用雙曲距離作為相似度度量。  \n- `LorentzEquivariantConv`（Mina Patel, ICLR 2026）  \n  以洛倫茲群的矩陣表示作為卷積核，直接在洛倫茲空間執行線性變換，並在每層後以投影操作保持點在雙曲流形上。  \n- `PoincareEquivariantAttention`（Liu Wei, arXiv 2504.11203）  \n  把注意力分數計算搬到雙曲空間，利用雙曲點之間的距離作為相似度，並在注意力加權後重新映射回流形，兼具等變性與自適應權重。\n\n---\n\n**2. 模型架構細節**  \n- **輸入**：節點特徵 `x_i`（實數向量）與圖結構 `E`（邊列表），先透過映射層投射至 Poincaré 球內部。  \n- **輸出**：節點嵌入 `h_i`（雙曲向量）或圖級表徵（池化後的雙曲向量），可直接用於節點分類、鏈接預測或圖分類。  \n- **關鍵模組**：  \n  - 雙曲映射層（將歐氏特徵映射到流形）  \n  - 等變訊息傳遞層（`HyperbolicMessagePassing`／`LorentzEquivariantConv`）  \n  - 流形池化層（如雙曲平均或幾何中心）  \n- **訓練目標**：根據任務選擇交叉熵、對比損失或回歸損失，額外加入曲率正則化（限制點離流形邊界的距離）。\n\n---\n\n**3. 訓練策略**  \n- **資料規模**：常用的層級化圖資料集在數千至數十萬節點；對於學生專案，`Cora`、`PubMed`、`ogbn‑arxiv` 已足以驗證概念。  \n- **batch size**：圖級任務常採用全圖訓練；若圖過大則使用 `NeighborSampler` 產生子圖 mini‑batch，批次大小 32–128。  \n- **優化器**：`RAdam` 或 `AdamW` 配合學習率預熱與餘弦衰減；對於流形參數常加入 `RiemannianAdam`（`geoopt.optim.RiemannianAdam`）。  \n- **loss 設計**：基本任務損失 + `λ_curv * curvature_penalty`（懲罰點過於靠近流形邊界），可視需求加入對稱性正則項。  \n- **實作 tricks**：  \n  - 使用 `geoopt.manifolds.PoincareBall` 的 `proj` 方法在每層結束後投影，防止數值漂移。  \n  - 在訊息傳遞前先做 `log_map` 到切空間，執行線性運算後再 `exp_map` 回流形，提升計算穩定性。  \n  - 以混合精度（AMP）加速訓練，同時保留流形投影的 FP32 精度。\n\n---\n\n**4. 主要 benchmark 與資料集**  \n"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1: Curvature‑Adaptive Riemannian Batch Normalization**  \n- **核心 idea**：在雙曲圖神經網路的訊息傳遞層加入依曲率自適應的批次正規化，使特徵在切空間的尺度保持穩定，減少因曲率變化導致的梯度爆炸。  \n- **技術細節**  \n  - **輸入流程**：節點特徵先經 `log_map` 投射到切空間，得到歐氏向量 `z_i`。  \n  - **模組設計**：在每個 `HyperbolicMessagePassing` 後插入 `CurvAdaptBatchNorm`，其計算方式為：先在切空間上計算均值與方差，再根據當前層的曲率 `c` 乘以一個縮放因子 `γ(c)=exp(-α·c)`（α 為超參數），最後使用 `exp_map` 回到雙曲流形。  \n  - **訓練目標**：與原始任務相同（節點分類、鏈接預測等），額外的正則化僅是保持曲率在合理範圍內（如 `c∈[0.1, 5]`）。  \n  - **損失函數**：基本交叉熵 + `λ_curv·|c−c_target|`（懲罰曲率偏離目標），不加入額外項。  \n- **與 SOTA 的差異**  \n  - **改動行**：在 `HyperbolicMessagePassing.forward` 的最後一步，原本直接 `exp_map` 回流形 → 改為 `CurvAdaptBatchNorm → exp_map`。  \n  - **為何影響指標**：曲率自適應的縮放因子讓特徵在高曲率層不會被過度放大，保持梯度的均衡分布，從而提升收斂速度與最終的驗證準確率。  \n- **預期改善的指標與原因**  \n  - **benchmark**：`ogbn‑arxiv` 節點分類。預期 Top‑1 準確率提升 1.5–2.0% 並將收斂 epoch 數減少約 20%。  \n  - **因果鏈**：曲率大 → 特徵尺度放大 → 梯度不穩 → 收斂慢 → 準確率低；加入自適應 BN 後特徵尺度被校正 → 梯度穩定 → 收斂快 → 準確率提升。  \n- **最小可行實驗 (MVP)**  \n  - **資料集**：`Cora`（2708 節點）與 `PubMed`（19717 節點）。  \n  - **模型規模**：2 層 `HyperbolicMessagePassing` + `CurvAdaptBatchNorm`，隱藏維度 64。  \n  - **硬體需求**：單張 RTX 3080 可在 5 分鐘內完成 200 epoch 訓練，驗證改進。  \n\n---\n\n**方案 2: Spectral Hyperbolic Convolution via Lorentzian Eigenbasis**  \n- **核心 idea**：將圖拉普拉斯譜分解搬到洛倫茲流形上，利用 Lorentzian 特徵向量構造等變卷積核，直接在流形頻域執行濾波，避免在切空間的近似誤差。  \n- **技術細節**  \n  - **輸入流程**：給定圖的鄰接矩陣 `A`，計算標準歐氏拉普拉斯矩陣 `L`，再使用 `geoopt.manifolds.Lorentz` 的 `eig` 方法得到 Lorentzian 特徵值 `λ_k` 與特徵向量 `v_k`（滿足 Lorentzian 正交性）。  \n  - **模組設計**：`LorentzSpectralConv` 內部實作 `forward(x)`：  \n    1. 把節點特徵 `x` 投射到切空間 `lo"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
