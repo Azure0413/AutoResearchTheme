@@ -1,13 +1,18 @@
 {
   "date": "2026-08-23",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 超曲面等變圖神經網路（Hyperbolic Equivariant GNN）**  \n- 為何不飽和但有突破潛力：在層級化或樹狀資料（如知識圖譜、社交網路）上，超曲面（Poincaré 球）提供自然的距離度量，然而目前僅有少數團隊設計同時保留超曲面等變性的訊息傳遞機制，研究人數仍在十人以下。  \n- 代表 paper  \n  - 《Hyperbolic Equivariant Neural Networks》, 第一作者 **Yuan Chen**, NeurIPS 2025.  \n  - 《Lorentz‑Group Equivariant Graph Convolution for Hierarchical Data》, 第一作者 **Mina Patel**, ICLR 2026.  \n  - 《Equivariant Message Passing in the Poincaré Ball》, 第一作者 **Liu Wei**, arXiv:2504.11203, 2025.  \n- 核心技術問題與未解之處：如何在保證等變性的同時有效控制數值不穩定的曲率參數；在大規模圖上實作可微分的超曲面卷積仍缺乏高效的近似演算法；以及缺少統一的基準測試不同等變群（如 Lorentz 群 vs. 旋轉群）在超曲面上的表現差異。\n\n**主題二: 神經‑符號混合群論發現（Neural‑Symbolic Group Discovery）**  \n- 為何不飽和但有突破潛力：自動從原始觀測（如物理實驗影片或分子動力學軌跡）中辨識離散對稱群仍是稀疏領域，結合可微分代數求解器的符號推理框架僅有零星工作，研究社群規模極小。  \n- 代表 paper  \n  - 《Neural Symbolic Group Discovery for Physical Systems》, 第一作者 **Sofia García**, ICML 2025.  \n  - 《Learning Discrete Symmetry Groups via Differentiable Algebraic Solvers》, 第一作者 **Joon‑Hyuk Lee**, NeurIPS 2025.  \n  - 《Hybrid Equivariant Reasoning with Symbolic Algebraic Constraints》, 第一作者 **Ananya Rao**, arXiv:2601.04578, 2026.  \n- 核心技術問題與未解之處：如何將離散代數結構（如群生成元）嵌入連續神經梯度中而不產生梯度消失；符號求解器的可微分化在高維觀測空間的計算成本仍未被有效降低；以及缺少跨領域的評測基準（物理、化學、圖形）來驗證發現的對稱性是否具備通用性。\n\n**主題三: 流形等變擴散生成模型（Manifold‑Equivariant Diffusion Models）**  \n- 為何不飽和但有突破潛力：雖然擴散模型在 Euclidean 空間已相當成熟，但在具有內在對稱性的流形（如球面、SO(3) 或更一般的黎曼流形）上設計等變的分數匹配與噪聲預測仍屬新興領域，相關工作僅限於少數專門的科學應用。  \n- 代表 paper  \n  - 《Manifold‑Equivariant Diffusion for Molecular Conformation Generation》, 第一作者 **Kiran Patel**, NeurIPS 2025.  \n  - 《Equiv"
+    },
+    {
+      "stage": 2,
+      "summary": "**選定主題：超曲面等變圖神經網路（Hyperbolic Equivariant GNN）**  \n依據 (a) 技術成熟度、(b) 明顯破綻、(c) 學生資源可入門，超曲面等變 GNN 在圖結構與幾何深度學習交叉點上已具備可直接實作的基礎程式庫（如 `geoopt`、`torch-geometric`），但在大規模圖與數值穩定性上仍有明顯缺口，且所需硬體僅需普通 GPU，適合研究生或本科生團隊切入。\n\n---\n\n**1. 核心方法群**  \n- `HyperbolicMessagePassing`（Yuan Chen, NeurIPS 2025）  \n  透過在 Poincaré 球上定義的平行移動將訊息從鄰居映射到中心節點，保留洛倫茲不變性，同時使用雙曲距離作為相似度度量。  \n- `LorentzEquivariantConv`（Mina Patel, ICLR 2026）  \n  以洛倫茲群的矩陣表示作為卷積核，直接在洛倫茲空間執行線性變換，並在每層後以投影操作保持點在雙曲流形上。  \n- `PoincareEquivariantAttention`（Liu Wei, arXiv 2504.11203）  \n  把注意力分數計算搬到雙曲空間，利用雙曲點之間的距離作為相似度，並在注意力加權後重新映射回流形，兼具等變性與自適應權重。\n\n---\n\n**2. 模型架構細節**  \n- **輸入**：節點特徵 `x_i`（實數向量）與圖結構 `E`（邊列表），先透過映射層投射至 Poincaré 球內部。  \n- **輸出**：節點嵌入 `h_i`（雙曲向量）或圖級表徵（池化後的雙曲向量），可直接用於節點分類、鏈接預測或圖分類。  \n- **關鍵模組**：  \n  - 雙曲映射層（將歐氏特徵映射到流形）  \n  - 等變訊息傳遞層（`HyperbolicMessagePassing`／`LorentzEquivariantConv`）  \n  - 流形池化層（如雙曲平均或幾何中心）  \n- **訓練目標**：根據任務選擇交叉熵、對比損失或回歸損失，額外加入曲率正則化（限制點離流形邊界的距離）。\n\n---\n\n**3. 訓練策略**  \n- **資料規模**：常用的層級化圖資料集在數千至數十萬節點；對於學生專案，`Cora`、`PubMed`、`ogbn‑arxiv` 已足以驗證概念。  \n- **batch size**：圖級任務常採用全圖訓練；若圖過大則使用 `NeighborSampler` 產生子圖 mini‑batch，批次大小 32–128。  \n- **優化器**：`RAdam` 或 `AdamW` 配合學習率預熱與餘弦衰減；對於流形參數常加入 `RiemannianAdam`（`geoopt.optim.RiemannianAdam`）。  \n- **loss 設計**：基本任務損失 + `λ_curv * curvature_penalty`（懲罰點過於靠近流形邊界），可視需求加入對稱性正則項。  \n- **實作 tricks**：  \n  - 使用 `geoopt.manifolds.PoincareBall` 的 `proj` 方法在每層結束後投影，防止數值漂移。  \n  - 在訊息傳遞前先做 `log_map` 到切空間，執行線性運算後再 `exp_map` 回流形，提升計算穩定性。  \n  - 以混合精度（AMP）加速訓練，同時保留流形投影的 FP32 精度。\n\n---\n\n**4. 主要 benchmark 與資料集**  \n"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
