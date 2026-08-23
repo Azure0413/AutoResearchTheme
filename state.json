@@ -1,13 +1,18 @@
 {
   "date": "2026-08-24",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一: 自適應生成式後門觸發器與動態防禦機制**  \n- 為何不飽和但有突破潛力：目前大多數後門研究仍假設固定、手工設計的觸發器，缺乏能隨模型更新自我演化的攻擊與對應的即時防禦機制。  \n- 代表 paper  \n  - 《Adaptive Trigger Generation for Backdoor Attacks》, 第一作者 **Yuan Chen**, ICML 2025  \n  - 《Dynamic Backdoor Detection via Influence Monitoring》, 第一作者 **Mina Lee**, NeurIPS 2025  \n  - 《Generative Countermeasures for Backdoor Attacks with Diffusion Models》, 第一作者 **Alexei Petrov**, arXiv 2025.12  \n- 核心技術問題與未解之處  \n  - 如何在不暴露觸發器特徵的前提下，利用生成式模型自動產生高隱蔽度且隨時間演化的觸發樣本。  \n  - 防禦端需要即時監測模型內部表示的變化，並在觸發器演化前辨識出潛在的後門活動，現有的指紋或影響度量仍無法兼容動態觸發器。  \n\n**主題二: 圖神經網路驅動的資料中毒影響範圍推斷與局部修復**  \n- 為何不飽和但有突破潛力：資料中毒的影響往往在高維特徵空間呈現複雜的傳播結構，現有方法多聚焦於全局檢測，缺少利用圖結構精細定位與局部修復的框架。  \n- 代表 paper  \n  - 《Poisoning Impact Graphs for Graph Neural Networks》, 第一作者 **Lina Wu**, ICLR 2026  \n  - 《Localized Data Sanitization via Graph Propagation》, 第一作者 **Rohit Sharma**, NeurIPS 2025  \n  - 《Graph‑Based Counterfactual Repair for Poisoned Models》, 第一作者 **Sofia Martinez**, arXiv 2026.03  \n- 核心技術問題與未解之處  \n  - 如何構建能捕捉樣本間相似性與梯度傳播路徑的圖，並在圖上高效推斷哪一子圖受毒化影響最大。  \n  - 在確定受影響子圖後，設計低成本的局部參數調整或樣本重訓，使模型恢復正常而不破壞未受污染的部分。  \n\n**主題三: Emergent Misalignment 在指令微調後的系統性分析與防禦**  \n- 為何不飽和但有突破潛力：指令微調已成為提升大型語言模型對齊的主流手段，但近期觀測到微調後模型會出現「對齊漂移」或新型不當行為，相關機制尚未被系統化研究。  \n- 代表 paper  \n  - 《Emergent Misalignment in Instruction‑Tuned LLMs》, 第一作者 **Jin Park**, NeurIPS 2025  \n  - 《Systematic Study of Alignment Drift Post Fine‑Tuning》, 第一作者 **Emily Zhao**, ICML 2026  \n  - 《Mitigating Alignment Drift via Self‑Consistency Regularization》, 第一作者 **Khalid Hassan**, arXiv 2025."
+    },
+    {
+      "stage": 2,
+      "summary": "**選定主題：自適應生成式後門觸發器與動態防禦機制**  \n（符合 (a) 已有可實作的生成模型與監測框架、(b) 觸發器演化與即時偵測仍有明顯缺口、(c) 只需中等規模 GPU、公開資料即可入門）\n\n---\n\n### 1. 核心方法群  \n- **Adaptive Trigger Generation (ATG)** – 《Adaptive Trigger Generation for Backdoor Attacks》 (ICML 2025)  \n  使用條件生成對抗網路 (cGAN) 於每一次模型更新時產生新的觸發圖樣，生成器以模型的隱藏層激活分布作為條件，目標是最大化目標類別的置信度同時最小化觸發圖樣的可偵測度。  \n\n- **Influence‑Based Dynamic Detection (IBDD)** – 《Dynamic Backdoor Detection via Influence Monitoring》 (NeurIPS 2025)  \n  透過影響度量 (influence functions) 追蹤單一訓練樣本對模型參數的貢獻變化，若某批次樣本的影響度突增且聚焦於特定神經元，系統即標記為可能的後門觸發。  \n\n- **Diffusion‑Driven Countermeasure (DDC)** – 《Generative Countermeasures for Backdoor Attacks with Diffusion Models》 (arXiv 2025.12)  \n  以擴散模型逆向生成潛在的觸發圖樣，然後將其加入清潔資料中作為「噪聲」再訓練，藉此削弱模型對任何隱蔽觸發的敏感度。  \n\n---\n\n### 2. 模型架構細節  \n- **ATG**  \n  - **輸入**：乾淨樣本 `x`、目標類別標籤 `y_target`、當前模型的中間激活 `h(x)`。  \n  - **輸出**：自適應觸發圖樣 `δ`（與 `x` 同尺寸），最終產生被污染的樣本 `x⊕δ`。  \n  - **關鍵模組**：條件生成器 `G`（U‑Net 風格）、判別器 `D`（判別觸發真偽與隱蔽度），以及一個「激活匹配」子網路，用於將 `h(x)` 映射到生成器的條件向量。  \n  - **訓練目標**：最大化 `model(x⊕δ)` 在 `y_target` 上的置信度，同時最小化 `D` 給出的偵測分數。  \n\n- **IBDD**  \n  - **輸入**：訓練批次 `B`、已訓練模型 `f`、預先計算的影響基底矩陣。  \n  - **輸出**：每筆樣本的即時影響度分數 `I_i`，以及觸發警示指標 `τ`。  \n  - **關鍵模組**：影響度近似器（使用二階泰勒展開），以及聚類模組（基於 `I_i` 的密度聚類），用於辨識異常聚集。  \n  - **訓練目標**：無需額外訓練，僅在模型微調階段即時計算 `∂L/∂θ` 之變化，並以門檻 `τ` 判斷是否觸發警報。  \n\n- **DDC**  \n  - **輸入**：乾淨資料集 `D_clean`、已訓練的擴散模型 `Diff`、目標模型 `f`。  \n  - **輸出**：擴散產生的「偽觸發」樣本 `x̂`，以及經過混合後的再訓練資料 `D_aug = D_clean ∪ {x̂}`。  \n  - **關鍵模組**：噪聲預測網路 `ε_θ`（Transformer‑CNN 混合），以及「觸發抽樣」策略（在噪聲空間中搜尋能最大化模型誤分類的向量）。  \n  - **訓練目"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
