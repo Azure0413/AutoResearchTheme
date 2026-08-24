@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-08",
-    "stage1_topics": "**階層式異質專家 MoE 路由**\n\n* **關鍵事實**：\n + 目前只有少數團隊研究階層式異質專家 MoE 路由。\n + 研究人數仍在十人以下，缺乏系統化的效能與公平性基準。\n* **結論**：\n + 需要設計可微分的路由可調整不同層級、不同容量專家的負載平衡。\n + 需要理論指引異質專家間的參數共享與知識傳遞機制。\n* **技術細節**：\n + 需要同步調整不同層級、不同容量專家的負載平衡。\n + 需要設計理論指引異質專家間的參數共享與知識傳遞機制。\n* **論點**：\n + 需要考慮路由可微分性和負載平衡的問題。\n + 需要考慮異質專家間的參數共享與知識傳遞機制。\n* **引用的 paper 名稱**：\n + *Hierarchical Heterogeneous Mixture‑of‑Experts*，第一作者 **Jiawei Li**，NeurIPS 2025。\n + *C",
-    "final_proposal": "**Stage 5 (✅ 完整研究提案) 結構化摘要**\n\n**1. 研究痛點與背景**\n\n- 目前的階層式異質專家 MoE 路由方法存在缺陷：\n + 路由權重設置過於簡單\n + 無法充分適應不同層級和專家的需求\n + 缺乏對於長尾分布的資料的考慮\n- 參考論文：Hierarchical Heterogeneous Mixture‑of‑Experts（Jiawei Li, NeurIPS 2025）、Capacity‑Balanced Routing for Multi‑Scale MoE（Sara Kwon, arXiv 2025.12）\n\n**2. 核心研究方法**\n\n- 引入動態路由權"
-  },
-  {
     "date": "2026-08-09",
     "stage1_topics": "**自適應混合群等變學習（Adaptive Mixed‑Group Equivariance）**\n\n* **關鍵事實**：\n + 大多數現有等變模型只假設單一全局對稱群。\n + 在實際資料中，同一樣本的不同子結構可能遵守不同或多重群。\n* **結論**：\n + 需要發展可學習的自適應混合群等變模型。\n + 模型應能夠在可微分框架下同時學習多個群的表示並自動選擇局部最適群。\n* **技術細節**：\n + 需要設計群間參數共享與正則化的理論指引。\n + 需要避免群選擇的 combinatorial 爆炸。\n* **論點**：\n + 等變模型的局限性。\n + 自適應混合群等變模型的潛力。\n* **引用**：\n + 《Adaptive Mixed‑Group Equivariance for Heterogeneous Data》, Lin Zhao, NeurIPS 2025\n + 《Mixt",
     "final_proposal": "**Stage 5: 完整研究提案**\n\n**1. 研究痛點與背景**\n\n* 現有對稱群學習方法局限性：無法有效捕捉複雜資料中的多尺度對稱性\n* 最近研究：《Adaptive Mixed-Group Equivariance for Heterogeneous Data》(Lin Zhao, NeurIPS 2025)、《Mixture of Symmetry Groups in Graph Neural Networks》(Priya Patel, ICLR 2026)\n\n**2. 核心研究方法**\n\n* 多尺度對稱群學習（Multi-Scale Symmetry Group Learnin"
@@ -68,5 +63,10 @@
     "date": "2026-08-22",
     "stage1_topics": "**主題一：持續學習與動態專家增減的 MoE 架構**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊探索在同一模型生命週期內自動加入或移除專家，以應對新任務或概念漂移，研究人數仍在十人以下，缺乏系統化的評測基準。  \n- 代表 paper  \n  - 《Dynamic Expert Expansion for Continual Mixture‑of‑Experts», 第一作者 **Jia‑Wei Chen**, arXiv:2504.01873, 2025  \n  - 《Lifelong MoE: Adaptive Expert Pruning and Growth via Gradient‑Based Signals», 第一作者 **Mina Patel**, ICLR 2026, 2026  \n  - 《Continual MoE with Task‑Aware Expert",
     "final_proposal": "**## 1. 研究痛點與背景**  \n- **重要性**：隨著大型混合專家模型（Mixture‑of‑Experts, MoE）在語言與視訊領域的參數規模突破千億，如何在保持高效推理的同時保證模型在概念漂移、噪聲與資源受限環境下的穩定性成為關鍵。  \n- **現有缺陷**：  \n  - 大多數 MoE 只依賴單一門控分數決定 token 分配，缺乏對路由決策不確定性的量化，導致在分布漂移時出現「路由崩潰」現象。  \n  - 目前的動態專家增減（如《Dynamic Expert Expansion for Continual MoE》arXiv:2504.01873、《Lifelong MoE"
+  },
+  {
+    "date": "2026-08-25",
+    "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：自適應網格神經常微分方程 (Neural ODE) 用於高精度流體模擬**  \n  - 研究團隊僅十人以下；結合自適應離散化與可微分 ODE 尚無成熟工具鏈。  \n  - 代表論文：  \n    - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》 (Yuan Zhang, NeurIPS 2025, arXiv:2504.01234)  \n    - 《Neural ODE with Dynamic Mesh Refinement for Incompressible Navier‑Stokes》 (Lina Chen, ICLR 2026, arXiv:2601.04567)  \n    - 《Continuous‑Time Mesh‑Adapti",
+    "final_proposal": "**研究痛點與創新概念**  \n- 高雷諾數多相流 CFD 仍受固定網格與剛性時間步長限制，導致資源浪費與長時間不穩定。  \n- 目前 Adaptive Mesh Neural ODE 只用單一空間指標（如渦度）細化，且時間步長與空間細化解耦，累積誤差難以即時校正。  \n- 參考文獻：  \n  - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》, Yuan Zhang, NeurIPS 2025 (arXiv:2504.01234)  \n  - 《Implicit Neural SDEs for Scalable High‑Di"
   }
 ]

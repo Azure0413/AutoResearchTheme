@@ -1,6 +1,6 @@
 {
   "date": "2026-08-25",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**方案 1 – Adaptive Mesh Neural ODE（Zhang 等，NeurIPS 2025）**  \n- **核心假設失效**：可微分網格生成在高雷諾數或突變邊界下易斷裂，梯度失效。  \n- **補救措施**：加入拓撲不變性條件、拓撲平滑正則、可微分重連。  \n- **資料不足**：12k CFD 片段同一 OpenFOAM 案例，缺跨域驗證；學習率敏感。  \n- **補救**：擴充至 30k 多物理場樣本，提供超參數敏感度圖，自適應學習率或二階優化器。  \n- **計算瓶頸**：單卡 24 GB 只能容納 64³，128³ 需 80 GB，需 8×H100。  \n- **補救**：分層記憶體映射、網格切片、混合精度 FP16+FP32。  \n- **基準不完整**：只對固定網格與有限差分做比較，未納入 Mesh‑Free Neural PDE、FNO 等。  \n- **補救**：加入最新基線，公平比較時間步長與誤差容忍度，Ablation Study。  \n- **失效模式**：長時間或高壓縮流場下渦度指標失效，導致過度細化或網格凍結。  \n- **補救**：多指標細化（壓力梯度、密度變化、能量殘差），自適應細化上限與網格重置。\n\n**方案 2 – Implicit Neural SDE（Patel 等，ICLR 2026）**  \n- **收斂問題**：高維（>100）空間隱式 SDE 迭代易陷入局部最小，似然偏差。  \n- **補救**：高相關特徵收斂分析，加入特徵去相關化層或預條件化。  \n- **資料缺乏**：僅合成 Gaussian mixture，未驗證真實金融或"
+    },
+    {
+      "stage": 5,
+      "summary": "**研究痛點與創新概念**  \n- 高雷諾數多相流 CFD 仍受固定網格與剛性時間步長限制，導致資源浪費與長時間不穩定。  \n- 目前 Adaptive Mesh Neural ODE 只用單一空間指標（如渦度）細化，且時間步長與空間細化解耦，累積誤差難以即時校正。  \n- 參考文獻：  \n  - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》, Yuan Zhang, NeurIPS 2025 (arXiv:2504.01234)  \n  - 《Implicit Neural SDEs for Scalable High‑Dimensional Density Modeling》, Mina Patel, ICLR 2026 (arXiv:2603.02115)  \n\n**核心方法 – DS‑AM**  \n- **雙向誤差指標**：同時評估空間殘差 \\(R_{\\text{spatial}}\\) 與時間殘差 \\(R_{\\text{temporal}}\\)，計算 \\(dual\\_error = \\alpha R_{\\text{spatial}} + \\beta R_{\\text{temporal}}\\)。  \n- **自適應控制**：根據 \\(dual\\_error\\) 觸發局部細化/合併網格與時間步長調整。  \n- **可微分拓撲平滑正則 \\(L_{\\text{topo}}\\)**：避免梯度斷裂，確保網格連續性。  \n- **混合精度 FP16+FP32 + 分層記憶體切片**：單卡 24–48 GB GPU 可容納 128³ 以上動態網格。  \n- **元學習調整 α、β**：減少人工超參數調校。  \n\n**訓練與推論目標**  \n- \\(L_{\\text{flow}}\\)：速度/壓力 L2 差距  \n- \\(L_{\\text{phys}}\\)：Navier‑Stokes 空間殘差  \n- \\(L_{\\text{time}}\\)：時間截斷誤差  \n- \\(L_{\\text{budget}}\\)：節點數量正則化  \n\n**實驗設計**  \n- 資料集：CFDBench‑Turbulent、CFDBench‑Multiph"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }
