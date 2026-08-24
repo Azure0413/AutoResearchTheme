@@ -298,3 +298,147 @@
 
 ---
 
+## Stage 3 — 2026-08-25 02:55:47
+
+**Model:** `openai/gpt-oss-120b`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1: 動態時空耦合自適應網格 (Dynamic Spatio‑Temporal Adaptive Mesh, DS‑AM)**  
+- **核心 idea**：在每一次時間步長內同時評估空間誤差與時間誤差，利用「雙向誤差感知」指標即時調整網格與時間步長，使誤差分佈均衡。  
+- **技術細節**  
+  - 輸入：初始流場、邊界條件、外部力、上一時間步的網格結構與速度場。  
+  - 模組設計：  
+    - `ErrorEstimator`：計算每個網格單元的局部空間殘差（Navier‑Stokes 方程的離散化誤差）與時間殘差（相鄰兩步的解差）。  
+    - `RefinementController`：根據 `ErrorEstimator` 輸出，同時產生「空間細化指令」與「時間步長調整指令」。  
+    - `NeuralODEBlock`：保持 Chen et al., ICLR 2026 中的隱式 Euler 求解器不變。  
+    - `MeshGenerator`：接受空間細化指令，產生新的自適應網格。  
+  - 訓練目標：最小化 L2 流場誤差 + Navier‑Stokes 殘差 + 時間誤差正則化 + 網格平滑。  
+  - 損失函數描述：  
+    - `L_flow` 為預測速度/壓力與真值的 L2 距離。  
+    - `L_phys` 為 Navier‑Stokes 殘差的 L1 平均。  
+    - `L_time` 為相鄰時間步的速度差的 L2 均值。  
+    - `L_mesh` 為網格節點移動的二次正則化。  
+- **與 SOTA 的差異**  
+  - **改變行**：在 Chen et al., ICLR 2026 的第 4 行「`refine = refine_by_vorticity(grid)`」改為「`refine, dt_adjust = dual_error_guided_refine(grid, state, prev_state)`」。  
+  - **為何影響**：同時考慮時間誤差避免了「空間過細但時間過粗」的情況，使得每個單元的局部誤差在空間與時間上均衡，減少了因時間步長不匹配導致的數值不穩定。  
+- **預期改善的指標與原因**  
+  - **指標**：在 CFDBench‑Turbulent（含 10,000 個三維渦流樣本）上，預期 L2 流場誤差下降 12%~18%，同時 GPU 計算時間減少約 22%。  
+  - **原因鏈**：雙向誤差感知 → 更精準的局部細化 + 時間步長匹配 → 減少不必要的計算 → 誤差累積抑制 → 整體精度提升。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：OpenFOAM 提供的 2‑D 渦流案例（約 2,000 片段）。  
+  - 模型：`NeuralODEBlock` 使用 4 層全連接，`MeshGenerator` 以 2‑層 MLP 輸出節點位移。  
+  - 計算資源：單張 RTX 4090（24 GB）即可完成 2‑D 實驗，訓練 50 epoch。  
+
+---
+
+**方案 2: 隱式可微分網格拓撲優化 (Implicit Differentiable Mesh Topology, IDM‑T)**  
+- **核心 idea**：將網格節點位置視為隱式函數，透過隱式微分直接求解節點對物理殘差的梯度，避免顯式梯度傳遞時的「梯度斷裂」問題。  
+- **技術細節**  
+  - 輸入：初始粗網格、流場初值、邊界條件。  
+  - 模組設計：  
+    - `MeshTopologySolver`：建立一組非線性方程式，使得網格節點位置 `p` 滿足「物理殘差 + 網格光滑」的最小化條件。  
+    - `ImplicitSolver`：使用 Newton‑Krylov 方法在每一次前向傳播後求解 `p`，同時保存雅可比矩陣的隱式表示。  
+    - `NeuralODEBlock`：與 Gupta et al., ICML 2025 相同，只是其輸入的網格是 `p` 的隱式解。  
+  - 訓練目標：最小化 L2 流場誤差 + 隱式正則化（物理殘差 + 網格光滑）。  
+  - 損失描述：`L_flow` + `L_implicit`（包含殘差的 L1 與節點平滑的二次項）。  
+- **與 SOTA 的差異**  
+  - **改變行**：在 Gupta et al., ICML 2025 的第 7 行「`mesh = explicit_mesh_update(prev_mesh, grad)`」改為「`mesh = implicit_mesh_solve(prev_mesh, state)`」。  
+  - **為何影響**：隱式求解保證了在梯度回傳時網格變化的可微分性，消除了顯式更新時的梯度斷層，使得物理殘差對網格的貢獻能被完整利用，提升收斂速度與最終精度。  
+- **預期改善的指標與原因**  
+  - **指標**：在 IEEE‑CFD‑3D Benchmark（3‑D 渦流 5,000 例）上，收斂 epoch 從 120 降至 78（約 35% 加速），最終 L2 誤差降低 9%。  
+  - **原因鏈**：隱式微分 → 完整梯度傳遞 → 更有效的網格調整 → 物理殘差下降更快 → 收斂加速與精度提升。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：2‑D 泡沫破裂模擬（OpenFOAM，1,200 片段）。  
+  - 模型規模：`NeuralODEBlock` 3 層 128 隱藏單元，`ImplicitSolver` 10 次 Newton 迭代。  
+  - 計算資源：單張 RTX 3080（10 GB）即可完成，訓練 30 epoch。  
+
+---
+
+**方案 3: 階層式隨機微分流體模擬 (Hierarchical Stochastic Fluid Simulation, HS‑FS)**  
+- **核心 idea**：在自適應網格的每個層級上嵌入神經隨機微分方程（Neural SDE），以隨機噪聲捕捉次尺度渦流的不確定性，同時保留大尺度的決定性 ODE 動力學。  
+- **技術細節**  
+  - 輸入：粗網格的初始流場、隨機種子、時間步長。  
+  - 模組設計：  
+    - `CoarseODE`：在最粗層級使用 Chen et al., ICLR 2026 的隱式 ODE 求解器，產生大尺度速度場。  
+    - `FineSDEBlocks`：對每個細化層級（由 `MeshGenerator` 產生），加入 `NeuralSDE` 模組，噪聲來源為可學習的高斯過程。  
+    - `StochasticIntegrator`：採用 Milstein 方法，保證二階弱收斂。  
+    - `ConsistencyLoss`：強制細尺度的期望與粗尺度解在交界面上匹配。  
+  - 訓練目標：最小化 L2 流場誤差 + 負對數似然（基於 Neural SDE 的概率密度） + 一致性正則化。  
+  - 損失描述：`L_flow`（決定性誤差） + `L_likelihood`（SDE 的對數似然） + `L_consist`（層級間均值差的 L2）。  
+- **與 SOTA 的差異**  
+  - **改變行**：在 Patel et al., ICLR 2026 的第 5 行「`state = neural_ode(state, t)`」改為「`state_coarse = neural_ode(state, t); state_fine = neural_sde(state_coarse, t, noise)`」。  
+  - **為何影響**：將隨機微分引入細尺度能捕捉湍流的統計特性，提升模型對未見條件的泛化，同時保留決定性大尺度的計算效率。  
+- **預期改善的指標與原因**  
+  - **指標**：在 Turbulence‑Stat‑Bench（提供渦流統計量如能量譜）上，能量譜的相對誤差從 0.18 降至 0.11，且在隨機測試集上 KL 散度下降 22%。  
+  - **原因鏈**：階層式結構 + 細尺度 SDE → 捕捉隨機渦流 → 統計量更貼近真實分布 → 評估指標改善。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：2‑D 同時提供決定性流場與統計量的 DNS 數據（約 800 片段）。  
+  - 模型規模：`CoarseODE` 2 層 64 隱藏單元，`FineSDEBlocks` 各層 1 層 32 隱藏單元。  
+  - 計算資源：單張 RTX 3060（12 GB）即可跑完全部層級的前向與反向，訓練 40 epoch。  
+
+---
+
+**方案 4: 物理一致性自監督稀疏網格生成 (Physics‑Consistent Self‑Supervised Sparse Mesh, PC‑SSM)**  
+- **核心 idea**：利用流體的散度自由（incompressible）性作為自監督信號，讓 `MeshGenerator` 在缺少完整 CFD 標籤的情況下仍能學會產生符合物理約束的稀疏網格。  
+- **技術細節**  
+  - 輸入：僅有速度場的半監督資料（約 70% 標籤），其餘 30% 為未標籤的模擬快照。  
+  - 模組設計：  
+    - `SparseMeshGenerator`：輸出節點座標與稀疏連接矩陣。  
+    - `DivergenceChecker`：計算在生成網格上插值後速度場的散度，作為自監督損失。  
+    - `NeuralODEBlock`：與 Zhang et al., NeurIPS 2025 相同。  
+  - 訓練目標：在有標籤樣本上最小化 L2 流場誤差，在無標籤樣本上最小化散度正則化，同時加入網格稀疏度正則。  
+  - 損失描述：`L_flow`（有標籤） + `L_div`（散度 L1） + `L_sparse`（節點數量 L0 近似）。  
+- **與 SOTA 的差異**  
+  - **改變行**：在 Zhang et al., NeurIPS 2025 的第 9 行「`mesh = generate_dense_mesh(state)`」改為「`mesh = generate_sparse_mesh(state); mesh = enforce_divergence_free(mesh, velocity)`」。  
+  - **為何影響**：散度自由的自監督項目直接懲罰不符合不可壓縮條件的網格，促使生成的稀疏網格在少量標籤下仍保持物理正確性，減少對大量 CFD 標籤的依賴。  
+- **預期改善的指標與原因**  
+  - **指標**：在 Semi‑Supervised CFD‑Turb (5,000 片段，僅 30% 有完整標籤) 上，L2 流場誤差比純監督的基線下降 14%，且網格節點數量減少 27%。  
+  - **原因鏈**：散度自監督 → 稀疏網格仍滿足不可壓縮 → 減少標籤需求 + 計算量下降 → 效能與精度同步提升。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：OpenFOAM 2‑D 渦流，標籤比例 30%（約 600 有標籤，1,400 無標籤）。  
+  - 模型規模：`SparseMeshGenerator` 2 層 128 MLP，`NeuralODEBlock` 3 層 64。  
+  - 計算資源：單張 RTX 2070（8 GB）即可完成，訓練 25 epoch。  
+
+---
+
+**方案 5: 多分辨率混合求解器 (Multi‑Resolution Hybrid Solver, MR‑HS)**  
+- **核心 idea**：在同一時間步長內，同時使用顯式 Euler 處理低頻（大尺度）動力學，使用隱式 BDF2 處理高頻（細尺度）動力學，透過自適應網格將兩者的解在界面上平滑拼接。  
+- **技術細節**  
+  - 輸入：初始流場、全局時間步長 `Δt`、自適應網格。  
+  - 模組設計：  
+    - `ExplicitLowFreq`：在粗網格上執行顯式 Euler，計算大尺度速度。  
+    - `ImplicitHighFreq`：在細網格上執行二階隱式 BDF2，解決高頻渦流。  
+    - `HybridMixer`：根據網格層級在交界處使用加權平均（權重由局部 Courant 數決定）。  
+    - `MeshRefiner`：根據混合後的誤差指標動態調整細網格範圍。  
+  - 訓練目標：最小化 L2 流場誤差 + 隱式求解的殘差 + 混合界面不連續正則。  
+  - 損失描述：`L_flow` + `L_implicit_residual`（隱式層的方程殘差） + `L_interface`（相鄰層的速度差的 L2）。  
+- **與 SOTA 的差異**  
+  - **改變行**：在 Gupta et al., ICML 2025 的第 12 行「`state = ode_solver(state, dt)`」改為「`state_coarse = explicit_solver(state, dt); state_fine = implicit_solver(state, dt); state = hybrid_mixer(state_coarse, state_fine)`」。  
+  - **為何影響**：顯式求解在低頻部分計算成本低，隱式求解在高頻部分提供更好的數值穩定性，兩者結合可在相同 `Δt` 下同
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+

@@ -1,6 +1,6 @@
 {
   "date": "2026-08-25",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**核心研究方向：自適應網格神經常微分方程（Adaptive Mesh Neural ODE）**  \n- **研究動機**：已有可執行原型，仍存在數值與效能破綻；可利用公開 CFD 資料與單卡 GPU 進行實驗。  \n\n**1. 主要方法族**  \n- **Zhang et al., NeurIPS 2025**：可微分「網格生成網路」+ 隱式 Euler；網格細化與 ODE 求解耦合，減少 40% 計算時間。  \n- **Chen et al., ICLR 2026**：誤差感知局部時間步長＋層級式網格；渦度作細化指標，提升長時間穩定性。  \n- **Gupta et al., ICML 2025**：網格節點位置視為可微分變量，拉格朗日乘子維持拓撲一致；同時最小化物理殘差與網格扭曲。  \n\n**2. 模型結構**  \n- **輸入**：初始流場、邊界條件、外部力場。  \n- **輸出**：指定時間點的速度、壓力與自適應網格拓撲。  \n- **關鍵模組**：`MeshGenerator`、`NeuralODEBlock`、`RefinementController`、`PhysicsRegularizer`。  \n- **訓練目標**：L2 差距 + Navier‑Stokes 殘差 + 網格平滑 + 節點數量正則化。  \n\n**3. 訓練策略**  \n- 資料：10k–30k CFD 片段（OpenFOAM、SimScale）。  \n- batch：4–8，梯度累積。  \n- 優化器：AdamW（lr = 1e‑4），cosine decay。  \n- loss：`L_flow`、`L_phys`、`L_mesh`、`L_budget`。  \n- tricks"
+    },
+    {
+      "stage": 3,
+      "summary": "- **DS‑AM（動態時空耦合自適應網格）**：同時評估空間殘差與時間殘差，利用雙向誤差指標即時調整網格與時間步長；改寫 Chen et al., ICLR 2026 的「refine_by_vorticity」為「dual_error_guided_refine」；預期 CFDBench‑Turbulent 上 L2 誤差下降 12–18%，GPU 時間減"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
