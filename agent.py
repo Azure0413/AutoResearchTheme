@@ -68,8 +68,8 @@ DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
 
 # ===== 模型分配 =====
 MODEL_RESEARCH = "groq/compound-mini"          # Stage 1, 2 — 內建 web search
-MODEL_REASONING = "llama-3.3-70b-versatile"    # Stage 3, 4, 5 — 純推理
-MODEL_SUMMARY = "llama-3.1-8b-instant"         # 摘要壓縮 / 最後 fallback
+MODEL_REASONING = "openai/gpt-oss-120b"        # Stage 3, 4, 5 — 純推理
+MODEL_SUMMARY = "openai/gpt-oss-20b"           # 摘要壓縮 / 最後 fallback
 
 # Per-stage max_tokens(關鍵修正:stage 3 本來 2048 嚴重不夠)
 STAGE_MAX_TOKENS = {
@@ -527,6 +527,9 @@ def safe_completion(messages, model, max_tokens, temperature=0.7):
                 last_error = e
                 status = getattr(e, "status_code", None)
                 if status == 429:
+                    if "tokens per day" in str(e) or "(TPD)" in str(e):
+                        print(f"[429-TPD] {m} 今日額度用盡,不重試,直接換下一個")
+                        break
                     wait = min((2 ** attempt) * 15, 90)
                     print(f"[429] {m} rate limit,等 {wait}s 重試 "
                           f"({attempt + 1}/{MAX_RETRIES})")
