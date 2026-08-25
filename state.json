@@ -1,6 +1,6 @@
 {
   "date": "2026-08-26",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "- **研究主題**：動態令牌推理路徑的神經歸因圖，適合學生實作且仍有突破空間。  \n- **核心方法**  \n  - **TokenFlow**（ICLR 2026, Maya Patel）：逐層追蹤注意力，資訊增益作為邊權重，形成「流向圖」。  \n  - **Dynamic Attribution Networks (DAN)**（NeurIPS 2025, Carlos Mendes）：前向時插入可微分歸因模組，梯度‑注意力交叉加權，支持即時可視化。  \n  - **Graph‑Based Token Attribution (GTA)**（arXiv 2025, Yuna Kim）：將注意力矩陣剪枝後用圖卷積聚合鄰居訊號，輸出關鍵路徑列表。  \n- **模型架構**  \n  - 輸入：可變長度 token 序列；輸出：預測 logits + 歸因圖。  \n  - 重要模組：注意力抽取層、歸因聚合器、圖壓縮器（稀疏化/社群偵測）。  \n  - 訓練目標：交叉熵 + 資訊保留損失（1‑相關係數） + L1 稀疏正則。  \n- **訓練策略**  \n  - 資料：OpenWebText/C4（5–10 B token），單機 8‑GPU 6–12 天。  \n  - batch：每 GPU 2 k token，梯度累積 4 步。  \n  - 優化器：AdamW，線性 warm‑up + cosine decay。  \n  - tricks：注意力快取、動態門檻剪枝、混合精度。  \n- **Benchmark & 指標**  \n  - OpenWebText‑Attribution、WikiText‑2‑Graph。  \n  - Path‑Recall、Edge‑F1、Logit‑Stability。  \n- **優劣比較**  \n  - TokenFlow：直觀、無額外參數；缺點是圖規模大、無稀疏正則。  \n  - DAN：可"
+    },
+    {
+      "stage": 3,
+      "summary": "**結構化摘要（約 400 字）**\n\n- **方案 1：時間衰減資訊增益圖 (Temporal‑Decay TokenFlow)**\n  - *核心想法*：在 TokenFlow 的資訊增益邊權中加入可學習的時間衰減係數 `γ_l = sigmoid(w·l + b)`，使低層噪聲被抑制，強化高層因果路徑。  \n  - *技術細節*：每層先計算 IG，再乘以 `γ_l`；訓練目標為交叉熵 + L1 稀疏 + `λ·Σ(γ_l - target_l)^2`。  \n  - *SOTA 差異*：改動行 12，將 `edge_weight = IG(i,j)` 改為 `IG(i,j) * γ_l`。  \n  - *預期效益*：Edge‑F1 於 OpenWebText‑Attribution 提升 4–6%，Logit‑Stability 降低 2–3%。  \n  - *MVP*：WikiText‑2‑Graph + 12‑層 Llama‑mini，RTX 4090 8 h 內可收斂。\n\n- **方案 2：模組化稀疏自編碼器電路抽取器 (Modular Sparse Auto‑Circuit)**\n  - *核心想法*：在 Sparse Autoencoders 的編碼端加入 `Proj_mod` → Softmax，將稀疏激活映射到預定演算法原語表，並用門控 `g = sigmoid(α·h)` 調節強度。  \n  - *技術細節*：損失為 L2 重建 + λ₁·L1 + λ₂·KL(Proj_mod(h)‖Prior_K)。  \n  - *SOTA 差異*：改動行 8，將 `z = Encoder(x)` 改為 `Softmax(Proj_mod(Encoder(x)))`，並在解碼前乘以 `g`。  \n  - *預期效益*：AutoCircuit‑Eval 上因果一致性提升 7%，算法對齊分數提升 0.12，重建誤差 <1%。"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
