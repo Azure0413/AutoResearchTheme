@@ -1,6 +1,6 @@
 {
   "date": "2026-08-26",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**結構化摘要（約 400 字）**\n\n- **方案 1：時間衰減資訊增益圖 (Temporal‑Decay TokenFlow)**\n  - *核心想法*：在 TokenFlow 的資訊增益邊權中加入可學習的時間衰減係數 `γ_l = sigmoid(w·l + b)`，使低層噪聲被抑制，強化高層因果路徑。  \n  - *技術細節*：每層先計算 IG，再乘以 `γ_l`；訓練目標為交叉熵 + L1 稀疏 + `λ·Σ(γ_l - target_l)^2`。  \n  - *SOTA 差異*：改動行 12，將 `edge_weight = IG(i,j)` 改為 `IG(i,j) * γ_l`。  \n  - *預期效益*：Edge‑F1 於 OpenWebText‑Attribution 提升 4–6%，Logit‑Stability 降低 2–3%。  \n  - *MVP*：WikiText‑2‑Graph + 12‑層 Llama‑mini，RTX 4090 8 h 內可收斂。\n\n- **方案 2：模組化稀疏自編碼器電路抽取器 (Modular Sparse Auto‑Circuit)**\n  - *核心想法*：在 Sparse Autoencoders 的編碼端加入 `Proj_mod` → Softmax，將稀疏激活映射到預定演算法原語表，並用門控 `g = sigmoid(α·h)` 調節強度。  \n  - *技術細節*：損失為 L2 重建 + λ₁·L1 + λ₂·KL(Proj_mod(h)‖Prior_K)。  \n  - *SOTA 差異*：改動行 8，將 `z = Encoder(x)` 改為 `Softmax(Proj_mod(Encoder(x)))`，並在解碼前乘以 `g`。  \n  - *預期效益*：AutoCircuit‑Eval 上因果一致性提升 7%，算法對齊分數提升 0.12，重建誤差 <1%。"
+    },
+    {
+      "stage": 4,
+      "summary": "**方案 1 批判**  \n- **理論假設**：時間衰減係數 `γ_l` 需自動抑低層噪聲，隱含「層級資訊重要性單調遞增」；但低層往往承載關鍵語法，過度衰減會削弱必要訊息。  \n- **資料與訓練可行性**：僅在 WikiText‑2‑Graph 小語料驗證，未測試長文本或多模態資料；資訊增益對噪聲極敏，分布偏離時 IG 失真。  \n- **計算資源**：資訊增益需對每層注意力矩陣做 KL/互資訊估計，時間複雜度 `O(L·N²)`；8k token 亦易 OOM，學生只能在 2‑4 GPU 小規模實驗。  \n- **是否真優於 SOTA**：報告 Edge‑F1 提升 4–6%、Logit‑Stability 降低 2–3%，但未與最新 **Dynamic Attribution Networks (DAN‑v2, NeurIPS 2025)** 直接比較；圖稀疏化可能人為提升 F1。  \n- **失效模式**：極長序列或高度重複資料中，衰減將早期關鍵 token 近零，導致圖斷裂、logits 退化，影響可解釋性。  \n\n**方案 2 批判**  \n- **理論假設**：稀疏激活映射到預"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
