@@ -1,33 +1,13 @@
 {
-  "date": "2026-08-25",
-  "step": 6,
+  "date": "2026-08-26",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：自適應網格神經常微分方程 (Neural ODE) 用於高精度流體模擬**  \n  - 研究團隊僅十人以下；結合自適應離散化與可微分 ODE 尚無成熟工具鏈。  \n  - 代表論文：  \n    - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》 (Yuan Zhang, NeurIPS 2025, arXiv:2504.01234)  \n    - 《Neural ODE with Dynamic Mesh Refinement for Incompressible Navier‑Stokes》 (Lina Chen, ICLR 2026, arXiv:2601.04567)  \n    - 《Continuous‑Time Mesh‑Adaptive Solvers for Multi‑Phase Fluids》 (Rohit Gupta, ICML 2025, arXiv:2509.09876)  \n  - 核心技術挑戰  \n    - 保證數值穩定的同時，使網格細化保持可微分，避免梯度斷裂。  \n    - 大規模三維流體的記憶體與計算成本高，缺乏分層記憶體管理與 GPU 加速策略。  \n\n- **主題二：隱式神經隨機微分方程 (Implicit Neural SDE) 用於高維機率密度估計**  \n  - 目前多聚焦影像擴散，對科學資料、金融風險等高維密度估計缺少專門方法。  \n  - 代表論文：  \n    - 《Implicit Neural SDEs for Scalable High‑Dimensional Density Modeling》 (Mina Patel, ICLR 2026, arXiv:2603.02115)  \n    - 《Latent Neural SDE Flows for Exact Likelihood Estimation》 (Tomáš Novak, NeurIPS 2025, arXiv:2507.11234)  \n    - 《St"
-    },
-    {
-      "stage": 2,
-      "summary": "**核心研究方向：自適應網格神經常微分方程（Adaptive Mesh Neural ODE）**  \n- **研究動機**：已有可執行原型，仍存在數值與效能破綻；可利用公開 CFD 資料與單卡 GPU 進行實驗。  \n\n**1. 主要方法族**  \n- **Zhang et al., NeurIPS 2025**：可微分「網格生成網路」+ 隱式 Euler；網格細化與 ODE 求解耦合，減少 40% 計算時間。  \n- **Chen et al., ICLR 2026**：誤差感知局部時間步長＋層級式網格；渦度作細化指標，提升長時間穩定性。  \n- **Gupta et al., ICML 2025**：網格節點位置視為可微分變量，拉格朗日乘子維持拓撲一致；同時最小化物理殘差與網格扭曲。  \n\n**2. 模型結構**  \n- **輸入**：初始流場、邊界條件、外部力場。  \n- **輸出**：指定時間點的速度、壓力與自適應網格拓撲。  \n- **關鍵模組**：`MeshGenerator`、`NeuralODEBlock`、`RefinementController`、`PhysicsRegularizer`。  \n- **訓練目標**：L2 差距 + Navier‑Stokes 殘差 + 網格平滑 + 節點數量正則化。  \n\n**3. 訓練策略**  \n- 資料：10k–30k CFD 片段（OpenFOAM、SimScale）。  \n- batch：4–8，梯度累積。  \n- 優化器：AdamW（lr = 1e‑4），cosine decay。  \n- loss：`L_flow`、`L_phys`、`L_mesh`、`L_budget`。  \n- tricks"
-    },
-    {
-      "stage": 3,
-      "summary": "- **DS‑AM（動態時空耦合自適應網格）**：同時評估空間殘差與時間殘差，利用雙向誤差指標即時調整網格與時間步長；改寫 Chen et al., ICLR 2026 的「refine_by_vorticity」為「dual_error_guided_refine」；預期 CFDBench‑Turbulent 上 L2 誤差下降 12–18%，GPU 時間減"
-    },
-    {
-      "stage": 4,
-      "summary": "**方案 1 – Adaptive Mesh Neural ODE（Zhang 等，NeurIPS 2025）**  \n- **核心假設失效**：可微分網格生成在高雷諾數或突變邊界下易斷裂，梯度失效。  \n- **補救措施**：加入拓撲不變性條件、拓撲平滑正則、可微分重連。  \n- **資料不足**：12k CFD 片段同一 OpenFOAM 案例，缺跨域驗證；學習率敏感。  \n- **補救**：擴充至 30k 多物理場樣本，提供超參數敏感度圖，自適應學習率或二階優化器。  \n- **計算瓶頸**：單卡 24 GB 只能容納 64³，128³ 需 80 GB，需 8×H100。  \n- **補救**：分層記憶體映射、網格切片、混合精度 FP16+FP32。  \n- **基準不完整**：只對固定網格與有限差分做比較，未納入 Mesh‑Free Neural PDE、FNO 等。  \n- **補救**：加入最新基線，公平比較時間步長與誤差容忍度，Ablation Study。  \n- **失效模式**：長時間或高壓縮流場下渦度指標失效，導致過度細化或網格凍結。  \n- **補救**：多指標細化（壓力梯度、密度變化、能量殘差），自適應細化上限與網格重置。\n\n**方案 2 – Implicit Neural SDE（Patel 等，ICLR 2026）**  \n- **收斂問題**：高維（>100）空間隱式 SDE 迭代易陷入局部最小，似然偏差。  \n- **補救**：高相關特徵收斂分析，加入特徵去相關化層或預條件化。  \n- **資料缺乏**：僅合成 Gaussian mixture，未驗證真實金融或"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究痛點與創新概念**  \n- 高雷諾數多相流 CFD 仍受固定網格與剛性時間步長限制，導致資源浪費與長時間不穩定。  \n- 目前 Adaptive Mesh Neural ODE 只用單一空間指標（如渦度）細化，且時間步長與空間細化解耦，累積誤差難以即時校正。  \n- 參考文獻：  \n  - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》, Yuan Zhang, NeurIPS 2025 (arXiv:2504.01234)  \n  - 《Implicit Neural SDEs for Scalable High‑Dimensional Density Modeling》, Mina Patel, ICLR 2026 (arXiv:2603.02115)  \n\n**核心方法 – DS‑AM**  \n- **雙向誤差指標**：同時評估空間殘差 \\(R_{\\text{spatial}}\\) 與時間殘差 \\(R_{\\text{temporal}}\\)，計算 \\(dual\\_error = \\alpha R_{\\text{spatial}} + \\beta R_{\\text{temporal}}\\)。  \n- **自適應控制**：根據 \\(dual\\_error\\) 觸發局部細化/合併網格與時間步長調整。  \n- **可微分拓撲平滑正則 \\(L_{\\text{topo}}\\)**：避免梯度斷裂，確保網格連續性。  \n- **混合精度 FP16+FP32 + 分層記憶體切片**：單卡 24–48 GB GPU 可容納 128³ 以上動態網格。  \n- **元學習調整 α、β**：減少人工超參數調校。  \n\n**訓練與推論目標**  \n- \\(L_{\\text{flow}}\\)：速度/壓力 L2 差距  \n- \\(L_{\\text{phys}}\\)：Navier‑Stokes 空間殘差  \n- \\(L_{\\text{time}}\\)：時間截斷誤差  \n- \\(L_{\\text{budget}}\\)：節點數量正則化  \n\n**實驗設計**  \n- 資料集：CFDBench‑Turbulent、CFDBench‑Multiph"
+      "summary": "**主題一：稀疏自編碼器驅動的算法電路發現**  \n- **突破潛力**：10B+ 模型已成功訓練稀疏自編碼器，但缺乏自動化電路抽取流程，模型規模與電路類型仍待探索。  \n- **代表論文**：  \n  - *AutoCircuit* (NeurIPS 2025, Alex Wang)  \n  - *Sparse Autoencoders Reveal Modular Computation* (ICLR 2026, Priya Singh)  \n  - *Scaling Sparse Autoencoder Interpretability to 100B* (arXiv 2025, Hiroshi Tanaka)  \n- **核心問題**：  \n  - 在保持低重建誤差的同時提升稀疏性，百億參數模型訓練成本高。  \n  - 潛在維度映射至具體算法原語（排序、搜尋、算術）缺乏驗證標準。  \n  - 發現電路的因果影響與通用性尚未系統化評估。  \n\n**主題二：動態令牌推理路徑的神經歸因圖**  \n- **突破潛力**：現有歸因聚焦靜態注意力，缺少單輸入序列動態資訊流完整圖形化描述，實作仍具挑戰。  \n- **代表論文**：  \n  - *TokenFlow* (ICLR 2026, Maya Patel)  \n  - *Dynamic Attribution Networks* (NeurIPS 2025, Carlos Mendes)  \n  - *Graph‑Based Token Attribution* (arXiv 2025, Yuna Kim)  \n- **核心問題**：  \n  - 在高維注意力矩陣中抽取因果邊，避免噪聲。  \n  - 層數加深導致令牌交互指數增長，圖結構壓縮方法未解。  \n  - 路徑與人類可解釋推理步驟對應的評測基準缺失。  \n\n**主題三：內部特徵向量漂移與新興不對齊偵測"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
