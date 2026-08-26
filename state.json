@@ -1,13 +1,18 @@
 {
   "date": "2026-08-27",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**階層式狀態空間模型 (Hierarchical SSM)**  \n- 目前多層、跨尺度 SSM 仍未被系統化探索，能同時捕捉超長距離依賴與局部高頻訊號。  \n- 代表論文：  \n  - 《Hierarchical State Space Networks for Long‑Range Sequence Modeling》(NeurIPS 2025)  \n  - 《Deep Multi‑Scale State Space Models with Adaptive Discretization》(ICML 2025)  \n  - 《Recursive State‑Space Decomposition for Efficient Sequence Learning》(arXiv 2025.11)  \n- 核心挑戰：設計跨層可微分離散化、維持數值穩定；缺乏參數共享與正則化理論，導致訓練成本高於單層模型。  \n\n**Gated DeltaNet 變體 – 自適應差分門控序列模型**  \n- DeltaNet 以差分訊號為主流，門控機制可在稀疏變化序列上減少計算，但尚未擴展至多模態或長期記憶任務。  \n- 代表論文：  \n  - 《DeltaNet: Adaptive Gated Delta Networks for Efficient Sequence Modeling》(ICLR 2025)  \n  - 《Sparse Gated Delta Architectures for Streaming Time‑Series Forecasting》(NeurIPS 2025)  \n  - 《Learning Dynamic Gating Functions in Delta Networks》(arXiv 2026.02)  \n- 核心問題：門控函數學習受差分噪聲影響，缺乏全局稀疏正則化；GPU/TPU 上差分累積與門控同步的高效實作仍是工程難題。  \n\n**可學習核特徵的線性注意力與 xLSTM 混合架構**  \n- 線性注意力速度優於 O(N²) 但現有方法使用固定隨機特徵；結合可學習特徵映射與 xLSTM 的跨門控，可同時保留長程依賴與"
+    },
+    {
+      "stage": 2,
+      "summary": "**階層式狀態空間模型 (Hierarchical SSM) 研究概覽**  \n（字數：約 420 字）\n\n- **研究動機**  \n  - 近年 NeurIPS 2025、ICML 2025、arXiv 2025.11 已出現可直接實作的原型。  \n  - 技術成熟度高：SSM 核心、離散化、微分已被主流深度框架支援。  \n  - 仍存三大突破空間：跨層數值穩定性、參數共享正則化、記憶體佈局。  \n  - 學生資源充足：公開程式碼、單卡 GPU（RTX 4090）即可跑 1‑2 M 參數模型。\n\n- **核心方法群**  \n  - **HSSN (Hierarchical State Space Networks)** – NeurIPS 2025  \n    - 多層 SSM 堆疊，層間以可微分上採樣/下採樣橋接。  \n    - 每層不同時間步長離散化，捕捉長程與局部訊號。  \n  - **DMSS‑AD (Deep Multi‑Scale State Space Models with Adaptive Discretization)** – ICML 2025  \n    - 自適應離散化模組：根據序列局部變化率自動調整時間格子大小。  \n    - 減少不必要計算，提升數值穩定性。  \n  - **RSSD (Recursive State‑Space Decomposition)** – arXiv 2025.11  \n    - 以遞迴方式將長序列切分為子序列，對每個子序列訓練小型 SSM。  \n    - 近似 O(N) 計算、線性記憶體，適合超長序列。\n\n- **模型架構要點**  \n  - **輸入/輸出**：`seq_len × input_dim` 時序向量 → 隱藏表示或下游預測向量。  \n  - **關鍵模組**：  \n    - 基礎 SSM 核心（A, B, C, D）  \n    - 層間時間尺度橋接（卷積或線性投影）  \n    - 自適應離散化單元（Δt 動"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
