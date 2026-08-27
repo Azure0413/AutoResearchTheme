@@ -1,6 +1,6 @@
 {
   "date": "2026-08-27",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**階層式狀態空間模型 (Hierarchical SSM) 研究概覽**  \n（字數：約 420 字）\n\n- **研究動機**  \n  - 近年 NeurIPS 2025、ICML 2025、arXiv 2025.11 已出現可直接實作的原型。  \n  - 技術成熟度高：SSM 核心、離散化、微分已被主流深度框架支援。  \n  - 仍存三大突破空間：跨層數值穩定性、參數共享正則化、記憶體佈局。  \n  - 學生資源充足：公開程式碼、單卡 GPU（RTX 4090）即可跑 1‑2 M 參數模型。\n\n- **核心方法群**  \n  - **HSSN (Hierarchical State Space Networks)** – NeurIPS 2025  \n    - 多層 SSM 堆疊，層間以可微分上採樣/下採樣橋接。  \n    - 每層不同時間步長離散化，捕捉長程與局部訊號。  \n  - **DMSS‑AD (Deep Multi‑Scale State Space Models with Adaptive Discretization)** – ICML 2025  \n    - 自適應離散化模組：根據序列局部變化率自動調整時間格子大小。  \n    - 減少不必要計算，提升數值穩定性。  \n  - **RSSD (Recursive State‑Space Decomposition)** – arXiv 2025.11  \n    - 以遞迴方式將長序列切分為子序列，對每個子序列訓練小型 SSM。  \n    - 近似 O(N) 計算、線性記憶體，適合超長序列。\n\n- **模型架構要點**  \n  - **輸入/輸出**：`seq_len × input_dim` 時序向量 → 隱藏表示或下游預測向量。  \n  - **關鍵模組**：  \n    - 基礎 SSM 核心（A, B, C, D）  \n    - 層間時間尺度橋接（卷積或線性投影）  \n    - 自適應離散化單元（Δt 動"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3 – 四項創新方法概覽（300–500字）**\n\n- **方案 1：階層式時間尺度自適應離散化 (ATSD)**\n  - 核心：每層 SSM 內置可微分時間步長估計器（小型 MLP），輸出 Δt 取代固定格子。  \n  - 技術：離散化算子保留原 A,B,C,D；訓練損失＝預測交叉熵 + λ_time 時間平滑正則。  \n  - 與 SOTA 差異：相較於 ICML 2025 的單層自適應，ATSD 在每層部署 Δt 估計器，允許高層自動放大時間尺度。  \n  - 預期：LRA‑Pathfinder 精度提升 4–6%，訓練收斂速度加快 15%。  \n  - MVP：3‑層 HSSN（隱藏 256），Δt 估計器 2‑層 MLP；LRA‑Pathfinder、ListOps；RTX 4090 20‑epoch 8–12 h。\n\n- **方案 2：交叉層門控稀疏化 (CLGS)**\n  - 核心：層間加入可學習門控掩碼 g_l，僅傳遞被激活通道。  \n  - 技術：掩碼生成器為 Sigmoid(‖h_l‖₂) → g_l；使用 Straight‑Through Estimator；加入稀疏正則（平均激活率<30%）。  \n  - 與 SOTA 差異：DeltaNet 只在單層差分路徑門控，CLGS 將門控搬至層間，直接削減跨層計算。  \n  - 預期：ETT‑m2 MSE 下降 8–10%，推理 FLOPs 減少 35%。  \n  - MVP：4‑層 HSSN（隱藏 128），門控生成器單層線性+Sig"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
