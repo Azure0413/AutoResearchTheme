@@ -1,13 +1,18 @@
 {
   "date": "2026-08-28",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "- **測試時計算伸縮律與動態推理深度調整**  \n  - 目前僅有少數研究量化推理階段算力‑效能關係，缺乏可即時調整推理深度的理論與實作框架。  \n  - 代表論文：  \n    - *Scaling Laws for Test‑Time Compute in Large Language Models* (Emily Chen, NeurIPS 2025)  \n    - *Dynamic Compute Allocation via Reinforcement Learning* (Ravi Patel, ICML 2025)  \n    - *Adaptive Inference for Transformers with Budget Constraints* (Liang Zhou, arXiv 2026.04012)  \n  - 核心技術挑戰：① 在保持預測品質的前提下，如何設計可微分的算力指導；② 動態早退機制與序列長度交互效應缺乏統一伸縮律；③ 不同硬體（GPU、TPU、邊緣 ASIC）算力分配策略尚未可比。\n\n- **自我改進回路的理論基礎與可行性驗證**  \n  - 自我產生訓練資料並迭代微調的概念仍處於探索階段，研究人數不足十人，缺乏嚴謹的收斂與安全性理論。  \n  - 代表論文：  \n    - *Self‑Training at Scale: Iterative Self‑Improvement of Language Models* (Yuan Liu,"
+    },
+    {
+      "stage": 2,
+      "summary": "**核心方法與架構**  \n- **Early‑Exit Transformer**：每層或每隔幾層加入判斷分支；若置信度/entropy 超門檻即直接輸出，否則繼續往下。  \n- **Dynamic Token Pruning (DTP)**：推理時根據注意力或梯度重要性，逐層刪除低貢獻 token，降低 O(N²) 計算。  \n- **RL‑Based Compute Scheduler**：強化學習代理決定層數與 token 數，以 latency/FLOPs 為獎勵，模型品質為懲罰。  \n\n**技術細節**  \n- 輸入：可變長度文字序列或多模態嵌入；輸出：token 分布或序列，早退時直接返回。  \n- 重要模組：判斷分支（classifier + confidence estimator）、token mask 生成器、RL policy network（小型 MLP）。  \n- 訓練目標：保持原始精度，最小化期望 FLOPs；損失 = 交叉熵 + λ·期望 FLOPs + 早退 KL 懲罰。  \n\n**訓練策略**  \n- 資料：C4、RedPajama 1T；Batch 256–512（混合精度可至 1024）。  \n- 優化器：AdamW，"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
