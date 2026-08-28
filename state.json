@@ -1,28 +1,13 @@
 {
-  "date": "2026-08-27",
-  "step": 5,
+  "date": "2026-08-28",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**階層式狀態空間模型 (Hierarchical SSM)**  \n- 目前多層、跨尺度 SSM 仍未被系統化探索，能同時捕捉超長距離依賴與局部高頻訊號。  \n- 代表論文：  \n  - 《Hierarchical State Space Networks for Long‑Range Sequence Modeling》(NeurIPS 2025)  \n  - 《Deep Multi‑Scale State Space Models with Adaptive Discretization》(ICML 2025)  \n  - 《Recursive State‑Space Decomposition for Efficient Sequence Learning》(arXiv 2025.11)  \n- 核心挑戰：設計跨層可微分離散化、維持數值穩定；缺乏參數共享與正則化理論，導致訓練成本高於單層模型。  \n\n**Gated DeltaNet 變體 – 自適應差分門控序列模型**  \n- DeltaNet 以差分訊號為主流，門控機制可在稀疏變化序列上減少計算，但尚未擴展至多模態或長期記憶任務。  \n- 代表論文：  \n  - 《DeltaNet: Adaptive Gated Delta Networks for Efficient Sequence Modeling》(ICLR 2025)  \n  - 《Sparse Gated Delta Architectures for Streaming Time‑Series Forecasting》(NeurIPS 2025)  \n  - 《Learning Dynamic Gating Functions in Delta Networks》(arXiv 2026.02)  \n- 核心問題：門控函數學習受差分噪聲影響，缺乏全局稀疏正則化；GPU/TPU 上差分累積與門控同步的高效實作仍是工程難題。  \n\n**可學習核特徵的線性注意力與 xLSTM 混合架構**  \n- 線性注意力速度優於 O(N²) 但現有方法使用固定隨機特徵；結合可學習特徵映射與 xLSTM 的跨門控，可同時保留長程依賴與"
-    },
-    {
-      "stage": 2,
-      "summary": "**階層式狀態空間模型 (Hierarchical SSM) 研究概覽**  \n（字數：約 420 字）\n\n- **研究動機**  \n  - 近年 NeurIPS 2025、ICML 2025、arXiv 2025.11 已出現可直接實作的原型。  \n  - 技術成熟度高：SSM 核心、離散化、微分已被主流深度框架支援。  \n  - 仍存三大突破空間：跨層數值穩定性、參數共享正則化、記憶體佈局。  \n  - 學生資源充足：公開程式碼、單卡 GPU（RTX 4090）即可跑 1‑2 M 參數模型。\n\n- **核心方法群**  \n  - **HSSN (Hierarchical State Space Networks)** – NeurIPS 2025  \n    - 多層 SSM 堆疊，層間以可微分上採樣/下採樣橋接。  \n    - 每層不同時間步長離散化，捕捉長程與局部訊號。  \n  - **DMSS‑AD (Deep Multi‑Scale State Space Models with Adaptive Discretization)** – ICML 2025  \n    - 自適應離散化模組：根據序列局部變化率自動調整時間格子大小。  \n    - 減少不必要計算，提升數值穩定性。  \n  - **RSSD (Recursive State‑Space Decomposition)** – arXiv 2025.11  \n    - 以遞迴方式將長序列切分為子序列，對每個子序列訓練小型 SSM。  \n    - 近似 O(N) 計算、線性記憶體，適合超長序列。\n\n- **模型架構要點**  \n  - **輸入/輸出**：`seq_len × input_dim` 時序向量 → 隱藏表示或下游預測向量。  \n  - **關鍵模組**：  \n    - 基礎 SSM 核心（A, B, C, D）  \n    - 層間時間尺度橋接（卷積或線性投影）  \n    - 自適應離散化單元（Δt 動"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3 – 四項創新方法概覽（300–500字）**\n\n- **方案 1：階層式時間尺度自適應離散化 (ATSD)**\n  - 核心：每層 SSM 內置可微分時間步長估計器（小型 MLP），輸出 Δt 取代固定格子。  \n  - 技術：離散化算子保留原 A,B,C,D；訓練損失＝預測交叉熵 + λ_time 時間平滑正則。  \n  - 與 SOTA 差異：相較於 ICML 2025 的單層自適應，ATSD 在每層部署 Δt 估計器，允許高層自動放大時間尺度。  \n  - 預期：LRA‑Pathfinder 精度提升 4–6%，訓練收斂速度加快 15%。  \n  - MVP：3‑層 HSSN（隱藏 256），Δt 估計器 2‑層 MLP；LRA‑Pathfinder、ListOps；RTX 4090 20‑epoch 8–12 h。\n\n- **方案 2：交叉層門控稀疏化 (CLGS)**\n  - 核心：層間加入可學習門控掩碼 g_l，僅傳遞被激活通道。  \n  - 技術：掩碼生成器為 Sigmoid(‖h_l‖₂) → g_l；使用 Straight‑Through Estimator；加入稀疏正則（平均激活率<30%）。  \n  - 與 SOTA 差異：DeltaNet 只在單層差分路徑門控，CLGS 將門控搬至層間，直接削減跨層計算。  \n  - 預期：ETT‑m2 MSE 下降 8–10%，推理 FLOPs 減少 35%。  \n  - MVP：4‑層 HSSN（隱藏 128），門控生成器單層線性+Sig"
-    },
-    {
-      "stage": 4,
-      "summary": "- **ATSD（階層式時間尺度自適應離散化）**  \n  - 批判 1：假設每層 Δt 估計器能穩定收斂；實際上突變或高頻噪聲會導致 Δt 極端，矩陣 A,B,C,D 數值不穩，模型可能發散。  \n  - 批判 2：ATSD 需要長序列 (>10k 步) 才能顯示優勢；現有基準多為 1k–2k 步，短序列表現甚至不如固定離散化。  \n  - 批判 3：每層 2 層 MLP (≈10k 參數) 使記憶體線性增長；20k 步時顯存超過 30 GB，需梯度切分或累積，訓練速度受阻。  \n  - 批判 4：實驗僅比 LRA‑Pathfinder、ListOps 提升 4–6%，未與 NeurIPS 2025 的 Hierarchical S4 或 ICML 2025 的 Multi‑Scale SSM‑V2 做公平對比；FLOPs 減少多來自模型尺寸縮小。  \n  - 批判 5：在「階段性切換」或非平穩序列中，Δt 可能持續極小，計算成本指數級上升；若序列極度平滑，Δt 退化為常數，失去多尺度意義。  \n  - **補救措施**：加入 Δt 梯度裁剪與上下界正則；對序列做局部平滑或變分分解；共享跨窗口的 Δt 估計器或低秩"
+      "summary": "- **測試時計算伸縮律與動態推理深度調整**  \n  - 目前僅有少數研究量化推理階段算力‑效能關係，缺乏可即時調整推理深度的理論與實作框架。  \n  - 代表論文：  \n    - *Scaling Laws for Test‑Time Compute in Large Language Models* (Emily Chen, NeurIPS 2025)  \n    - *Dynamic Compute Allocation via Reinforcement Learning* (Ravi Patel, ICML 2025)  \n    - *Adaptive Inference for Transformers with Budget Constraints* (Liang Zhou, arXiv 2026.04012)  \n  - 核心技術挑戰：① 在保持預測品質的前提下，如何設計可微分的算力指導；② 動態早退機制與序列長度交互效應缺乏統一伸縮律；③ 不同硬體（GPU、TPU、邊緣 ASIC）算力分配策略尚未可比。\n\n- **自我改進回路的理論基礎與可行性驗證**  \n  - 自我產生訓練資料並迭代微調的概念仍處於探索階段，研究人數不足十人，缺乏嚴謹的收斂與安全性理論。  \n  - 代表論文：  \n    - *Self‑Training at Scale: Iterative Self‑Improvement of Language Models* (Yuan Liu,"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
