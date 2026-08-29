@@ -1,18 +1,13 @@
 {
-  "date": "2026-08-29",
-  "step": 3,
+  "date": "2026-08-30",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": ""
-    },
-    {
-      "stage": 2,
-      "summary": "**神經符號推理與程式合成（Neural‑Symbolic Reasoning & Program Synthesis）核心概念**\n\n- **主要方法**  \n  - **NSR (Neural Symbolic Reasoner)**：NeurIPS 2025，將神經特徵映射至布林子句，利用可微分邏輯層與 SAT 求解器完成符號推理。  \n  - **ProgSynth‑LLM**：ICLR 2026，LLM 先產生程式草稿，再透過執行回饋（execution‑feedback loop）校正語法與語意，最終得到可驗證程式。  \n  - **S3P (Self‑Supervised Symbolic Pre‑training)**：ICML 2025，使用自動生成的程式/公式對，結構遮蔽與代數等價兩種自監督目標，學習抽象代數與邏輯規則。\n\n- **模型架構**  \n  - **輸入**：自然語言問題 + 可選結構化提示（變數、類型）。  \n  - **輸出**：符號化邏輯式或可執行程式碼（Python / Mini‑DSL）。  \n  - **關鍵模組**：Transformer 編碼器 → 符號化層（離散符號映射）→ 求解器介面（SAT/SMT 或執行環境）。  \n  - **訓練目標**：主損失為「語義正確率」（驗證成功率），輔助損失為「結構一致性」與「語法正確性」。\n\n- **訓練策略**  \n  - 資料：1.2 億自動生成程式/公式對 + 5 萬人工標註「問題‑答案」對。  \n  - Batch：GPU 256，CPU‑SAT 動態 mini‑batch 32。  \n  - 優化器：AdamW，LR 2e‑4，cosine decay。  \n  - Loss：`L_main`（驗證成功率負對數）、`L_struct`（遮蔽交叉熵）、`L_reg`（權重衰減）。  \n  -"
+      "summary": "**階層任務圖與嵌套持續學習**  \n- **突破潛力**：目前僅少數團隊嘗試以結構化任務圖同時管理多層次、跨領域任務序列，能自然支援「任務內部」與「任務之間」的遞迴知識傳遞。  \n- **代表論文**：  \n  - *Nested Continual Learning via Hierarchical Task Graphs* (Lin Zhao, NeurIPS 2025)  \n  - *TaskTree: Structured Task Decomposition for Lifelong Learning* (Maria Fernandez, ICML 2026)  \n  - *Hierarchical Graph Memory for Nested Continual Learning* (Arjun Mehta, arXiv 2025.12)  \n- **核心技術問題**：  \n  - 動態生成任務圖時如何保持圖結構的穩定性與可擴展性。  \n  - 在圖上進行高效梯度傳遞與記憶更新，避免跨層次遺忘與衝突。  \n- **結論**：若能解決圖結構穩定與梯度傳遞問題，將可實現多層次任務的無縫遞迴學習，顯著提升長期學習效能。\n\n**生成式稀疏回放緩衝區**  \n- **突破潛力**：傳統回放依賴大量真實樣本，記憶成本高；利用生成模型只保存少量關鍵特徵，再透過稀疏抽樣重建過去資料，可在極端記憶受限裝置上實現長期學習。  \n- **代表論文**：  \n  - *Generative Sparse Replay for Lifelong Vision* (Kunal Patel, ICLR 2026)  \n  - *Memory‑Constrained Generative Replay via Diffusion Priors* (Yoonhee Kim, NeurIPS 2025)  \n  - *Sparse Replay Buffers with Conditional Diffusion Models* (Luca Rossi, arX"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0
+    "1": 0
   }
 }
