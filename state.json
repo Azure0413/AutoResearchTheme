@@ -1,13 +1,18 @@
 {
   "date": "2026-08-29",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": ""
+    },
+    {
+      "stage": 2,
+      "summary": "**神經符號推理與程式合成（Neural‑Symbolic Reasoning & Program Synthesis）核心概念**\n\n- **主要方法**  \n  - **NSR (Neural Symbolic Reasoner)**：NeurIPS 2025，將神經特徵映射至布林子句，利用可微分邏輯層與 SAT 求解器完成符號推理。  \n  - **ProgSynth‑LLM**：ICLR 2026，LLM 先產生程式草稿，再透過執行回饋（execution‑feedback loop）校正語法與語意，最終得到可驗證程式。  \n  - **S3P (Self‑Supervised Symbolic Pre‑training)**：ICML 2025，使用自動生成的程式/公式對，結構遮蔽與代數等價兩種自監督目標，學習抽象代數與邏輯規則。\n\n- **模型架構**  \n  - **輸入**：自然語言問題 + 可選結構化提示（變數、類型）。  \n  - **輸出**：符號化邏輯式或可執行程式碼（Python / Mini‑DSL）。  \n  - **關鍵模組**：Transformer 編碼器 → 符號化層（離散符號映射）→ 求解器介面（SAT/SMT 或執行環境）。  \n  - **訓練目標**：主損失為「語義正確率」（驗證成功率），輔助損失為「結構一致性」與「語法正確性」。\n\n- **訓練策略**  \n  - 資料：1.2 億自動生成程式/公式對 + 5 萬人工標註「問題‑答案」對。  \n  - Batch：GPU 256，CPU‑SAT 動態 mini‑batch 32。  \n  - 優化器：AdamW，LR 2e‑4，cosine decay。  \n  - Loss：`L_main`（驗證成功率負對數）、`L_struct`（遮蔽交叉熵）、`L_reg`（權重衰減）。  \n  -"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
