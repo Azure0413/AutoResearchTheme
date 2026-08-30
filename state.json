@@ -1,28 +1,13 @@
 {
-  "date": "2026-08-30",
-  "step": 5,
+  "date": "2026-08-31",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**階層任務圖與嵌套持續學習**  \n- **突破潛力**：目前僅少數團隊嘗試以結構化任務圖同時管理多層次、跨領域任務序列，能自然支援「任務內部」與「任務之間」的遞迴知識傳遞。  \n- **代表論文**：  \n  - *Nested Continual Learning via Hierarchical Task Graphs* (Lin Zhao, NeurIPS 2025)  \n  - *TaskTree: Structured Task Decomposition for Lifelong Learning* (Maria Fernandez, ICML 2026)  \n  - *Hierarchical Graph Memory for Nested Continual Learning* (Arjun Mehta, arXiv 2025.12)  \n- **核心技術問題**：  \n  - 動態生成任務圖時如何保持圖結構的穩定性與可擴展性。  \n  - 在圖上進行高效梯度傳遞與記憶更新，避免跨層次遺忘與衝突。  \n- **結論**：若能解決圖結構穩定與梯度傳遞問題，將可實現多層次任務的無縫遞迴學習，顯著提升長期學習效能。\n\n**生成式稀疏回放緩衝區**  \n- **突破潛力**：傳統回放依賴大量真實樣本，記憶成本高；利用生成模型只保存少量關鍵特徵，再透過稀疏抽樣重建過去資料，可在極端記憶受限裝置上實現長期學習。  \n- **代表論文**：  \n  - *Generative Sparse Replay for Lifelong Vision* (Kunal Patel, ICLR 2026)  \n  - *Memory‑Constrained Generative Replay via Diffusion Priors* (Yoonhee Kim, NeurIPS 2025)  \n  - *Sparse Replay Buffers with Conditional Diffusion Models* (Luca Rossi, arX"
-    },
-    {
-      "stage": 2,
-      "summary": "- **研究主題**：生成式稀疏回放緩衝區（Generative Sparse Replay, GSR），針對硬體受限終端裝置，解決記憶品質與計算效率缺口。  \n- **核心方法**：  \n  - *GSR*（Patel et al., ICLR 2026）：輕量化 VAE 產生關鍵特徵向量，回放時只重建少量 latent。  \n  - *DPR*（Kim et al., NeurIPS 2025）：預訓練擴散模型作為先驗，僅保存噪聲種子與條件編碼。  \n  - *CDSB*（Rossi et al., arXiv 2025.12）：條件擴散＋動態重要度評估，階層式解碼提升細節。  \n- **模型架構**：輸入圖像 → Encoder（輕量化 Conv/ViT）壓縮為 latent `z`；Generator（條件 VAE 或小型擴散）根據 `z` 或噪聲種子重建；Importance Selector 根據梯度或訊息熵挑選保存的 `z`。  \n- **訓練策略**：  \n  - 目標：重建損失（L1+感知）+ 稀疏正則（L0 近似）+ 協同損失（KL 生成樣本與主模型）。  \n  - 優化器 AdamW，LR 3e‑4，Batch 64，使用 EMA 更新生成器，動態調整 λ_sparse。  \n- **Benchmark**：CIFAR‑100‑Continual（Avg‑Acc 71%，Forgetting 12%）、ImageNet‑R（Top‑1 58%，記憶 45 MB）、Tiny‑ImageNet‑Lifelong。  \n- **優缺點**：  \n  - GSR：低成本、易部署；缺點是生成品質受限、重要度選擇噪聲敏感。  \n  - DPR：高真實度合成、極小記憶；"
-    },
-    {
-      "stage": 3,
-      "summary": "**方案 1：Adaptive Graph Pruning with Gradient‑Influence Scoring (AGP‑GIS)**  \n- **核心概念**：在 TaskTree 階層任務圖上即時剪枝，只保留梯度貢獻最高的子圖，減少訊息傳遞與遺忘。  \n- **技術流程**：  \n  - 由 `TaskTree` 產生的圖 `G_t` → 用 mini‑batch 計算每條邊的梯度影響分數 `s(e)`（梯度點積 × 邊權重）。  \n  - 在 `GraphUpdater` 前插入 `PruneScheduler`：每 `K` 步根據 `s(e)` 排序，保留前 `ρ`% 的邊，其餘邊訊息被屏蔽。  \n  - 損失：`L_total = L_task + λ Σ_{e∉E_keep}|s(e)|`，`λ` 隨訓練進度線性衰減。  \n- **SOTA 差異**：改動 `Algorithm 2` 第 7 行由「傳遞所有邊」改為「僅傳遞 `E_keep`」；第 9 行加入 `s(e)` 計算。  \n- **預期效益**：CIFAR‑100‑Continual 上平均準確度提升 3–4%，遺忘率下降 5% 以內；稀疏化降低梯度噪聲，提升舊任務表徵穩定性。  \n- **MVP**：CIFAR‑100‑Continual、TaskTree 基礎模型、RTX 4090、30 epoch、4 h 內完成；對比原始 TaskTree 的準確度與遺忘率。\n\n**方案 2：Dual‑Stage Conditional Diffusion Replay (DS‑CDR)**  \n- **核心概念**：先用條件 VAE 生成粗糙圖像，再以小型擴散模型條件重建高品質樣本，兼顧速度與真實度。  \n- **技術流程**：  \n  - 從舊任務緩衝區取 latent `z` → VAE Decoder"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 – 嚴格自我批判（結構化摘要）**\n\n- **方案 1 AGP‑GIS**  \n  - *理論假設*：梯度點積作為邊重要度指標在高度非線性、梯度噪聲大或長尾/概念漂移情境下易失真。  \n  - *資料/訓練可行性*：僅於 CIFAR‑100‑Continual 測試；對每個 mini‑batch 計算 O(|E|) 的分數，batch 調整會造成分數波動。  \n  - *計算資源*：需遍歷整個任務圖，GPU 24 GB 可能 OOM；未公開圖規模與記憶體曲線。  \n  - *是否真優於 SOTA*：只對比 TaskTree，未納入 Dynamic Task Graph Continual Learning、Graph‑Based Elastic Weight Consolidation 等基線；提升 3–4% 可能來自 λ 正則化。  \n  - *失效模式*：高度循環或多重依賴的任務圖易被剪枝斷開關鍵回饋路徑，長序列中累積錯誤導致圖崩潰。  \n  - *補救措施*：引入訊息熵、注意力權重等多尺度重要度；Meta‑Learning 調整 λ 與 K；分塊圖計算、CPU‑GPU 混合近似；結構完整性檢查與可恢復剪枝。\n\n- **方案 2 DS‑CDR**  \n  - *理論假設*："
+      "summary": ""
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
