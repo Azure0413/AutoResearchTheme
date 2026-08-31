@@ -1,6 +1,6 @@
 {
   "date": "2026-08-31",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "- **研究主題**：自監督圖神經網路（Self‑Supervised GNN）  \n  - 2025‑2026 年已出現可直接實作的框架，適合學生級研究。  \n  - 仍缺乏在大規模、異質圖與跨領域遷移上的成熟解法。  \n\n- **核心方法**  \n  - **GraphMAE**（NeurIPS 2025）  \n    - 以節點特徵遮蔽訓練自編碼器，僅在遮蔽位置重建。  \n    - 取得 OGB‑Products 0.92 ROC‑AUC，顯著優於 GraphSAGE。  \n  - **MaskGNN**（ICLR 2026）  \n    - 在結構層面遮蔽邊，解碼器預測被遮蔽連接。  \n    - 提升 Hits@10，對拓撲變化更健壯。  \n  - **HeteroGraphMAE**（ICML 2025）  \n    - 對異質圖設計不同類型的遮蔽比例與重建損失。  \n    - 支援知識圖譜，提升多模態訊息學習。  \n\n- **模型架構**  \n  - **編碼器**：GraphSAGE / GIN / Heterogeneous GNN，層歸一化＋殘差。  \n  - **遮蔽模組**：隨機選取節點/邊，使用掩碼向量。  \n  - **解碼器**：線性投影或 MLP，僅計算遮蔽位置的重建誤差。  \n  - **損失**：重建損失（MSE/BCE）+ 可選 InfoNCE 對比損失。  \n\n- **訓練策略**  \n  - 子圖抽樣（Cluster‑GCN/鄰居采樣），批次 256‑1024。  \n  - 優化器 AdamW，lr 1e‑3，cosine decay"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：中心性導向遮蔽**  \n  - 以節點度中心性 `c(v)` 產生遮蔽機率 `p(v)=c(v)/Σc`，取代 GraphMAE 的隨機遮蔽。  \n  - 編碼器保持 GraphSAGE；解碼器使用線性投影。  \n  - 損失：MSE + InfoNCE（僅對被遮蔽節點）。  \n  - 預期：OGB‑Products ROC‑AUC ↑1.5%（0.94），Hetionet MRR ↑2%。  \n  - MVP：OGB‑Products，2‑層 GraphSAGE，128‑維，20 epoch，RTX‑3090 6 h。  \n\n- **方案 2：層次子圖重建**  \n  - Cluster‑GCN 切分子圖 `S_i`；子圖內遮蔽20%，全圖遮蔽10%。  \n  - 子圖編碼器：2‑層 GIN → `h_i`；全圖編碼器：1‑層 GraphSAGE → `h_g`。  \n  - 解碼器：子圖 MLP、全圖線性投影。  \n  - 損失：子圖重建 + 全圖重建 + λ × 子圖/全圖對比（InfoNCE）。  \n  - 預期：OGB‑MolPC"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
