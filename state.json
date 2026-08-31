@@ -1,28 +1,13 @@
 {
-  "date": "2026-08-31",
-  "step": 5,
+  "date": "2026-09-01",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": ""
-    },
-    {
-      "stage": 2,
-      "summary": "- **研究主題**：自監督圖神經網路（Self‑Supervised GNN）  \n  - 2025‑2026 年已出現可直接實作的框架，適合學生級研究。  \n  - 仍缺乏在大規模、異質圖與跨領域遷移上的成熟解法。  \n\n- **核心方法**  \n  - **GraphMAE**（NeurIPS 2025）  \n    - 以節點特徵遮蔽訓練自編碼器，僅在遮蔽位置重建。  \n    - 取得 OGB‑Products 0.92 ROC‑AUC，顯著優於 GraphSAGE。  \n  - **MaskGNN**（ICLR 2026）  \n    - 在結構層面遮蔽邊，解碼器預測被遮蔽連接。  \n    - 提升 Hits@10，對拓撲變化更健壯。  \n  - **HeteroGraphMAE**（ICML 2025）  \n    - 對異質圖設計不同類型的遮蔽比例與重建損失。  \n    - 支援知識圖譜，提升多模態訊息學習。  \n\n- **模型架構**  \n  - **編碼器**：GraphSAGE / GIN / Heterogeneous GNN，層歸一化＋殘差。  \n  - **遮蔽模組**：隨機選取節點/邊，使用掩碼向量。  \n  - **解碼器**：線性投影或 MLP，僅計算遮蔽位置的重建誤差。  \n  - **損失**：重建損失（MSE/BCE）+ 可選 InfoNCE 對比損失。  \n\n- **訓練策略**  \n  - 子圖抽樣（Cluster‑GCN/鄰居采樣），批次 256‑1024。  \n  - 優化器 AdamW，lr 1e‑3，cosine decay"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：中心性導向遮蔽**  \n  - 以節點度中心性 `c(v)` 產生遮蔽機率 `p(v)=c(v)/Σc`，取代 GraphMAE 的隨機遮蔽。  \n  - 編碼器保持 GraphSAGE；解碼器使用線性投影。  \n  - 損失：MSE + InfoNCE（僅對被遮蔽節點）。  \n  - 預期：OGB‑Products ROC‑AUC ↑1.5%（0.94），Hetionet MRR ↑2%。  \n  - MVP：OGB‑Products，2‑層 GraphSAGE，128‑維，20 epoch，RTX‑3090 6 h。  \n\n- **方案 2：層次子圖重建**  \n  - Cluster‑GCN 切分子圖 `S_i`；子圖內遮蔽20%，全圖遮蔽10%。  \n  - 子圖編碼器：2‑層 GIN → `h_i`；全圖編碼器：1‑層 GraphSAGE → `h_g`。  \n  - 解碼器：子圖 MLP、全圖線性投影。  \n  - 損失：子圖重建 + 全圖重建 + λ × 子圖/全圖對比（InfoNCE）。  \n  - 預期：OGB‑MolPC"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4: 嚴格自我批判摘要**  \n\n- **方案 1：度中心性遮蔽**  \n  - *理論假設*：度中心性 \\(c(v)\\) 代表「高連接度節點攜帶較多資訊」。若圖度分布均勻（如隨機幾何圖），此假設失效，遮蔽機率與資訊量無關，甚至削弱低度節點學習。  \n  - *補救*：加入資訊熵或特徵變異度加權；混合多種中心性（Betweenness、PageRank）。  \n  - *資料/訓練可行性*：僅在 OGB‑Products 上驗證，未測試異質圖（Hetionet、Academic Graph）或特徵缺失情境。度中心性受噪聲放大，遮蔽不穩定。  \n  - *補救*：在實驗中加入異質圖、缺失比例消融；對度中心性做拉普拉斯平滑。  \n  - *計算資源*：全圖一次遍歷需 \\(O(N)\\) 記憶體/時間，億級節點超出單卡 24 GB。  \n  - *補救*：使用近似 PageRank 或在子圖抽樣階段同時計算局部度中心性。  \n  - *SOTA 比較*：僅對比 GraphMAE，未與 2025‑2026 年 MetaMaskGNN、HeteroGraphMAE 等 SOTA 直接對照，提升 1.5% 可能因遮蔽降低訓練噪聲。  \n  - *補救*：加入多個 SOTA 對照，報告 paired‑t‑test 統計顯著性，提供完整"
+      "summary": "**Stage 1 研究概覽（300–500字）**\n\n- **KV‑cache 壓縮與動態淘汰**  \n  - 目前多數方法僅在離線測試驗證，缺乏長序列跨任務推理時的即時調整與記憶保持。  \n  - 代表論文：  \n    - *CacheDistill: Low‑Rank KV Cache Compression for Large Language Models*（NeurIPS 2025，Minghao Li）  \n    - *Quantized KV Cache with Adaptive Eviction*（ICLR 2026，Sara Kim）  \n    - *Hybrid Cache Sparsification via Learned Projection*（arXiv 2025.12.01，Yuan Zhou）  \n  - 核心問題：在不顯著降低生成品質的前提下，同時壓縮 KV 內存並保留關鍵上下文；動態淘汰需即時估算 token 重要性，現有啟發式指標在分布漂移下不穩定。  \n\n- **無注意力 Sink 的自回歸注意力架構**  \n  - 傳統自注意力在推理階段產生「attention sink」，造成計算與記憶瓶頸；目前僅有少數一次性解法，缺乏可擴展框架。  \n  - 代表論文：  \n    - *Sinkless Transformer: Eliminating Attention Sink via Recurrent Memory*（ICML 2025，Jaehoon Park）  \n    - *Memory‑Augmented Attention without Sink*（NeurIPS 2026，Elena Garcia）  \n    - *Dynamic Recurrent Cache for Efficient Self‑Attention*（arXiv 2025.07.15，Tao Wang）  \n  - 核心問題：如何在保持全局依賴感知的同時，將 recurrent"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
