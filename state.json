@@ -1,6 +1,6 @@
 {
   "date": "2026-08-31",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：中心性導向遮蔽**  \n  - 以節點度中心性 `c(v)` 產生遮蔽機率 `p(v)=c(v)/Σc`，取代 GraphMAE 的隨機遮蔽。  \n  - 編碼器保持 GraphSAGE；解碼器使用線性投影。  \n  - 損失：MSE + InfoNCE（僅對被遮蔽節點）。  \n  - 預期：OGB‑Products ROC‑AUC ↑1.5%（0.94），Hetionet MRR ↑2%。  \n  - MVP：OGB‑Products，2‑層 GraphSAGE，128‑維，20 epoch，RTX‑3090 6 h。  \n\n- **方案 2：層次子圖重建**  \n  - Cluster‑GCN 切分子圖 `S_i`；子圖內遮蔽20%，全圖遮蔽10%。  \n  - 子圖編碼器：2‑層 GIN → `h_i`；全圖編碼器：1‑層 GraphSAGE → `h_g`。  \n  - 解碼器：子圖 MLP、全圖線性投影。  \n  - 損失：子圖重建 + 全圖重建 + λ × 子圖/全圖對比（InfoNCE）。  \n  - 預期：OGB‑MolPC"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4: 嚴格自我批判摘要**  \n\n- **方案 1：度中心性遮蔽**  \n  - *理論假設*：度中心性 \\(c(v)\\) 代表「高連接度節點攜帶較多資訊」。若圖度分布均勻（如隨機幾何圖），此假設失效，遮蔽機率與資訊量無關，甚至削弱低度節點學習。  \n  - *補救*：加入資訊熵或特徵變異度加權；混合多種中心性（Betweenness、PageRank）。  \n  - *資料/訓練可行性*：僅在 OGB‑Products 上驗證，未測試異質圖（Hetionet、Academic Graph）或特徵缺失情境。度中心性受噪聲放大，遮蔽不穩定。  \n  - *補救*：在實驗中加入異質圖、缺失比例消融；對度中心性做拉普拉斯平滑。  \n  - *計算資源*：全圖一次遍歷需 \\(O(N)\\) 記憶體/時間，億級節點超出單卡 24 GB。  \n  - *補救*：使用近似 PageRank 或在子圖抽樣階段同時計算局部度中心性。  \n  - *SOTA 比較*：僅對比 GraphMAE，未與 2025‑2026 年 MetaMaskGNN、HeteroGraphMAE 等 SOTA 直接對照，提升 1.5% 可能因遮蔽降低訓練噪聲。  \n  - *補救*：加入多個 SOTA 對照，報告 paired‑t‑test 統計顯著性，提供完整"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
