@@ -1,13 +1,18 @@
 {
   "date": "2026-09-02",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要（300–500字）**\n\n- **主題一：圖神經網路 + 貝葉斯不確定性在晶體結構穩定性預測**\n  - **突破潛力**：結合圖注意力機制與貝葉斯估計，實現端到端結構生成與能量評估，研究團隊數量少於十人。  \n  - **代表論文**  \n    - *Crystal Graph Attention Networks for Stable Structure Prediction*（Yuan Li，NeurIPS 2025）  \n    - *Bayesian Graph Neural Networks for Materials Uncertainty Quantification*（Mina Chen，ICLR 2026）  \n    - *High‑Throughput Graph‑Based Discovery of Metastable Phases*（arXiv:2504.1123，2025）  \n  - **核心技術問題**  \n    - 如何在保持推理速度的同時捕捉長程晶格相互作用。  \n    - 在缺乏實驗標籤時自適應校正系統性偏差。  \n\n- **主題二：神經量子態 + 變分蒙特卡羅預測固態催化表面能障**\n  - **突破潛力**：神經量子態在周期性固態系統（金屬/氧化物表面）中的應用仍屬新興，僅少數實驗室探索。  \n  - **代表論文**  \n    - *Neural Quantum States for Periodic Catalytic Surfaces*（Jae‑ho Kim，ICLR 2026）  \n    - *Variational Neural Wavefunctions for Surface Reaction Energies*（Sara Patel，NeurIPS 2025）  \n    - *Hybrid VMC‑GNN Framework for Heterogeneous Catalysis*（arXiv:2511.0437，2025）  \n  - **核心技術問題**  \n    - 在保持波函數可微分性的同時處理大尺度晶格的平移對稱與多體相關性。  \n    - 如何將高精度量子化學基準（如 CCSD(T)）有效轉移至神經網路近似。  \n\n- **主題三：多尺度自適應神經常微分方"
+    },
+    {
+      "stage": 2,
+      "summary": "**結構化摘要（300–500字）**\n\n- **研究主題**：圖神經網路（GNN）結合貝葉斯不確定性，用於晶體結構能量/穩定性預測。  \n- **核心方法**  \n  - **B‑GAT**（Zhang et al., 2023）：圖注意力層的權重視為隨機變數，變分推斷學習後驗分布，直接輸出能量與標準差。  \n  - **DE‑GNN**（Kearnes et al., 2019）：多個獨立 GNN（CGCNN、SchNet）訓練後平均，利用模型多樣性產生置信區間。  \n  - **MC‑Dropout‑GNN**（Gal & Ghahramani, 2016）：在標準 GNN 加入 dropout，推論時多次前向傳播統計方差作為不確定性。  \n- **模型架構**  \n  - 輸入：原子特徵向量 + 鄰接矩陣；輸出：`energy_pred`、`uncertainty_pred`。  \n  - 重要模組：圖注意力層、貝葉斯推斷（變分或 dropout）、全局池化。  \n  - 損失：MSE + λ·KL（B‑GAT）或 MSE + λ·variance_regularizer（MC‑Dropout）。  \n- **訓練策略**  \n  - 資料：Materials Project（≈130k）或 OQMD（≈300k）預"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
