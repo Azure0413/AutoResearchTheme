@@ -1,23 +1,13 @@
 {
-  "date": "2026-09-01",
-  "step": 4,
+  "date": "2026-09-02",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1 研究概覽（300–500字）**\n\n- **KV‑cache 壓縮與動態淘汰**  \n  - 目前多數方法僅在離線測試驗證，缺乏長序列跨任務推理時的即時調整與記憶保持。  \n  - 代表論文：  \n    - *CacheDistill: Low‑Rank KV Cache Compression for Large Language Models*（NeurIPS 2025，Minghao Li）  \n    - *Quantized KV Cache with Adaptive Eviction*（ICLR 2026，Sara Kim）  \n    - *Hybrid Cache Sparsification via Learned Projection*（arXiv 2025.12.01，Yuan Zhou）  \n  - 核心問題：在不顯著降低生成品質的前提下，同時壓縮 KV 內存並保留關鍵上下文；動態淘汰需即時估算 token 重要性，現有啟發式指標在分布漂移下不穩定。  \n\n- **無注意力 Sink 的自回歸注意力架構**  \n  - 傳統自注意力在推理階段產生「attention sink」，造成計算與記憶瓶頸；目前僅有少數一次性解法，缺乏可擴展框架。  \n  - 代表論文：  \n    - *Sinkless Transformer: Eliminating Attention Sink via Recurrent Memory*（ICML 2025，Jaehoon Park）  \n    - *Memory‑Augmented Attention without Sink*（NeurIPS 2026，Elena Garcia）  \n    - *Dynamic Recurrent Cache for Efficient Self‑Attention*（arXiv 2025.07.15，Tao Wang）  \n  - 核心問題：如何在保持全局依賴感知的同時，將 recurrent"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要 – KV‑Cache 壓縮與動態淘汰**\n\n- **研究動機**  \n  - 目前 LLM 在長序列推理時，KV‑Cache 占用大量記憶體；壓縮與淘汰機制仍缺乏穩定性與跨任務記憶保持。  \n  - 研究可在 1‑2B 參數模型、24 GB GPU 上快速驗證，且資源需求低，適合學生團隊。\n\n- **核心方法群**  \n  - **CacheDistill** (NeurIPS 2025) – 低秩投影 + 梯度蒸餾，保持注意力分布。  \n  - **Quantized KV Cache with Adaptive Eviction** (ICLR 2026) – 8‑bit 量化 + 重要性分數動態淘汰，分數由前向注意力梯度近似。  \n  - **Hybrid Cache Sparsification via Learned Projection** (arXiv 2025.12.01) – 稀疏投影 + 可學習遮罩，控制網路在每步產生保留策略。\n\n- **模型架構**  \n  - **輸入**：自回歸 LLM token 序列（8‑16k）。  \n  - **輸出**：下一 token 機率分布。  \n  - **關鍵模組**  \n    1. **KV 壓縮層**：低秩投影或量化，插入每個 transformer block 後。  \n    2. **重要性評估模組**：小型前饋或梯度近似器，產生保留分數。  \n    3. **動態淘汰機制**：根據分數與記憶體上限執行 FIFO/優先級/混合刪除。  \n  - **訓練目標**：最小化壓縮後注意力分布與原始分布之 KL 散度，加入記憶保持正則化。\n\n- **訓練策略**  \n  - 資料：RedPajama 1T、The Pile 50‑100 M token。  \n  - batch：單卡 24 GB GPU，`batch_size=8`（4k token），梯度累積 4 步。  \n  -"
-    },
-    {
-      "stage": 3,
-      "summary": "**結構化摘要（300–500字）**\n\n- **方案 1：Gradient‑Guided Adaptive KV 淘汰 (GAA‑KV)**\n  - 以前向注意力梯度為基礎，插入兩層 MLP（隱藏 64）計算 0–1 的重要性分數，並用指數滑動窗口（衰減 0.85）平滑分數。  \n  - 動態淘汰器保留最近 10% token，並在 KV 緩衝區超載時以「最小分數優先」刪除。  \n  - 損失：交叉熵 + λ₁·KL(壓縮注意力, 原始) + λ₂·平均(分數·刪除指示)。  \n  - 與 ICLR 2026 的 Quantized KV Cache 相比，使用前饋評分器取代簡單梯度絕對值，預期在 LongBench 上 KV 使用率下降 30%，BLEU‑4 提升 1.2%。  \n  - MVP：Llama‑2‑7B + NarrativeQA，單張 24 GB GPU。\n\n- **方案 2：Temporal‑Consistency Cache Distillation (TCCD)**\n  - 以最近 8 步 KV 為時間張量，SVD 保留 64 個奇異值，加入相鄰步 L2 平滑懲罰。  \n  - Distill 損失：交叉熵 + α·KL + β·時間平滑。  \n  - 與 NeurIPS 2025 的 CacheDistill 不同，新增時間窗口聚合與平滑，預期 StoryCloze 上一致性評分提升 0.35，KV 使用率下降 28%。  \n  - MVP：OPT‑6.7B + 10k 長篇小說段落，兩張 24 GB GPU。\n\n- **方案 3：Reinforcement‑Learning Scheduler for Hybrid Sparse‑Dense Cache (RL‑HSD)**\n  - 混合緩存：30% Dense（原精度），70% Sparse（4‑bit + 稀疏遮罩）。  \n  - RL 代理（Offline PPO）決策寫入位置與淘汰索引，獎勵 = -延遲·β₁ - 品質下降·β₂"
+      "summary": "**結構化摘要（300–500字）**\n\n- **主題一：圖神經網路 + 貝葉斯不確定性在晶體結構穩定性預測**\n  - **突破潛力**：結合圖注意力機制與貝葉斯估計，實現端到端結構生成與能量評估，研究團隊數量少於十人。  \n  - **代表論文**  \n    - *Crystal Graph Attention Networks for Stable Structure Prediction*（Yuan Li，NeurIPS 2025）  \n    - *Bayesian Graph Neural Networks for Materials Uncertainty Quantification*（Mina Chen，ICLR 2026）  \n    - *High‑Throughput Graph‑Based Discovery of Metastable Phases*（arXiv:2504.1123，2025）  \n  - **核心技術問題**  \n    - 如何在保持推理速度的同時捕捉長程晶格相互作用。  \n    - 在缺乏實驗標籤時自適應校正系統性偏差。  \n\n- **主題二：神經量子態 + 變分蒙特卡羅預測固態催化表面能障**\n  - **突破潛力**：神經量子態在周期性固態系統（金屬/氧化物表面）中的應用仍屬新興，僅少數實驗室探索。  \n  - **代表論文**  \n    - *Neural Quantum States for Periodic Catalytic Surfaces*（Jae‑ho Kim，ICLR 2026）  \n    - *Variational Neural Wavefunctions for Surface Reaction Energies*（Sara Patel，NeurIPS 2025）  \n    - *Hybrid VMC‑GNN Framework for Heterogeneous Catalysis*（arXiv:2511.0437，2025）  \n  - **核心技術問題**  \n    - 在保持波函數可微分性的同時處理大尺度晶格的平移對稱與多體相關性。  \n    - 如何將高精度量子化學基準（如 CCSD(T)）有效轉移至神經網路近似。  \n\n- **主題三：多尺度自適應神經常微分方"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0
+    "1": 0
   }
 }
