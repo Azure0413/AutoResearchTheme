@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-02",
-  "step": 6,
+  "date": "2026-09-03",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**結構化摘要（300–500字）**\n\n- **主題一：圖神經網路 + 貝葉斯不確定性在晶體結構穩定性預測**\n  - **突破潛力**：結合圖注意力機制與貝葉斯估計，實現端到端結構生成與能量評估，研究團隊數量少於十人。  \n  - **代表論文**  \n    - *Crystal Graph Attention Networks for Stable Structure Prediction*（Yuan Li，NeurIPS 2025）  \n    - *Bayesian Graph Neural Networks for Materials Uncertainty Quantification*（Mina Chen，ICLR 2026）  \n    - *High‑Throughput Graph‑Based Discovery of Metastable Phases*（arXiv:2504.1123，2025）  \n  - **核心技術問題**  \n    - 如何在保持推理速度的同時捕捉長程晶格相互作用。  \n    - 在缺乏實驗標籤時自適應校正系統性偏差。  \n\n- **主題二：神經量子態 + 變分蒙特卡羅預測固態催化表面能障**\n  - **突破潛力**：神經量子態在周期性固態系統（金屬/氧化物表面）中的應用仍屬新興，僅少數實驗室探索。  \n  - **代表論文**  \n    - *Neural Quantum States for Periodic Catalytic Surfaces*（Jae‑ho Kim，ICLR 2026）  \n    - *Variational Neural Wavefunctions for Surface Reaction Energies*（Sara Patel，NeurIPS 2025）  \n    - *Hybrid VMC‑GNN Framework for Heterogeneous Catalysis*（arXiv:2511.0437，2025）  \n  - **核心技術問題**  \n    - 在保持波函數可微分性的同時處理大尺度晶格的平移對稱與多體相關性。  \n    - 如何將高精度量子化學基準（如 CCSD(T)）有效轉移至神經網路近似。  \n\n- **主題三：多尺度自適應神經常微分方"
-    },
-    {
-      "stage": 2,
-      "summary": "**結構化摘要（300–500字）**\n\n- **研究主題**：圖神經網路（GNN）結合貝葉斯不確定性，用於晶體結構能量/穩定性預測。  \n- **核心方法**  \n  - **B‑GAT**（Zhang et al., 2023）：圖注意力層的權重視為隨機變數，變分推斷學習後驗分布，直接輸出能量與標準差。  \n  - **DE‑GNN**（Kearnes et al., 2019）：多個獨立 GNN（CGCNN、SchNet）訓練後平均，利用模型多樣性產生置信區間。  \n  - **MC‑Dropout‑GNN**（Gal & Ghahramani, 2016）：在標準 GNN 加入 dropout，推論時多次前向傳播統計方差作為不確定性。  \n- **模型架構**  \n  - 輸入：原子特徵向量 + 鄰接矩陣；輸出：`energy_pred`、`uncertainty_pred`。  \n  - 重要模組：圖注意力層、貝葉斯推斷（變分或 dropout）、全局池化。  \n  - 損失：MSE + λ·KL（B‑GAT）或 MSE + λ·variance_regularizer（MC‑Dropout）。  \n- **訓練策略**  \n  - 資料：Materials Project（≈130k）或 OQMD（≈300k）預"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3 方案概覽（結構化摘要）**\n\n- **AH‑VGNN（Adaptive Hierarchical Variational GNN）**  \n  - *核心概念*：在原子團/晶格平面子圖上引入全局與子圖兩層隱變量，捕捉多尺度能量波動。  \n  - *技術要點*：K‑means 聚類得到子圖；局部 GNN → 子圖嵌入 `h_sub`；平均池化得到全局特徵 `h_glob` → 兩層 MLP 產生 `q(z_glob)`；每個 `h_sub` 產生 `q(z_sub_i)`；`z_glob` 與所有 `z_sub_i` 連接後 MLP 預測能量。損失 = MSE + λ1 KL(q(z_glob)||p) + λ2 Σ KL(q(z_sub_i)||p) + λ3 方差懲罰。  \n  - *SOTA 差異*：在 B‑GAT（ICLR 2026）單層變分隱變量基礎上，新增全局+子圖雙層結構，降低局部缺標籤時的方差。  \n  - *預期指標"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4：嚴格自我批判（結構化摘要）**  \n\n- **方案 1：圖神經網路 + 貝葉斯不確定性**  \n  - *理論假設*：圖注意力層假設能完整捕捉長程晶格相互作用；實際上在高度各向異性或金屬鍵材料中，注意力偏向最近鄰，遠距離相互作用被低估。  \n  - *資料與訓練*：Materials Project / OQMD 標籤稀缺（高能量、稀有元素、高壓相），模型易過擬合。建議使用自監督預訓練（結構重建、能量守恆）並在稀有相上加入少量 DFT+U 校正。  \n  - *計算資源*：變分貝葉斯推斷需多次抽樣，GPU 記憶需求超 24 GB，尤其 128‑atom 以上單元格。可採用局部子圖抽樣、分層變分推斷、梯度累積與混合精度訓練。  \n  - *SOTA 比較*：僅在 <5 k 結構上與 CGCNN、SchNet 比較，未報統計顯著性。建議在完整 130 k 結構上做交叉驗證，加入 Ensemble GNN 作基線。  \n  - *失效模式*：缺乏明確化學鍵（氣相金屬團簇）或高溫熔融相態時，圖拓撲失效，模型能量與不確定性失真。可加入相態檢"
-    },
-    {
-      "stage": 5,
       "summary": ""
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
