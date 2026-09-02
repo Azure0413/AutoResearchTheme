@@ -1,6 +1,6 @@
 {
   "date": "2026-09-02",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**結構化摘要（300–500字）**\n\n- **研究主題**：圖神經網路（GNN）結合貝葉斯不確定性，用於晶體結構能量/穩定性預測。  \n- **核心方法**  \n  - **B‑GAT**（Zhang et al., 2023）：圖注意力層的權重視為隨機變數，變分推斷學習後驗分布，直接輸出能量與標準差。  \n  - **DE‑GNN**（Kearnes et al., 2019）：多個獨立 GNN（CGCNN、SchNet）訓練後平均，利用模型多樣性產生置信區間。  \n  - **MC‑Dropout‑GNN**（Gal & Ghahramani, 2016）：在標準 GNN 加入 dropout，推論時多次前向傳播統計方差作為不確定性。  \n- **模型架構**  \n  - 輸入：原子特徵向量 + 鄰接矩陣；輸出：`energy_pred`、`uncertainty_pred`。  \n  - 重要模組：圖注意力層、貝葉斯推斷（變分或 dropout）、全局池化。  \n  - 損失：MSE + λ·KL（B‑GAT）或 MSE + λ·variance_regularizer（MC‑Dropout）。  \n- **訓練策略**  \n  - 資料：Materials Project（≈130k）或 OQMD（≈300k）預"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3 方案概覽（結構化摘要）**\n\n- **AH‑VGNN（Adaptive Hierarchical Variational GNN）**  \n  - *核心概念*：在原子團/晶格平面子圖上引入全局與子圖兩層隱變量，捕捉多尺度能量波動。  \n  - *技術要點*：K‑means 聚類得到子圖；局部 GNN → 子圖嵌入 `h_sub`；平均池化得到全局特徵 `h_glob` → 兩層 MLP 產生 `q(z_glob)`；每個 `h_sub` 產生 `q(z_sub_i)`；`z_glob` 與所有 `z_sub_i` 連接後 MLP 預測能量。損失 = MSE + λ1 KL(q(z_glob)||p) + λ2 Σ KL(q(z_sub_i)||p) + λ3 方差懲罰。  \n  - *SOTA 差異*：在 B‑GAT（ICLR 2026）單層變分隱變量基礎上，新增全局+子圖雙層結構，降低局部缺標籤時的方差。  \n  - *預期指標"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
