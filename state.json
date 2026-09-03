@@ -1,6 +1,6 @@
 {
   "date": "2026-09-03",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**Stage 4：嚴格自我批判（TG‑ODE vs CausalVAE‑RL）**\n\n- **TG‑ODE 方案批判**  \n  - *理論假設*  \n    - 假設圖拓撲隨時間平滑變化，鄰接矩陣 `A(t)` 可用 MLP 近似。  \n    - 若圖在某時刻突發連邊或斷邊，ODE 右側不連續，導致求解器失穩。  \n    - **補救**：加入離散跳躍項或混合微分‑離散框架，允許在特定時間點手動插入結構更新。  \n  - *資料與訓練可行性*  \n    - 只在 Wikipedia‑Temporal、Social‑Evo 兩個小型基準上驗證，無法證明在金融交易網、交通流、電力網等大規模長序列上的泛化。  \n    - **補救**：擴充至至少三個不同領域的大規模動態圖，並做跨域遷移測試。  \n  - *計算資源*  \n    - 使用 Dormand‑Prince 高階自適應求解器，GPU 記憶體波動大，計算時間遠超離散 GCN（報告 4 h/20 epoch，RTX 3080）。  \n    - 在 24 GB 單卡上，batch 或節點數增大即爆炸。  \n    - **補救**：採用固定步長求解器（Euler、RK2）作基線，提供記憶體/時間曲線；探索分段求解或圖分割。  \n  - *是否真優於 SOTA*  \n    - 只比較原始離散 GCN、Temporal GCN 及少數卷積變體，未納入 NeurIPS 2025《Evolving Graph Transformers"
+    },
+    {
+      "stage": 5,
+      "summary": "- **研究痛點**：動態圖資料需同時捕捉時間平滑性與因果結構；離散 GCN 在大時間間隔下訊息傳遞誤差（NeurIPS 2025《Continuous‑Time Graph Neural Networks via Neural ODEs》），因果學習多聚焦靜態圖，易受 spurious correlation 影響。  \n- **核心方法**：Hybrid Continuous‑Time Causal Graph Neural ODE (CCG‑ODE)，結合圖 ODE、CausalVAE 與 Jump‑Diffusion，於單一框架學習連續時間訊息傳遞與因果潛在向量 `z_c(t)`，並輸入離線 RL 策略。  \n- **演算法流程**：  \n  1. 取 `A(t), X(t)`；  \n  2. Graph‑ODE：`dH/dt = σ(AH W_g)+ψ(t)`；  \n  3. CausalVAE：輸入 `X(t)` 產生 `z_c(t)`，損失為重建+KL+因果正則；  \n  4. 檢測結構變化，超閾觸發 Jump‑Diffusion：`ΔH = J(A(t^+)-A(t^-))`；  \n  5. 用自適應步長 ODE（Dormand‑Prince）積分至 `t+Δt`；  \n  6. 組合 `h(t+Δt)=concat(H,z_c)` 作為離線 RL 策略 `π_θ` 的狀態輸入。  \n- **訓練目標**：`L_total = L_ode + αL_cvae + βL_rl`，其中 `L_rl` 包含 Actor‑Critic、行為克隆與熵正則。  \n- **推論"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }
