@@ -1,6 +1,6 @@
 {
   "date": "2026-09-03",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "抱歉，我目前只有「請提供前一階段提到的三個主題」這段文字，並沒有看到實際的 Stage 2（📖 深入相關方法）內容。若您能提供該段落的完整文字，我將能為您整理成 300–500 字的結構化摘要，列出關鍵事實、結論、技術細節、論點與引用的 paper 名稱。請將原始內容貼上，我會馬上為您處理。"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1：Temporal‑Graph Neural ODE (TG‑ODE)**  \n- 核心：將離散 GCN 更新 `H_{t+1}=σ(A_t H_t W)` 轉為連續微分 `dH/dt = σ(A(t)H(t)W)+φ(t)`，可在任意時間點插值。  \n- 技術：輸入時間圖序列 → MLP 產生 `H₀` → Graph‑Convolutional ODE Block（單層 GCN + 時間編碼） → ODE 求解器（Dormand‑Prince）積分至 `H(T)`；損失為預測交叉熵 + 時間平滑正則。  \n- 與 SOTA 差異：基於 NeurIPS 2025《Continuous‑Time Graph Neural Networks via Neural ODEs》，改動在訊息傳遞公式，實現連續時間建模。  \n- 預期提升：在 *Wikipedia‑Temporal*、*Social‑Evo* 上 AUC 提升 3–5%，因減少時間離散化誤差。  \n- MVP：UCI‑Dynamic（10k 節點、100k 時間步），隱藏 64，單層 GCN‑ODE；RTX 3080 4 h/20 epoch。\n\n**方案 2：CausalVAE‑RL**  \n- 核心：先用因果 VAE 抽取潛在因果變數 `zᶜ`，再以 `zᶜ` 為離線 RL 策略輸入，降低 spurious correlation。  \n- 技術：CausalVAE（ICLR 2026《CausalVAE: Unsupervised Causal"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
