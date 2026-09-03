@@ -1,6 +1,6 @@
 {
   "date": "2026-09-03",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**方案 1：Temporal‑Graph Neural ODE (TG‑ODE)**  \n- 核心：將離散 GCN 更新 `H_{t+1}=σ(A_t H_t W)` 轉為連續微分 `dH/dt = σ(A(t)H(t)W)+φ(t)`，可在任意時間點插值。  \n- 技術：輸入時間圖序列 → MLP 產生 `H₀` → Graph‑Convolutional ODE Block（單層 GCN + 時間編碼） → ODE 求解器（Dormand‑Prince）積分至 `H(T)`；損失為預測交叉熵 + 時間平滑正則。  \n- 與 SOTA 差異：基於 NeurIPS 2025《Continuous‑Time Graph Neural Networks via Neural ODEs》，改動在訊息傳遞公式，實現連續時間建模。  \n- 預期提升：在 *Wikipedia‑Temporal*、*Social‑Evo* 上 AUC 提升 3–5%，因減少時間離散化誤差。  \n- MVP：UCI‑Dynamic（10k 節點、100k 時間步），隱藏 64，單層 GCN‑ODE；RTX 3080 4 h/20 epoch。\n\n**方案 2：CausalVAE‑RL**  \n- 核心：先用因果 VAE 抽取潛在因果變數 `zᶜ`，再以 `zᶜ` 為離線 RL 策略輸入，降低 spurious correlation。  \n- 技術：CausalVAE（ICLR 2026《CausalVAE: Unsupervised Causal"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4：嚴格自我批判（TG‑ODE vs CausalVAE‑RL）**\n\n- **TG‑ODE 方案批判**  \n  - *理論假設*  \n    - 假設圖拓撲隨時間平滑變化，鄰接矩陣 `A(t)` 可用 MLP 近似。  \n    - 若圖在某時刻突發連邊或斷邊，ODE 右側不連續，導致求解器失穩。  \n    - **補救**：加入離散跳躍項或混合微分‑離散框架，允許在特定時間點手動插入結構更新。  \n  - *資料與訓練可行性*  \n    - 只在 Wikipedia‑Temporal、Social‑Evo 兩個小型基準上驗證，無法證明在金融交易網、交通流、電力網等大規模長序列上的泛化。  \n    - **補救**：擴充至至少三個不同領域的大規模動態圖，並做跨域遷移測試。  \n  - *計算資源*  \n    - 使用 Dormand‑Prince 高階自適應求解器，GPU 記憶體波動大，計算時間遠超離散 GCN（報告 4 h/20 epoch，RTX 3080）。  \n    - 在 24 GB 單卡上，batch 或節點數增大即爆炸。  \n    - **補救**：採用固定步長求解器（Euler、RK2）作基線，提供記憶體/時間曲線；探索分段求解或圖分割。  \n  - *是否真優於 SOTA*  \n    - 只比較原始離散 GCN、Temporal GCN 及少數卷積變體，未納入 NeurIPS 2025《Evolving Graph Transformers"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
