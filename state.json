@@ -1,6 +1,6 @@
 {
   "date": "2026-09-04",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**方案 1 – Adaptive Horizon Empowerment (AHE) 批判摘要**  \n- **理論假設**：AHE 以單一 MLP 預測可預測性窗口 τ，若環境多模態或突變，預測偏差大，資訊增益下降。  \n  - **補救**：加入貝葉斯/深度集合估計 τ 置信度，置信度低時採用保守上界。  \n- **資料與訓練可行性**：三目標（策略、MI 下界、τ 回歸）梯度相互干擾，缺乏 λ 敏感度分析。  \n  - **補救**：分階段訓練或使用 GradNorm 等自適應權重平衡。  \n- **計算資源**：每步額外 MLP + MI 評估，Humanoid‑Run 48h/RTX 3080，遠超學生級 GPU。  \n  - **補救**：輕量化 τ 預測器、共享特徵編碼、梯度累積與混合精度。  \n- **是否真優於 SOTA**：僅對比 PPO+固定視窗，未納入 Variational Empowerment、Meta‑Empowerment 等。15% 成功率提升可能因訓練時間/批次。  \n  - **補救**：加入至少三個公開 SOTA、統計顯著性檢驗。  \n- **failure mode**：長期不可預測狀態導致 τ 上限、MI 方差爆炸、intrinsic reward 噪聲。  \n  - **補救**：τ 上限正則化、衰減機制、訓練早期監控，必要時 fallback 至固定視窗。\n\n**方案 2 – Ensemble Dynamics Empowerment (EDE) 批判摘要**  \n- **理論假設**：ensemble 方差作為 intrinsic reward，若模型偏差共振，噪聲被誤當探索信號。  \n  - **補救**：加入負相關正則化或 bootstrap 重抽樣以提升模型多樣性。  \n- **資料與訓練可行"
+    },
+    {
+      "stage": 5,
+      "summary": "**研究痛點**  \n- 高維連續控制（>100 維）缺乏高效探索；傳統好奇心/隨機探索樣本效率低。  \n- 現有 empowerment 方法受限於固定視窗、計算成本高、缺乏不確定性感知。  \n\n**核心創新 – BAHE‑E**  \n1. **自適應時間視窗**：利用 Horizon Predictor（兩層 MLP）根據狀態可預測性動態輸出 τ_t；加入貝葉斯 dropout 置信度 c_t，低置信度時退回 τ=5。  \n2. **貝葉斯 Ensemble Dynamics**：兩個 2‑層 MLP 模型，直接以預測方差 σ_t 作為不確定性指標，加入 intrinsic reward。  \n3. **變分壓縮 + Meta‑Adaptor**：行動映射至低維 latent z（參考 ICLR 2026），小型 LSTM 微調 empowerment 預測器，快速跨任務適應。  \n\n**演算法流程**  \n- 觀測 s_t → 特徵 h_t → τ_t、c_t。  \n- 以 τ_t 抽樣行動序列 → 變分編碼 g_ξ → latent z。  \n- z → Ensemble Dynamics → σ_t。  \n- 變分 empowerment 下界 Ĩ_t + λ·σ_t → intrinsic reward r^i_t。  \n- r^i_t + 外部獎勵 r^e_t → PPO 更新 π_θ。  \n- Meta‑Adaptor 以單層 LSTM 調整 E_φ(s)。  \n\n**訓練目標**  \n- PPO 目標 + 變分 empowerment 下界 + Horizon 正則化 + Ensemble 預測誤差最小化。  \n\n**實驗設計**  \n- 資料集：DeepMind Control（Humanoid‑Run、Quadruped‑Walk）、Mujoco AntMaze、Meta‑World。  \n- Baseline：PPO+Fixed‑Window Empowerment、Variational Empowerment、Meta‑Empowerment、RND。  \n- 評估指標：成功率、樣本效率、計算時間、穩定性。  \n- Ablation：去除 Adaptive"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }
