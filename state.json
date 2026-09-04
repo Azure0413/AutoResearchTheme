@@ -1,6 +1,6 @@
 {
   "date": "2026-09-04",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**高維連續控制中資訊增益驅動探索（Empowerment‑Based Exploration）關鍵摘要**  \n\n- **研究動機**  \n  - 2025‑2026 年已出現可實作的基礎框架，但效能與穩定性仍不足。  \n  - 目標：在 RTX 3080 等學生級 GPU 上實現高效、穩定的探索方法。  \n\n- **核心方法群**  \n  - **Mutual Information Neural Estimation Empowerment**（NeurIPS 2025）  \n    - 以 MINE 估算 \\(I(s,a)\\)，加入 critic 網路作為 intrinsic reward，結合 PPO。  \n  - **Scalable Variational Empowerment**（ICLR 2026）  \n    - 變分下界 + 對抗式 decoder，將行動映射至低維 latent，降低樣本需求，支持端到端微分。  \n  - **Empowerment‑Guided Multi‑Task RL**（ICML 2025）  \n    - 共享 empowerment 預測器，使用 meta‑learning 快速適應多任務；結合 KL 正則化防止信號漂移。  \n\n- **模型架構**  \n  - **輸入**：當前觀測 \\(s_t\\)（圖像、關節角度等）＋過去 \\(k\\) 步歷史緩衝。  \n  - **輸出**：  \n    - 主政策網路 \\(\\pi_\\theta(a|s)\\)。  \n    - Empowerment 預測器 \\(E_\\phi(s)\\) → intrinsic reward。  \n  - **關鍵模組**  \n    - MI 估算器：兩個 MLP 將 \\(s\\) 與 \\(a\\) 映射至共享 latent，計算對數密度差。  \n    - 變分壓縮層（ICLR 2026）：\\(z = g_\\psi(a)\\) → 低維 latent，減少估算方差。  \n    - Meta‑Adaptor（ICML 2025）：小型 LSTM 調整 \\(E_\\phi\\) 參數，快速適應新任務。  \n\n- **訓練策略**  \n  - 單任務 1‑2 百萬步；多任務 5‑10 個變體，每個 500k 步。  \n  - Batch 4096（可升至"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3：創新方法概覽（300–500字）**\n\n- **方案 1：Adaptive Horizon Empowerment (AHE)**\n  - **核心概念**：根據狀態可預測性自動調整 empowerment 時間視窗，讓高不確定區域拉長視窗、穩定區域縮短。  \n  - **技術亮點**：在 ICML 2025 的 Empowerment‑Guided Multi‑Task RL 基礎上加入兩層 MLP 的 Horizon Predictor，輸出正實數 τₜ；損失函數結合 PPO、MI 下界、τₜ 正則化與熵關聯。  \n  - **預期效益**：在 DeepMind Control Suite 的 Humanoid‑Run 上成功率提升 15%，樣本效率提升 30%；動態視窗降低 MI 估算方差，提升探索速度。\n\n- **方案 2：Ensemble Dynamics Empowerment (EDE)**\n  - **核心概念**：利用三模型 ensemble 估算轉移分布，將方差直接作為 intrinsic reward，減少單模型偏差。  \n  - **技術亮點**：在 ICLR 2026 的 Scalable Variational Empowerment 中加入 Ensemble Aggregator，計算均值與方差；損失加入 λ₂ * mean(variance)。  \n  - **預期效益**：在 Mujoco‑AntMaze 上成功率提升 20%，平均回"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }

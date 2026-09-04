@@ -270,3 +270,106 @@
 
 ---
 
+## Stage 3 — 2026-09-04 08:21:56
+
+**Model:** `openai/gpt-oss-120b`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1: Adaptive Horizon Empowerment (AHE)**  
+- **核心 idea**：根據當前狀態的可預測性自動調整 empowerment 計算的時間視窗，讓探索信號在高不確定區域拉長、在穩定區域縮短。  
+- **技術細節**  
+  - **輸入流程**：觀測 `s_t`（圖像或關節向量）＋過去 `k` 步的觀測緩衝。  
+  - **模組設計**：在原有 `Empowerment‑Guided Multi‑Task RL`（ICML 2025）架構上，新增一個 **Horizon Predictor**（兩層 MLP），輸出一個正實數 `τ_t` 作為本步的 empowerment 時間尺度。  
+  - **訓練目標**：同時最小化（1）原始 policy 損失（PPO 目標），（2）empowerment 下界損失，與（3）Horizon Predictor 的正則化，使 `τ_t` 與狀態的資訊熵呈正相關。  
+  - **損失函數**：policy 損失 + λ1 * empowerment MI 下界 + λ2 * (|τ_t − τ_base|) + λ3 * (entropy(s_t) − τ_t)²。  
+- **與 SOTA 的差異**  
+  - **改動**：在每一步的 empowerment 估算中，將固定的時間步長 `τ`（ICLR 2026 使用的 5 步）換成由 `Horizon Predictor` 動態產生的 `τ_t`。  
+  - **影響**：動態調整視窗可減少高維狀態下 MI 估算的方差，同時在資訊稀薄的區域提供更長的遠景信號，提升探索效率。  
+- **預期改善的指標與原因**  
+  - **指標**：DeepMind Control Suite 中 Humanoid‑Run（100‑維）成功完成率提升 15%，樣本效率提升約 30%。  
+  - **原因**：長視窗在不確定區域捕捉更多未來可控性，短視窗在已學會的子任務中減少不必要的探索噪聲，直接提升累積回報與收斂速度。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：DeepMind Control Suite `humanoid_walk` 與 `quadruped_run`。  
+  - **模型**：policy 為 2 層 256 隱藏的 MLP，Horizon Predictor 為 2 層 64 隱藏。  
+  - **硬體**：單張 RTX 3080，約 1.5M 參數，訓練 1M 步即可觀測到樣本效率提升。  
+
+**方案 2: Ensemble Dynamics Empowerment (EDE)**  
+- **核心 idea**：以模型集合估算環境轉移分布，將 ensemble 的不確定性直接注入 empowerment 的 MI 估算，降低單一模型偏差。  
+- **技術細節**  
+  - **輸入流程**：`s_t`、`a_t` 送入三個獨立的前向動態模型（每個為 2 層 128 隱藏的 MLP），得到三組預測 `s_{t+1}^{(i)}`。  
+  - **模組設計**：在 `Scalable Variational Empowerment`（ICLR 2026）的變分 decoder 前加入 **Ensemble Aggregator**，計算三個預測的均值與方差，方差作為額外的 intrinsic reward項。  
+  - **訓練目標**：policy 損失 + λ1 * empowerment 下界 + λ2 * (ensemble variance) 作為額外的探索獎勵。  
+  - **損失函數**：policy loss + λ1 * MI 下界 + λ2 * mean(variance(s_{t+1}^{(i)}))。  
+- **與 SOTA 的差異**  
+  - **改動**：將單一變分 decoder 替換為三模型 ensemble，並在 MI 估算的樣本權重中加入模型方差。  
+  - **影響**：ensemble 提供更可靠的狀態分布估計，減少 MI 下界的偏差，使 empowerment 信號在高維度更穩定，特別是對抗環境噪聲時表現更佳。  
+- **預期改善的指標與原因**  
+  - **指標**：在 `Mujoco‑AntMaze` 任務上，成功穿過迷宮的次數提升 20%，平均回合長度縮短 25%。  
+  - **原因**：模型方差高時會自動提升探索獎勵，促使 agent 走向尚未被準確建模的區域，從而更快發現有效通道。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：OpenAI Gym `AntMaze-v0`。  
+  - **模型**：policy 為 2 層 256 MLP，ensemble 每個 2 層 128 MLP。總參數約 2M。  
+  - **硬體**：單張 RTX 3060 可在 500k 步內完成測試。  
+
+**方案 3: Contrastive Predictive Empowerment (CPE)**  
+- **核心 idea**：把 empowerment 的 MI 估算改寫為對比預測任務，利用時間對比損失直接學習「行動能影響未來觀測」的表示，省去密度估計的高方差。  
+- **技術細節**  
+  - **輸入流程**：從 `s_t` 抽取特徵 `f_t`（CNN 或 MLP），將 `a_t` 與 `f_t` 合併得到行動‑狀態嵌入 `h_t`。  
+  - **模組設計**：在 `Variational Empowerment for Continuous Control`（ICML 2025）的 MI 估算器位置，加入 **Contrastive Predictor**：一個 2 層投影頭把 `h_t` 投射到 `z_t`，另一個 2 層投影把未來觀測 `s_{t+Δ}` 投射到 `z_{t+Δ}`。利用 InfoNCE‑類似的對比損失，使正樣本是同一時間序列的配對，負樣本是 batch 中其他時間步。  
+  - **訓練目標**：policy PPO 損失 + λ1 * 對比預測損失（InfoNCE）作為 empowerment 獎勵。  
+  - **損失函數**：policy loss + λ1 * (對比損失) + λ2 * KL 正則化（保持 latent 分佈接近標準正態）。  
+- **與 SOTA 的差異**  
+  - **改動**：把原本的 MINE 估算器（需要兩個神經網路計算密度比）換成單一對比投影頭，將 MI 估算改為最大化正樣本相似度、最小化負樣本相似度。  
+  - **影響**：對比學習在高維度下更穩定，梯度方差顯著降低，訓練速度提升約 2 倍，且不需要額外的密度估計樣本。  
+- **預期改善的指標與原因**  
+  - **指標**：在 `Meta‑World` 中的 `reach` 與 `push` 任務，樣本需求從 800k 步降至 500k 步，最終成功率提升 8%。  
+  - **原因**：對比預測直接捕捉行動對未來觀測的可辨識性，等同於更精確的 empowerment 信號，促使政策更快聚焦於高價值行動。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：Meta‑World `reach-v2`。  
+  - **模型**：policy 為 2 層 256 MLP，投影頭為 2 層 64。總參數約 1.2M。  
+  - **硬體**：單張 RTX 3070，訓練 600k 步即可驗證樣本效率提升。  
+
+**方案 4: Meta‑Regularized Skill Discovery with Empowerment (MSDE)**  
+- **核心 idea**：在無監督技能發現的對比動態嵌入框架中加入 empowerment 正則化，讓學得的技能同時最大化對未來狀態的可控性。  
+- **技術細節**  
+  - **輸入流程**：觀測 `s_t` 先經過編碼器得到 `e_t`，再透過技能選擇器產生離散技能標籤 `z_t`（Gumbel‑Softmax）。  
+  - **模組設計**：基於 `Contrastive Dynamic Skill Embedding`（NeurIPS 2025）加入 **Empowerment Regularizer**：對每個技能 `z` 計算其在當前狀態的 empowerment 下界（使用變分 decoder），將結果作為額外的損失項。  
+  - **訓練目標**：對比損失（使相同技能的軌跡聚集）+ λ1 * empowerment 正則化（鼓勵每個技能在不同起始狀態下都有高可控性）+ 元學習損失（在多任務上快速適應）。  
+  - **損失函數**：對比損失 + λ1 * (−empowerment 下界) + λ2 * meta‑learning 內部適應損失。  
+- **與 SOTA 的差異**  
+  - **改動**：在原有的對比技能嵌入損失中額外加入 empowerment 下界的負項，使得技能不僅要在表徵上相似，還必須在可控性上高。  
+  - **影響**：技能會自動傾向於「能改變環境」的行為，避免出現僅在觀測空間內相似但對環境影響小的冗餘技能，提升 downstream 任務的可轉移性。  
+- **預期改善的指標與原因**  
+  - **指標**：在 `AntMaze` 上使用學得的技能作為子政策，完成迷宮的成功率提升 18%，並在 `Meta‑World` 的多任務微調中收斂速度加快約 25%。  
+  - **原因**：empowerment 正則化使技能具備更高的「控制力」，在下游任務中更容易被重新組合成有效的行動序列。  
+- **最小可行實驗 (MVP)**  
+  - **資料集**：`AntMaze` 以及 `Meta‑World` `push‑v2`。  
+  - **模型**：編碼器 2 層 128，技能選擇器 1 層 64，empowerment decoder 2 層 64。總參數約 1.5M。  
+  - **硬體**：單張 RTX 3060，訓練 400k 步即可觀測到技能可控性提升的指標。  
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
