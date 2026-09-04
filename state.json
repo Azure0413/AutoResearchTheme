@@ -1,6 +1,6 @@
 {
   "date": "2026-09-04",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**Stage 3：創新方法概覽（300–500字）**\n\n- **方案 1：Adaptive Horizon Empowerment (AHE)**\n  - **核心概念**：根據狀態可預測性自動調整 empowerment 時間視窗，讓高不確定區域拉長視窗、穩定區域縮短。  \n  - **技術亮點**：在 ICML 2025 的 Empowerment‑Guided Multi‑Task RL 基礎上加入兩層 MLP 的 Horizon Predictor，輸出正實數 τₜ；損失函數結合 PPO、MI 下界、τₜ 正則化與熵關聯。  \n  - **預期效益**：在 DeepMind Control Suite 的 Humanoid‑Run 上成功率提升 15%，樣本效率提升 30%；動態視窗降低 MI 估算方差，提升探索速度。\n\n- **方案 2：Ensemble Dynamics Empowerment (EDE)**\n  - **核心概念**：利用三模型 ensemble 估算轉移分布，將方差直接作為 intrinsic reward，減少單模型偏差。  \n  - **技術亮點**：在 ICLR 2026 的 Scalable Variational Empowerment 中加入 Ensemble Aggregator，計算均值與方差；損失加入 λ₂ * mean(variance)。  \n  - **預期效益**：在 Mujoco‑AntMaze 上成功率提升 20%，平均回"
+    },
+    {
+      "stage": 4,
+      "summary": "**方案 1 – Adaptive Horizon Empowerment (AHE) 批判摘要**  \n- **理論假設**：AHE 以單一 MLP 預測可預測性窗口 τ，若環境多模態或突變，預測偏差大，資訊增益下降。  \n  - **補救**：加入貝葉斯/深度集合估計 τ 置信度，置信度低時採用保守上界。  \n- **資料與訓練可行性**：三目標（策略、MI 下界、τ 回歸）梯度相互干擾，缺乏 λ 敏感度分析。  \n  - **補救**：分階段訓練或使用 GradNorm 等自適應權重平衡。  \n- **計算資源**：每步額外 MLP + MI 評估，Humanoid‑Run 48h/RTX 3080，遠超學生級 GPU。  \n  - **補救**：輕量化 τ 預測器、共享特徵編碼、梯度累積與混合精度。  \n- **是否真優於 SOTA**：僅對比 PPO+固定視窗，未納入 Variational Empowerment、Meta‑Empowerment 等。15% 成功率提升可能因訓練時間/批次。  \n  - **補救**：加入至少三個公開 SOTA、統計顯著性檢驗。  \n- **failure mode**：長期不可預測狀態導致 τ 上限、MI 方差爆炸、intrinsic reward 噪聲。  \n  - **補救**：τ 上限正則化、衰減機制、訓練早期監控，必要時 fallback 至固定視窗。\n\n**方案 2 – Ensemble Dynamics Empowerment (EDE) 批判摘要**  \n- **理論假設**：ensemble 方差作為 intrinsic reward，若模型偏差共振，噪聲被誤當探索信號。  \n  - **補救**：加入負相關正則化或 bootstrap 重抽樣以提升模型多樣性。  \n- **資料與訓練可行"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
