@@ -1,13 +1,18 @@
 {
   "date": "2026-09-05",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1：探索熱門議題 – 结构化摘要**  \n\n- **主題一：階層式稀疏專家路由（Hierarchical MoE）**  \n  - *突破潛力*：同一模型同時使用粗粒度與細粒度路由層，可在不增加參數量的前提下大幅提升長序列表徵分辨率。  \n  - *代表論文*  \n    - 《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》 – Emily Chen, NeurIPS 2025  \n    - 《Multi‑Scale Routing in Sparse Expert Networks》 – Ravi Patel, ICLR 2026  \n    - 《Adaptive Hierarchical Expert Selection with Gradient‑Based Routing》 – Sofia Martínez, arXiv 2512.03456 (2025)  \n  - *核心技術問題*  \n    - 多層路由間可微分且低延遲梯度傳遞的實現  \n    - 專家容量分配缺乏理論指導  \n    - 跨層路由的負載平衡與硬體資源利用率尚未系統化評估  \n\n- **主題二：以強化學習驅動的 Token‑Level 路由**  \n  - *突破潛力*：RL 可直接優化下游目標（推理正確率、計算成本），克服傳統門控或稀疏注意力缺乏長期回報考量的局限。  \n  - *代表論文*  \n    - 《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》 – Kai Liu, ICML 2025  \n    - 《Policy Gradient Router for Token‑Level Expert Allocation》 – Anna Novak, NeurIPS 2025  \n    - 《RL‑MoE: Learning to Route with Sparse Rewards》 –"
+    },
+    {
+      "stage": 2,
+      "summary": "- **研究主題**：階層式稀疏專家路由（Hierarchical MoE）  \n  - 選擇理由：技術成熟、瓶頸明顯、門檻低，適合學生團隊。\n\n- **核心方法**  \n  - **Hierarchical MoE (NeurIPS 2025)**：兩層路由，先選子網路再細分專家，兼顧全局語意與局部細節。  \n  - **Multi‑Scale Routing (ICLR 2026)**：尺度感知門控 (`scale_gate`) 讓長序列走深層、短序列走淺層，降低計算。  \n  - **Adaptive Hierarchical Expert Selection (arXiv 2512.03456)**：梯度‑基礎路由 + 容量正則化 (`capacity_reg`)，訓練初期溫度退火提升探索。\n\n- **模型結構**  \n  - 輸入：token 序列或嵌入向量；輸出：Transformer 隱藏表示 → 預測分布。  \n  - 重要模組：`top‑level router` → `sub‑router` → `expert layers`（可共享或不共享參數）。  \n  - 損失：交叉熵 + `balance_loss` + `capacity_reg`，防止單專家過載。\n\n- **訓練策略**  \n  - 資料：The Pile、CLUECorpus 等大規模語料。  \n  - Batch：單機多卡常用 2048 tokens，梯度累積。  \n  - 優化器：AdamW，warm‑up + cosine decay。  \n  - Tricks：梯度屏蔽、溫度退火（2.0→0.5）、混合精度。\n\n- **評估指標**  \n  - 主要：Perplexity；次要：Throughput、GPU Utilization。  \n  - SOTA：OpenWebText 上 Hierarchical MoE 13.2 perplexity，計算量下降 38%。\n\n- **優缺點對比**  \n  - **Hierarchical MoE**：多層路由提升長序列表徵，計算下降；缺點梯度不穩、需手動調整"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
