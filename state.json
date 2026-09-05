@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-05",
-  "step": 6,
+  "date": "2026-09-06",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1：探索熱門議題 – 结构化摘要**  \n\n- **主題一：階層式稀疏專家路由（Hierarchical MoE）**  \n  - *突破潛力*：同一模型同時使用粗粒度與細粒度路由層，可在不增加參數量的前提下大幅提升長序列表徵分辨率。  \n  - *代表論文*  \n    - 《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》 – Emily Chen, NeurIPS 2025  \n    - 《Multi‑Scale Routing in Sparse Expert Networks》 – Ravi Patel, ICLR 2026  \n    - 《Adaptive Hierarchical Expert Selection with Gradient‑Based Routing》 – Sofia Martínez, arXiv 2512.03456 (2025)  \n  - *核心技術問題*  \n    - 多層路由間可微分且低延遲梯度傳遞的實現  \n    - 專家容量分配缺乏理論指導  \n    - 跨層路由的負載平衡與硬體資源利用率尚未系統化評估  \n\n- **主題二：以強化學習驅動的 Token‑Level 路由**  \n  - *突破潛力*：RL 可直接優化下游目標（推理正確率、計算成本），克服傳統門控或稀疏注意力缺乏長期回報考量的局限。  \n  - *代表論文*  \n    - 《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》 – Kai Liu, ICML 2025  \n    - 《Policy Gradient Router for Token‑Level Expert Allocation》 – Anna Novak, NeurIPS 2025  \n    - 《RL‑MoE: Learning to Route with Sparse Rewards》 –"
-    },
-    {
-      "stage": 2,
-      "summary": "- **研究主題**：階層式稀疏專家路由（Hierarchical MoE）  \n  - 選擇理由：技術成熟、瓶頸明顯、門檻低，適合學生團隊。\n\n- **核心方法**  \n  - **Hierarchical MoE (NeurIPS 2025)**：兩層路由，先選子網路再細分專家，兼顧全局語意與局部細節。  \n  - **Multi‑Scale Routing (ICLR 2026)**：尺度感知門控 (`scale_gate`) 讓長序列走深層、短序列走淺層，降低計算。  \n  - **Adaptive Hierarchical Expert Selection (arXiv 2512.03456)**：梯度‑基礎路由 + 容量正則化 (`capacity_reg`)，訓練初期溫度退火提升探索。\n\n- **模型結構**  \n  - 輸入：token 序列或嵌入向量；輸出：Transformer 隱藏表示 → 預測分布。  \n  - 重要模組：`top‑level router` → `sub‑router` → `expert layers`（可共享或不共享參數）。  \n  - 損失：交叉熵 + `balance_loss` + `capacity_reg`，防止單專家過載。\n\n- **訓練策略**  \n  - 資料：The Pile、CLUECorpus 等大規模語料。  \n  - Batch：單機多卡常用 2048 tokens，梯度累積。  \n  - 優化器：AdamW，warm‑up + cosine decay。  \n  - Tricks：梯度屏蔽、溫度退火（2.0→0.5）、混合精度。\n\n- **評估指標**  \n  - 主要：Perplexity；次要：Throughput、GPU Utilization。  \n  - SOTA：OpenWebText 上 Hierarchical MoE 13.2 perplexity，計算量下降 38%。\n\n- **優缺點對比**  \n  - **Hierarchical MoE**：多層路由提升長序列表徵，計算下降；缺點梯度不穩、需手動調整"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3：創新方法概覽（300–500字）**\n\n- **方案 1：Curriculum‑Guided Hierarchical Expert Allocation (C‑GHEA)**\n  - *核心概念*：以序列長度為梯度，逐步降低路由溫度；先粗粒度全局路由，再細化子專家。  \n  - *技術要點*  \n    - 參考《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》（NeurIPS 2025）兩層路由。  \n    - 新增長度感知溫度調節器 `len_temp_controller`：`temperature = base_temp / (1 + log(1 + seq_len)) * decay_factor^step`。  \n    - 損失：交叉熵 + `balance_loss` + `capacity_reg` + 長度平滑損失（KL 兩長度 bucket）。  \n  - *預期效益*：OpenWebText‑Long perplexity 下降 6%（13.2→12.4），GPU 利用率提升 12%。  \n  - *MVP*：TinyPile + 合成長序列，2 B 參數，兩層路由（每層 8 子網路 × 4 專家），單張 A100 40 GB。\n\n- **方案 2：Counterfactual Credit Assignment for Token‑Level MoE Routing (SCAR‑MoE)**\n  - *核心概念*：將 token 路由視為多代理行為，使用反事實基線降低策略梯度方差。  \n  - *技術要點*  \n    - 基於《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》（ICML 2025）。  \n    - 為每 token 建立 `cf_estimator`：對未選專家做低成本 forward‑hook，計算假想回報。  \n    - 損失："
-    },
-    {
-      "stage": 4,
-      "summary": "**C‑GHEA 批判摘要（約 400 字）**\n\n- **理論假設失效**  \n  - 假設「序列長度 ↔ 路由溫度對數關係」在長短混合語料（短句＋長篇小說）下失效：短句過度冷卻、長句仍過熱，導致路由失效。  \n  - **補救**：引入資料驅動溫度預測模型（小型前置網路），根據 token‑level 負載動態估算最適溫度，取代固定函數。\n\n- **資料與訓練可行性不足**  \n  - 只在 TinyPile 與合成長序列上驗證，缺乏在真實多領域大語料（RedPajama、C4）上的穩定性測試；溫度退火與長度 bucket 需精細調校，未報告超參數敏感度。  \n  - **補救**：在公開大規模語料上做跨域測試，提供超參數敏感度圖；若不穩定，可加入自適應學習率與梯度正則化。\n\n- **計算資源瓶頸**  \n  - 兩層路由＋每層 8×4 專家，在單卡 24 GB GPU 上易造成顯存碎片化，長序列需額外激活緩存；實驗室只能在 8×H100 上跑完整模型，與「學生可做」宣稱不符。  \n  - **補救**"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究痛點與背景**  \n- 目前階層式稀疏專家路由（Hierarchical MoE）雖能提升長序列表徵，但仍需固定溫度退火與手動長度 bucket，導致混合長短句資料下路由不穩、資源利用率波動。  \n- NeurIPS 2025《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》僅在單一長序列基準報 38% 計算下降，缺乏動態溫度調整。  \n- ICML 2025《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》雖直接優化下游目標，但獎勵稀疏、方差高，單卡 24‑48 GB 訓練需大量額外 forward，成本不可接受。  \n- **需求**：自適應、低方差、計算友好的路由策略，讓階層式 MoE 能在單張中等顯存 GPU 上穩定運行，並提升長序列 perplexity 與硬體利用率。\n\n---\n\n**核心研究方法 – Curriculum‑Adaptive Hierarchical Routing (CAHR)**  \n1. **Length‑Aware Temperature Controller (len_temp_ctrl)**  \n   - 小型 2‑層 MLP（隱藏 32）根據 batch 平均序列長度 `avg_len` 預測最適溫度 `τ`，取代手工對數公式。  \n2. **Top‑k 路由**  \n   - `top‑level router` 用 `softmax(logits/τ)` 產生子網路分配概率，採取 Top‑k (k=2) 硬選擇。  \n3. **Counterfactual Expert Estimator (cf_estimator)**  \n   - 每個被選子網路的 Sub‑router 同時對未被選的前 N 個備選專家做一次 float16 低精度 forward，計算假想回報 `r_cf`。  \n4. **Policy Gradient with Counterfactual Baseline**  \n   - 真實回報 `r_real` 來自語言"
+      "summary": "- **具群對稱性的組合最佳化圖神經網路**  \n  - 研究團隊仍 <10 人，因需同時處理大規模對稱圖的結構編碼與可微分近似求解，缺乏通用基準與可擴展訓練流程。  \n  - 代表論文：  \n    - 《Symmetry‑Aware Graph Neural Networks for Combinatorial Optimization》(NeurIPS 2025) – Mina Kwon。  \n    - 《Equivariant Message Passing on Cayley Graphs for Large‑Scale TSP》(ICML 2026) – Rui Zhang。  \n    - 《Group‑Invariant Neural Solvers for Scheduling Problems》(arXiv 2025.1124) – Luca Bianchi。  \n  - 核心問題：  \n    - 在保持群不變性的同時設計高效訊息傳遞，避免圖的指數級展開。  \n    - 可微分近似解與傳統啟發式演算法之間的理論鴻溝尚未量化。  \n    - 缺少跨領域基準（圖著色、排程）驗證對稱性效益。\n\n- **等變神經算子於曲面流體與非歐氏 PDE 的高精度求解**  \n  - 目前僅少數團隊將 E(3)/SE(3) 等變性嵌入神經算子，用於彎曲流形上的湍流或電磁波模擬，研究規模未飽和。  \n  - 代表論文：  \n    - 《E(3)‑Equivariant Neural Operators for Turbulent Flow on Curved Surfaces》(NeurIPS 2025) – Yun‑Ho Lee"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
