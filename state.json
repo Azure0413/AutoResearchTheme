@@ -1,6 +1,6 @@
 {
   "date": "2026-09-05",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "- **研究主題**：階層式稀疏專家路由（Hierarchical MoE）  \n  - 選擇理由：技術成熟、瓶頸明顯、門檻低，適合學生團隊。\n\n- **核心方法**  \n  - **Hierarchical MoE (NeurIPS 2025)**：兩層路由，先選子網路再細分專家，兼顧全局語意與局部細節。  \n  - **Multi‑Scale Routing (ICLR 2026)**：尺度感知門控 (`scale_gate`) 讓長序列走深層、短序列走淺層，降低計算。  \n  - **Adaptive Hierarchical Expert Selection (arXiv 2512.03456)**：梯度‑基礎路由 + 容量正則化 (`capacity_reg`)，訓練初期溫度退火提升探索。\n\n- **模型結構**  \n  - 輸入：token 序列或嵌入向量；輸出：Transformer 隱藏表示 → 預測分布。  \n  - 重要模組：`top‑level router` → `sub‑router` → `expert layers`（可共享或不共享參數）。  \n  - 損失：交叉熵 + `balance_loss` + `capacity_reg`，防止單專家過載。\n\n- **訓練策略**  \n  - 資料：The Pile、CLUECorpus 等大規模語料。  \n  - Batch：單機多卡常用 2048 tokens，梯度累積。  \n  - 優化器：AdamW，warm‑up + cosine decay。  \n  - Tricks：梯度屏蔽、溫度退火（2.0→0.5）、混合精度。\n\n- **評估指標**  \n  - 主要：Perplexity；次要：Throughput、GPU Utilization。  \n  - SOTA：OpenWebText 上 Hierarchical MoE 13.2 perplexity，計算量下降 38%。\n\n- **優缺點對比**  \n  - **Hierarchical MoE**：多層路由提升長序列表徵，計算下降；缺點梯度不穩、需手動調整"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3：創新方法概覽（300–500字）**\n\n- **方案 1：Curriculum‑Guided Hierarchical Expert Allocation (C‑GHEA)**\n  - *核心概念*：以序列長度為梯度，逐步降低路由溫度；先粗粒度全局路由，再細化子專家。  \n  - *技術要點*  \n    - 參考《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》（NeurIPS 2025）兩層路由。  \n    - 新增長度感知溫度調節器 `len_temp_controller`：`temperature = base_temp / (1 + log(1 + seq_len)) * decay_factor^step`。  \n    - 損失：交叉熵 + `balance_loss` + `capacity_reg` + 長度平滑損失（KL 兩長度 bucket）。  \n  - *預期效益*：OpenWebText‑Long perplexity 下降 6%（13.2→12.4），GPU 利用率提升 12%。  \n  - *MVP*：TinyPile + 合成長序列，2 B 參數，兩層路由（每層 8 子網路 × 4 專家），單張 A100 40 GB。\n\n- **方案 2：Counterfactual Credit Assignment for Token‑Level MoE Routing (SCAR‑MoE)**\n  - *核心概念*：將 token 路由視為多代理行為，使用反事實基線降低策略梯度方差。  \n  - *技術要點*  \n    - 基於《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》（ICML 2025）。  \n    - 為每 token 建立 `cf_estimator`：對未選專家做低成本 forward‑hook，計算假想回報。  \n    - 損失："
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }

@@ -253,3 +253,106 @@
 
 ---
 
+## Stage 3 — 2026-09-05 08:00:22
+
+**Model:** `openai/gpt-oss-120b`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1：Curriculum‑Guided Hierarchical Expert Allocation (C‑GHEA)**  
+- **核心 idea**：在階層式 MoE 中以序列長度為依據，逐步降低路由溫度，讓模型先學會粗粒度全局路由，再精細化到子專家。  
+- **技術細節**  
+  - 輸入：標準 token 序列，額外提供序列長度特徵。  
+  - 模組設計：保留《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》（NeurIPS 2025）中的兩層路由架構，新增 **長度感知溫度調節器**（`len_temp_controller`），在每個訓練 step 依長度 bucket 計算當前溫度。  
+  - 訓練目標：交叉熵 + `balance_loss` + `capacity_reg` + **長度平滑損失**（鼓勵相同長度的樣本使用相似路由分布）。  
+  - 損失描述：在原有損失基礎上，加上一項衡量不同長度 bucket 之間路由分布 KL 差異的正則項。  
+- **與 SOTA 的差異**  
+  - **被改的元件**：原始兩層路由的溫度退火程式（第 3 行 `temperature = max(0.5, init_temp * decay_factor^step)`）改為 **長度感知退火**：`temperature = base_temp / (1 + log(1 + seq_len)) * decay_factor^step`。  
+  - **為何影響指標**：較長序列在早期保持較高溫度，避免過早固定子專家，提升長序列的表徵分辨率；較短序列快速收斂，減少計算，預期降低 perplexity 同時提升吞吐量。  
+- **預期改善的指標與原因**  
+  - Benchmark：OpenWebText‑Long（平均序列長度 2k）預期 perplexity 下降 6%（從 13.2 降至約 12.4），GPU 利用率提升 12%。  
+  - 推理鏈：長序列 → 高溫度 → 多子專家 → 精細特徵 → 低溫度 → 少子專家 → 輸出。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：TinyPile（10 B tokens）＋人工合成長序列子集。  
+  - 模型規模：2 B 參數、兩層階層路由、每層 8 個子網路、每子網路 4 個專家。  
+  - 設備：單張 NVIDIA A100（40 GB）即可跑 8‑GPU 模擬的微型版，驗證 perplexity 與吞吐量。  
+
+**方案 2：Counterfactual Credit Assignment for Token‑Level MoE Routing (SCAR‑MoE)**  
+- **核心 idea**：將每個 token 的路由決策視為多代理行為，使用反事實基線（counterfactual baseline）減少策略梯度方差，直接優化下游效能。  
+- **技術細節**  
+  - 輸入：標準 token 序列。  
+  - 模組設計：在《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》（ICML 2025）基礎上，為每個 token 建立 **反事實路由估計器**（`cf_estimator`），在前向傳播結束後，對同一 token 的其他候選專家執行一次低成本 forward‑hook，計算假想回報。  
+  - 訓練目標：交叉熵 + `balance_loss` + **策略梯度損失**（使用反事實基線校正）。  
+  - 損失描述：策略梯度的加權回報等於真實回報減去該 token 所有未被選擇專家的平均回報，從而形成低方差的梯度。  
+- **與 SOTA 的差異**  
+  - **被改的元件**：原始 policy‑gradient 更新式（第 7 行 `loss += -logπ * (R - b)`）改為 **反事實校正**：`loss += -logπ * (R - avg_cf_R)`，其中 `avg_cf_R` 為同 token 所有候選專家的回報平均。  
+  - **為何影響指標**：減少梯度噪聲，使路由策略更快收斂，特別在高稀疏度設定下提升選擇正確專家的概率，預計降低推理成本 15% 並提升語言模型的 zero‑shot 准確率。  
+- **預期改善的指標與原因**  
+  - Benchmark：MMLU‑Zero（零樣本多任務）預期正確率提升 2.3 個百分點，GPU 計算量下降 14%。  
+  - 推理鏈：token → 反事實估計 → 改良的 policy 梯度 → 專家選擇 → 輸出。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：ARC‑Challenge（少量樣本）+ The Pile 前 1 B tokens。  
+  - 模型規模：600 M 參數、單層 MoE（12 個專家、top‑2 選擇）。  
+  - 設備：單張 RTX 4090（24 GB）即可完成 2‑epoch 訓練，驗證策略梯度方差與效能提升。  
+
+**方案 3：Predictive Load‑Balancing Scheduler for Hierarchical MoE (DCS‑PLB)**  
+- **核心 idea**：在路由前加入輕量預測網路，根據當前 batch 的 token 分佈預測每個子專家的負載，動態調整 `capacity_reg` 參數以避免瓶頸。  
+- **技術細節**  
+  - 輸入：token 序列以及每層路由的初始門控分數。  
+  - 模組設計：在《Adaptive Hierarchical Expert Selection with Gradient‑Based Routing》（arXiv 2512.03456）之上，新增 **負載預測器**（`load_predictor`），是一個兩層 MLP，輸入當前 batch 的門控向量統計（均值、方差），輸出每個子專家的目標容量比例。  
+  - 訓練目標：交叉熵 + `balance_loss` + `capacity_reg`（使用預測比例）+ **預測一致性損失**（實際選擇的負載與預測比例的 L1 距離）。  
+  - 損失描述：在每個 forward 後，計算實際每個子專家的 token 數量，與 `load_predictor` 輸出的目標比例比較，加入懲罰。  
+- **與 SOTA 的差異**  
+  - **被改的元件**：原始容量正則化（第 5 行 `capacity_reg = λ * max(0, actual_capacity - target_capacity)`）改為 **預測驅動的容量正則化**：`capacity_reg = λ * |actual_capacity - pred_capacity|`，其中 `pred_capacity` 由 `load_predictor` 輸出。  
+  - **為何影響指標**：提前調整容量分配，使得路由在硬體層面更均衡，減少 GPU 記憶體碎片與同步等待，提升吞吐量與能源效率。  
+- **預期改善的指標與原因**  
+  - Benchmark：EleutherAI‑Pythia‑2.8B 訓練過程中，GPU 利用率提升 9%，訓練時長縮短約 11%。  
+  - 推理鏈：batch → 門控向量 → 負載預測 → 動態容量正則 → 子專家選擇 → 輸出。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：OpenWebText（2 B tokens）子集 200 M tokens。  
+  - 模型規模：1 B 參數、兩層階層 MoE（每層 4 個子網路、每子網路 2 個專家）。  
+  - 設備：單張 NVIDIA RTX 6000（48 GB）可跑 4‑GPU 模擬的微型版，觀測容量分布與吞吐量。  
+
+**方案 4：Meta‑Router – MAML‑Style Fast Adaptation of Expert Selection (MetaRouter)**  
+- **核心 idea**：利用模型無關元學習（MAML）在多任務上快速適應路由參數，使得同一 MoE 能在新領域以少量步驟找到最適專家組合。  
+- **技術細節**  
+  - 輸入：多任務 token 流（例如語言建模、程式碼生成、對話生成）。  
+  - 模組設計：在《Multi‑Scale Routing in Sparse Expert Networks》（ICLR 2026）的兩層路由上，將 **top‑level router 的門控權重** 包裝為可微分的元參數。訓練分為內部適應階段（對每個任務執行 1‑2 次梯度更新）與外部聚合階段（更新元參數）。  
+  - 訓練目標：交叉熵 + `balance_loss` + **元損失**（外部任務平均交叉熵）。  
+  - 損失描述：每個任務先用少量 batch 更新路由權重，然後回傳更新後的損失到元優化器，元優化器再對所有任務的損失做一次梯度步驟。  
+- **與 SOTA 的差異**  
+  - **被改的元件**：原始路由權重在全局訓練中一次性更新（第 2 行 `router_weights = optimizer.step()`），改為 **雙階梯度更新**：內部 `router_weights_task = router_weights - α * ∇_router L_task`，外部 `router_weights = router_weights - β * ∇_meta Σ L_task( router_weights_task )`。  
+  - **為何影響指標**：元學習使路由在新任務上快速找到高效專家組合，降低適應時的計算開銷，提升少量樣本 fine‑tune 時的 perplexity 改善幅度。  
+- **預期改善的指標與原因**  
+  - Benchmark：Few‑Shot CodeGen（10‑sample fine‑tune）預期程式碼正確率提升 4.5%，且 fine‑tune 時的 GPU 時間下降 30%。  
+  - 推理鏈：任務抽樣 → 內部路由適應 → 元路由聚合 → 專家選擇 → 輸出。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：CodeSearchNet（Python） + WikiText‑103（語言）作為兩個任務。  
+  - 模型規模：400 M 參數、單層 MoE（6 個專家、top‑2）。  
+  - 設備：單張 RTX 3090（24 GB）即可完成 3‑task 元訓練，驗證少樣本適應效果。  
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
