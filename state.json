@@ -1,13 +1,18 @@
 {
   "date": "2026-09-06",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "- **具群對稱性的組合最佳化圖神經網路**  \n  - 研究團隊仍 <10 人，因需同時處理大規模對稱圖的結構編碼與可微分近似求解，缺乏通用基準與可擴展訓練流程。  \n  - 代表論文：  \n    - 《Symmetry‑Aware Graph Neural Networks for Combinatorial Optimization》(NeurIPS 2025) – Mina Kwon。  \n    - 《Equivariant Message Passing on Cayley Graphs for Large‑Scale TSP》(ICML 2026) – Rui Zhang。  \n    - 《Group‑Invariant Neural Solvers for Scheduling Problems》(arXiv 2025.1124) – Luca Bianchi。  \n  - 核心問題：  \n    - 在保持群不變性的同時設計高效訊息傳遞，避免圖的指數級展開。  \n    - 可微分近似解與傳統啟發式演算法之間的理論鴻溝尚未量化。  \n    - 缺少跨領域基準（圖著色、排程）驗證對稱性效益。\n\n- **等變神經算子於曲面流體與非歐氏 PDE 的高精度求解**  \n  - 目前僅少數團隊將 E(3)/SE(3) 等變性嵌入神經算子，用於彎曲流形上的湍流或電磁波模擬，研究規模未飽和。  \n  - 代表論文：  \n    - 《E(3)‑Equivariant Neural Operators for Turbulent Flow on Curved Surfaces》(NeurIPS 2025) – Yun‑Ho Lee"
+    },
+    {
+      "stage": 2,
+      "summary": "**核心概念**  \n- 研究主題：具群對稱性的組合最佳化圖神經網路（Symmetry‑Aware GNNs）  \n- 2025‑2026 已有可實作原型，但缺標準基準、理論量化與大規模驗證。  \n\n**主要方法**  \n- **SAMP**（Mina Kwon, NeurIPS 2025）  \n  - 以群表示（如 *S<sub>n</sub>*）為訊息傳遞指標，確保同構圖訊息不變。  \n- **CayGNN**（Rui Zhang, ICML 2026）  \n  - 在 Cayley 圖上構建群生成子，利用稀疏卷積處理 10k‑節點以上圖。  \n- **GINS**（Luca Bianchi, arXiv 2025.1124）  \n  - 群不變池化 + 可微分啟發式解碼器，直接輸出排程/顏色近似解。  \n\n**模型架構**  \n- 輸入：節點/邊特徵 + 群生成子或矩陣。  \n- 輸出：離散決策向量（TSP 順序、排程時間表）。  \n- 重要模組：群變換層、等變訊息傳遞層、可微分解碼器。  \n- 訓練目標：最小化相對誤差 + 群正則化（λ≈0.1）。  \n\n**訓練策略**  \n- 資料：小型基準 10‑20k 範例；大型擴充 100‑200k 次優解。  \n- Batch：32‑64 圖，使用圖填充。  \n- 優化器：AdamW，LR 1e‑3 → 1e‑5。  \n- Tricks：梯度累積、層正則化、驗證集早停。  \n\n**Benchmark**  \n- TSP（TSPLIB 100/200/500）：相對誤差 3.2 %（SOTA CayGNN）。  \n- VRP（CVRPLIB）：路徑長度"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
