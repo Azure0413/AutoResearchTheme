@@ -1,6 +1,6 @@
 {
   "date": "2026-09-05",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**C‑GHEA 批判摘要（約 400 字）**\n\n- **理論假設失效**  \n  - 假設「序列長度 ↔ 路由溫度對數關係」在長短混合語料（短句＋長篇小說）下失效：短句過度冷卻、長句仍過熱，導致路由失效。  \n  - **補救**：引入資料驅動溫度預測模型（小型前置網路），根據 token‑level 負載動態估算最適溫度，取代固定函數。\n\n- **資料與訓練可行性不足**  \n  - 只在 TinyPile 與合成長序列上驗證，缺乏在真實多領域大語料（RedPajama、C4）上的穩定性測試；溫度退火與長度 bucket 需精細調校，未報告超參數敏感度。  \n  - **補救**：在公開大規模語料上做跨域測試，提供超參數敏感度圖；若不穩定，可加入自適應學習率與梯度正則化。\n\n- **計算資源瓶頸**  \n  - 兩層路由＋每層 8×4 專家，在單卡 24 GB GPU 上易造成顯存碎片化，長序列需額外激活緩存；實驗室只能在 8×H100 上跑完整模型，與「學生可做」宣稱不符。  \n  - **補救**"
+    },
+    {
+      "stage": 5,
+      "summary": "**研究痛點與背景**  \n- 目前階層式稀疏專家路由（Hierarchical MoE）雖能提升長序列表徵，但仍需固定溫度退火與手動長度 bucket，導致混合長短句資料下路由不穩、資源利用率波動。  \n- NeurIPS 2025《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》僅在單一長序列基準報 38% 計算下降，缺乏動態溫度調整。  \n- ICML 2025《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》雖直接優化下游目標，但獎勵稀疏、方差高，單卡 24‑48 GB 訓練需大量額外 forward，成本不可接受。  \n- **需求**：自適應、低方差、計算友好的路由策略，讓階層式 MoE 能在單張中等顯存 GPU 上穩定運行，並提升長序列 perplexity 與硬體利用率。\n\n---\n\n**核心研究方法 – Curriculum‑Adaptive Hierarchical Routing (CAHR)**  \n1. **Length‑Aware Temperature Controller (len_temp_ctrl)**  \n   - 小型 2‑層 MLP（隱藏 32）根據 batch 平均序列長度 `avg_len` 預測最適溫度 `τ`，取代手工對數公式。  \n2. **Top‑k 路由**  \n   - `top‑level router` 用 `softmax(logits/τ)` 產生子網路分配概率，採取 Top‑k (k=2) 硬選擇。  \n3. **Counterfactual Expert Estimator (cf_estimator)**  \n   - 每個被選子網路的 Sub‑router 同時對未被選的前 N 個備選專家做一次 float16 低精度 forward，計算假想回報 `r_cf`。  \n4. **Policy Gradient with Counterfactual Baseline**  \n   - 真實回報 `r_real` 來自語言"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }

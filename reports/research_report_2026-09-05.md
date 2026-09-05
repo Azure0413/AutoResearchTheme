@@ -402,3 +402,121 @@
 
 ---
 
+## Stage 5 — 2026-09-05 16:33:29
+
+**Model:** `openai/gpt-oss-120b`
+
+**Prompt:**
+
+綜合前四階段,整合出**一個最完善、最值得執行**的研究提案。選擇標準:(a) 技術可行 (b) 創新性高 (c) 計算成本可控(單張 24-48G GPU 可開工)。
+
+**輸出格式**(嚴格遵守,不要 LaTeX、不要表格):
+
+## 1. 研究痛點與背景
+(為何重要?目前方法的具體缺陷?引用 1-2 篇 paper 支撐論點)
+
+## 2. 核心研究方法
+(一段 paragraph 說明 idea,再用條列列出 step-by-step 演算法、訓練目標、推論流程)
+
+## 3. 與既有方法的差異與創新性
+(條列至少 3 個層級的新穎性:演算法層、實作層、應用層)
+
+## 4. 實驗設計
+- **資料集**:
+- **baseline**:
+- **評估指標**:
+- **ablation study 設計**:
+- **計算需求估計**(GPU 數量 × 時間 × 成本):
+
+## 5. 預期貢獻與影響
+(科學價值 + 工程應用 + 為何 reviewer 會給高分)
+
+## 6. 風險與緩解
+(誠實列出 2-3 個最大風險與應對策略)
+
+**Response (full):**
+
+**## 1. 研究痛點與背景**  
+- 現有的階層式稀疏專家路由（Hierarchical MoE）在長序列上雖能提升表示力，但仍依賴**固定的溫度退火**與**手動設計的長度 bucket**，導致在混合長短句資料上路由不穩，計算資源利用率波動大。  
+- 《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》 (NeurIPS 2025) 只在單一長序列基準上報告 38% 計算下降，缺乏**動態溫度調整**的機制。  
+- 《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》 (ICML 2025) 引入 RL 以直接優化下游目標，但**獎勵稀疏、方差高**，在單卡 24‑48 GB 訓練時需大量額外 forward，成本不可接受。  
+
+**因此**：需要一套**自適應、低方差且計算友好的路由策略**，讓階層式 MoE 能在單張中等顯存 GPU 上穩定運行，同時提升長序列的 perplexity 與硬體利用率。
+
+---
+
+**## 2. 核心研究方法**  
+本提案提出 **Curriculum‑Adaptive Hierarchical Routing (CAHR)**，結合**長度感知溫度控制器**與**基於反事實基線的低方差策略梯度**，在兩層路由結構中動態調整路由溫度與專家選擇。  
+
+**演算法步驟**  
+- **Step 1**：在 `top‑level router` 前加入 **Length‑Aware Temperature Controller** (`len_temp_ctrl`)。根據當前 batch 中的平均序列長度 `avg_len`，利用小型前置 MLP 預測最適溫度 `τ`，取代手工對數公式。  
+- **Step 2**：`top‑level router` 使用 `softmax( logits / τ )` 產生子網路分配概率，採取 Top‑k (k=2) 進行硬選擇。  
+- **Step 3**：對每個被選子網路，**Sub‑router** 仍採用傳統的 Top‑k 專家選擇，但在每個 token 上同時執行 **Counterfactual Expert Estimator** (`cf_estimator`)：對未被選的前 N 個備選專家做一次低精度 forward（float16），計算假想回報 `r_cf`。  
+- **Step 4**：使用 **Policy Gradient with Counterfactual Baseline**：  
+  - 真實回報 `r_real` 來自最終語言模型損失（交叉熵）。  
+  - 基線 `b = mean(r_cf)`。  
+  - 梯度更新 `∇θ = (r_real - b) * ∇log πθ(action)`，方差顯著降低。  
+- **Step 5**：損失函數 = 交叉熵 + `balance_loss`（促進負載均衡） + `capacity_reg`（防止單專家過載） + `temp_reg`（鼓勵溫度平滑變化）。  
+- **推論流程**：僅執行 **Step 1‑2‑3** 的硬選擇，不計算 `cf_estimator`，因此推論成本與標準 Hierarchical MoE 相同。
+
+---
+
+**## 3. 與既有方法的差異與創新性**  
+- **演算法層**  
+  - 引入 **Length‑Aware Temperature Controller**，以資料驅動方式自適應路由溫度，克服固定退火的局限。  
+  - 結合 **Counterfactual Expert Estimator** 與 **Policy Gradient**，在保持單卡可訓的前提下提供低方差的 RL 路由信號。  
+- **實作層**  
+  - `cf_estimator` 使用 **float16 低精度 forward**，僅增加約 15% 計算開銷，遠低於完整 RL‑MoE 的多次環境模擬。  
+  - `len_temp_ctrl` 為 **2‑層 MLP**（隱藏 32），參數量可忽略不計，且可與主模型共享同一 optimizer。  
+- **應用層**  
+  - 針對 **混合長短句語料**（如 RedPajama、C4）提供穩定的路由行為，提升長序列 perplexity 同時不犧牲短句效能。  
+  - 完全兼容現有的 **Transformer‑MoE 框架**（如 DeepSpeed MoE、FairScale），易於在開源社群中復現與擴展。
+
+---
+
+**## 4. 實驗設計**  
+- **資料集**:  
+  - 主訓練集：RedPajama‑1B（含大量長段落）  
+  - 補充長序列測試集：OpenWebText‑Long（平均 2,048 token）  
+  - 短句基準：C4 隨機抽樣 512 token 子序列  
+- **baseline**:  
+  - 標準 Hierarchical MoE (NeurIPS 2025)  
+  - Multi‑Scale Routing (ICLR 2026)  
+  - RL‑MoE (ICML 2025)  
+- **評估指標**:  
+  - Perplexity（長序列與短句分別報告）  
+  - GPU Utilization（平均 %）  
+  - Throughput（tokens / sec）  
+  - 路由方差（action entropy）  
+- **ablation study 設計**:  
+  - 移除 `len_temp_ctrl` → 觀察長序列 perplexity 變化  
+  - 替換 `cf_estimator` 為無基線的 REINFORCE → 方差與收斂速度比較  
+  - 調整 `top‑k` 數量（2→4） → 計算成本與效能權衡  
+- **計算需求估計**:  
+  - 單張 NVIDIA RTX 4090（24 GB）訓練 2 B 參數模型，batch size 16，總訓練步數 300k。  
+  - 預估訓練時間 ≈ 45 天，電費約 2,200 USD。  
+  - 若使用 2 張 RTX 4090 可將時間減半，成本仍在可接受範圍內。
+
+---
+
+**## 5. 預期貢獻與影響**  
+- **科學價值**：首次在 Hierarchical MoE 中結合**資料驅動溫度自適應**與**低方差反事實 RL**，提供可解釋且穩定的路由機制。  
+- **工程應用**：在單卡 24‑48 GB GPU 上即可訓練 2 B 參數的長序列模型，降低研究門檻，適合中小型實驗室與產業團隊快速部署。  
+- **審稿優勢**：創新點明確、實驗設計完整、計算成本透明，且直接回應近期社群對「可持續、可重現」MoE 研究的關切，預期在 NeurIPS 2026 或 ICLR 2027 取得高分。
+
+---
+
+**## 6. 風險與緩解**  
+- **風險 1**：`len_temp_ctrl` 預測不準，導致溫度過高或過低。  
+  - **緩解**：在訓練早期加入 **temperature calibration loss**（使預測溫度與驗證 perplexity 的梯度方向一致），並在每個 epoch 後做簡易線性回歸校正。  
+- **風險 2**：`cf_estimator` 的低精度 forward 仍增加顯存壓力，可能在 24 GB 卡上觸發 OOM。  
+  - **緩解**：實作 **動態備選專家截斷**，僅對 top‑N (N=3) 未被選的專家執行 `cf_estimator`，並使用 **gradient checkpointing** 減少顯存占用。  
+- **風險 3**：RL 方差仍高於預期，收斂緩慢。  
+  - **緩解**：結合 **baseline moving average** 與 **entropy regularization**，在必要時切換回純梯度路由（不使用 RL）作為 warm‑up，確保模型先得到穩定基礎。
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
