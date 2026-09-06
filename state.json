@@ -1,13 +1,18 @@
 {
   "date": "2026-09-07",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1 研究主題概覽（300–500字）**\n\n- **主題一：自適應觸發器演化攻擊與動態防禦框架**  \n  - *突破潛力*：少數團隊探討模型部署後觸發器隨環境變化自行演化，防禦缺即時偵測與再校正。  \n  - *代表論文*：  \n    - 《Evolving Backdoors in Deployed Language Models》 (NeurIPS 2025) – Hao Li  \n    - 《Adaptive Trigger Generation for Persistent Model Poisoning》 (ICLR 2026) – Sara Kim  \n    - 《Dynamic Defense via Trigger Detection and Model Recalibration》 (arXiv 2025.12) – Ravi Patel  \n  - *核心技術問題*：  \n    - 在不影響正常推論的前提下即時捕捉觸發器結構變化。  \n    - 資源有限時完成模型再校正，缺乏高效增量學習策略。  \n\n- **主題二：跨語言/跨領域資料中毒的語意一致性圖譜偵測**  \n  - *突破潛力*：跨語言或跨領域中毒手法新興，利用語意一致性圖譜偵測的研究人數不足十人。  \n  - *代表論文*：  \n    - 《Cross‑Lingual Data Poisoning Detection via Semantic Consistency Graphs》 (ICML 2025) – Mei Chen  \n    - 《Graph‑based Provenance for Detecting Hidden Poisoning in Large Corpora》 (NeurIPS 2025) – Joon Park  \n    - 《Multilingual Consistency Checks for Poisoning Resilience》 (arXiv 2026.01) – Anika Singh  \n  - *核心技術問題*：  \n    - 建立跨語言語意對齊圖譜需高品質翻譯與對齊工具，低資源語言表現不佳。  \n    - 中毒樣本隱蔽於長尾分布，圖譜稀疏導致召回率下降。  \n\n- **主題三：雙向對抗自我修復模型"
+    },
+    {
+      "stage": 2,
+      "summary": "**核心研究主題**  \n- 自適應觸發器演化攻擊（Evolving Backdoors in Deployed Language Models, NeurIPS 2025）  \n- 多樣化觸發器生成（Adaptive Trigger Generation for Persistent Model Poisoning, ICLR 2026）  \n- 動態防禦（Dynamic Defense via Trigger Detection and Model Recalibration, arXiv 2025.12）  \n\n---\n\n### 1. 方法概覽  \n- **攻擊端**：  \n  - 透過演化演算法或 GAN 生成隱向量觸發器，持續調整以適應模型輸出變化。  \n  - 目標：最大化目標類別概率，最小化觸發器可辨識度（KL 散度）。  \n- **防禦端**：  \n  - `AnomalyAttention`：在 Transformer 注意力層加入稀疏門控，偵測異常激活。  \n  - `RecalibrationHead`：Adapter 微調，快速抑制後門效應。  \n  - 目標：最小化偵測錯誤率與正常任務損失。  \n\n---\n\n### 2. 技術細節  \n- **輸入/輸出**：  \n  - 輸入：tokenised 文字 + 觸發器候選集合。  \n  - 輸出：攻擊端（目標類別/生成文字），防禦端（偵測分數、校正預測）。  \n- **訓練配置**：  \n  - 資料：100 M 句子（OpenWebText）+ 0.1 % 合成觸發樣本。  \n  - Batch：256（8×A100）或 128（單卡）。  \n  - 優化器：AdamW，LR 2e‑4，cosine decay。  \n  - Loss：`L_target`、`L_stealth`、`L_detect`、`L_recal`。  \n  - Tricks：梯度累積、觸發器向量 EMA、稀疏 Top‑k"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
