@@ -1,6 +1,6 @@
 {
   "date": "2026-09-07",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**核心研究主題**  \n- 自適應觸發器演化攻擊（Evolving Backdoors in Deployed Language Models, NeurIPS 2025）  \n- 多樣化觸發器生成（Adaptive Trigger Generation for Persistent Model Poisoning, ICLR 2026）  \n- 動態防禦（Dynamic Defense via Trigger Detection and Model Recalibration, arXiv 2025.12）  \n\n---\n\n### 1. 方法概覽  \n- **攻擊端**：  \n  - 透過演化演算法或 GAN 生成隱向量觸發器，持續調整以適應模型輸出變化。  \n  - 目標：最大化目標類別概率，最小化觸發器可辨識度（KL 散度）。  \n- **防禦端**：  \n  - `AnomalyAttention`：在 Transformer 注意力層加入稀疏門控，偵測異常激活。  \n  - `RecalibrationHead`：Adapter 微調，快速抑制後門效應。  \n  - 目標：最小化偵測錯誤率與正常任務損失。  \n\n---\n\n### 2. 技術細節  \n- **輸入/輸出**：  \n  - 輸入：tokenised 文字 + 觸發器候選集合。  \n  - 輸出：攻擊端（目標類別/生成文字），防禦端（偵測分數、校正預測）。  \n- **訓練配置**：  \n  - 資料：100 M 句子（OpenWebText）+ 0.1 % 合成觸發樣本。  \n  - Batch：256（8×A100）或 128（單卡）。  \n  - 優化器：AdamW，LR 2e‑4，cosine decay。  \n  - Loss：`L_target`、`L_stealth`、`L_detect`、`L_recal`。  \n  - Tricks：梯度累積、觸發器向量 EMA、稀疏 Top‑k"
+    },
+    {
+      "stage": 3,
+      "summary": ""
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }

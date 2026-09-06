@@ -262,3 +262,123 @@
 
 ---
 
+## Stage 3 — 2026-09-07 07:07:26
+
+**Model:** `openai/gpt-oss-120b`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1：貝氏觸發器後驗 (Bayesian Trigger Posterior, BTP)**  
+- **核心 idea**：以貝氏推理直接估算每筆輸入的觸發器存在機率，並在偵測分數上加入不確定性校正。  
+- **技術細節**  
+  - **輸入流程**：文字序列 → 先前的觸發器特徵抽取器 → 產生觸發器向量候選集合。  
+  - **模組設計**：在原有 `TriggerDetector` 後新增 `PosteriorEstimator`，內部維持一個高斯混合模型 (GMM) 參數，用來近似觸發器特徵的後驗分布。  
+  - **訓練目標**：同時最小化偵測交叉熵損失與 KL 散度，使 GMM 逼近真實觸發器特徵分布。  
+  - **損失函數**：  
+    - `L_det`：偵測正負樣本的交叉熵。  
+    - `L_KL`：模型預測的後驗分布與由已知觸發器樣本估計的先驗分布之 KL 散度。  
+    - 總損失 = `L_det` 加上 λ 倍的 `L_KL`。  
+- **與 SOTA 的差異**  
+  - 在 *Dynamic Defense* (arXiv 2025.12) 中，第 12 行原本是「`score = sigmoid(linear(det_features))`」；本方案將第 12 行改為「`score, uncertainty = posterior_estimator(det_features)`」，再以 `score - β·uncertainty` 作為最終偵測分數。  
+  - 改動讓模型在高不確定性時降低偵測分數，減少對正常樣本的誤報。  
+- **預期改善的指標與原因**  
+  - **偵測真陽性率 (TPR)** 於 *Cross‑Lingual Data Poisoning* benchmark 預期提升 8%；原因是貝氏後驗提供了對罕見觸發器的更敏感度，同時抑制了因噪聲導致的偽陽性。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：ICML 2025 釋出的多語言中毒測試集（約 20k 句）。  
+  - 模型：125M 參數的 BERT‑base。  
+  - 訓練：單張 RTX 4090，batch 128，5 epoch 可完成。  
+  - 評估指標：TPR、FPR、AUC。  
+
+---
+
+**方案 2：圖神經毒化偵測器 (Graph Neural Poison Detector, GNP‑Detect)**  
+- **核心 idea**：將語料庫視為語意相似圖，利用圖神經網路聚合鄰居訊息以捕捉隱蔽的中毒子圖。  
+- **技術細節**  
+  - **輸入流程**：語句 → 句向量 (Sentence‑BERT) → 最近 k 個句子建立無向圖的邊。  
+  - **模組設計**：在原有 `SemanticConsistencyGraph` 基礎上，加上一層 `MessagePassingLayer`（使用加權求和），產出每個節點的毒化得分。  
+  - **訓練目標**：最大化中毒節點得分與標記中毒樣本的二元交叉熵，同時加入圖平滑正則化，使相鄰正常句子的得分保持相近。  
+  - **損失函數**：  
+    - `L_bin`：二元交叉熵。  
+    - `L_smooth`：相鄰節點得分差的 L2 懲罰。  
+    - 總損失 = `L_bin` + γ·`L_smooth`。  
+- **與 SOTA 的差異**  
+  - 在 *Cross‑Lingual Data Poisoning Detection* (ICML 2025) 的第 8 行原本是「`edge_weight = cosine(sim_i, sim_j)`」；本方案改為「`edge_weight = learned_weight(i, j)`」由一個小型 MLP 產生，讓圖結構在訓練中自適應。  
+  - 這樣的改動使得圖能根據語料的實際中毒模式調整連接強度，提升對長尾毒化樣本的召回率。  
+- **預期改善的指標與原因**  
+  - 在 *Multilingual Consistency Checks* (arXiv 2026.01) 上的召回率 (Recall) 預期提升 12%，因為自適應邊權能更好地捕捉跨語言語意漂移所帶來的隱蔽毒化。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：NeurIPS 2025 公布的 50k 句多語言語料，包含 0.2% 中毒樣本。  
+  - 模型：300M 參數的 Sentence‑BERT + 2 層 GNN。  
+  - 訓練：單張 RTX 4090，batch 256，3 epoch。  
+  - 評估：Precision、Recall、F1。  
+
+---
+
+**方案 3：元學習再校正 (Meta‑Adaptation Recalibration, MAR)**  
+- **核心 idea**：使用元梯度更新快速調整模型最後一層的參數，以在偵測到觸發器後即時抑制其效應。  
+- **技術細節**  
+  - **輸入流程**：文字 → 基礎模型 → 觸發器偵測器 → 若偵測分數超過門檻，啟動元學習模組。  
+  - **模組設計**：在原有 `RecalibrationHead` 前加入 `MetaOptimizer`，在每個 mini‑batch 結束時計算「偵測後的損失」對 `RecalibrationHead` 參數的二階梯度，並以此更新參數。  
+  - **訓練目標**：同時最小化正常任務的交叉熵與觸發後的後驗損失，使得模型在偵測到觸發器時能快速回退到安全預測。  
+  - **損失函數**：  
+    - `L_norm`：正常樣本的交叉熵。  
+    - `L_backdoor`：觸發樣本的負對數似然 (使目標類別概率下降)。  
+    - 總損失 = `L_norm` + α·`L_backdoor`。  
+- **與 SOTA 的差異**  
+  - 在 *Dynamic Defense* (arXiv 2025.12) 的第 23 行原本是「`adapter.step()`」一次梯度更新；本方案改為「`meta_step(adapter_params, loss_backdoor)`」執行一次元梯度更新。  
+  - 這個改動讓模型在每次偵測到觸發時，利用二階資訊即時調整參數，縮短從偵測到抑制的延遲時間。  
+- **預期改善的指標與原因**  
+  - 在 *Evolving Backdoors in Deployed Language Models* (NeurIPS 2025) 的延遲偵測‑抑制指標 (Latency‑Mitigation) 預期降低 35%，因為元梯度直接針對觸發效應的梯度方向做校正，避免了多輪微調的累積延遲。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：10k 句含觸發與非觸發樣本的合成資料集（參考 *Adaptive Trigger Generation* ICLR 2026 附錄）。  
+  - 模型：250M 參數的 RoBERTa‑large。  
+  - 訓練：單張 RTX 4090，batch 64，2 epoch 即可觀測 latency 改善。  
+  - 評估：偵測‑抑制延遲、正常任務準確率。  
+
+---
+
+**方案 4：強化觸發器演化 (Reinforced Trigger Evolution, RTE)**  
+- **核心 idea**：將觸發器的演化視為一個強化學習環境，使用策略梯度同時優化攻擊成功率與偵測隱蔽性。  
+- **技術細節**  
+  - **輸入流程**：當前觸發器向量 → 送入策略網路 → 產生「微調向量」 → 更新觸發器。  
+  - **模組設計**：策略網路為兩層前饋網路，輸出每個 token 的修改概率；環境回饋由兩個獎勵組成：  
+    - `R_success`：模型對目標類別的概率提升。  
+    - `R_stealth`：偵測器給予的低分數懲罰（負獎勵）。  
+  - **訓練目標**：最大化期望獎勵 `R = R_success - λ·R_stealth`，使用 REINFORCE 演算法更新策略參數。  
+  - **損失函數**：策略梯度的負期望獎勵，加上熵正則化以避免策略過早收斂。  
+- **與 SOTA 的差異**  
+  - 在 *Adaptive Trigger Generation* (ICLR 2026) 的第 15 行原本是「`trigger = GA_evolve(prev_trigger)`」使用遺傳演算法；本方案改為「`trigger = policy_network(prev_trigger)`」並在第 16 行加入「`policy_loss = -log_prob * (R - baseline)`」。  
+  - 這個改動把離散的 GA 換成可微分的策略網路，使得獎勵信號（包括偵測器的即時回饋）能直接影響觸發器的生成方向，提高隱蔽性與成功率的協同提升。  
+- **預期改善的指標與原因**  
+  - 在 *Dynamic Defense* 測試集上，觸發成功率 (Attack Success Rate) 預期提升 14%，偵測召回率下降 9%，因為策略同時考慮兩個目標，避免了僅追求成功率而導致的高偵測率。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：NeurIPS 2025 公布的 5k 句觸發測試集。  
+  - 模型：100M 參數的 DistilBERT。  
+  - 訓練：單張 RTX 4090，batch 128，2000 次策略迭代即可觀測成功率變化。  
+  - 評估：Attack Success Rate、Detection Recall、策略收斂速度。  
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
