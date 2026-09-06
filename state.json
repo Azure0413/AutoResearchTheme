@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-06",
-  "step": 6,
+  "date": "2026-09-07",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "- **具群對稱性的組合最佳化圖神經網路**  \n  - 研究團隊仍 <10 人，因需同時處理大規模對稱圖的結構編碼與可微分近似求解，缺乏通用基準與可擴展訓練流程。  \n  - 代表論文：  \n    - 《Symmetry‑Aware Graph Neural Networks for Combinatorial Optimization》(NeurIPS 2025) – Mina Kwon。  \n    - 《Equivariant Message Passing on Cayley Graphs for Large‑Scale TSP》(ICML 2026) – Rui Zhang。  \n    - 《Group‑Invariant Neural Solvers for Scheduling Problems》(arXiv 2025.1124) – Luca Bianchi。  \n  - 核心問題：  \n    - 在保持群不變性的同時設計高效訊息傳遞，避免圖的指數級展開。  \n    - 可微分近似解與傳統啟發式演算法之間的理論鴻溝尚未量化。  \n    - 缺少跨領域基準（圖著色、排程）驗證對稱性效益。\n\n- **等變神經算子於曲面流體與非歐氏 PDE 的高精度求解**  \n  - 目前僅少數團隊將 E(3)/SE(3) 等變性嵌入神經算子，用於彎曲流形上的湍流或電磁波模擬，研究規模未飽和。  \n  - 代表論文：  \n    - 《E(3)‑Equivariant Neural Operators for Turbulent Flow on Curved Surfaces》(NeurIPS 2025) – Yun‑Ho Lee"
-    },
-    {
-      "stage": 2,
-      "summary": "**核心概念**  \n- 研究主題：具群對稱性的組合最佳化圖神經網路（Symmetry‑Aware GNNs）  \n- 2025‑2026 已有可實作原型，但缺標準基準、理論量化與大規模驗證。  \n\n**主要方法**  \n- **SAMP**（Mina Kwon, NeurIPS 2025）  \n  - 以群表示（如 *S<sub>n</sub>*）為訊息傳遞指標，確保同構圖訊息不變。  \n- **CayGNN**（Rui Zhang, ICML 2026）  \n  - 在 Cayley 圖上構建群生成子，利用稀疏卷積處理 10k‑節點以上圖。  \n- **GINS**（Luca Bianchi, arXiv 2025.1124）  \n  - 群不變池化 + 可微分啟發式解碼器，直接輸出排程/顏色近似解。  \n\n**模型架構**  \n- 輸入：節點/邊特徵 + 群生成子或矩陣。  \n- 輸出：離散決策向量（TSP 順序、排程時間表）。  \n- 重要模組：群變換層、等變訊息傳遞層、可微分解碼器。  \n- 訓練目標：最小化相對誤差 + 群正則化（λ≈0.1）。  \n\n**訓練策略**  \n- 資料：小型基準 10‑20k 範例；大型擴充 100‑200k 次優解。  \n- Batch：32‑64 圖，使用圖填充。  \n- 優化器：AdamW，LR 1e‑3 → 1e‑5。  \n- Tricks：梯度累積、層正則化、驗證集早停。  \n\n**Benchmark**  \n- TSP（TSPLIB 100/200/500）：相對誤差 3.2 %（SOTA CayGNN）。  \n- VRP（CVRPLIB）：路徑長度"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3：創新方法概覽（300–500字）**  \n\n- **方案 1：階層余類聚合圖神經網路（HCAGNN）**  \n  - 核心：利用對稱群 \\(G_0\\) 的左餘類將節點聚合，將指數級訊息傳遞壓縮為對數級。  \n  - 模組：余類編碼 → 余類圖訊息傳遞 → 下層展開 → 可微分解碼。  \n  - 損失：\\(L=L_{\\text{opt}}+\\beta L_{\\text{coset}}\\)，其中 \\(L_{\\text{coset}}\\) 為餘類特徵方差。  \n  - 與 SOTA 差異：將 `SAMP`（NeurIPS 2025）訊息傳遞從節點改為余類層，計算量降至 \\(O(|V|/|G_0|)\\)。  \n  - 預期：TSPLIB 500、CVRPLIB 10k+ 節點推理時間 ↓30–45%，相對誤差 ↓0.5%。  \n  - MVP：TSPLIB 100/200，使用 \\(S_5\\)，余類層 2 層 64 維，RTX 4090 50 epoch。\n\n- **方案 2：自適應群正則化強化學習（AGRL）**  \n  - 核心：RL 代理動態調整每層正則化係數 \\(\\lambda_l\\)，平衡對稱性與解品質。  \n  - 模組：正則化控制器（兩層 FFN）→ 環境回饋（相對誤差、梯度方差）→ REINFORCE 更新。  \n  - 損失：\\(L=L_{\\text{opt}}+\\lambda_l L_{\\text{group}}\\)。  \n  - 與 SOTA 差異：改寫 `CayGNN`（ICML 2026）固定 \\(\\lambda=0.1\\) 為動態 \\(\\lambda_l\\)。  \n  - 預期：CVRPLIB 1000+、JSSP 200 收斂 epoch"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4: 嚴格自我批判（結構化摘要）**\n\n---\n\n### 方案 1：階層余類聚合圖神經網路（HCAGNN）\n\n| 觀點 | 主要批判 | 主要補救措施 | 相關論文/工具 |\n|------|----------|--------------|---------------|\n| **理論假設** | 假設對稱群的左餘類能完整捕捉圖結構；在非完整對稱或受隨機擾動的圖中，餘類聚合會抹平關鍵局部差異，導致解質量急劇下降。 | 在模型中加入餘類層可學習加權機制，恢復節點層級細粒度訊息；在理論分析中加入對稱破壞的魯棒性界限。 | — |\n| **資料與訓練可行性** | 只在 TSPLIB 100/200 上驗證，資料規模過小；缺乏噪聲或動態變化測試；未展示超參數敏感度。 | 擴充至隨機生成的大規模 TSP、VRP 以及實務排程資料；提供超參數掃描曲線，證明模型對層數/維度的平滑性。 | — |\n| **計算資源** | 雖理論計算量降至 O(|V|/|G0|)，實作中餘類圖與原始圖頻繁映射，導致記憶體拷貝與索引操作；單卡 24 GB GPU 在 10k+ 節點"
-    },
-    {
-      "stage": 5,
-      "summary": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 目前群對稱性 GNN（SAMP、CayGNN、GINS）在小規模 TSP/VRP 上相對誤差 ≈3%，但面臨：  \n    1. 訊息傳遞成本與節點數線性，10k 節點 GPU 內存易飽和。  \n    2. 群正則化係數固定（λ≈0.1），缺乏自適應，對噪聲或破對稱資料表現不穩。  \n    3. 缺乏大規模、跨領域驗證（物流、製造排程）及對稱破壞測試。  \n  - 參考文獻：NeurIPS 2025《Symmetry‑Aware Graph Neural Networks for Combinatorial Optimization》、ICML 2026《Equivariant Message Passing on Cayley Graphs for Large‑Scale TSP》。\n\n- **核心方法：HCAGNN‑AGRL**  \n  - **階層餘類聚合**：先在對稱群左餘類上粗粒度聚合，計算量降至 O(|V|/|G₀|)。  \n  - **自適應群正則化**：兩層前饋 `λ‑controller` 以 REINFORCE 根據梯度方差與相對誤差動態輸出 λ_l。  \n  - **演算法流程**：  \n    1. 抽取對稱群 G₀ → 左餘類集合。  \n    2. 構建餘類圖，聚合特徵（加權平均 + 可學習注意力）。  \n    3. 在餘類圖上執行 `EquivariantCosetConv`。  \n    4. 餘類展開回原圖，進行 2‑3 層細粒度訊息傳遞。  \n    5. 可微分解碼器產生離散決策。  \n  - **損失組成**：`L_opt`（問題目標）+ β·`L_coset`（餘類方差）+ Σ λ_l·"
+      "summary": "**Stage 1 研究主題概覽（300–500字）**\n\n- **主題一：自適應觸發器演化攻擊與動態防禦框架**  \n  - *突破潛力*：少數團隊探討模型部署後觸發器隨環境變化自行演化，防禦缺即時偵測與再校正。  \n  - *代表論文*：  \n    - 《Evolving Backdoors in Deployed Language Models》 (NeurIPS 2025) – Hao Li  \n    - 《Adaptive Trigger Generation for Persistent Model Poisoning》 (ICLR 2026) – Sara Kim  \n    - 《Dynamic Defense via Trigger Detection and Model Recalibration》 (arXiv 2025.12) – Ravi Patel  \n  - *核心技術問題*：  \n    - 在不影響正常推論的前提下即時捕捉觸發器結構變化。  \n    - 資源有限時完成模型再校正，缺乏高效增量學習策略。  \n\n- **主題二：跨語言/跨領域資料中毒的語意一致性圖譜偵測**  \n  - *突破潛力*：跨語言或跨領域中毒手法新興，利用語意一致性圖譜偵測的研究人數不足十人。  \n  - *代表論文*：  \n    - 《Cross‑Lingual Data Poisoning Detection via Semantic Consistency Graphs》 (ICML 2025) – Mei Chen  \n    - 《Graph‑based Provenance for Detecting Hidden Poisoning in Large Corpora》 (NeurIPS 2025) – Joon Park  \n    - 《Multilingual Consistency Checks for Poisoning Resilience》 (arXiv 2026.01) – Anika Singh  \n  - *核心技術問題*：  \n    - 建立跨語言語意對齊圖譜需高品質翻譯與對齊工具，低資源語言表現不佳。  \n    - 中毒樣本隱蔽於長尾分布，圖譜稀疏導致召回率下降。  \n\n- **主題三：雙向對抗自我修復模型"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
