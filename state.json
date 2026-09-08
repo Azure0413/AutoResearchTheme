@@ -1,13 +1,18 @@
 {
   "date": "2026-09-09",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：因果介入與中介分析在大型語言模型內部機制**  \n- 研究缺口：目前僅有少數團隊嘗試系統化因果介入來量化單一神經元或子模組對輸出的貢獻，缺乏可擴展的中介分析框架。  \n- 代表工作  \n  - 《Causal Mediation in Large Language Models》 (Mina Lee, ICLR 2026)  \n  - 《Interventional Probes for Understanding Transformer Computation》 (Ravi Kumar, NeurIPS 2025)  \n- 核心技術挑戰  \n  - 設計低成本且不破壞模型分佈的微調介入策略。  \n  - 高維激活空間中中介效應估計易受噪聲影響，缺乏穩健方法。  \n\n**主題二：內部特徵向量軌跡聚類與異常偵測**  \n- 研究缺口：多數研究停留於單一步驟激活可視化，未系統追蹤特徵向量在長序列或多輪對話中的演變，難以捕捉錯誤行為萌芽。  \n- 代表工作  \n  - 《Trajectory‑Based Detection of Emergent Misalignment in Transformers》 (Yuan Hsu, NeurIPS 2025)  \n  - 《Clustering Activation Trajectories for Safety Monitoring》 (Lena Zhang, ICML 2026)  \n- 核心技術挑戰  \n  - 高維激活序列的即時降維與聚類演算法尚未成熟。  \n  - 如何將異常軌跡映射回具體電路或語意模組，提供可操作修正建議。  \n\n**主題三：階段性稀疏自編碼器驅動的跨層電路演化圖**  \n- 研究缺口：稀疏自編碼器多聚焦單一訓練階段"
+    },
+    {
+      "stage": 2,
+      "summary": "- **研究主題**：大型語言模型內部機制的因果介入與中介分析，已具備可落地實驗框架（Interventional Probes），但缺乏可擴展、噪聲魯棒的中介估計方法，適合學生團隊實作。  \n- **核心方法**：  \n  - *Interventional Probe*（Ravi Kumar, NeurIPS 2025）：在前向傳播時硬性替換注意力頭或前饋層輸出，觀測最終預測變化。  \n  - *Causal Mediation Analysis*（Mina Lee, ICLR 2026）：兩階段模型，第一階段估計介入變量分布，第二階段用逆概率加權測量間接效應。  \n  - *Do‑Operator Gradient*（Zhang et al., ICML 2026）：利用「do」操作的梯度近似，直接對神經元施加微小干預，計算輸出分布敏感度。  \n- **模型架構**：輸入為 token IDs + 位置編碼；輸出為 logits；關鍵模組包括目標子模組（注意力頭/前饋層/神經元）與介入層（do 操作或激活替換）。  \n- **訓練策略**：使用預訓練模型，僅在介入階段微調；資料量 1‑2 % 的公開語料足夠；batch 16‑32；AdamW lr≈1e‑4；loss 由 KL(原始 vs 介入) 與 L2 正則化組成。  \n- **實作技巧**：梯度檢查點、先在 gpt2‑small 驗證、同一子模組多次抽樣平均以降低噪聲。  \n- **Benchmark**：LAMBADA、TruthfulQA、Synthetic Causal Suite；"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
