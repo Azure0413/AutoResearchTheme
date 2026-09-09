@@ -1,13 +1,18 @@
 {
   "date": "2026-09-10",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：多尺度階層式狀態空間模型 (H‑SSM)**  \n- 目前僅少數團隊嘗試在單一模型內同時捕捉微觀與宏觀時間尺度的長程依賴，缺乏系統化層級參數共享機制，導致超長序列（>10⁵）仍難以保持穩定與高效。  \n- 代表論文：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling* (Yuan Chen, ICLR 2026)  \n  - *Multi‑Scale Mamba: Adaptive Depth SSMs for Audio‑Video Fusion* (Lina Gupta, NeurIPS 2025)  \n  - *Scalable Hierarchical SSMs via Progressive Kernel Learning* (arXiv:2504.1123, 2025)  \n- 核心技術挑戰：  \n  - 層級間動態調整狀態轉移矩陣尺度，避免梯度消失/爆炸。  \n  - 參數共享與稀疏化缺乏理論指導，訓練成本高於單層 SSM。  \n  - 缺統一評測基準，難以比較多尺度 SSM 與 Transformer 在超長序列上的效能與記憶保持。\n\n**主題二：閘控 DeltaNet 用於稀疏序列建模**  \n- DeltaNet 以差分訊號捕捉變化，但在高維稀疏序列（程式碼、事件流）上缺乏有效門控機制，導致計算資源浪費；目前僅在小規模資料集驗證概念，未擴展至大規模語言或控制任務。  \n- 代表論文：  \n  - *Gated Delta Networks for Efficient Sparse Sequence Modeling* (Kai Liu, ICML 2025)  \n  - *Adaptive Gate Mechanisms in DeltaNet for Real‑Time Event Streams* (Mina Park, NeurIPS 2025)"
+    },
+    {
+      "stage": 2,
+      "summary": "**核心研究方向**  \n- 研究主題：多尺度階層式狀態空間模型（H‑SSM）  \n- 已於 ICLR 2026、NeurIPS 2025、arXiv 2025 公開原始碼，成熟度足以讓研究生自行復現；仍缺乏層級參數共享、動態尺度調整與長序列穩定性之理論與實驗支撐。\n\n**主要方法族群**  \n- **Hierarchical State‑Space Model (H‑SSM)** – Chen 等 (ICLR 2026)：多層 SSM 堆疊，跨層注意力門控自動選擇粗/細時間步長。  \n- **Multi‑Scale Mamba** – Gupta 等 (NeurIPS 2025)：結合 Mamba 卷積式狀態轉移，根據頻譜能量自適應調整層級深度、核長。  \n- **Progressive Kernel Learning SSM (PKL‑SSM)** – Liu 等 (arXiv:2504.1123)：逐層預訓練核函數，稀疏線性組合實現參數共享與計算量減半。\n\n**模型架構要點**  \n- 輸入：長序列向量（長度≥10⁵）。  \n- 輸出：任務對應標籤、隱向量或生成結果。  \n- 重要模組：  \n  - 層級狀態空間單元（A_l, B_l, C_l）。  \n  - 跨層門控（類 GRU），決定粗粒度狀態是否傳遞。  \n  - 可變步長調度器，根據隱狀態變化率選擇 Δt_l。  \n- 訓練目標：自回歸語言模型→交叉熵；序列分類→交叉熵+KL；序列重建→MSE+L1。\n\n**訓練策略**  \n- 資料：文字使用 The Pile / OpenWebText；音訊/視訊使用 AudioSet / Kinetics‑700。  \n- Batch：單卡 8‑16 序列，梯度累"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
