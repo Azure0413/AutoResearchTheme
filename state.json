@@ -1,6 +1,6 @@
 {
   "date": "2026-09-09",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**結構化摘要（約 400 字）**\n\n- **方案 1：因果介入與中介分析**  \n  - *理論假設*：單一神經元/注意力頭介入不破壞全局分布。  \n    - 反例：長文本中「單點干預」導致語意漂移。  \n    - 補救：量化「局部保守度」(KL 差距門檻)；採用「平滑介入」而非硬替換。  \n  - *資料與訓練可行性*：1‑2 % 公開語料樣本多樣性不足。  \n    - 補救：結合 *Synthetic Causal Suite* 與真實長文，採分層抽樣與多輪隨機子集交叉驗證。  \n  - *計算資源*：每次前向需多次「do‑operator」近似，70B 模型成本 10‑20 倍。  \n    - 補救：低秩梯度近似、子模組低維投影；將模型切分為「可插拔」子圖。  \n  - *是否優於 SOTA*：基準僅 LAMBADA、TruthfulQA、Synthetic Causal Suite，提升 2‑3 %。  \n    - 補救：同一模型跑 *Causal Tracing*、*PathPatch*、本方法，加入 MMLU、BIG-bench Hard，做統計顯著性測試。  \n  - *失效模式*：長序列 (>2 k token) 或多輪對話中介入噪聲放大，出現負介入效應。  \n    - 補救：時間窗平滑機制、階段性介入（僅關鍵層）。  \n\n- **方案 2：內部特徵向量軌跡聚類與異常偵測**  \n  - *理論假設*：高維激活聚類直接映射語意/電路異常。  \n    - 反例：激活空間流形結構，K‑means 產生虛假簇。  \n    - 補救：使用"
+    },
+    {
+      "stage": 5,
+      "summary": "**研究痛點與背景**  \n- 大型語言模型內部機制仍為「黑盒」，長序列或多輪對話中單點因果介入噪聲高、效應不穩。  \n- 目前因果介入（《Interventional Probes for Understanding Transformer Computation》NeurIPS 2025）缺乏全局激活軌跡觀察；僅聚類（《Trajectory‑Based Detection of Emergent Misalignment in Transformers》NeurIPS 2025）無法量化介入對輸出分布的因果貢獻。  \n- 需求：同時結合激活軌跡與因果中介，能在 24‑48 GB GPU 上完成且對噪聲具備魯棒性。\n\n**核心方法：Trajectory‑Guided Causal Mediation (TGCM)**  \n- **Step 1**：收集目標層（注意力頭、前饋層）激活向量序列。  \n- **Step 2**：增量式 PCA 降至 64 維 → DBSCAN 聚類，辨識常態與異常軌跡。  \n- **Step 3**：對異常簇選取代表神經元/頭，構造 `do(x)` 介入（軟替換為均值+微小噪聲）。  \n- **Step 4**：依《Causal Mediation in Large Language Models》ICLR 2026 兩階段框架，先估計介入變量分布，再用逆概率加權 (IPW) 計算間接效應。  \n- **噪聲魯棒權重**：根據聚類內變異度調整 IPW 權重，降低噪聲影響。  \n- **Step 5**：訓練輕量 MLP `M`，輸入激活向量，輸出門控係數 `g∈[0,1]`，最小化 `KL(original_logits , intervened_logits)`。  \n- **Step 6**：損失函數 `"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }

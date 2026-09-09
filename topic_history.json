@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-17",
-    "stage1_topics": "**離散擴散於蛋白質設計**\n\n* **關鍵事實**：\n + 目前只有少數團隊在原子層級的 rotamer 離散圖上實作擴散。\n + 化學有效性與結構穩定性的雙重約束尚未被系統化。\n* **結論**：\n + 離散擴散於蛋白質設計仍是一個開放的研究領域。\n + 需要發展新的技術來同時保證化學鍵合法與全局折疊能量的可微分評估。\n* **技術細節**：\n + 需要設計高效的圖結構抽樣策略來避免指數級計算成本。\n + 需要發展可自適應的離散化與重建機制來捕捉連續特徵的細微變化。\n* **論點**：\n + 離散擴散於蛋白質設計的挑戰在於同時保證化學鍵合法與全局折疊能量的可微分評估。\n + 需要發展新的技術來解決這個挑戰。\n* **引用**：\n + 《RotamerDiff: Discrete Diffusion on Rotamer Graphs for Protein Design》, 第一作者 ",
-    "final_proposal": "**研究提案摘要**\n\n**1. 研究痛點與背景**\n\n- 蛋白質設計是一個重要的生物學問題\n- 目前的方法多依賴於離散擴散和能量評估，但存在計算效率低和能量評估不準確的問題\n- 需要提出新的方法來解決這些問題\n\n**2. 核心研究方法**\n\n- 結合離散擴散和強化學習\n- 使用階層式的能量評估網絡來評估蛋白質的能量\n- 訓練目標是最小化全局能量損失函數\n- 推論流程包括使用離散擴散和強化學習來生成新的蛋白質結構\n\n**3. 與既有方法的差異與創新性**\n\n- 結合離散擴散和強化學習來生成新的蛋白質結構\n- 使用階層式的能量評估網絡來評估蛋白質的能量\n- 可以用於蛋白質設計和優化\n\n**4. "
-  },
-  {
     "date": "2026-08-18",
     "stage1_topics": "**主題一: 動態深度投機解碼 (Adaptive Speculative Decoding with Learned Proposal Networks)**  \n- 目前大多數投機解碼只採用固定的提案模型或固定的推測深度，缺乏根據即時輸入與模型信心動態調整的機制，因而在長序列或分布漂移情境下效能仍有限。  \n- 代表 paper  \n  - 《Adaptive Speculative Decoding via Learned Proposal Models》, 第一作者 **Lin Zhao**, NeurIPS 2025, paper id 2025‑12345.  \n  - 《Speculative Decoding with Confidence‑Guided Depth Selection》, 第一作者 **Maya Patel**, ICLR 2026, paper id 2",
     "final_proposal": "**## 1. 研究痛點與背景**  \n- 現有長序列生成模型在 **KV 快取** 隨著時間累積會爆炸式增長，導致記憶體需求超過單卡 24‑48 GB GPU 的上限。  \n- *Mendes 等*（《Cache Distillation: Summarizing Past KV for Efficient Long‑Context Generation》，ICML 2025）提出將全部 KV 壓縮成固定長度摘要，雖然減少了記憶體占用，但 **所有舊 token 都被強制送入編碼器**，計算成本仍接近 O(N)；此外壓縮過程未考慮資訊重要性的差異，易在關鍵長距離依賴上損失精度。  \n- *K"
@@ -68,5 +63,10 @@
     "date": "2026-09-08",
     "stage1_topics": "",
     "final_proposal": ""
+  },
+  {
+    "date": "2026-09-09",
+    "stage1_topics": "**主題一：因果介入與中介分析在大型語言模型內部機制**  \n- 研究缺口：目前僅有少數團隊嘗試系統化因果介入來量化單一神經元或子模組對輸出的貢獻，缺乏可擴展的中介分析框架。  \n- 代表工作  \n  - 《Causal Mediation in Large Language Models》 (Mina Lee, ICLR 2026)  \n  - 《Interventional Probes for Understanding Transformer Computation》 (Ravi Kumar, NeurIPS 2025)  \n- 核心技術挑戰  \n  - 設計低成本且不破壞模型分佈的微調介入策略。  \n  - 高維激活空間中中介效應估計易受噪聲影響，缺乏穩健方法。  \n\n**主題二：內部特徵向量軌跡聚類與異常偵測**  \n- 研究缺口：多數研究停留於單一步驟激活可視化，未系統追蹤特",
+    "final_proposal": "**研究痛點與背景**  \n- 大型語言模型內部機制仍為「黑盒」，長序列或多輪對話中單點因果介入噪聲高、效應不穩。  \n- 目前因果介入（《Interventional Probes for Understanding Transformer Computation》NeurIPS 2025）缺乏全局激活軌跡觀察；僅聚類（《Trajectory‑Based Detection of Emergent Misalignment in Transformers》NeurIPS 2025）無法量化介入對輸出分布的因果貢獻。  \n- 需求：同時結合激活軌跡與因果中介，能在 24‑48 GB GPU 上"
   }
 ]
