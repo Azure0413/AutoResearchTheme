@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-09",
-  "step": 6,
+  "date": "2026-09-10",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一：因果介入與中介分析在大型語言模型內部機制**  \n- 研究缺口：目前僅有少數團隊嘗試系統化因果介入來量化單一神經元或子模組對輸出的貢獻，缺乏可擴展的中介分析框架。  \n- 代表工作  \n  - 《Causal Mediation in Large Language Models》 (Mina Lee, ICLR 2026)  \n  - 《Interventional Probes for Understanding Transformer Computation》 (Ravi Kumar, NeurIPS 2025)  \n- 核心技術挑戰  \n  - 設計低成本且不破壞模型分佈的微調介入策略。  \n  - 高維激活空間中中介效應估計易受噪聲影響，缺乏穩健方法。  \n\n**主題二：內部特徵向量軌跡聚類與異常偵測**  \n- 研究缺口：多數研究停留於單一步驟激活可視化，未系統追蹤特徵向量在長序列或多輪對話中的演變，難以捕捉錯誤行為萌芽。  \n- 代表工作  \n  - 《Trajectory‑Based Detection of Emergent Misalignment in Transformers》 (Yuan Hsu, NeurIPS 2025)  \n  - 《Clustering Activation Trajectories for Safety Monitoring》 (Lena Zhang, ICML 2026)  \n- 核心技術挑戰  \n  - 高維激活序列的即時降維與聚類演算法尚未成熟。  \n  - 如何將異常軌跡映射回具體電路或語意模組，提供可操作修正建議。  \n\n**主題三：階段性稀疏自編碼器驅動的跨層電路演化圖**  \n- 研究缺口：稀疏自編碼器多聚焦單一訓練階段"
-    },
-    {
-      "stage": 2,
-      "summary": "- **研究主題**：大型語言模型內部機制的因果介入與中介分析，已具備可落地實驗框架（Interventional Probes），但缺乏可擴展、噪聲魯棒的中介估計方法，適合學生團隊實作。  \n- **核心方法**：  \n  - *Interventional Probe*（Ravi Kumar, NeurIPS 2025）：在前向傳播時硬性替換注意力頭或前饋層輸出，觀測最終預測變化。  \n  - *Causal Mediation Analysis*（Mina Lee, ICLR 2026）：兩階段模型，第一階段估計介入變量分布，第二階段用逆概率加權測量間接效應。  \n  - *Do‑Operator Gradient*（Zhang et al., ICML 2026）：利用「do」操作的梯度近似，直接對神經元施加微小干預，計算輸出分布敏感度。  \n- **模型架構**：輸入為 token IDs + 位置編碼；輸出為 logits；關鍵模組包括目標子模組（注意力頭/前饋層/神經元）與介入層（do 操作或激活替換）。  \n- **訓練策略**：使用預訓練模型，僅在介入階段微調；資料量 1‑2 % 的公開語料足夠；batch 16‑32；AdamW lr≈1e‑4；loss 由 KL(原始 vs 介入) 與 L2 正則化組成。  \n- **實作技巧**：梯度檢查點、先在 gpt2‑small 驗證、同一子模組多次抽樣平均以降低噪聲。  \n- **Benchmark**：LAMBADA、TruthfulQA、Synthetic Causal Suite；"
-    },
-    {
-      "stage": 3,
-      "summary": ""
-    },
-    {
-      "stage": 4,
-      "summary": "**結構化摘要（約 400 字）**\n\n- **方案 1：因果介入與中介分析**  \n  - *理論假設*：單一神經元/注意力頭介入不破壞全局分布。  \n    - 反例：長文本中「單點干預」導致語意漂移。  \n    - 補救：量化「局部保守度」(KL 差距門檻)；採用「平滑介入」而非硬替換。  \n  - *資料與訓練可行性*：1‑2 % 公開語料樣本多樣性不足。  \n    - 補救：結合 *Synthetic Causal Suite* 與真實長文，採分層抽樣與多輪隨機子集交叉驗證。  \n  - *計算資源*：每次前向需多次「do‑operator」近似，70B 模型成本 10‑20 倍。  \n    - 補救：低秩梯度近似、子模組低維投影；將模型切分為「可插拔」子圖。  \n  - *是否優於 SOTA*：基準僅 LAMBADA、TruthfulQA、Synthetic Causal Suite，提升 2‑3 %。  \n    - 補救：同一模型跑 *Causal Tracing*、*PathPatch*、本方法，加入 MMLU、BIG-bench Hard，做統計顯著性測試。  \n  - *失效模式*：長序列 (>2 k token) 或多輪對話中介入噪聲放大，出現負介入效應。  \n    - 補救：時間窗平滑機制、階段性介入（僅關鍵層）。  \n\n- **方案 2：內部特徵向量軌跡聚類與異常偵測**  \n  - *理論假設*：高維激活聚類直接映射語意/電路異常。  \n    - 反例：激活空間流形結構，K‑means 產生虛假簇。  \n    - 補救：使用"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究痛點與背景**  \n- 大型語言模型內部機制仍為「黑盒」，長序列或多輪對話中單點因果介入噪聲高、效應不穩。  \n- 目前因果介入（《Interventional Probes for Understanding Transformer Computation》NeurIPS 2025）缺乏全局激活軌跡觀察；僅聚類（《Trajectory‑Based Detection of Emergent Misalignment in Transformers》NeurIPS 2025）無法量化介入對輸出分布的因果貢獻。  \n- 需求：同時結合激活軌跡與因果中介，能在 24‑48 GB GPU 上完成且對噪聲具備魯棒性。\n\n**核心方法：Trajectory‑Guided Causal Mediation (TGCM)**  \n- **Step 1**：收集目標層（注意力頭、前饋層）激活向量序列。  \n- **Step 2**：增量式 PCA 降至 64 維 → DBSCAN 聚類，辨識常態與異常軌跡。  \n- **Step 3**：對異常簇選取代表神經元/頭，構造 `do(x)` 介入（軟替換為均值+微小噪聲）。  \n- **Step 4**：依《Causal Mediation in Large Language Models》ICLR 2026 兩階段框架，先估計介入變量分布，再用逆概率加權 (IPW) 計算間接效應。  \n- **噪聲魯棒權重**：根據聚類內變異度調整 IPW 權重，降低噪聲影響。  \n- **Step 5**：訓練輕量 MLP `M`，輸入激活向量，輸出門控係數 `g∈[0,1]`，最小化 `KL(original_logits , intervened_logits)`。  \n- **Step 6**：損失函數 `"
+      "summary": "**主題一：多尺度階層式狀態空間模型 (H‑SSM)**  \n- 目前僅少數團隊嘗試在單一模型內同時捕捉微觀與宏觀時間尺度的長程依賴，缺乏系統化層級參數共享機制，導致超長序列（>10⁵）仍難以保持穩定與高效。  \n- 代表論文：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling* (Yuan Chen, ICLR 2026)  \n  - *Multi‑Scale Mamba: Adaptive Depth SSMs for Audio‑Video Fusion* (Lina Gupta, NeurIPS 2025)  \n  - *Scalable Hierarchical SSMs via Progressive Kernel Learning* (arXiv:2504.1123, 2025)  \n- 核心技術挑戰：  \n  - 層級間動態調整狀態轉移矩陣尺度，避免梯度消失/爆炸。  \n  - 參數共享與稀疏化缺乏理論指導，訓練成本高於單層 SSM。  \n  - 缺統一評測基準，難以比較多尺度 SSM 與 Transformer 在超長序列上的效能與記憶保持。\n\n**主題二：閘控 DeltaNet 用於稀疏序列建模**  \n- DeltaNet 以差分訊號捕捉變化，但在高維稀疏序列（程式碼、事件流）上缺乏有效門控機制，導致計算資源浪費；目前僅在小規模資料集驗證概念，未擴展至大規模語言或控制任務。  \n- 代表論文：  \n  - *Gated Delta Networks for Efficient Sparse Sequence Modeling* (Kai Liu, ICML 2025)  \n  - *Adaptive Gate Mechanisms in DeltaNet for Real‑Time Event Streams* (Mina Park, NeurIPS 2025)"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
