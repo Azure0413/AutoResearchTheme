@@ -1,6 +1,6 @@
 {
   "date": "2026-09-09",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "- **研究主題**：大型語言模型內部機制的因果介入與中介分析，已具備可落地實驗框架（Interventional Probes），但缺乏可擴展、噪聲魯棒的中介估計方法，適合學生團隊實作。  \n- **核心方法**：  \n  - *Interventional Probe*（Ravi Kumar, NeurIPS 2025）：在前向傳播時硬性替換注意力頭或前饋層輸出，觀測最終預測變化。  \n  - *Causal Mediation Analysis*（Mina Lee, ICLR 2026）：兩階段模型，第一階段估計介入變量分布，第二階段用逆概率加權測量間接效應。  \n  - *Do‑Operator Gradient*（Zhang et al., ICML 2026）：利用「do」操作的梯度近似，直接對神經元施加微小干預，計算輸出分布敏感度。  \n- **模型架構**：輸入為 token IDs + 位置編碼；輸出為 logits；關鍵模組包括目標子模組（注意力頭/前饋層/神經元）與介入層（do 操作或激活替換）。  \n- **訓練策略**：使用預訓練模型，僅在介入階段微調；資料量 1‑2 % 的公開語料足夠；batch 16‑32；AdamW lr≈1e‑4；loss 由 KL(原始 vs 介入) 與 L2 正則化組成。  \n- **實作技巧**：梯度檢查點、先在 gpt2‑small 驗證、同一子模組多次抽樣平均以降低噪聲。  \n- **Benchmark**：LAMBADA、TruthfulQA、Synthetic Causal Suite；"
+    },
+    {
+      "stage": 3,
+      "summary": ""
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
