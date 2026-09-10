@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-10",
-  "step": 6,
+  "date": "2026-09-11",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一：多尺度階層式狀態空間模型 (H‑SSM)**  \n- 目前僅少數團隊嘗試在單一模型內同時捕捉微觀與宏觀時間尺度的長程依賴，缺乏系統化層級參數共享機制，導致超長序列（>10⁵）仍難以保持穩定與高效。  \n- 代表論文：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling* (Yuan Chen, ICLR 2026)  \n  - *Multi‑Scale Mamba: Adaptive Depth SSMs for Audio‑Video Fusion* (Lina Gupta, NeurIPS 2025)  \n  - *Scalable Hierarchical SSMs via Progressive Kernel Learning* (arXiv:2504.1123, 2025)  \n- 核心技術挑戰：  \n  - 層級間動態調整狀態轉移矩陣尺度，避免梯度消失/爆炸。  \n  - 參數共享與稀疏化缺乏理論指導，訓練成本高於單層 SSM。  \n  - 缺統一評測基準，難以比較多尺度 SSM 與 Transformer 在超長序列上的效能與記憶保持。\n\n**主題二：閘控 DeltaNet 用於稀疏序列建模**  \n- DeltaNet 以差分訊號捕捉變化，但在高維稀疏序列（程式碼、事件流）上缺乏有效門控機制，導致計算資源浪費；目前僅在小規模資料集驗證概念，未擴展至大規模語言或控制任務。  \n- 代表論文：  \n  - *Gated Delta Networks for Efficient Sparse Sequence Modeling* (Kai Liu, ICML 2025)  \n  - *Adaptive Gate Mechanisms in DeltaNet for Real‑Time Event Streams* (Mina Park, NeurIPS 2025)"
-    },
-    {
-      "stage": 2,
-      "summary": "**核心研究方向**  \n- 研究主題：多尺度階層式狀態空間模型（H‑SSM）  \n- 已於 ICLR 2026、NeurIPS 2025、arXiv 2025 公開原始碼，成熟度足以讓研究生自行復現；仍缺乏層級參數共享、動態尺度調整與長序列穩定性之理論與實驗支撐。\n\n**主要方法族群**  \n- **Hierarchical State‑Space Model (H‑SSM)** – Chen 等 (ICLR 2026)：多層 SSM 堆疊，跨層注意力門控自動選擇粗/細時間步長。  \n- **Multi‑Scale Mamba** – Gupta 等 (NeurIPS 2025)：結合 Mamba 卷積式狀態轉移，根據頻譜能量自適應調整層級深度、核長。  \n- **Progressive Kernel Learning SSM (PKL‑SSM)** – Liu 等 (arXiv:2504.1123)：逐層預訓練核函數，稀疏線性組合實現參數共享與計算量減半。\n\n**模型架構要點**  \n- 輸入：長序列向量（長度≥10⁵）。  \n- 輸出：任務對應標籤、隱向量或生成結果。  \n- 重要模組：  \n  - 層級狀態空間單元（A_l, B_l, C_l）。  \n  - 跨層門控（類 GRU），決定粗粒度狀態是否傳遞。  \n  - 可變步長調度器，根據隱狀態變化率選擇 Δt_l。  \n- 訓練目標：自回歸語言模型→交叉熵；序列分類→交叉熵+KL；序列重建→MSE+L1。\n\n**訓練策略**  \n- 資料：文字使用 The Pile / OpenWebText；音訊/視訊使用 AudioSet / Kinetics‑700。  \n- Batch：單卡 8‑16 序列，梯度累"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3 – 創新方法概覽（300–500字）**\n\n- **方案 1：動態層級核共享 (AHKS)**\n  - **核心概念**：將多層 H‑SSM 的核矩陣拆成共享低秩基礎核 \\(K_{\\text{base}}=U\\,V^\\top\\) 與可學習層級縮放向量 \\(s_l\\)，即 \\(K_l=\\operatorname{diag}(s_l)\\,U\\,V^\\top\\)。  \n  - **技術要點**  \n    - 嵌入層 → \\(L\\) 層 SSM；每層只需學一次 \\(U,V\\) 及各自 \\(s_l\\)。  \n    - 交叉熵 + λ₁ KL(層間分布相似) + λ₂ 低秩正則化（Frobenius 範數）。  \n  - **與 SOTA 差異**：改寫 Multi‑Scale Mamba 的「每層獨立核」為「共享低秩核＋層級縮放」。  \n  - **預期效益**：參數量減半、GPU 記憶使用下降 30%，Long‑Range Arena (ListOps、PathX) 精度提升 1.5–2%。  \n  - **MVP**：3 層、隱藏 512、秩 64；RTX 4090 8 h 50k 步訓練。\n\n- **方案 2：隨機層深度調度 (SDS‑SSM)**\n  - **核心概念**：根據隱狀態變化率 \\(\\Delta=\\|h_l-h_{l-1}\\|\\) 產生跳躍概率 \\(p_l=\\sigma(\\alpha\\Delta+\\beta)\\)，以伯努利抽樣決定是否執行層 \\(l\\)。  \n  - **技術要點**  \n    - 初期高溫 Softmax 使"
-    },
-    {
-      "stage": 4,
-      "summary": "**結構化摘要（300–500字）**\n\n- **方案 1：動態層級核共享 (AHKS)**\n  - *核心假設*：所有層可用同一低秩基礎核 `U·Vᵀ` 乘以層級縮放向量 `s_l` 完全表達。  \n    - **缺陷**：若資料呈高度非線性或跨尺度頻譜（如長音訊突變、程式碼嵌套），單一低秩核無法捕捉層間獨特頻率，導致資訊損失。  \n    - **補救**：在共享核上加層級專屬殘差模組（小卷積/MLP）以補償頻譜缺口。  \n  - *資料與訓練可行性*：實驗僅覆蓋 Long‑Range Arena 子集（ListOps、PathX），缺乏大規模自然語料（The Pile）或多模態序列驗證。訓練對 `λ₁、λ₂` 超參高度敏感，無穩定自動調整策略。  \n    - **補救**：提出基於驗證集梯度統計的自適應正則化係數調整機制，並加入跨語料的大規模預訓練/微調結果。  \n  - *計算資源*：即使參數減半，仍需兩次矩陣乘法；序列長度 >10⁵ 時記憶體與時間超出 24 GB GPU。報告 8 h 50k 步基於 RTX 4090。  \n    - **補救**：採用分段卷積、混合精度（FP16+BF16）與動態時間步長裁剪；提供「梯度累積+模型並行」腳本，支持 1–2 張 24 GB GPU 完成 100k 步。  \n  - *是否真優於 SOTA*：基準選取易收斂任務，未包含長文生成或實時音訊流；提升 1.5–2% 可能因 batch size 或訓練步數差異。缺乏與 Mamba‑X、S4‑Long 等最新基線直接對照。  \n    - **補救**"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究痛點與背景**  \n- 超長序列（≥10⁵）在語音、影片、程式碼等領域日益重要。  \n- 目前 H‑SSM 兩大瓶頸：  \n  1. 各層核獨立學習 → 參數爆炸、記憶體高。  \n  2. 無動態層深度調度 → 在資訊緩慢變化區段仍全層計算，能耗不成比例。  \n- 相關工作：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling*（Yuan Chen，ICLR 2026）未提供參數共享。  \n  - *Gated Delta Networks for Efficient Sparse Sequence Modeling*（Kai Liu，ICML 2025）僅在小規模稀疏序列驗證。  \n\n**核心研究方法 – AHKS‑SDS**  \n- **低秩核共享**：所有層共享基礎核 `U·Vᵀ`，每層僅學習縮放向量 `s_l`。  \n- **隨機層深度調度**：  \n  - 計算隱狀態變化率 `Δ_l = ‖h_{l-1}−h_{l-2}‖`。  \n  - 跳躍概率 `p_l = σ(α·Δ_l + β)`，伯努利抽樣決定是否執行層。  \n- **前向流程**：  \n  - 若 `g_l=1` → 生成層級核 `K_l = diag(s_l)·U·Vᵀ` → 更新隱狀態 `h_l` → 門控輸出。  \n  - 若 `g_l=0` → 直接 `h_l = h_{l-1}`。  \n- **訓練目標**：交叉熵 / MSE + 正則化（KL、Frobenius、跳躍期望）。  \n\n**創新點**  \n- 首次結合低秩核共享與層級縮放，解決參數膨脹。  \n- 基於隱"
+      "summary": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：測試時計算資源與推理深度的縮放律**  \n  - *核心問題*：缺乏系統化實驗與理論框架說明推理時 FLOPs、延遲與推理深度、正確率之間的指數/多項式關係；現有工作多聚焦於訓練階段。  \n  - *代表論文*：  \n    - 《Test‑Time Compute Scaling for Large Language Models》 (Alex Kim, NeurIPS 2025)  \n    - 《Adaptive Inference for Reasoning Transformers》 (Priya Patel, ICLR 2026)  \n    - 《Scaling Laws for Inference‑Time Reasoning Accuracy》 (arXiv:2503.01427, 2025)  \n  - *技術挑戰*：  \n    - 在不改變模型參數的前提下，動態調整推理步數/迭代次數以符合算力限制。  \n    - 缺乏可比較的基準測試集與度量標準，導致縮放曲線難以統一評估。  \n\n- **主題二：遞迴式自我提升與自我蒸餾的可行性**  \n  - *核心問題*：自我提升機制僅有少數原型實驗，缺乏對「自我增長」是否穩定或發散的系統性分析；在大規模模型上尚未證明可擴展。  \n  - *代表論文*：  \n    - 《Self‑Play for Language Model Self‑Improvement》 (David Liu, ICML 2025)  \n    - 《Bootstrapped Self‑Improvement via Recursive Distillation》 (Emily Chen, ICLR 2026)  \n    - 《Iterative Self‑Refinement of Reasoning Capabilities》 (arXiv:2509.04112, 2025)  \n  - *技術挑戰*：  \n    - 設計可靠自我評估指標，避免自我迭代中產生偏差或幻"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
