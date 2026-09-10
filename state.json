@@ -1,6 +1,6 @@
 {
   "date": "2026-09-10",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**核心研究方向**  \n- 研究主題：多尺度階層式狀態空間模型（H‑SSM）  \n- 已於 ICLR 2026、NeurIPS 2025、arXiv 2025 公開原始碼，成熟度足以讓研究生自行復現；仍缺乏層級參數共享、動態尺度調整與長序列穩定性之理論與實驗支撐。\n\n**主要方法族群**  \n- **Hierarchical State‑Space Model (H‑SSM)** – Chen 等 (ICLR 2026)：多層 SSM 堆疊，跨層注意力門控自動選擇粗/細時間步長。  \n- **Multi‑Scale Mamba** – Gupta 等 (NeurIPS 2025)：結合 Mamba 卷積式狀態轉移，根據頻譜能量自適應調整層級深度、核長。  \n- **Progressive Kernel Learning SSM (PKL‑SSM)** – Liu 等 (arXiv:2504.1123)：逐層預訓練核函數，稀疏線性組合實現參數共享與計算量減半。\n\n**模型架構要點**  \n- 輸入：長序列向量（長度≥10⁵）。  \n- 輸出：任務對應標籤、隱向量或生成結果。  \n- 重要模組：  \n  - 層級狀態空間單元（A_l, B_l, C_l）。  \n  - 跨層門控（類 GRU），決定粗粒度狀態是否傳遞。  \n  - 可變步長調度器，根據隱狀態變化率選擇 Δt_l。  \n- 訓練目標：自回歸語言模型→交叉熵；序列分類→交叉熵+KL；序列重建→MSE+L1。\n\n**訓練策略**  \n- 資料：文字使用 The Pile / OpenWebText；音訊/視訊使用 AudioSet / Kinetics‑700。  \n- Batch：單卡 8‑16 序列，梯度累"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3 – 創新方法概覽（300–500字）**\n\n- **方案 1：動態層級核共享 (AHKS)**\n  - **核心概念**：將多層 H‑SSM 的核矩陣拆成共享低秩基礎核 \\(K_{\\text{base}}=U\\,V^\\top\\) 與可學習層級縮放向量 \\(s_l\\)，即 \\(K_l=\\operatorname{diag}(s_l)\\,U\\,V^\\top\\)。  \n  - **技術要點**  \n    - 嵌入層 → \\(L\\) 層 SSM；每層只需學一次 \\(U,V\\) 及各自 \\(s_l\\)。  \n    - 交叉熵 + λ₁ KL(層間分布相似) + λ₂ 低秩正則化（Frobenius 範數）。  \n  - **與 SOTA 差異**：改寫 Multi‑Scale Mamba 的「每層獨立核」為「共享低秩核＋層級縮放」。  \n  - **預期效益**：參數量減半、GPU 記憶使用下降 30%，Long‑Range Arena (ListOps、PathX) 精度提升 1.5–2%。  \n  - **MVP**：3 層、隱藏 512、秩 64；RTX 4090 8 h 50k 步訓練。\n\n- **方案 2：隨機層深度調度 (SDS‑SSM)**\n  - **核心概念**：根據隱狀態變化率 \\(\\Delta=\\|h_l-h_{l-1}\\|\\) 產生跳躍概率 \\(p_l=\\sigma(\\alpha\\Delta+\\beta)\\)，以伯努利抽樣決定是否執行層 \\(l\\)。  \n  - **技術要點**  \n    - 初期高溫 Softmax 使"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
