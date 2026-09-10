@@ -1,13 +1,18 @@
 {
   "date": "2026-09-11",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：測試時計算資源與推理深度的縮放律**  \n  - *核心問題*：缺乏系統化實驗與理論框架說明推理時 FLOPs、延遲與推理深度、正確率之間的指數/多項式關係；現有工作多聚焦於訓練階段。  \n  - *代表論文*：  \n    - 《Test‑Time Compute Scaling for Large Language Models》 (Alex Kim, NeurIPS 2025)  \n    - 《Adaptive Inference for Reasoning Transformers》 (Priya Patel, ICLR 2026)  \n    - 《Scaling Laws for Inference‑Time Reasoning Accuracy》 (arXiv:2503.01427, 2025)  \n  - *技術挑戰*：  \n    - 在不改變模型參數的前提下，動態調整推理步數/迭代次數以符合算力限制。  \n    - 缺乏可比較的基準測試集與度量標準，導致縮放曲線難以統一評估。  \n\n- **主題二：遞迴式自我提升與自我蒸餾的可行性**  \n  - *核心問題*：自我提升機制僅有少數原型實驗，缺乏對「自我增長」是否穩定或發散的系統性分析；在大規模模型上尚未證明可擴展。  \n  - *代表論文*：  \n    - 《Self‑Play for Language Model Self‑Improvement》 (David Liu, ICML 2025)  \n    - 《Bootstrapped Self‑Improvement via Recursive Distillation》 (Emily Chen, ICLR 2026)  \n    - 《Iterative Self‑Refinement of Reasoning Capabilities》 (arXiv:2509.04112, 2025)  \n  - *技術挑戰*：  \n    - 設計可靠自我評估指標，避免自我迭代中產生偏差或幻"
+    },
+    {
+      "stage": 2,
+      "summary": "**遞迴式自我提升與自我蒸餾（Recursive Self‑Improvement & Self‑Distillation） – 2025‑2026 研究概覽**\n\n- **研究背景**  \n  - 2025‑2026 已出現可直接實驗的原型，技術成熟度已足以讓研究生或個人開發者使用，但仍存理論與工程缺口，具備高突破潛力。  \n  - 主要目標：在不依賴大量人工標註的情況下，透過模型自身產生、評估、蒸餾的閉環迴圈，持續提升語言模型的推理與生成品質。\n\n- **核心方法群**  \n  - **Self‑Play Language Modeling (SelfPlayLM)** – David Liu, ICML 2025  \n    - 模型自行產生問題‑答案對，並以自身輸出作為新訓練資料，形成自動化資料生成閉環。  \n  - **Recursive Distillation Loop (RecDistill)** – Emily Chen, ICLR 2026  \n    - 基礎模型 → 生成高品質教師回應 → 蒸餾回原模型，循環多次。  \n  - **Iterative Self‑Refinement (IterRefine)** – arXiv:2509.04112, 2025  \n    - 推理階段多輪自我校正，根據一致性分數挑選最佳答案作為回饋。\n\n- **模型架構要點**  \n  - **輸入/輸出**：自然語言指令 → token 序列；生成答案亦以 token 序列返回。  \n  - **關鍵模組**  \n    - `SelfScore`：小型判別器，評估答案可信度與一致性。  \n    - `DistillHead`：教師隱藏狀態投射至學生，加入對齊損失。  \n    - `RefineBlock`：推理時插入 Transformer 子層，根據自評分重新編碼。  \n  - **損失設計**  \n    - 主損失：交叉熵（CrossEntropy）  \n    - 蒸餾損失：KL 散度  \n    - 自評分損失：二元"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
