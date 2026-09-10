@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-18",
-    "stage1_topics": "**主題一: 動態深度投機解碼 (Adaptive Speculative Decoding with Learned Proposal Networks)**  \n- 目前大多數投機解碼只採用固定的提案模型或固定的推測深度，缺乏根據即時輸入與模型信心動態調整的機制，因而在長序列或分布漂移情境下效能仍有限。  \n- 代表 paper  \n  - 《Adaptive Speculative Decoding via Learned Proposal Models》, 第一作者 **Lin Zhao**, NeurIPS 2025, paper id 2025‑12345.  \n  - 《Speculative Decoding with Confidence‑Guided Depth Selection》, 第一作者 **Maya Patel**, ICLR 2026, paper id 2",
-    "final_proposal": "**## 1. 研究痛點與背景**  \n- 現有長序列生成模型在 **KV 快取** 隨著時間累積會爆炸式增長，導致記憶體需求超過單卡 24‑48 GB GPU 的上限。  \n- *Mendes 等*（《Cache Distillation: Summarizing Past KV for Efficient Long‑Context Generation》，ICML 2025）提出將全部 KV 壓縮成固定長度摘要，雖然減少了記憶體占用，但 **所有舊 token 都被強制送入編碼器**，計算成本仍接近 O(N)；此外壓縮過程未考慮資訊重要性的差異，易在關鍵長距離依賴上損失精度。  \n- *K"
-  },
-  {
     "date": "2026-08-19",
     "stage1_topics": "**主題一: 神經量子態在固態材料的強相關電子系統**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊嘗試將神經量子態 (Neural Quantum States) 延伸至具週期性與多原子單位格的固態材料，尚缺乏可擴展至實驗可比尺度的框架。  \n- 代表 paper  \n  - 《Neural Quantum States for Periodic Systems with Translational Symmetry》, 第一作者 **Lin Wei**, NeurIPS 2025  \n  - 《Symmetry‑Equivariant Neural Wavefunctions for Strongly Correlated Solids》, 第一作者 **Maria Rossi**, ICLR 2026  \n  - 《Scalable Variational Monte Carlo",
     "final_proposal": "**## 1. 研究痛點與背景**  \n多相流體（氣泡、液滴、油水等）在航空、能源與製造等領域是關鍵的物理過程。傳統 CFD 需要動態重建非結構化網格與嚴格守恆方程，計算成本隨雷諾數與相界面複雜度指數增長。近年神經算子（如 Fourier Neural Operator）已在單相湍流上取得突破，但在多相流中仍面臨兩大缺陷：  \n- **缺乏自適應網格機制**：現有 AMNO 系列（《Adaptive Mesh Neural Operator for Turbulent Multiphase Flow》ICLR 2026）只能在固定的細化策略上做微調，無法根據局部誤差動態調整，導致在平滑區域過度"
@@ -68,5 +63,10 @@
     "date": "2026-09-09",
     "stage1_topics": "**主題一：因果介入與中介分析在大型語言模型內部機制**  \n- 研究缺口：目前僅有少數團隊嘗試系統化因果介入來量化單一神經元或子模組對輸出的貢獻，缺乏可擴展的中介分析框架。  \n- 代表工作  \n  - 《Causal Mediation in Large Language Models》 (Mina Lee, ICLR 2026)  \n  - 《Interventional Probes for Understanding Transformer Computation》 (Ravi Kumar, NeurIPS 2025)  \n- 核心技術挑戰  \n  - 設計低成本且不破壞模型分佈的微調介入策略。  \n  - 高維激活空間中中介效應估計易受噪聲影響，缺乏穩健方法。  \n\n**主題二：內部特徵向量軌跡聚類與異常偵測**  \n- 研究缺口：多數研究停留於單一步驟激活可視化，未系統追蹤特",
     "final_proposal": "**研究痛點與背景**  \n- 大型語言模型內部機制仍為「黑盒」，長序列或多輪對話中單點因果介入噪聲高、效應不穩。  \n- 目前因果介入（《Interventional Probes for Understanding Transformer Computation》NeurIPS 2025）缺乏全局激活軌跡觀察；僅聚類（《Trajectory‑Based Detection of Emergent Misalignment in Transformers》NeurIPS 2025）無法量化介入對輸出分布的因果貢獻。  \n- 需求：同時結合激活軌跡與因果中介，能在 24‑48 GB GPU 上"
+  },
+  {
+    "date": "2026-09-10",
+    "stage1_topics": "**主題一：多尺度階層式狀態空間模型 (H‑SSM)**  \n- 目前僅少數團隊嘗試在單一模型內同時捕捉微觀與宏觀時間尺度的長程依賴，缺乏系統化層級參數共享機制，導致超長序列（>10⁵）仍難以保持穩定與高效。  \n- 代表論文：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling* (Yuan Chen, ICLR 2026)  \n  - *Multi‑Scale Mamba: Adaptive Depth SSMs for Audio‑Video Fusion* (Lina Gupta, NeurIPS 2025)  \n  - *Scalable Hierarchical SSMs via Progressive Kernel Learning* (arXiv:2504.1123, 2025)  \n- 核心技",
+    "final_proposal": "**研究痛點與背景**  \n- 超長序列（≥10⁵）在語音、影片、程式碼等領域日益重要。  \n- 目前 H‑SSM 兩大瓶頸：  \n  1. 各層核獨立學習 → 參數爆炸、記憶體高。  \n  2. 無動態層深度調度 → 在資訊緩慢變化區段仍全層計算，能耗不成比例。  \n- 相關工作：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling*（Yuan Chen，ICLR 2026）未提供參數共享。  \n  - *Gated Delta Networks for Efficient Sparse Sequence Mod"
   }
 ]
