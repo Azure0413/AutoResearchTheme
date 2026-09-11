@@ -1,6 +1,6 @@
 {
   "date": "2026-09-11",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：Budget‑Aware Adaptive Depth (BAD)**\n  - 核心：即時算力預算決定 Transformer 迭代次數，避免不必要深度推理。  \n  - 技術：每迭代後加入單層 MLP `BudgetGate`，輸出剩餘算力指標 `b_t`；若 `b_t < τ` 則提前終止。  \n  - 損失：交叉熵 + α·迭代次數 + β·BudgetGate 二元交叉熵。  \n  - 與 SOTA 差異：《Adaptive Inference for Reasoning Transformers》使用靜態門檻，BAD 轉為全局算力感知。  \n  - 預期：MMLU、GSM‑8K 上算力效率提升 12%，正確率提升 2.8%。  \n  - MVP：7B Llama‑2 + MMLU 5領域 + 1k GSM‑8K，單張 RTX 4090。\n\n- **方案 2：Iterative Self‑Scored Distillation (ISD)**\n  - 核心：自產可信度分數 `score` 作為蒸餾權重，過濾低品質答案。  \n  - 技術：`SelfScoreHead` 產生 0‑1 分數；`WeightedDistillLoss` 乘以 `score`。  \n  - 損失：交叉熵 + Σ(score·KL)。  \n  - 與 SOTA 差異：《Recursive Distillation Loop》對所有樣本等權重，ISD 加權。  \n  - 預期：TruthfulQA、OpenAI‑Evals 真實性提升 4–5%。  \n  -"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4：嚴格自我批判（方案 1 vs 方案 2）**  \n\n- **方案 1：BudgetGate**  \n  - *理論假設*：即時算力預算映射推理深度，忽略多輪推理波動。  \n    - **補救**：加入前瞻式算力預測網路（如小型 LSTM），預估未來 FLOPs。  \n  - *資料與訓練可行性*：僅 7B Llama‑2、少量領域測試；門檻 τ 敏感。  \n    - **補救**：在 XStory、MMLU‑All 等多語言基準做系統性 ablation，採用自適應 τ。  \n  - *計算資源*：額外前向/反向傳播，24 G VRAM 仍易 OOM，長序列更難。  \n    - **補救**：使用梯度檢查點、分段推理，提供 24 G 低資源腳本。  \n  - *是否真優於 SOTA*：基準僅 MMLU 五子領域＋1k GSM‑8K，12% 效率、2.8% 正確率提升可能因 cherry‑pick。  \n    - **補救**：重新評估完整 MMLU、ARC‑Challenge、BIG‑Bench，並做統計顯著性檢驗。  \n  - *失敗模式*：噪聲或對抗輸入易導致過早截斷，產生不完整答案。  \n    - **補救**：設安全回退機制，低 b_t 時切換完整深度或檢查句子結束符。  \n\n- **方案 2：Self‑ScoreHead + 迴圈蒸餾**  \n  - *理論假設*：自評分能可靠衡量答案品質，存在循環偏差。  \n    - **補救**：加入外部真實性判別器或對抗樣本提升辨識力。  \n  - *"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
