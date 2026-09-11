@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-19",
-    "stage1_topics": "**主題一: 神經量子態在固態材料的強相關電子系統**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊嘗試將神經量子態 (Neural Quantum States) 延伸至具週期性與多原子單位格的固態材料，尚缺乏可擴展至實驗可比尺度的框架。  \n- 代表 paper  \n  - 《Neural Quantum States for Periodic Systems with Translational Symmetry》, 第一作者 **Lin Wei**, NeurIPS 2025  \n  - 《Symmetry‑Equivariant Neural Wavefunctions for Strongly Correlated Solids》, 第一作者 **Maria Rossi**, ICLR 2026  \n  - 《Scalable Variational Monte Carlo",
-    "final_proposal": "**## 1. 研究痛點與背景**  \n多相流體（氣泡、液滴、油水等）在航空、能源與製造等領域是關鍵的物理過程。傳統 CFD 需要動態重建非結構化網格與嚴格守恆方程，計算成本隨雷諾數與相界面複雜度指數增長。近年神經算子（如 Fourier Neural Operator）已在單相湍流上取得突破，但在多相流中仍面臨兩大缺陷：  \n- **缺乏自適應網格機制**：現有 AMNO 系列（《Adaptive Mesh Neural Operator for Turbulent Multiphase Flow》ICLR 2026）只能在固定的細化策略上做微調，無法根據局部誤差動態調整，導致在平滑區域過度"
-  },
-  {
     "date": "2026-08-20",
     "stage1_topics": "**主題一: 自我監督的程序化技能發現與組合**  \n- 為何不飽和但有突破潛力：目前只有零星工作嘗試在無標註環境中自動發掘可重複使用的「程序化」技能，且缺乏系統化的技能組合機制，使得長期開放式任務的學習仍受限。  \n- 代表 paper  \n  - 《Procedural Skill Discovery via Predictive World Models》, 第一作者 **Yuan Liu**, NeurIPS 2025  \n  - 《Compositional Skill Graphs for Reinforcement Learning》, 第一作者 **Anita Patel**, ICLR 2026  \n  - 《Unsupervised Action Segmentation for Open‑Ended Agents》, arXiv:2509.01432, 2025  \n",
     "final_proposal": "**## 1. 研究痛點與背景**  \n- **重要性**：在開放式機器人與虛擬代理任務中，工具的自動設計與即時使用是突破長期自主性的關鍵。若代理只能使用預先定義好的工具，將無法應對環境變化或未知任務。  \n- **現有缺陷**：  \n  - 《Differentiable Physics‑Based Tool Synthesis for Agents》 (Kim 2025) 只能在單一連續向量空間中搜尋工具，缺乏結構化的類型選擇，導致搜尋效率低下。  \n  - 《Zero‑Shot Tool Invention via Latent Program Induction》 (Zhou 2026"
@@ -68,5 +63,10 @@
     "date": "2026-09-10",
     "stage1_topics": "**主題一：多尺度階層式狀態空間模型 (H‑SSM)**  \n- 目前僅少數團隊嘗試在單一模型內同時捕捉微觀與宏觀時間尺度的長程依賴，缺乏系統化層級參數共享機制，導致超長序列（>10⁵）仍難以保持穩定與高效。  \n- 代表論文：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling* (Yuan Chen, ICLR 2026)  \n  - *Multi‑Scale Mamba: Adaptive Depth SSMs for Audio‑Video Fusion* (Lina Gupta, NeurIPS 2025)  \n  - *Scalable Hierarchical SSMs via Progressive Kernel Learning* (arXiv:2504.1123, 2025)  \n- 核心技",
     "final_proposal": "**研究痛點與背景**  \n- 超長序列（≥10⁵）在語音、影片、程式碼等領域日益重要。  \n- 目前 H‑SSM 兩大瓶頸：  \n  1. 各層核獨立學習 → 參數爆炸、記憶體高。  \n  2. 無動態層深度調度 → 在資訊緩慢變化區段仍全層計算，能耗不成比例。  \n- 相關工作：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling*（Yuan Chen，ICLR 2026）未提供參數共享。  \n  - *Gated Delta Networks for Efficient Sparse Sequence Mod"
+  },
+  {
+    "date": "2026-09-11",
+    "stage1_topics": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：測試時計算資源與推理深度的縮放律**  \n  - *核心問題*：缺乏系統化實驗與理論框架說明推理時 FLOPs、延遲與推理深度、正確率之間的指數/多項式關係；現有工作多聚焦於訓練階段。  \n  - *代表論文*：  \n    - 《Test‑Time Compute Scaling for Large Language Models》 (Alex Kim, NeurIPS 2025)  \n    - 《Adaptive Inference for Reasoning Transformers》 (Priya Patel, ICLR 2026)  \n    - 《Scaling Laws for Inference‑Time Reasoning Accuracy》 (arXiv:2503.01427, 202",
+    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 大型語言模型推理需固定深度與算力，單張 24‑48 GB GPU 無法兼顧效能與成本。  \n  - 現有自我蒸餾方法對所有生成樣本等權重，噪聲樣本會削弱提升效果。  \n  - 缺乏同時考慮算力預算與答案品質的閉環迴圈。\n\n- **核心方法：Budget‑Aware Self‑Scored Adaptive Distillation (BASAD)**  \n  - **SelfScoreHead**：在每層輸出 0‑1 的可信度分數。  \n  - **BudgetGate**：根據剩餘 FLOPs 預算 `B_max` 動"
   }
 ]
