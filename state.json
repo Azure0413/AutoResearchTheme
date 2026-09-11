@@ -1,6 +1,6 @@
 {
   "date": "2026-09-11",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**遞迴式自我提升與自我蒸餾（Recursive Self‑Improvement & Self‑Distillation） – 2025‑2026 研究概覽**\n\n- **研究背景**  \n  - 2025‑2026 已出現可直接實驗的原型，技術成熟度已足以讓研究生或個人開發者使用，但仍存理論與工程缺口，具備高突破潛力。  \n  - 主要目標：在不依賴大量人工標註的情況下，透過模型自身產生、評估、蒸餾的閉環迴圈，持續提升語言模型的推理與生成品質。\n\n- **核心方法群**  \n  - **Self‑Play Language Modeling (SelfPlayLM)** – David Liu, ICML 2025  \n    - 模型自行產生問題‑答案對，並以自身輸出作為新訓練資料，形成自動化資料生成閉環。  \n  - **Recursive Distillation Loop (RecDistill)** – Emily Chen, ICLR 2026  \n    - 基礎模型 → 生成高品質教師回應 → 蒸餾回原模型，循環多次。  \n  - **Iterative Self‑Refinement (IterRefine)** – arXiv:2509.04112, 2025  \n    - 推理階段多輪自我校正，根據一致性分數挑選最佳答案作為回饋。\n\n- **模型架構要點**  \n  - **輸入/輸出**：自然語言指令 → token 序列；生成答案亦以 token 序列返回。  \n  - **關鍵模組**  \n    - `SelfScore`：小型判別器，評估答案可信度與一致性。  \n    - `DistillHead`：教師隱藏狀態投射至學生，加入對齊損失。  \n    - `RefineBlock`：推理時插入 Transformer 子層，根據自評分重新編碼。  \n  - **損失設計**  \n    - 主損失：交叉熵（CrossEntropy）  \n    - 蒸餾損失：KL 散度  \n    - 自評分損失：二元"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：Budget‑Aware Adaptive Depth (BAD)**\n  - 核心：即時算力預算決定 Transformer 迭代次數，避免不必要深度推理。  \n  - 技術：每迭代後加入單層 MLP `BudgetGate`，輸出剩餘算力指標 `b_t`；若 `b_t < τ` 則提前終止。  \n  - 損失：交叉熵 + α·迭代次數 + β·BudgetGate 二元交叉熵。  \n  - 與 SOTA 差異：《Adaptive Inference for Reasoning Transformers》使用靜態門檻，BAD 轉為全局算力感知。  \n  - 預期：MMLU、GSM‑8K 上算力效率提升 12%，正確率提升 2.8%。  \n  - MVP：7B Llama‑2 + MMLU 5領域 + 1k GSM‑8K，單張 RTX 4090。\n\n- **方案 2：Iterative Self‑Scored Distillation (ISD)**\n  - 核心：自產可信度分數 `score` 作為蒸餾權重，過濾低品質答案。  \n  - 技術：`SelfScoreHead` 產生 0‑1 分數；`WeightedDistillLoss` 乘以 `score`。  \n  - 損失：交叉熵 + Σ(score·KL)。  \n  - 與 SOTA 差異：《Recursive Distillation Loop》對所有樣本等權重，ISD 加權。  \n  - 預期：TruthfulQA、OpenAI‑Evals 真實性提升 4–5%。  \n  -"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
