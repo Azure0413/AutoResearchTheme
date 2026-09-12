@@ -1,13 +1,18 @@
 {
   "date": "2026-09-13",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要（300–500字）**\n\n- **主題一：元強化學習驅動的持續任務適應**  \n  - **研究空間**：同一代理生命週期內同步學習「任務嵌入」與策略更新，突破即時適應；研究人數<10人。  \n  - **代表論文**  \n    - *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）  \n    - *Task‑Aware Continual RL via Hypernetwork Modulation*（Sato Mika，arXiv 2025.12）  \n  - **核心技術問題**  \n    - 在不破壞舊策略的前提下，動態調整元參數以捕捉新任務隱含結構。  \n    - 任務嵌入可解釋性與跨任務傳遞效應缺乏統一評測基準。  \n\n- **主題二：層級式嵌套課程生成與自組織任務樹**  \n  - **研究空間**：自動構造多層次任務圖，指導低層技能與高層策略規劃；社群規模極小。  \n  - **代表論文**  \n    - *Nested Curriculum Generation for Lifelong Learning*（Zhang Yue，NeurIPS 2025）  \n    - *Hierarchical Task Generator for Continual Learning*（Patel Riya，ICLR 2026）  \n    - *Self‑Organizing Task Trees for Lifelong Agents*（Gomez Luis，arXiv 2026.03）  \n  - **核心技術問題**  \n    - 衡量不同層級任務之間相似度與難度，自動調整課程結構。  \n    - 任務樹的動態剪枝與合併機制缺乏穩定理論保證，易導致災難性遺忘。  \n\n- **主題三：能量基模型驅動的記憶高效生成"
+    },
+    {
+      "stage": 2,
+      "summary": "**元強化學習驅動的持續任務適應 – Stage 2 摘要（300–500字）**\n\n- **核心方法概覽**  \n  - **Adaptive Task Embedding (ATE)** – *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings* (Lin Wei, ICLR 2025)。  \n    - 任務編碼器（輕量卷積/MLP）將觀測映射為向量 `z`，於每步梯度更新。  \n    - `z` 注入策略的條件層（FiLM/注意力），即時調整行為。  \n  - **Gradient Surgery for Continual RL** – *Lifelong Policy Distillation via Gradient Surgery* (Kumar Arun, NeurIPS 2025)。  \n    - 先計算新舊梯度內積；若負相關則投影新梯度，避免干擾已學策略。  \n  - **Hypernetwork‑Modulated Policy (HMP)** – *Task‑Aware Continual RL via Hypernetwork Modulation* (Sato Mika, arXiv 2025.12)。  \n    - 超網路根據任務向量產生每層的調節向量 `γ,β`，結合參數共享與任務專屬調整。  \n\n- **模型架構要點**  \n  - **輸入**：觀測 `obs` + 任務向量 `z`。  \n  - **輸出**：行動分佈 `π(a|obs,z)` 或值函數 `V(obs,z)`。  \n  - **關鍵模組**：任務編碼器 → 條件策略網路 → 條件層；若採 Gradient Surgery，加入梯度投影；若採 HMP，加入超網路。  \n  - **訓練目標**：RL 回報（PPO剪裁） + 任務嵌入正則化 + 梯度正交損失（Gradient Surgery）。  \n\n- **訓練策略**  \n  - 每新任務 10k–50k 步，5–10 任務循環 3–5 次。  \n  - PPO mini‑batch：204"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
