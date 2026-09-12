@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-12",
-  "step": 6,
+  "date": "2026-09-13",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一：因果物件中心世界模型 (Causal Object‑Centric World Models)**  \n- **市場空缺**：目前僅有零星研究在無監督 slot‑based 表徵中同時學習因果關係，缺乏系統化因果圖結構與可操作的反事實推理機制。  \n- **代表論文**：  \n  - 《Causal Slot Attention for Interactive Agents》 (Hao Zhang, ICLR 2026)  \n  - 《Counterfactual Object‑Centric World Modeling》 (Lina Petrov, NeurIPS 2025)  \n  - 《Learning Latent Causal Graphs for Robotic Manipulation》 (Ravi Kumar, arXiv 2025.04)  \n- **核心技術挑戰**：  \n  - 在高維視覺輸入中自動辨識因果邊並保持物件槽穩定性。  \n  - 反事實 roll‑out 的梯度傳遞在非線性因果結構下易失穩。  \n  - 缺乏有效正則化手段，導致跨場景因果圖遷移與通用化困難。  \n\n**主題二：圖神經動力學驅動的長時序視頻預測 (Graph‑Neural Dynamics for Long‑Horizon Video Forecasting)**  \n- **市場空缺**：雖已用圖神經網路做短期動作預測，但在 10 秒以上、變速率連續視頻中同時保留細節與全局動態的模型仍極少。  \n- **代表"
-    },
-    {
-      "stage": 2,
-      "summary": "**因果物件中心世界模型 (Causal Object‑Centric World Models) 2025‑2026 研究概覽**  \n\n- **核心方法**  \n  - *Causal Slot Attention* (ICLR 2026)：Slot Attention + 可微分因果圖層，估計父子關係。  \n  - *Counterfactual Object‑Centric World Modeling* (NeurIPS 2025)：雙向圖卷積 + 生成式解碼器，執行反事實干預。  \n  - *Learning Latent Causal Graphs for Robotic Manipulation* (arXiv 2025.04)：VAE + 稀疏 KL 正則化，學習隱式因果圖。  \n\n- **模型架構**  \n  - 輸入：RGB/深度序列 + 動作訊號。  \n  - 輸出：物件槽向量、潛在因果圖、反事實畫面。  \n  - 重要模組：`slot_encoder`（卷積+Slot Attention）、`causal_graph_module`（Gumbel‑Softmax）、`counterfactual_decoder`（VAE‑decoder）。  \n\n- **訓練策略**  \n  - 資料：10‑30 h 合成場景或 100k 真實框架。  \n  - 優化器：AdamW，LR 1e‑4，cosine decay。  \n  - 損失：`L_total = L_recon + λ1·L_KL_graph + λ2·L_counterfactual`，加梯度裁剪、隨機裁剪、EMA。  \n\n- **Benchmark**  \n  - CLEVR‑Physics：因果邊精度 0.78，PSNR 28 dB（SOTA）。  \n  - Meta‑World：成功率提升 12%，圖結構召回率。  \n  - RoboDesk：跨場景因果遷移 F1。  \n\n- **優劣比較**  \n  - *Causal Slot Attention*：端到端、槽穩定；缺點：Gumbel‑Softmax 噪聲、跨場景稀疏度調整差。  \n  - *Counterfactual O‑CWM*：解釋性強、真實資料成功率高；缺點：需干"
-    },
-    {
-      "stage": 3,
-      "summary": "**方案 1：因果插值槽回饋 (CISF)**  \n- 核心：在 *Causal Slot Attention*（ICLR 2026）中，將由 Gumbel‑Softmax 產生的因果鄰接矩陣 `E_t` 用於插值槽 `\\tilde s_t^k = λ·s_t^k + (1‑λ)·Σ_j E_t^{kj}·s_t^j`，即槽表徵同時受觀測與因果結構影響。  \n- 技術要點：加入插值回饋層、插值一致性損失 `L_int`，並保持原有重建與稀疏正則。  \n- 預期：在 CLEVR‑Physics 上因果邊精度從 0.78 提升至 0.84；Meta‑World 成功率提升 6%。MVP：10k CLEVR 影片、6M 參數、RTX‑4090 12 h/50 epoch。\n\n**方案 2：時間分"
-    },
-    {
-      "stage": 4,
-      "summary": "**方案 1 批判與補救**  \n- **理論假設失效**：假設單步 Gumbel‑Softmax 能精確捕捉因果鄰接 `E_t`，但高噪聲/遮擋下易產生偽邊。  \n  - 補救：加入稀疏圖先驗或物理不變性正則化，並用圖結構驗證集過濾不合理邊。  \n- **資料與訓練可行性不足**：僅用 10k CLEVR 影片，樣本多樣性低；插值一致性損失 `L_int` 與重建損失梯度衝突。  \n  - 補救：擴充至 Meta‑World、RoboDesk 等真實場景，採分階段訓練與梯度正交化。  \n- **計算資源瓶頸**：插值槽回饋需 O(K²) 計算，12‑16 槽在 64‑128 帧長序列上 VRAM 爆炸。  \n  - 補救：使用稀疏鄰接或 Top‑M 注意力降至 O(K·M)，結合混合精度與梯度累積。  \n- **SOTA 比較不充分**：因果邊精度提升 0.78→0.84 只在 CLEVR‑Physics，未在 PHYRE、Real‑World Robotic Benchmarks 上驗證。  \n  - 補救：同步多公開基準報告，加入統計顯著性測試。  \n- **失效模式**：循環或長程依賴時插值槽訊"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究痛點與背景**  \n- 目前因果物件中心模型（*Causal Slot Attention* ICLR 2026、*Counterfactual O‑CWM* NeurIPS 2025）雖能抽取物件槽，但  \n  1. 因果圖稀疏度與穩定性不足（如 *Learning Latent Causal Graphs for Robotic Manipulation* arXiv 2025.04）。  \n  2. 反事實 roll‑out 計算 O(K²)，長序列易超過 48 GB GPU。  \n  3. 缺乏可操作的跨域正則化，物理不變性難保證。\n\n**核心方法：CISF‑SGR**  \n- **稀疏圖先驗 + 物理不變性正則**：在 `causal_graph_module` 加入 L1 稀疏化與「動作不變」損失 `L_phys`，確保圖在不同干預下結構一致。  \n- **插值槽回饋**：利用 `E_t` 的 Top‑M 邊加權混合相鄰槽，產生插值槽 `s̃_t`，計算量降至 O(K·M)。  \n- **演算法流程**：  \n  1. RGB‑Depth → `slot_encoder` → `s_t`。  \n  2. Gumbel‑Softmax 產生 `Ē_t`，加 L1 + `L_phys`。  \n  3. Top‑M 篩選 → `E_t`。  \n  4. 計算 `s̃_t`，加入一致性損失 `L_int`。  \n  5. `s̃_t` + `E_t` → `counterfactual_decoder` 生成重建與反事實影像。  \n- **訓練目標**：`L_total = L_recon + λ1·L_KL_graph + λ2·L_int + λ3·L_phys`。\n\n**創新與差異**  \n- **演算法層**：Top‑M 稀疏注意力將 O(K²"
+      "summary": "**結構化摘要（300–500字）**\n\n- **主題一：元強化學習驅動的持續任務適應**  \n  - **研究空間**：同一代理生命週期內同步學習「任務嵌入」與策略更新，突破即時適應；研究人數<10人。  \n  - **代表論文**  \n    - *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）  \n    - *Task‑Aware Continual RL via Hypernetwork Modulation*（Sato Mika，arXiv 2025.12）  \n  - **核心技術問題**  \n    - 在不破壞舊策略的前提下，動態調整元參數以捕捉新任務隱含結構。  \n    - 任務嵌入可解釋性與跨任務傳遞效應缺乏統一評測基準。  \n\n- **主題二：層級式嵌套課程生成與自組織任務樹**  \n  - **研究空間**：自動構造多層次任務圖，指導低層技能與高層策略規劃；社群規模極小。  \n  - **代表論文**  \n    - *Nested Curriculum Generation for Lifelong Learning*（Zhang Yue，NeurIPS 2025）  \n    - *Hierarchical Task Generator for Continual Learning*（Patel Riya，ICLR 2026）  \n    - *Self‑Organizing Task Trees for Lifelong Agents*（Gomez Luis，arXiv 2026.03）  \n  - **核心技術問題**  \n    - 衡量不同層級任務之間相似度與難度，自動調整課程結構。  \n    - 任務樹的動態剪枝與合併機制缺乏穩定理論保證，易導致災難性遺忘。  \n\n- **主題三：能量基模型驅動的記憶高效生成"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
