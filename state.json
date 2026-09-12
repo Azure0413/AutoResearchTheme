@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**方案 1 批判與補救**  \n- **理論假設失效**：假設單步 Gumbel‑Softmax 能精確捕捉因果鄰接 `E_t`，但高噪聲/遮擋下易產生偽邊。  \n  - 補救：加入稀疏圖先驗或物理不變性正則化，並用圖結構驗證集過濾不合理邊。  \n- **資料與訓練可行性不足**：僅用 10k CLEVR 影片，樣本多樣性低；插值一致性損失 `L_int` 與重建損失梯度衝突。  \n  - 補救：擴充至 Meta‑World、RoboDesk 等真實場景，採分階段訓練與梯度正交化。  \n- **計算資源瓶頸**：插值槽回饋需 O(K²) 計算，12‑16 槽在 64‑128 帧長序列上 VRAM 爆炸。  \n  - 補救：使用稀疏鄰接或 Top‑M 注意力降至 O(K·M)，結合混合精度與梯度累積。  \n- **SOTA 比較不充分**：因果邊精度提升 0.78→0.84 只在 CLEVR‑Physics，未在 PHYRE、Real‑World Robotic Benchmarks 上驗證。  \n  - 補救：同步多公開基準報告，加入統計顯著性測試。  \n- **失效模式**：循環或長程依賴時插值槽訊"
+    },
+    {
+      "stage": 5,
+      "summary": "**研究痛點與背景**  \n- 目前因果物件中心模型（*Causal Slot Attention* ICLR 2026、*Counterfactual O‑CWM* NeurIPS 2025）雖能抽取物件槽，但  \n  1. 因果圖稀疏度與穩定性不足（如 *Learning Latent Causal Graphs for Robotic Manipulation* arXiv 2025.04）。  \n  2. 反事實 roll‑out 計算 O(K²)，長序列易超過 48 GB GPU。  \n  3. 缺乏可操作的跨域正則化，物理不變性難保證。\n\n**核心方法：CISF‑SGR**  \n- **稀疏圖先驗 + 物理不變性正則**：在 `causal_graph_module` 加入 L1 稀疏化與「動作不變」損失 `L_phys`，確保圖在不同干預下結構一致。  \n- **插值槽回饋**：利用 `E_t` 的 Top‑M 邊加權混合相鄰槽，產生插值槽 `s̃_t`，計算量降至 O(K·M)。  \n- **演算法流程**：  \n  1. RGB‑Depth → `slot_encoder` → `s_t`。  \n  2. Gumbel‑Softmax 產生 `Ē_t`，加 L1 + `L_phys`。  \n  3. Top‑M 篩選 → `E_t`。  \n  4. 計算 `s̃_t`，加入一致性損失 `L_int`。  \n  5. `s̃_t` + `E_t` → `counterfactual_decoder` 生成重建與反事實影像。  \n- **訓練目標**：`L_total = L_recon + λ1·L_KL_graph + λ2·L_int + λ3·L_phys`。\n\n**創新與差異**  \n- **演算法層**：Top‑M 稀疏注意力將 O(K²"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }

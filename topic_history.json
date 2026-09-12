@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-20",
-    "stage1_topics": "**主題一: 自我監督的程序化技能發現與組合**  \n- 為何不飽和但有突破潛力：目前只有零星工作嘗試在無標註環境中自動發掘可重複使用的「程序化」技能，且缺乏系統化的技能組合機制，使得長期開放式任務的學習仍受限。  \n- 代表 paper  \n  - 《Procedural Skill Discovery via Predictive World Models》, 第一作者 **Yuan Liu**, NeurIPS 2025  \n  - 《Compositional Skill Graphs for Reinforcement Learning》, 第一作者 **Anita Patel**, ICLR 2026  \n  - 《Unsupervised Action Segmentation for Open‑Ended Agents》, arXiv:2509.01432, 2025  \n",
-    "final_proposal": "**## 1. 研究痛點與背景**  \n- **重要性**：在開放式機器人與虛擬代理任務中，工具的自動設計與即時使用是突破長期自主性的關鍵。若代理只能使用預先定義好的工具，將無法應對環境變化或未知任務。  \n- **現有缺陷**：  \n  - 《Differentiable Physics‑Based Tool Synthesis for Agents》 (Kim 2025) 只能在單一連續向量空間中搜尋工具，缺乏結構化的類型選擇，導致搜尋效率低下。  \n  - 《Zero‑Shot Tool Invention via Latent Program Induction》 (Zhou 2026"
-  },
-  {
     "date": "2026-08-22",
     "stage1_topics": "**主題一：持續學習與動態專家增減的 MoE 架構**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊探索在同一模型生命週期內自動加入或移除專家，以應對新任務或概念漂移，研究人數仍在十人以下，缺乏系統化的評測基準。  \n- 代表 paper  \n  - 《Dynamic Expert Expansion for Continual Mixture‑of‑Experts», 第一作者 **Jia‑Wei Chen**, arXiv:2504.01873, 2025  \n  - 《Lifelong MoE: Adaptive Expert Pruning and Growth via Gradient‑Based Signals», 第一作者 **Mina Patel**, ICLR 2026, 2026  \n  - 《Continual MoE with Task‑Aware Expert",
     "final_proposal": "**## 1. 研究痛點與背景**  \n- **重要性**：隨著大型混合專家模型（Mixture‑of‑Experts, MoE）在語言與視訊領域的參數規模突破千億，如何在保持高效推理的同時保證模型在概念漂移、噪聲與資源受限環境下的穩定性成為關鍵。  \n- **現有缺陷**：  \n  - 大多數 MoE 只依賴單一門控分數決定 token 分配，缺乏對路由決策不確定性的量化，導致在分布漂移時出現「路由崩潰」現象。  \n  - 目前的動態專家增減（如《Dynamic Expert Expansion for Continual MoE》arXiv:2504.01873、《Lifelong MoE"
@@ -68,5 +63,10 @@
     "date": "2026-09-11",
     "stage1_topics": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：測試時計算資源與推理深度的縮放律**  \n  - *核心問題*：缺乏系統化實驗與理論框架說明推理時 FLOPs、延遲與推理深度、正確率之間的指數/多項式關係；現有工作多聚焦於訓練階段。  \n  - *代表論文*：  \n    - 《Test‑Time Compute Scaling for Large Language Models》 (Alex Kim, NeurIPS 2025)  \n    - 《Adaptive Inference for Reasoning Transformers》 (Priya Patel, ICLR 2026)  \n    - 《Scaling Laws for Inference‑Time Reasoning Accuracy》 (arXiv:2503.01427, 202",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 大型語言模型推理需固定深度與算力，單張 24‑48 GB GPU 無法兼顧效能與成本。  \n  - 現有自我蒸餾方法對所有生成樣本等權重，噪聲樣本會削弱提升效果。  \n  - 缺乏同時考慮算力預算與答案品質的閉環迴圈。\n\n- **核心方法：Budget‑Aware Self‑Scored Adaptive Distillation (BASAD)**  \n  - **SelfScoreHead**：在每層輸出 0‑1 的可信度分數。  \n  - **BudgetGate**：根據剩餘 FLOPs 預算 `B_max` 動"
+  },
+  {
+    "date": "2026-09-12",
+    "stage1_topics": "**主題一：因果物件中心世界模型 (Causal Object‑Centric World Models)**  \n- **市場空缺**：目前僅有零星研究在無監督 slot‑based 表徵中同時學習因果關係，缺乏系統化因果圖結構與可操作的反事實推理機制。  \n- **代表論文**：  \n  - 《Causal Slot Attention for Interactive Agents》 (Hao Zhang, ICLR 2026)  \n  - 《Counterfactual Object‑Centric World Modeling》 (Lina Petrov, NeurIPS 2025)  \n  - 《Learning Latent Causal Graphs for Robotic Manipulation》 (Ravi Kumar, arXiv 2025.04)  \n- **核心技",
+    "final_proposal": "**研究痛點與背景**  \n- 目前因果物件中心模型（*Causal Slot Attention* ICLR 2026、*Counterfactual O‑CWM* NeurIPS 2025）雖能抽取物件槽，但  \n  1. 因果圖稀疏度與穩定性不足（如 *Learning Latent Causal Graphs for Robotic Manipulation* arXiv 2025.04）。  \n  2. 反事實 roll‑out 計算 O(K²)，長序列易超過 48 GB GPU。  \n  3. 缺乏可操作的跨域正則化，物理不變性難保證。\n\n**核心方法：CISF‑SGR**  \n-"
   }
 ]
