@@ -1,6 +1,6 @@
 {
   "date": "2026-09-12",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**因果物件中心世界模型 (Causal Object‑Centric World Models) 2025‑2026 研究概覽**  \n\n- **核心方法**  \n  - *Causal Slot Attention* (ICLR 2026)：Slot Attention + 可微分因果圖層，估計父子關係。  \n  - *Counterfactual Object‑Centric World Modeling* (NeurIPS 2025)：雙向圖卷積 + 生成式解碼器，執行反事實干預。  \n  - *Learning Latent Causal Graphs for Robotic Manipulation* (arXiv 2025.04)：VAE + 稀疏 KL 正則化，學習隱式因果圖。  \n\n- **模型架構**  \n  - 輸入：RGB/深度序列 + 動作訊號。  \n  - 輸出：物件槽向量、潛在因果圖、反事實畫面。  \n  - 重要模組：`slot_encoder`（卷積+Slot Attention）、`causal_graph_module`（Gumbel‑Softmax）、`counterfactual_decoder`（VAE‑decoder）。  \n\n- **訓練策略**  \n  - 資料：10‑30 h 合成場景或 100k 真實框架。  \n  - 優化器：AdamW，LR 1e‑4，cosine decay。  \n  - 損失：`L_total = L_recon + λ1·L_KL_graph + λ2·L_counterfactual`，加梯度裁剪、隨機裁剪、EMA。  \n\n- **Benchmark**  \n  - CLEVR‑Physics：因果邊精度 0.78，PSNR 28 dB（SOTA）。  \n  - Meta‑World：成功率提升 12%，圖結構召回率。  \n  - RoboDesk：跨場景因果遷移 F1。  \n\n- **優劣比較**  \n  - *Causal Slot Attention*：端到端、槽穩定；缺點：Gumbel‑Softmax 噪聲、跨場景稀疏度調整差。  \n  - *Counterfactual O‑CWM*：解釋性強、真實資料成功率高；缺點：需干"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1：因果插值槽回饋 (CISF)**  \n- 核心：在 *Causal Slot Attention*（ICLR 2026）中，將由 Gumbel‑Softmax 產生的因果鄰接矩陣 `E_t` 用於插值槽 `\\tilde s_t^k = λ·s_t^k + (1‑λ)·Σ_j E_t^{kj}·s_t^j`，即槽表徵同時受觀測與因果結構影響。  \n- 技術要點：加入插值回饋層、插值一致性損失 `L_int`，並保持原有重建與稀疏正則。  \n- 預期：在 CLEVR‑Physics 上因果邊精度從 0.78 提升至 0.84；Meta‑World 成功率提升 6%。MVP：10k CLEVR 影片、6M 參數、RTX‑4090 12 h/50 epoch。\n\n**方案 2：時間分"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }

@@ -242,3 +242,133 @@
 
 ---
 
+## Stage 3 — 2026-09-12 08:14:07
+
+**Model:** `openai/gpt-oss-120b`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1：因果插值槽回饋 (Causal Interpolated Slot Feedback, CISF)**  
+- **核心 idea**：在每一次前向傳遞中，用由潛在因果圖產生的插值向量直接回饋到 `slot_encoder`，讓槽的表徵同時受到當前觀測與預測因果關係的雙向影響。  
+- **技術細節**  
+  - **輸入流程**：連續的 RGB‑Depth 影格 `I_t` 與機械手臂動作 `a_t` 先送入卷積前置層，產生特徵圖 `F_t`。  
+  - **模組設計**：  
+    - `slot_encoder`：與 *Causal Slot Attention*（ICLR 2026）相同的 Slot Attention 結構，輸出 `S_t = {s_t^1,…,s_t^K}`。  
+    - `causal_graph_module`：利用 Gumbel‑Softmax 產生的隱式因果鄰接矩陣 `E_t`（與 *Counterfactual O‑CWM* 相同）。  
+    - **插值回饋層**：計算每個槽的因果插值 `\tilde s_t^k = λ·s_t^k + (1‑λ)·Σ_j E_t^{kj}·s_t^j`，其中 `λ` 為可學習的比例參數。  
+    - `counterfactual_decoder`：接收插值槽 `\tilde S_t`，生成反事實畫面 `\hat I_{t+Δ}`。  
+  - **訓練目標**：  
+    - 重建損失 `L_recon`（像素 L2）。  
+    - 因果圖稀疏正則 `L_sparse = β·|E_t|_1`。  
+    - 插值一致性損失 `L_int = γ·||S_t − \tilde S_t||_2`，鼓勵插值不破壞原始槽表徵。  
+    - 總損失 `L_total = L_recon + L_sparse + L_int`。  
+- **與 SOTA 的差異**  
+  - **改變**：在 *Causal Slot Attention* 的第 4 行「slot ← slot_attention(F)」之後，額外加入「slot ← interpolated_slot(slot, E)」。  
+  - **影響**：插值層讓槽在學習過程中即時感受到因果邊的約束，避免「槽漂移」現象，提升因果邊的召回率。  
+- **預期改善的指標與原因**  
+  - 在 CLEVR‑Physics 上，預期因果邊精度從 0.78 提升至約 0.84，因為槽表徵已被因果結構校正，圖結構推斷更穩定。  
+  - 在 Meta‑World，成功率提升約 6%（從 12% 到 18%），原因是插值槽提供了更一致的物件狀態估計，減少執行失誤。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：CLEVR‑Physics（10k 影片），使用 4‑GPU 訓練。  
+  - 模型規模：`slot_encoder` 2 層 Conv + 3 層 Slot Attention，`causal_graph_module` 2 層 GCN。參數總量 ≈ 6M。  
+  - 單張 RTX‑4090 可於 12 小時內完成 50 個 epoch，驗證 `L_int` 對因果邊精度的貢獻。  
+
+**方案 2：時間分層因果圖卷積 (Temporal Hierarchical Causal Graph Convolution, TH‑CGC)**  
+- **核心 idea**：在長時序視頻中，同步建構「快速」與「慢速」兩層因果圖，分別捕捉瞬時交互與長程因果關係，並在圖卷積階段交叉融合。  
+- **技術細節**  
+  - **輸入流程**：將連續 30 幀的特徵圖 `F_{t‑29:t}` 堆疊，使用 3D 卷積產生時間編碼 `H_t`。  
+  - **模組設計**：  
+    - `fast_graph`：在每幀上以 `H_t` 為節點特徵，使用 1‑step GCN 產生瞬時因果鄰接 `E_t^f`。  
+    - `slow_graph`：對每 5 幀做時間池化，產生低頻特徵 `\bar H_t`，再以 2‑step GCN 生成長程因果鄰接 `E_t^s`。  
+    - **跨層融合層**：對每個節點執行 `h_t^* = h_t + α·Σ_j E_t^{s}(i,j)·h_j`，其中 `α` 為可學習的比例。  
+    - `counterfactual_decoder` 仍使用插值槽（方案 1）或原始槽。  
+  - **訓練目標**：  
+    - 重建損失 `L_recon`。  
+    - 快速圖稀疏正則 `L_f_sparse` 與慢速圖稀疏正則 `L_s_sparse`。  
+    - 時間一致性損失 `L_time = δ·||E_t^f − Up(E_{t‑5}^s)||_2`，鼓勵兩層圖在時間上保持一致。  
+    - 總損失 `L_total = L_recon + L_f_sparse + L_s_sparse + L_time`。  
+- **與 SOTA 的差異**  
+  - **改變**：在 *Learning Latent Causal Graphs for Robotic Manipulation*（arXiv 2025.04）第 7 行「graph ← GCN(features)」之後，分別加入「fast_graph ← GCN(frame_features)」與「slow_graph ← GCN(pooled_features)」，再在第 9 行加入「features ← fuse(fast_graph, slow_graph)」。  
+  - **影響**：兩層圖分別捕捉不同時間尺度的因果依賴，解決單層圖在長時序（>10 s）上逐漸遺失因果訊號的問題。  
+- **預期改善的指標與原因**  
+  - 在 KITTI‑Flow‑Long（自建 15 s 駕駛序列）上，長時序 PSNR 預期提升 2.5 dB，因為慢速圖提供了長期運動趨勢的先驗。  
+  - 在 RoboDesk 長程搬運任務，成功率提升 9%（從 20% 到 29%），因為模型能預測遠端物件的因果變化。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：Mini‑Kinetics‑Long（5k 影片，每段 12 s）。  
+  - 模型規模：3D Conv (8 通道) + `fast_graph` 1‑layer GCN (4 M 參數) + `slow_graph` 2‑layer GCN (3 M 參數)。  
+  - 單張 RTX‑3090 可在 8 小時內完成 30 個 epoch，觀察 `L_time` 對 PSNR 的提升。  
+
+**方案 3：反事實動作指導的因果圖正則化 (Counterfactual Action‑Guided Causal Regularization, CACR)**  
+- **核心 idea**：利用已知的動作干預訊號，直接在因果圖上施加「動作‑因果」一致性約束，使圖結構更符合真實物理干預。  
+- **技術細節**  
+  - **輸入流程**：每一步提供觀測影格 `I_t`、機械手臂指令 `a_t`（離散或連續）以及執行後的下一影格 `I_{t+1}`。  
+  - **模組設計**：  
+    - `slot_encoder`、`causal_graph_module` 與 *Causal Slot Attention* 基本相同。  
+    - **動作映射層**：將動作 `a_t` 透過小型 MLP 投射成動作嵌入 `z_t^a`。  
+    - **因果圖‑動作耦合**：在圖的邊權重計算時加入 `e_{ij} = σ( w_{ij}·h_i + u_{ij}·h_j + v_{ij}·z_t^a )`，其中 `σ` 為 sigmoid。  
+    - `counterfactual_decoder`：在訓練時使用「干預」`a_t` 產生的反事實畫面 `\tilde I_{t+1}`。  
+  - **訓練目標**：  
+    - 重建損失 `L_recon`。  
+    - 動作‑因果一致性損失 `L_act = η·||E_t·z_t^a − Δh||_2`，其中 `Δh` 為槽表徵的變化向量（`h_{t+1}−h_t`）。  
+    - 圖稀疏正則 `L_sparse`。  
+    - 總損失 `L_total = L_recon + L_act + L_sparse`。  
+- **與 SOTA 的差異**  
+  - **改變**：在 *Counterfactual O‑CWM* 第 5 行「graph ← GCN(slot)」之後，改為「graph ← GCN(slot, action_embed)」，即把動作嵌入作為額外節點特徵參與圖卷積。  
+  - **影響**：直接把動作資訊映射到邊權重，使得圖結構在有干預時自動調整，減少因為「動作未被圖捕捉」導致的反事實生成失真。  
+- **預期改善的指標與原因**  
+  - 在 Meta‑World 的 `push‑button` 任務上，反事實畫面 SSIM 預期提升 0.07（從 0.81 到 0.88），因為圖已對應正確的手臂推力方向。  
+  - 在 RoboDesk 的搬運任務，因果圖召回率提升 5%（從 0.73 到 0.78），因為動作‑因果耦合減少了偽邊的生成。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：Meta‑World `push‑button`（10k 交互序列）。  
+  - 模型規模：`slot_encoder` 2 層 Conv + 3 層 Slot Attention，`causal_graph_module` 1 層 GCN，動作 MLP 2 層 (64 隱藏)。參數 ≈ 5M。  
+  - 單張 RTX‑3080 可在 6 小時內完成 40 個 epoch，觀測 `L_act` 對 SSIM 的貢獻。  
+
+**方案 4：稀疏因果圖的可微分結構搜索 (Differentiable Sparse Causal Structure Search, DSCS)**  
+- **核心 idea**：用可微分的 `Sparsemax` 取代 Gumbel‑Softmax，並加入雙層優化（內層結構更新、外層參數學習）以自動搜尋最稀疏且符合資料的因果圖。  
+- **技術細節**  
+  - **輸入流程**：同方案 1，先產生槽向量 `S_t`。  
+  - **模組設計**：  
+    - `causal_graph_module`：將原本的 Gumbel‑Softmax 采樣改為 `Sparsemax` 投射，輸出連續且稀疏的鄰接矩陣 `\hat E_t`（每行最多 3 個非零）。  
+    - **雙層優化器**：  
+      - **內層**：針對固定模型參數，最小化 `L_inner = L_recon + λ·| \hat E_t |_0`（0‑范數近似），使用 ADMM 迭代更新 `\hat E_t`。  
+      - **外層**：在內層結束後，使用普通的 AdamW 更新所有網路權重。  
+    - `counterfactual_decoder`：保持不變。  
+  - **訓練目標**：最終損失仍為 `L_total = L_recon + λ·| \hat E_t |_0`，但稀疏度直接由 `Sparsemax` 控制，無需額外正則。  
+- **與 SOTA 的差異**  
+  - **改變**：在 *Causal Slot Attention* 第 3 行「E ← gumbel_softmax(logits)」改為「E ← sparsemax(logits)」並加入 ADMM 內層迭代。  
+  - **影響**：`Sparsemax` 產生的鄰接矩陣天然稀疏，避免 Gumbel‑Softmax 采樣噪聲導致的圖不穩定，同時 ADMM 讓稀疏度可被直接優化，提升因果圖的結構精度。  
+- **預期改善的指標與原因**  
+  - 在 CLEVR‑Physics 上，圖的結構 F1 從 0.71 提升至約 0.80，因為稀疏圖更貼近真實因果拓撲，減少了偽邊。  
+  - 在 RoboDesk 的跨場景遷移測試中，遷移成功率提升 8%（從 45% 到 53%），原因是稀疏圖在新場景中更易泛化。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：CLEVR‑Physics（10k 影片）。  
+  - 模型規模：`slot_encoder` 3 層 Conv + 2 層 Slot Attention，`causal_graph_module` 1 層線性投射 + `Sparsemax`。參數 ≈ 4.5M。  
+  - 單張 RTX‑2070 也能在 10 小時內完成 30 個 epoch，觀測 `Sparsemax` 稀疏度與圖 F1 的關係。  
+
+以上四個方案皆以 **演算法層級** 的具體改動為核心，並提供明確的訓練目標、預期指標提升與可在單卡上驗證的 MVP，符合「能寫成一頁 method section」的可實作要求。祝研究順利！
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
