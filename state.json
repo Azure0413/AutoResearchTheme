@@ -1,13 +1,18 @@
 {
   "date": "2026-09-14",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**離散擴散在三大應用領域的關鍵概述**\n\n- **蛋白質功能設計（圖結構條件化）**  \n  - 研究人數不足二十人，缺乏成熟基準。  \n  - 代表論文：  \n    - *Graph‑Based Discrete Diffusion for Protein Function Design*（Yuan Liu，NeurIPS 2025）  \n    - *Flow Matching on Protein Contact Maps for Enzyme Engineering*（Ananya Patel，ICLR 2026）  \n    - *Discrete Diffusion for Active‑Site Motif Insertion in Enzymes*（Minghao Zhou，arXiv 2025.12）  \n  - 核心技術挑戰  \n    - 在離散擴散過程中嵌入物理能量函數以保證結構可折疊。  \n    - 高維圖空間中條件訊號（功能位點、結合口袋）的傳遞與梯度估計不穩定。  \n    - 缺乏跨家族大規模評估基準，方法比較困難。  \n\n- **程式碼合成與自動修復（受語法約束）**  \n  - 研究團隊稀少，市場需求大，突破潛力高。  \n  - 代表論文：  \n    - *Syntax‑Guided Discrete Diffusion for Program Synthesis*（Jae‑Hyun Kim，ICML 2025）  \n    - *Flow Matching for Structured Code Generation with Type Constraints*（Liang Zhang，ICLR 2026）  \n    - *Discrete Diffusion for Automated Bug Fixing in Large Codebases*（Priya Rao，arXiv 2025.09）  \n  - 核心技術挑戰  \n    - 離散噪聲過程中保持 AST 的樹形結構與語法正確性，需設計可微分結構投影。  \n    - 大型程式庫的語義一致性檢驗成本高，缺乏高效自動評估指標。  \n    - 樣本稀疏且多樣，如何利用少量標"
+    },
+    {
+      "stage": 2,
+      "summary": "**核心方法與技術要點**\n\n- **Syntax‑Guided Discrete Diffusion**（Kim 等，ICML 2025）  \n  - 在 AST 上進行離散噪聲擴散；每一步經「語法投影」確保合法性。  \n  - 主要優點：完全離散、語法合法性高；缺點：程式片段小於 50 行、擴散步數隨規模指數增長。  \n\n- **Flow Matching for Structured Code Generation**（Zhang 等，ICLR 2026）  \n  - 連續流匹配學習噪聲→程式映射；每步使用「類型約束解碼」投射回靜態類型系統。  \n  - 優點：樣本效率高、類型投影直接；缺點：需額外類型推斷模組，投影失敗率在高噪聲時上升。  \n\n- **Discrete Diffusion for Automated Bug Fixing**（Rao 等，arXiv 2025.09）  \n  - 先抽取「錯誤片段」作條件，擴散過程僅在錯誤位置修改。  \n  - 優點：Patch Accuracy 超 68%，可與測試套件自動驗證；缺點：依賴高品質錯誤定位，僅支援單點修復。  \n\n**模型架構細節**\n\n- 輸入：序列化 AST 或 token 序列 + 語法/類型約束向量。  \n- 輸出：每個擴散時間步的 AST 節點分布，最終解碼為完整程式。  \n- 主要模組：AST Encoder（圖神經/Transformer）、Noise Scheduler（節點替換/子樹刪除"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
