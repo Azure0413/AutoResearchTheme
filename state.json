@@ -1,6 +1,6 @@
 {
   "date": "2026-09-13",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**Stage 3：創新方法概覽（300–500字）**  \n\n- **方案 1：Task‑Embedding Gradient Orthogonalization (TEGO)**  \n  - **核心概念**：在策略更新時，同時對策略梯度與任務嵌入梯度做正交投影，防止任務向量漂移。  \n  - **技術要點**：  \n    - 任務編碼器 → 任務向量 `z` → 條件策略網路；  \n    - 插入 TEGO‑Layer：計算新舊梯度內積，若為負則投影到正交子空間；同理處理任務嵌入梯度；  \n    - 損失 = PPO + 任務嵌入 L2 + 條件正交損失。  \n  - **與 SOTA 差異**：在 *Lifelong Policy Distillation via Gradient Surgery*（NeurIPS 2025）第 4行後新增第 5行投影任務嵌入梯度；提升任務向量穩定性。  \n  - **預期效益**：Meta‑Continual RL Benchmark 上平均回報提升 6–9%，任務辨識率提升 4%。  \n  - **MVP**：Mini‑Meta‑Continual（5 任務），2 層 MLP 編碼器/策略，RTX 4090 2 h 完成訓練。  \n\n- **方案 2：Curriculum Tree Pruning via Bayesian Change Detection (CT‑BCD)**  \n  - **核心概念**：在自組織任務樹中加入貝葉斯變化點偵測，根據難度變化自動裁剪/合併子樹。  \n  - **技術要點**：  \n    - 觀測指標：成功率、回報變化率；  \n    - Change‑Detect Layer：維持每節點 Beta 後驗；  \n    - 損失 = 樹結構損失 + 變化偵測罰項（偵測到變化但回報未下降"
+    },
+    {
+      "stage": 4,
+      "summary": "**TEGO（Task‑Embedding Gradient Orthogonalization）批判要點**  \n- **理論假設失效**：假設策略梯度與任務嵌入梯度線性可分；實際上高度相關任務共線，正交投影會抹除有用訊息。  \n  - *補救*：加入梯度相似度門檻，僅在相似度低於閾值時執行正交化，並報告門檻敏感度。  \n- **資料與訓練可行性不足**：僅在五個合成任務上驗證，未測試 Atari、MuJoCo 等真實環境；任務切換頻率高時正交化頻繁，導致 PPO 不收斂。  \n  - *補救*：擴展至至少三個公開持續 RL 基準，繪製不同切換節奏下的收斂曲線。  \n- **計算成本高**：每 mini‑batch 需 O(B·D) 的內積與投影，對 200M 參數模型會爆掉 24 GB GPU。  \n  - *補救*：採用梯度子抽樣或低秩近似，並附上完整 GPU 記憶體、訓練時長與功耗報告。  \n- **SOTA 比較不充分**：使用自建「Mini‑Meta‑Continual」小規模測試集，與 NeurIPS 2025 主流基準（Continual‑World、Meta‑World）差距大，提升 6–9% 可能因任務簡單。  \n  - *補救*：在相同硬體與超參數下，與 Gradient‑Surgery、Hypernetwork‑Modulated 等最新方法直接比較，並提供統計顯著性檢驗。  \n- **失敗模式**：若任務嵌入早期未收斂，正交化會把策略梯度投影到近零方向，導致梯度消失，尤其在 >1M 步或"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
