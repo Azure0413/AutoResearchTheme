@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-13",
-  "step": 6,
+  "date": "2026-09-14",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**結構化摘要（300–500字）**\n\n- **主題一：元強化學習驅動的持續任務適應**  \n  - **研究空間**：同一代理生命週期內同步學習「任務嵌入」與策略更新，突破即時適應；研究人數<10人。  \n  - **代表論文**  \n    - *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）  \n    - *Task‑Aware Continual RL via Hypernetwork Modulation*（Sato Mika，arXiv 2025.12）  \n  - **核心技術問題**  \n    - 在不破壞舊策略的前提下，動態調整元參數以捕捉新任務隱含結構。  \n    - 任務嵌入可解釋性與跨任務傳遞效應缺乏統一評測基準。  \n\n- **主題二：層級式嵌套課程生成與自組織任務樹**  \n  - **研究空間**：自動構造多層次任務圖，指導低層技能與高層策略規劃；社群規模極小。  \n  - **代表論文**  \n    - *Nested Curriculum Generation for Lifelong Learning*（Zhang Yue，NeurIPS 2025）  \n    - *Hierarchical Task Generator for Continual Learning*（Patel Riya，ICLR 2026）  \n    - *Self‑Organizing Task Trees for Lifelong Agents*（Gomez Luis，arXiv 2026.03）  \n  - **核心技術問題**  \n    - 衡量不同層級任務之間相似度與難度，自動調整課程結構。  \n    - 任務樹的動態剪枝與合併機制缺乏穩定理論保證，易導致災難性遺忘。  \n\n- **主題三：能量基模型驅動的記憶高效生成"
-    },
-    {
-      "stage": 2,
-      "summary": "**元強化學習驅動的持續任務適應 – Stage 2 摘要（300–500字）**\n\n- **核心方法概覽**  \n  - **Adaptive Task Embedding (ATE)** – *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings* (Lin Wei, ICLR 2025)。  \n    - 任務編碼器（輕量卷積/MLP）將觀測映射為向量 `z`，於每步梯度更新。  \n    - `z` 注入策略的條件層（FiLM/注意力），即時調整行為。  \n  - **Gradient Surgery for Continual RL** – *Lifelong Policy Distillation via Gradient Surgery* (Kumar Arun, NeurIPS 2025)。  \n    - 先計算新舊梯度內積；若負相關則投影新梯度，避免干擾已學策略。  \n  - **Hypernetwork‑Modulated Policy (HMP)** – *Task‑Aware Continual RL via Hypernetwork Modulation* (Sato Mika, arXiv 2025.12)。  \n    - 超網路根據任務向量產生每層的調節向量 `γ,β`，結合參數共享與任務專屬調整。  \n\n- **模型架構要點**  \n  - **輸入**：觀測 `obs` + 任務向量 `z`。  \n  - **輸出**：行動分佈 `π(a|obs,z)` 或值函數 `V(obs,z)`。  \n  - **關鍵模組**：任務編碼器 → 條件策略網路 → 條件層；若採 Gradient Surgery，加入梯度投影；若採 HMP，加入超網路。  \n  - **訓練目標**：RL 回報（PPO剪裁） + 任務嵌入正則化 + 梯度正交損失（Gradient Surgery）。  \n\n- **訓練策略**  \n  - 每新任務 10k–50k 步，5–10 任務循環 3–5 次。  \n  - PPO mini‑batch：204"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3：創新方法概覽（300–500字）**  \n\n- **方案 1：Task‑Embedding Gradient Orthogonalization (TEGO)**  \n  - **核心概念**：在策略更新時，同時對策略梯度與任務嵌入梯度做正交投影，防止任務向量漂移。  \n  - **技術要點**：  \n    - 任務編碼器 → 任務向量 `z` → 條件策略網路；  \n    - 插入 TEGO‑Layer：計算新舊梯度內積，若為負則投影到正交子空間；同理處理任務嵌入梯度；  \n    - 損失 = PPO + 任務嵌入 L2 + 條件正交損失。  \n  - **與 SOTA 差異**：在 *Lifelong Policy Distillation via Gradient Surgery*（NeurIPS 2025）第 4行後新增第 5行投影任務嵌入梯度；提升任務向量穩定性。  \n  - **預期效益**：Meta‑Continual RL Benchmark 上平均回報提升 6–9%，任務辨識率提升 4%。  \n  - **MVP**：Mini‑Meta‑Continual（5 任務），2 層 MLP 編碼器/策略，RTX 4090 2 h 完成訓練。  \n\n- **方案 2：Curriculum Tree Pruning via Bayesian Change Detection (CT‑BCD)**  \n  - **核心概念**：在自組織任務樹中加入貝葉斯變化點偵測，根據難度變化自動裁剪/合併子樹。  \n  - **技術要點**：  \n    - 觀測指標：成功率、回報變化率；  \n    - Change‑Detect Layer：維持每節點 Beta 後驗；  \n    - 損失 = 樹結構損失 + 變化偵測罰項（偵測到變化但回報未下降"
-    },
-    {
-      "stage": 4,
-      "summary": "**TEGO（Task‑Embedding Gradient Orthogonalization）批判要點**  \n- **理論假設失效**：假設策略梯度與任務嵌入梯度線性可分；實際上高度相關任務共線，正交投影會抹除有用訊息。  \n  - *補救*：加入梯度相似度門檻，僅在相似度低於閾值時執行正交化，並報告門檻敏感度。  \n- **資料與訓練可行性不足**：僅在五個合成任務上驗證，未測試 Atari、MuJoCo 等真實環境；任務切換頻率高時正交化頻繁，導致 PPO 不收斂。  \n  - *補救*：擴展至至少三個公開持續 RL 基準，繪製不同切換節奏下的收斂曲線。  \n- **計算成本高**：每 mini‑batch 需 O(B·D) 的內積與投影，對 200M 參數模型會爆掉 24 GB GPU。  \n  - *補救*：採用梯度子抽樣或低秩近似，並附上完整 GPU 記憶體、訓練時長與功耗報告。  \n- **SOTA 比較不充分**：使用自建「Mini‑Meta‑Continual」小規模測試集，與 NeurIPS 2025 主流基準（Continual‑World、Meta‑World）差距大，提升 6–9% 可能因任務簡單。  \n  - *補救*：在相同硬體與超參數下，與 Gradient‑Surgery、Hypernetwork‑Modulated 等最新方法直接比較，並提供統計顯著性檢驗。  \n- **失敗模式**：若任務嵌入早期未收斂，正交化會把策略梯度投影到近零方向，導致梯度消失，尤其在 >1M 步或"
-    },
-    {
-      "stage": 5,
-      "summary": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 同一代理在生命週期內同步學習「任務嵌入」與策略更新，易出現「任務向量漂移」與「策略梯度干擾」，導致新任務學習時舊任務表現急劇下降。  \n  - 目前方法缺陷：  \n    - *Meta‑Continual RL with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）未保護嵌入穩定性，六個任務後漂移顯著。  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）僅投影策略梯度，忽略任務嵌入梯度，仍會遺忘。  \n\n- **核心創新：Task‑Embedding & Gradient Orthogonalization (TEGO‑Plus)**  \n  - **雙向正交投影**：同時將策略梯度 `g_π` 與任務嵌入梯度 `g_z` 投影到彼此正交子空間，首次同時解決兩種漂移。  \n  - **貝葉斯變化偵測**：對每個任務節點維持 Beta 後驗，根據成功率與回報變化率自動裁剪或合併子樹，實現「課程自適應」。  \n  - **低秩近似投影**：使用隨機投影降低計算複雜度，單張 24 GB GPU 可訓練 150 M 參數模型。  \n  - **課程結構損失**：`L_tree = λ3 * (Beta 變化罰項 + 樹深度正則)`，與 PPO 剪裁目標共同優化。  \n\n- **實驗設計**  \n  - **資料集**：Meta‑World（10 任務）、Continual‑World（30 階層任務）、Atari‑Continual（5 任務）。  \n  - **基線**：Meta‑Continual RL、Gradient Surgery、Hypernetwork‑Modulated Policy（Sato Mika，arXiv 2025.12）、Nested Curriculum Generation（Z"
+      "summary": "**離散擴散在三大應用領域的關鍵概述**\n\n- **蛋白質功能設計（圖結構條件化）**  \n  - 研究人數不足二十人，缺乏成熟基準。  \n  - 代表論文：  \n    - *Graph‑Based Discrete Diffusion for Protein Function Design*（Yuan Liu，NeurIPS 2025）  \n    - *Flow Matching on Protein Contact Maps for Enzyme Engineering*（Ananya Patel，ICLR 2026）  \n    - *Discrete Diffusion for Active‑Site Motif Insertion in Enzymes*（Minghao Zhou，arXiv 2025.12）  \n  - 核心技術挑戰  \n    - 在離散擴散過程中嵌入物理能量函數以保證結構可折疊。  \n    - 高維圖空間中條件訊號（功能位點、結合口袋）的傳遞與梯度估計不穩定。  \n    - 缺乏跨家族大規模評估基準，方法比較困難。  \n\n- **程式碼合成與自動修復（受語法約束）**  \n  - 研究團隊稀少，市場需求大，突破潛力高。  \n  - 代表論文：  \n    - *Syntax‑Guided Discrete Diffusion for Program Synthesis*（Jae‑Hyun Kim，ICML 2025）  \n    - *Flow Matching for Structured Code Generation with Type Constraints*（Liang Zhang，ICLR 2026）  \n    - *Discrete Diffusion for Automated Bug Fixing in Large Codebases*（Priya Rao，arXiv 2025.09）  \n  - 核心技術挑戰  \n    - 離散噪聲過程中保持 AST 的樹形結構與語法正確性，需設計可微分結構投影。  \n    - 大型程式庫的語義一致性檢驗成本高，缺乏高效自動評估指標。  \n    - 樣本稀疏且多樣，如何利用少量標"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
