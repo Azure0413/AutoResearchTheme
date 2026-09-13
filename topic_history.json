@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-22",
-    "stage1_topics": "**主題一：持續學習與動態專家增減的 MoE 架構**  \n- 為何不飽和但有突破潛力：目前僅有少數團隊探索在同一模型生命週期內自動加入或移除專家，以應對新任務或概念漂移，研究人數仍在十人以下，缺乏系統化的評測基準。  \n- 代表 paper  \n  - 《Dynamic Expert Expansion for Continual Mixture‑of‑Experts», 第一作者 **Jia‑Wei Chen**, arXiv:2504.01873, 2025  \n  - 《Lifelong MoE: Adaptive Expert Pruning and Growth via Gradient‑Based Signals», 第一作者 **Mina Patel**, ICLR 2026, 2026  \n  - 《Continual MoE with Task‑Aware Expert",
-    "final_proposal": "**## 1. 研究痛點與背景**  \n- **重要性**：隨著大型混合專家模型（Mixture‑of‑Experts, MoE）在語言與視訊領域的參數規模突破千億，如何在保持高效推理的同時保證模型在概念漂移、噪聲與資源受限環境下的穩定性成為關鍵。  \n- **現有缺陷**：  \n  - 大多數 MoE 只依賴單一門控分數決定 token 分配，缺乏對路由決策不確定性的量化，導致在分布漂移時出現「路由崩潰」現象。  \n  - 目前的動態專家增減（如《Dynamic Expert Expansion for Continual MoE》arXiv:2504.01873、《Lifelong MoE"
-  },
-  {
     "date": "2026-08-25",
     "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：自適應網格神經常微分方程 (Neural ODE) 用於高精度流體模擬**  \n  - 研究團隊僅十人以下；結合自適應離散化與可微分 ODE 尚無成熟工具鏈。  \n  - 代表論文：  \n    - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》 (Yuan Zhang, NeurIPS 2025, arXiv:2504.01234)  \n    - 《Neural ODE with Dynamic Mesh Refinement for Incompressible Navier‑Stokes》 (Lina Chen, ICLR 2026, arXiv:2601.04567)  \n    - 《Continuous‑Time Mesh‑Adapti",
     "final_proposal": "**研究痛點與創新概念**  \n- 高雷諾數多相流 CFD 仍受固定網格與剛性時間步長限制，導致資源浪費與長時間不穩定。  \n- 目前 Adaptive Mesh Neural ODE 只用單一空間指標（如渦度）細化，且時間步長與空間細化解耦，累積誤差難以即時校正。  \n- 參考文獻：  \n  - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》, Yuan Zhang, NeurIPS 2025 (arXiv:2504.01234)  \n  - 《Implicit Neural SDEs for Scalable High‑Di"
@@ -68,5 +63,10 @@
     "date": "2026-09-12",
     "stage1_topics": "**主題一：因果物件中心世界模型 (Causal Object‑Centric World Models)**  \n- **市場空缺**：目前僅有零星研究在無監督 slot‑based 表徵中同時學習因果關係，缺乏系統化因果圖結構與可操作的反事實推理機制。  \n- **代表論文**：  \n  - 《Causal Slot Attention for Interactive Agents》 (Hao Zhang, ICLR 2026)  \n  - 《Counterfactual Object‑Centric World Modeling》 (Lina Petrov, NeurIPS 2025)  \n  - 《Learning Latent Causal Graphs for Robotic Manipulation》 (Ravi Kumar, arXiv 2025.04)  \n- **核心技",
     "final_proposal": "**研究痛點與背景**  \n- 目前因果物件中心模型（*Causal Slot Attention* ICLR 2026、*Counterfactual O‑CWM* NeurIPS 2025）雖能抽取物件槽，但  \n  1. 因果圖稀疏度與穩定性不足（如 *Learning Latent Causal Graphs for Robotic Manipulation* arXiv 2025.04）。  \n  2. 反事實 roll‑out 計算 O(K²)，長序列易超過 48 GB GPU。  \n  3. 缺乏可操作的跨域正則化，物理不變性難保證。\n\n**核心方法：CISF‑SGR**  \n-"
+  },
+  {
+    "date": "2026-09-13",
+    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：元強化學習驅動的持續任務適應**  \n  - **研究空間**：同一代理生命週期內同步學習「任務嵌入」與策略更新，突破即時適應；研究人數<10人。  \n  - **代表論文**  \n    - *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）  \n    - *Task‑Aware Continual RL via Hypernetwork Modulation*（Sato Mika，arXiv 2025.12）  \n  - **核心技術問",
+    "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 同一代理在生命週期內同步學習「任務嵌入」與策略更新，易出現「任務向量漂移」與「策略梯度干擾」，導致新任務學習時舊任務表現急劇下降。  \n  - 目前方法缺陷：  \n    - *Meta‑Continual RL with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）未保護嵌入穩定性，六個任務後漂移顯著。  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）僅投"
   }
 ]

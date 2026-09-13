@@ -1,6 +1,6 @@
 {
   "date": "2026-09-13",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**TEGO（Task‑Embedding Gradient Orthogonalization）批判要點**  \n- **理論假設失效**：假設策略梯度與任務嵌入梯度線性可分；實際上高度相關任務共線，正交投影會抹除有用訊息。  \n  - *補救*：加入梯度相似度門檻，僅在相似度低於閾值時執行正交化，並報告門檻敏感度。  \n- **資料與訓練可行性不足**：僅在五個合成任務上驗證，未測試 Atari、MuJoCo 等真實環境；任務切換頻率高時正交化頻繁，導致 PPO 不收斂。  \n  - *補救*：擴展至至少三個公開持續 RL 基準，繪製不同切換節奏下的收斂曲線。  \n- **計算成本高**：每 mini‑batch 需 O(B·D) 的內積與投影，對 200M 參數模型會爆掉 24 GB GPU。  \n  - *補救*：採用梯度子抽樣或低秩近似，並附上完整 GPU 記憶體、訓練時長與功耗報告。  \n- **SOTA 比較不充分**：使用自建「Mini‑Meta‑Continual」小規模測試集，與 NeurIPS 2025 主流基準（Continual‑World、Meta‑World）差距大，提升 6–9% 可能因任務簡單。  \n  - *補救*：在相同硬體與超參數下，與 Gradient‑Surgery、Hypernetwork‑Modulated 等最新方法直接比較，並提供統計顯著性檢驗。  \n- **失敗模式**：若任務嵌入早期未收斂，正交化會把策略梯度投影到近零方向，導致梯度消失，尤其在 >1M 步或"
+    },
+    {
+      "stage": 5,
+      "summary": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 同一代理在生命週期內同步學習「任務嵌入」與策略更新，易出現「任務向量漂移」與「策略梯度干擾」，導致新任務學習時舊任務表現急劇下降。  \n  - 目前方法缺陷：  \n    - *Meta‑Continual RL with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）未保護嵌入穩定性，六個任務後漂移顯著。  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）僅投影策略梯度，忽略任務嵌入梯度，仍會遺忘。  \n\n- **核心創新：Task‑Embedding & Gradient Orthogonalization (TEGO‑Plus)**  \n  - **雙向正交投影**：同時將策略梯度 `g_π` 與任務嵌入梯度 `g_z` 投影到彼此正交子空間，首次同時解決兩種漂移。  \n  - **貝葉斯變化偵測**：對每個任務節點維持 Beta 後驗，根據成功率與回報變化率自動裁剪或合併子樹，實現「課程自適應」。  \n  - **低秩近似投影**：使用隨機投影降低計算複雜度，單張 24 GB GPU 可訓練 150 M 參數模型。  \n  - **課程結構損失**：`L_tree = λ3 * (Beta 變化罰項 + 樹深度正則)`，與 PPO 剪裁目標共同優化。  \n\n- **實驗設計**  \n  - **資料集**：Meta‑World（10 任務）、Continual‑World（30 階層任務）、Atari‑Continual（5 任務）。  \n  - **基線**：Meta‑Continual RL、Gradient Surgery、Hypernetwork‑Modulated Policy（Sato Mika，arXiv 2025.12）、Nested Curriculum Generation（Z"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }
