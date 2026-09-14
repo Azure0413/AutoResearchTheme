@@ -1,6 +1,6 @@
 {
   "date": "2026-09-14",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": ""
+    },
+    {
+      "stage": 5,
+      "summary": "**研究痛點**  \n- 現有離散擴散（*Syntax‑Guided Discrete Diffusion for Program Synthesis*, ICML 2025）僅能處理 50 行以下，擴散步數指數增長，導致記憶體與時間成本失控。  \n- *Flow Matching for Structured Code Generation with Type Constraints*（ICLR 2026）雖突破類型投影，但仍依賴外部靜態類型推斷，噪聲過大時投影失敗率升高，限制長程程式碼穩定性。  \n- 兩者缺乏結構層級噪聲設計，單節點噪聲難以同時保留語法合法性與語意一致性，200 行以上編譯成功率低於 40%。  \n\n**核心方法 – HEG‑Diff**  \n- **子樹分割**：以最大公共子結構切分 AST，得到子樹集合 `S={s₁,…,s_K}`。  \n- **子樹編碼**：圖神經網路 `Enc_AST` 產生向量 `h_i`。  \n- **子樹噪聲調度**：在每步 `t` 隨機選擇子樹，執行子樹置換或刪除，產生噪聲子樹 `\\tilde s_i^t`。  \n- **能量投影 `Proj_E`**：  \n  - 類型一致性能量 `E_type`（可微分靜態類型檢查器）。  \n  - 語意相容性能量 `E_sem`（預訓練程式語意模型相似度）。  \n  - 加權和 `E = λ_type·E_type + λ_sem·E_sem`，投影回最小化 `E` 的合法子樹 `s_i^t`。  \n- **去噪模型**：Transformer 解碼器 `Dec` 以 `h_i` 與時間嵌入 `t` 為條件，預測子樹分布，損失為交叉熵加投影成功率。  \n- **訓練目標**：`L = L_ce + α·L"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }

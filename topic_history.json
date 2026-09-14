@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-08-25",
-    "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：自適應網格神經常微分方程 (Neural ODE) 用於高精度流體模擬**  \n  - 研究團隊僅十人以下；結合自適應離散化與可微分 ODE 尚無成熟工具鏈。  \n  - 代表論文：  \n    - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》 (Yuan Zhang, NeurIPS 2025, arXiv:2504.01234)  \n    - 《Neural ODE with Dynamic Mesh Refinement for Incompressible Navier‑Stokes》 (Lina Chen, ICLR 2026, arXiv:2601.04567)  \n    - 《Continuous‑Time Mesh‑Adapti",
-    "final_proposal": "**研究痛點與創新概念**  \n- 高雷諾數多相流 CFD 仍受固定網格與剛性時間步長限制，導致資源浪費與長時間不穩定。  \n- 目前 Adaptive Mesh Neural ODE 只用單一空間指標（如渦度）細化，且時間步長與空間細化解耦，累積誤差難以即時校正。  \n- 參考文獻：  \n  - 《Adaptive Mesh Neural ODE for Turbulent Flow Simulation》, Yuan Zhang, NeurIPS 2025 (arXiv:2504.01234)  \n  - 《Implicit Neural SDEs for Scalable High‑Di"
-  },
-  {
     "date": "2026-08-26",
     "stage1_topics": "**主題一：稀疏自編碼器驅動的算法電路發現**  \n- **突破潛力**：10B+ 模型已成功訓練稀疏自編碼器，但缺乏自動化電路抽取流程，模型規模與電路類型仍待探索。  \n- **代表論文**：  \n  - *AutoCircuit* (NeurIPS 2025, Alex Wang)  \n  - *Sparse Autoencoders Reveal Modular Computation* (ICLR 2026, Priya Singh)  \n  - *Scaling Sparse Autoencoder Interpretability to 100B* (arXiv 2025, Hiroshi Tanaka)  \n- **核心問題**：  \n  - 在保持低重建誤差的同時提升稀疏性，百億參數模型訓練成本高。  \n  - 潛在維度映射至具體算法原語（排序、搜尋、算術）缺乏驗證標準。 ",
     "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 現有神經歸因圖多聚焦靜態注意力，忽略序列時間演化；TokenFlow（ICLR 2026）在長序列上邊數二次爆炸，缺乏噪聲抑制；Dynamic Attribution Networks（NeurIPS 2025）雖可微分歸因，但僅用硬門檻，深層模型仍產生大量虛假邊。  \n  - 需求：在保持圖解釋性與計算可控的前提下，動態抑制低層噪聲、突出高層因果路徑。\n\n- **核心方法：Temporal‑Decay Sparse Attribution (TDSA)**  \n  - **資訊增益 (IG)**：對每層注意力矩陣 \\"
@@ -68,5 +63,10 @@
     "date": "2026-09-13",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：元強化學習驅動的持續任務適應**  \n  - **研究空間**：同一代理生命週期內同步學習「任務嵌入」與策略更新，突破即時適應；研究人數<10人。  \n  - **代表論文**  \n    - *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）  \n    - *Task‑Aware Continual RL via Hypernetwork Modulation*（Sato Mika，arXiv 2025.12）  \n  - **核心技術問",
     "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 同一代理在生命週期內同步學習「任務嵌入」與策略更新，易出現「任務向量漂移」與「策略梯度干擾」，導致新任務學習時舊任務表現急劇下降。  \n  - 目前方法缺陷：  \n    - *Meta‑Continual RL with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）未保護嵌入穩定性，六個任務後漂移顯著。  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）僅投"
+  },
+  {
+    "date": "2026-09-14",
+    "stage1_topics": "**離散擴散在三大應用領域的關鍵概述**\n\n- **蛋白質功能設計（圖結構條件化）**  \n  - 研究人數不足二十人，缺乏成熟基準。  \n  - 代表論文：  \n    - *Graph‑Based Discrete Diffusion for Protein Function Design*（Yuan Liu，NeurIPS 2025）  \n    - *Flow Matching on Protein Contact Maps for Enzyme Engineering*（Ananya Patel，ICLR 2026）  \n    - *Discrete Diffusion for Active‑Site Motif Insertion in Enzymes*（Minghao Zhou，arXiv 2025.12）  \n  - 核心技術挑戰  \n    - 在離散擴散過程中嵌入物理",
+    "final_proposal": "**研究痛點**  \n- 現有離散擴散（*Syntax‑Guided Discrete Diffusion for Program Synthesis*, ICML 2025）僅能處理 50 行以下，擴散步數指數增長，導致記憶體與時間成本失控。  \n- *Flow Matching for Structured Code Generation with Type Constraints*（ICLR 2026）雖突破類型投影，但仍依賴外部靜態類型推斷，噪聲過大時投影失敗率升高，限制長程程式碼穩定性。  \n- 兩者缺乏結構層級噪聲設計，單節點噪聲難以同時保留語法合法性與語意一致性，200 行以上編"
   }
 ]
