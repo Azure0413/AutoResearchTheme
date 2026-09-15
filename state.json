@@ -1,23 +1,13 @@
 {
-  "date": "2026-09-15",
-  "step": 4,
+  "date": "2026-09-16",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": ""
-    },
-    {
-      "stage": 2,
-      "summary": "**核心方法與技術要點（約 400 字）**\n\n- **主要模型**  \n  - *MolFormer‑SelfSup*（ICLR 2026）：Transformer + 「遮蔽原子/鍵」與「圖結構重建」兩任務，學得全局與局部化學表示。  \n  - *Graphormer‑Contrast*（NeurIPS 2025）：在 Graphormer 上加入對比學習，將同分子不同子圖嵌入拉近，異構分子拉遠。  \n  - *Diffusion‑GNN Generator*（ICML 2025）：將擴散去噪過程嵌入 GNN，直接在圖空間生成合法分子，使用「結構完整性」自監督損失。\n\n- **模型架構**  \n  - 輸入：原子節點特徵（類型、電負度、環資訊）+ 鍵邊特徵（類型、方向）。  \n  - 輸出：分子向量（下游預測）或逐步生成的原子/鍵序列（生成任務）。  \n  - 重要模組：多頭圖注意力＋相對位置信息；遮蔽/對比/擴散投影頭；圖解碼器（圖卷積+邊生成網路）。  \n  - 訓練目標：遮蔽預測（交叉熵）、InfoNCE 對比損失、擴散去噪 MSE，三項損失加權 (0.4, 0.4, 0.2) 可自適調。\n\n- **訓練策略**  \n  - 資料：PubChem 110M、ZINC15 250M、ChEMBL"
-    },
-    {
-      "stage": 3,
-      "summary": "**階層式子圖對比預訓練 (Hierarchical Subgraph Contrastive Pre‑training)**  \n- **核心概念**：同一分子內同階層子圖（原子層、環層、骨架層）互相對比，拉近同層向量、遠離跨層向量，捕捉官能團–骨架層次結構。  \n- **技術流程**  \n  - 先用 *MolFormer‑SelfSup* (ICLR 2026) 產生節點嵌入，再固定深度切割器抽取三層子圖。  \n  - 每層投射至共享參數的 MLP，得到子圖向量。  \n  - 同層使用 InfoNCE（正樣本＝同分子不同遮蔽版本，負樣本＝跨分子子圖），跨層加入「層間距離懲罰」降低高層與低層余弦相似度。  \n- **與 SOTA 差異**：在 Graphormer‑Contrast (NeurIPS 2025) 的「對比樣本抽取」改為「分層子圖抽取 + 層間距離懲罰」。  \n- **預期效益**：OGB‑MolPCBA、QM9 上 HOMO‑LUMO 能隙 R² 提升 2–3%。  \n- **MVP**：6 層、隱藏 256 的 Graphormer，兩層投影 MLP；單 RTX 4090 24 h 1‑epoch 可驗證對比增益。\n\n---\n\n**自適應圖擴散噪聲調度 (Adaptive Graph Diffusion Noise Scheduling)**  \n- **核心概念**：根據分子拓撲複雜度（環數 + 平均鍵度）動態調整擴散噪聲幅度，簡單分子早期噪聲大、複雜分子噪聲小，提升生成化學有效性。  \n- **技術流程**  \n  - 計算「拓撲複雜度"
+      "summary": "**主題一：神經量子態 (Neural Quantum States) 在高維費米子系統的模擬**  \n- 目前僅有少數團隊結合等變性圖卷積與變分蒙特卡羅，能在 100+ 量子位元尺度上逼近基態能量，訓練成本高，研究人數不足二十人。  \n- 代表論文：  \n  - *Equivariant Neural Quantum States for Fermionic Systems*（Yuan Chen，NeurIPS 2025）  \n  - *Variational Monte Carlo with Symmetry‑Aware Graph Networks*（Lina Patel，ICLR 2026）  \n  - *Scalable Neural Ansatz for Strongly Correlated Materials*（Mikko Räsänen，arXiv 2025.12）  \n- 核心問題：  \n  - 如何在保持等變性約束的同時降低變分蒙特卡羅抽樣方差，實現大規模系統穩定收斂。  \n  - 缺乏通用基準套件與跨領域驗證，導致方法在高溫超導等實際材料問題上的可遷移性未確立。  \n\n**主題二：主動學習驅動的可微分反應力場，用於長時間尺度的從頭算分子動力學**  \n- 現有 ML 势能多聚焦靜態結構或短時間動力學，稀有反應事件抽樣效率不足，缺乏自動化誤差控制迴路。  \n- 代表論文：  \n  - *Active Learning of Reactive Force Fields for Ab Initio Molecular Dynamics*（Hao Liu，ICLR 2026）  \n  - *On‑the‑Fly Uncertainty Quantification for Neural Force Fields*（Sofia García，ICML 2025）  \n  - *Long‑Range Reactive MD with Adaptive Neural Potentials*（Joon‑Hyuk Kim，arXiv 2025.07）  \n- 核心問題：  \n  - 在高維原子配置空間即時評估模型不確定性，決策何時觸發高精度量子化學計算以更新模型。  \n  - 需要可擴展資料庫管理與分布式訓練框架，支"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0
+    "1": 0
   }
 }
