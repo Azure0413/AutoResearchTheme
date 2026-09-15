@@ -1,13 +1,18 @@
 {
   "date": "2026-09-16",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：神經量子態 (Neural Quantum States) 在高維費米子系統的模擬**  \n- 目前僅有少數團隊結合等變性圖卷積與變分蒙特卡羅，能在 100+ 量子位元尺度上逼近基態能量，訓練成本高，研究人數不足二十人。  \n- 代表論文：  \n  - *Equivariant Neural Quantum States for Fermionic Systems*（Yuan Chen，NeurIPS 2025）  \n  - *Variational Monte Carlo with Symmetry‑Aware Graph Networks*（Lina Patel，ICLR 2026）  \n  - *Scalable Neural Ansatz for Strongly Correlated Materials*（Mikko Räsänen，arXiv 2025.12）  \n- 核心問題：  \n  - 如何在保持等變性約束的同時降低變分蒙特卡羅抽樣方差，實現大規模系統穩定收斂。  \n  - 缺乏通用基準套件與跨領域驗證，導致方法在高溫超導等實際材料問題上的可遷移性未確立。  \n\n**主題二：主動學習驅動的可微分反應力場，用於長時間尺度的從頭算分子動力學**  \n- 現有 ML 势能多聚焦靜態結構或短時間動力學，稀有反應事件抽樣效率不足，缺乏自動化誤差控制迴路。  \n- 代表論文：  \n  - *Active Learning of Reactive Force Fields for Ab Initio Molecular Dynamics*（Hao Liu，ICLR 2026）  \n  - *On‑the‑Fly Uncertainty Quantification for Neural Force Fields*（Sofia García，ICML 2025）  \n  - *Long‑Range Reactive MD with Adaptive Neural Potentials*（Joon‑Hyuk Kim，arXiv 2025.07）  \n- 核心問題：  \n  - 在高維原子配置空間即時評估模型不確定性，決策何時觸發高精度量子化學計算以更新模型。  \n  - 需要可擴展資料庫管理與分布式訓練框架，支"
+    },
+    {
+      "stage": 2,
+      "summary": "**主題：主動學習驅動的可微分反應力場 (AL‑RFF)**  \n\n- **核心方法**  \n  - **AL‑RFF**：利用不確定性指標挑選高資訊量構型，增量更新神經勢能。  \n  - **OTF‑UQ**：在 MD 步驟同時輸出能量/力與貝葉斯/深度集合方差，方差超門檻即觸發高精度計算。  \n  - **LR‑RMD**：結合局部圖卷積與全局注意力，學習短程鍵變化與遠距離靜電/色散。  \n\n- **模型架構**  \n  - 輸入：原子座標、類型編碼、可選環境描述子（SOAP/ACSF）。  \n  - 輸出：總能量、每原子力向量、方差/熵。  \n  - 重要模組：`GraphConvBlock`（等變圖卷積）、`GlobalAttention`（長程注意力）、`UncertaintyHead`（多頭方差輸出）。  \n  - 損失：能量 MSE + 力 MSE + λ * mean(variance)；鼓勵低方差區域。  \n\n- **訓練策略**  \n  - 初始 5–10k DFT/CCSD(T) 標記點，主動迭代每次 1–2k 點。  \n  - Batch 64–128，AdamW (lr=1e‑3, wd=1e‑4)，cosine decay。  \n  - 技巧：梯度檢查點、FP16 混合精度、隨機旋轉/鏡像/噪聲增強。  \n\n- **Benchmark 資料集**  \n  - **MD17‑Reactive**：5 種反應，評估能量/力 MAE 與觸發率。  \n  - **QM9‑Rxn**：2,000 過渡態，測試過渡態能量與速率誤差。  \n  - **OpenCatalyst‑Active**：催化表面，評估吸附能 MAE 與能障偏差。  \n\n-"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
