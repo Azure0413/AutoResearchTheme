@@ -1,6 +1,6 @@
 {
   "date": "2026-09-16",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**方案 1：階層式不確定性導向抽樣 (HUGS)**  \n- 核心：同一 MD 步驟同時評估局部與全局不確定性；僅在全局高且局部顯著時觸發高精度量子計算，減少標記點。  \n- 技術：  \n  - `LocalGraphEncoder`（等變圖卷積，參考 *Equivariant Neural Quantum States for Fermionic Systems*, NeurIPS 2025）輸出原子向量 `h_i`。  \n  - `UncertaintyHead` 同時輸出 `σ_local(i)` 與 `σ_global`（`σ_global` 為 `h_i` 經線性投影後取均值）。  \n  - `TriggerPolicy`：`σ_global > τ_g` 且 `max_i σ_local(i) > τ_l` 時才呼叫 DFT/CCSD(T)。  \n  - 損失：能量 MSE + 力 MSE + λ₁·mean(σ_local) + λ₂·σ_global。  \n- 與 SOTA 差異：在 *On‑the‑Fly Uncertainty Quantification for Neural Force Fields*（ICML 2025）僅使用全局方差，HUGS 加入局部門檢查，預期標記點下降 30‑40%。  \n- MVP：MD17‑Reactive 前兩種反應；1.2 M 參數；單張 RTX 4090（FP16）即可完成 10 ps MD。\n\n**方案 2：對稱感知圖核預條件 (SAGKP)**  \n- 核心：在 VMC 抽樣中引入等變圖核預條件矩陣，降低梯度方差，提升 150+ 量子位元系統收斂速度。  \n- 技術：  \n  - `GraphKernel` 以等變圖卷積特徵映射計算核 `K(x,x')`。"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4 — 嚴格自我批判摘要（約 400 字）**\n\n- **方案 1（HUGS）理論假設**  \n  - 依賴局部不確定性 `σ_local(i)` 與全局不確定性 `σ_global` 同時捕捉罕見反應。  \n  - 若原子配置呈高度相關多模態，局部方差低、全局方差被少數噪聲放大，易誤觸發。  \n  - 建議加入局部方差分位數檢測或資訊增益指標，降低單點噪聲影響。  \n\n- **方案 1資料與訓練可行性**  \n  - 只在 MD17‑Reactive 前兩反應展示 10 ps 成功，資料極小。  \n  - `τ_g`、`τ_l` 需手動調整，缺乏自適應。  \n  - 建議擴充至 OpenCatalyst‑Active 等多步反應集，並用貝葉斯最佳化自動調節門檻。  \n\n- **方案 1計算資源**  \n  - 每 MD 步需同時計算局部與全局不確定性，觸發即時 DFT/CCSD(T)。  \n  - 單卡 24 GB VRAM 內存與 I/O 瓶頸嚴重。  \n  - 建議將不確定性估算移至 CPU 或加速器，使用異步緩衝；提供「低階預估」模式。  \n\n- **方案 1是否真優於 SOTA**  \n  - 30‑40 % 標記點下降僅對比 ICML 2025 “On‑the‑Fly Uncertainty Quantification”。  \n  - 未測試最新 “Active Learning with Ensemble Forces” 或 “Adaptive Sampling for Reactive MD”。  \n  - 建議同硬體、相同資料切分跑 ≥3 個基線，做配對 t‑test；加入 >200"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
