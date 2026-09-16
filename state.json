@@ -1,6 +1,6 @@
 {
   "date": "2026-09-16",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**主題：主動學習驅動的可微分反應力場 (AL‑RFF)**  \n\n- **核心方法**  \n  - **AL‑RFF**：利用不確定性指標挑選高資訊量構型，增量更新神經勢能。  \n  - **OTF‑UQ**：在 MD 步驟同時輸出能量/力與貝葉斯/深度集合方差，方差超門檻即觸發高精度計算。  \n  - **LR‑RMD**：結合局部圖卷積與全局注意力，學習短程鍵變化與遠距離靜電/色散。  \n\n- **模型架構**  \n  - 輸入：原子座標、類型編碼、可選環境描述子（SOAP/ACSF）。  \n  - 輸出：總能量、每原子力向量、方差/熵。  \n  - 重要模組：`GraphConvBlock`（等變圖卷積）、`GlobalAttention`（長程注意力）、`UncertaintyHead`（多頭方差輸出）。  \n  - 損失：能量 MSE + 力 MSE + λ * mean(variance)；鼓勵低方差區域。  \n\n- **訓練策略**  \n  - 初始 5–10k DFT/CCSD(T) 標記點，主動迭代每次 1–2k 點。  \n  - Batch 64–128，AdamW (lr=1e‑3, wd=1e‑4)，cosine decay。  \n  - 技巧：梯度檢查點、FP16 混合精度、隨機旋轉/鏡像/噪聲增強。  \n\n- **Benchmark 資料集**  \n  - **MD17‑Reactive**：5 種反應，評估能量/力 MAE 與觸發率。  \n  - **QM9‑Rxn**：2,000 過渡態，測試過渡態能量與速率誤差。  \n  - **OpenCatalyst‑Active**：催化表面，評估吸附能 MAE 與能障偏差。  \n\n-"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1：階層式不確定性導向抽樣 (HUGS)**  \n- 核心：同一 MD 步驟同時評估局部與全局不確定性；僅在全局高且局部顯著時觸發高精度量子計算，減少標記點。  \n- 技術：  \n  - `LocalGraphEncoder`（等變圖卷積，參考 *Equivariant Neural Quantum States for Fermionic Systems*, NeurIPS 2025）輸出原子向量 `h_i`。  \n  - `UncertaintyHead` 同時輸出 `σ_local(i)` 與 `σ_global`（`σ_global` 為 `h_i` 經線性投影後取均值）。  \n  - `TriggerPolicy`：`σ_global > τ_g` 且 `max_i σ_local(i) > τ_l` 時才呼叫 DFT/CCSD(T)。  \n  - 損失：能量 MSE + 力 MSE + λ₁·mean(σ_local) + λ₂·σ_global。  \n- 與 SOTA 差異：在 *On‑the‑Fly Uncertainty Quantification for Neural Force Fields*（ICML 2025）僅使用全局方差，HUGS 加入局部門檢查，預期標記點下降 30‑40%。  \n- MVP：MD17‑Reactive 前兩種反應；1.2 M 參數；單張 RTX 4090（FP16）即可完成 10 ps MD。\n\n**方案 2：對稱感知圖核預條件 (SAGKP)**  \n- 核心：在 VMC 抽樣中引入等變圖核預條件矩陣，降低梯度方差，提升 150+ 量子位元系統收斂速度。  \n- 技術：  \n  - `GraphKernel` 以等變圖卷積特徵映射計算核 `K(x,x')`。"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }

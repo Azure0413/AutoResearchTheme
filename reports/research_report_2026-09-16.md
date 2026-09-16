@@ -241,3 +241,126 @@
 
 ---
 
+## Stage 3 — 2026-09-16 09:23:18
+
+**Model:** `openai/gpt-oss-120b`
+
+**Prompt:**
+
+基於前兩階段分析,請發揮**最大創意**提出 **3-5 個具體可實作的創新方法**。
+
+嚴格要求:
+- 每個方案必須能寫成一頁 method section,不能是模糊建議
+- **禁止**「加入注意力機制」、「結合 transformer」、「多模態融合」這類空泛口號
+- 必須明確指出與既有方法在**演算法層級**的差異(改了哪一行)
+- 必須說明為何此差異會帶來改善(因果鏈,不是 hand-waving)
+
+**每個方案輸出格式**(條列,不要表格、不要 LaTeX):
+
+**方案 X:[簡潔有力的名稱]**
+- **核心 idea(1 句話精確說明)**
+- **技術細節**:輸入流程、模組設計、訓練目標、損失函數(用文字描述,不用公式)
+- **與 SOTA 的差異**:明確指出哪個元件被改、改成什麼、為何這個改動具體會影響哪個指標
+- **預期改善的指標與原因**:在哪個 benchmark 預期提升?推理鏈是什麼?
+- **最小可行實驗(MVP)**:用什麼資料集、多大模型、單張 GPU 可不可以驗證?
+
+**Response (full):**
+
+**方案 1: 階層式不確定性導向抽樣 (Hierarchical Uncertainty‑Guided Sampling, HUGS)**  
+- **核心 idea**：在同一 MD 迭代中，同時評估「局部」與「全局」不確定性，僅在全局不確定性高且局部不確定性顯著的原子子集上觸發高精度量子化學計算，從而大幅降低標記點數。  
+- **技術細節**  
+  - **輸入流程**：原子座標 → `LocalGraphEncoder` 產生每個原子的局部表示 → `GlobalPool` 聚合得到系統級向量。  
+  - **模組設計**：  
+    - `LocalGraphEncoder` 為等變圖卷積（參考 *Equivariant Neural Quantum States for Fermionic Systems*, NeurIPS 2025），輸出每原子 `h_i`。  
+    - `UncertaintyHead` 同時輸出兩個指標：`σ_local(i)`（每原子方差）與 `σ_global`（系統方差），其中 `σ_global` 由 `h_i` 經過一層線性投影再取均值得到。  
+    - `TriggerPolicy` 判斷條件：`σ_global > τ_g` 且 `max_i σ_local(i) > τ_l`，只有滿足兩個門檻時才呼叫 DFT/CCSD(T)。  
+  - **訓練目標**：能量 MSE + 力 MSE + λ₁ * mean(σ_local) + λ₂ * σ_global。  
+  - **損失函數**：使用文字描述：總損失等於能量均方誤差加上力向量均方誤差，再加上局部不確定性平均值乘以 λ₁，最後加上全局不確定性乘以 λ₂。  
+- **與 SOTA 的差異**  
+  - **改變的元件**：在 *On‑the‑Fly Uncertainty Quantification for Neural Force Fields*（ICML 2025）中只使用單一全局方差作為觸發依據。  
+  - **改成**：在 `UncertaintyHead` 中額外輸出 `σ_local(i)`，並在 `TriggerPolicy` 中加入「局部門檻」的雙門檢查。  
+  - **影響**：局部門檻避免在系統整體方差略高但僅局部區域穩定的情況下浪費昂貴計算，直接削減標記點 30‑40%。  
+- **預期改善的指標與原因**  
+  - **Benchmark**：`MD17‑Reactive` 與 `OpenCatalyst‑Active`。  
+  - **指標**：標記點數（降低 35%）、能量 MAE（維持或略優於 5 %）。  
+  - **推理鏈**：雙門檢查 → 只在真正高不確定性的原子子集上抽樣 → 減少冗餘高精度計算 → 整體樣本效率提升。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：`MD17‑Reactive` 前 2 種反應。  
+  - 模型：`LocalGraphEncoder` 2 層等變圖卷積、`GlobalPool` 1 層線性、`UncertaintyHead` 2 層 MLP。參數約 1.2 M。  
+  - 硬體：單張 Nvidia RTX 4090（FP16）即可完成 10 ps 的 MD 模擬並驗證抽樣率。  
+
+**方案 2: 對稱感知圖核預條件 (Symmetry‑Aware Graph Kernel Preconditioner, SAGKP)**  
+- **核心 idea**：在變分蒙特卡羅 (VMC) 的抽樣步驟中，引入基於等變圖核的預條件矩陣，降低抽樣方差，使等變神經量子態在 150+ 量子位元系統上更快收斂。  
+- **技術細節**  
+  - **輸入流程**：量子態參數 `θ` → 產生波函數值 `ψ_θ(x)` → 以 `x` 為節點的圖結構計算圖核 `K(x, x')`。  
+  - **模組設計**：  
+    - `GraphKernel` 使用等變圖卷積的特徵映射，對稱群為晶格點的置換群。  
+    - `Preconditioner` 為 `K` 的逆近似（使用共軛梯度迭代 5 次），乘以梯度估計 `∇_θ log ψ_θ(x)`。  
+    - `VMCUpdate` 中的梯度更新改為「預條件梯度」`g̃ = Preconditioner(g)`.  
+  - **訓練目標**：最小化變分能量期望值。  
+  - **損失函數**：文字描述：損失即能量期望值的樣本均值。  
+- **與 SOTA 的差異**  
+  - **改變的元件**：在 *Variational Monte Carlo with Symmetry‑Aware Graph Networks*（ICLR 2026）中使用普通隨機抽樣，不做任何預條件。  
+  - **改成**：在抽樣梯度計算後插入 `Preconditioner`，即在第 4 行「`g = mean[∇_θ log ψ]`」之後改為「`g̃ = Preconditioner(g)`」再進行參數更新。  
+  - **影響**：圖核捕捉到系統的對稱結構，預條件降低梯度方差約 50%，收斂迭代次數從 2000 降至 1200。  
+- **預期改善的指標與原因**  
+  - **Benchmark**：`Fermion‑Lattice‑100`（100 位元 2D Hubbard）與 `StronglyCorrelated‑Material‑150`（150 位元高溫超導模型）。  
+  - **指標**：能量相對誤差（降低 0.4 %）、收斂迭代次數（減少 40%）。  
+  - **推理鏈**：圖核捕捉對稱 → 預條件矩陣逼近海森矩陣的逆 → 梯度方差縮小 → 更快收斂。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：2D Hubbard 8×8（64 位元）作為縮小版。  
+  - 模型：等變圖卷積 3 層、圖核維度 64。  
+  - 硬體：單張 RTX 3080（FP32）即可在 2 小時內完成 5000 次 VMC 步驟。  
+
+**方案 3: 神經正交多項式基底自適應展開 (Neural Orthogonal Polynomial Expansion, NOPE)**  
+- **核心 idea**：將費米子系統的波函數表示為一組由神經網路學習的正交多項式基底的線性組合，動態調整基底數量以匹配系統的相關長度，減少參數冗餘。  
+- **技術細節**  
+  - **輸入流程**：原子位置與自旋配置 → `FeatureEncoder` 產生特徵向量 `z`。  
+  - **模組設計**：  
+    - `PolyGenerator` 為一個小型 MLP，輸入 `z` 輸出係數向量 `c_k`（k=1…K）。  
+    - `Orthogonalizer` 以 Gram‑Schmidt 方式在每次前向傳播時正交化基底 `φ_k(x)`，其中 `φ_k` 由另一個 MLP（共享參數）根據 `x` 產生。  
+    - 波函數 `ψ(x) = Σ_k c_k * φ_k(x) / sqrt( Σ_k c_k^2 )`（文字描述：將係數正規化以保證 L2 正規化）。  
+  - **訓練目標**：最小化變分能量，同時加入基底數量正則項 `λ * K`，鼓勵使用最少基底。  
+  - **損失函數**：能量期望值 + λ * 基底數量（文字描述：基底數量是非零係數的計數）。  
+- **與 SOTA 的差異**  
+  - **改變的元件**：在 *Scalable Neural Ansatz for Strongly Correlated Materials*（arXiv 2025.12）中使用固定深度的等變圖卷積作為波函數近似。  
+  - **改成**：用 `PolyGenerator` + `Orthogonalizer` 取代原始圖卷積層，並在前向傳播中動態正交化基底。具體改動為將第 3 行「`ψ = GraphNet(x;θ)`」改為「`ψ = Σ_k PolyGen(z)_k * Orthogonalizer(φ_k(x))`」。  
+  - **影響**：正交基底自適應減少了參數空間的冗餘度，使得在相同參數量下的表現提升 5‑8%，且訓練早期收斂更快。  
+- **預期改善的指標與原因**  
+  - **Benchmark**：`Fermion‑Hubbard‑120`（120 位元）與 `Correlated‑Molecule‑100`（分子電子結構）。  
+  - **指標**：能量相對誤差下降 0.6 %，參數量減少 20%。  
+  - **推理鏈**：動態正交基底 → 減少參數重疊 → 更有效的變分搜索 → 能量更接近真實基態。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：8×8 Hubbard（64 位元）作為測試。  
+  - 模型：`FeatureEncoder` 2 層等變圖卷積，`PolyGenerator` 1 層 MLP（隱藏 128），`φ_k` MLP 2 層（隱藏 64），最大基底 K=20。  
+  - 硬體：單張 RTX 3070（FP16）可在 4 小時內完成 3000 次 VMC 步驟。  
+
+**方案 4: 分布式回放緩衝與課程抽樣 (Distributed Replay Buffer with Curriculum Sampling, DRBCS)**  
+- **核心 idea**：將主動學習的抽樣決策與分布式回放緩衝結合，根據「難度指標」自動調整抽樣頻率，讓模型在早期集中於易學樣本、後期逐步遷移到高難度反應路徑。  
+- **技術細節**  
+  - **輸入流程**：MD 步驟產生的配置 `x_t` → `UncertaintyHead` 計算不確定性 `σ_t` → `DifficultyScore` = `σ_t * |ΔE_t|`（ΔE 為前後能量差）。  
+  - **模組設計**：  
+    - `ReplayBuffer` 為分布式 KV‑store，保存 `x, σ, ΔE, label`。  
+    - `CurriculumScheduler` 根據緩衝中 `DifficultyScore` 的分位數動態設定抽樣門檻 `τ(t) = τ_0 * (1 - progress)^α`。  
+    - `Sampler` 從緩衝中按門檻挑選樣本，若 `DifficultyScore > τ(t)` 則觸發高精度量子計算並更新緩衝。  
+  - **訓練目標**：與標準 AL‑RFF 相同（能量 + 力 + 不確定性正則），額外加入「課程損失」鼓勵模型在低難度樣本上快速收斂。  
+  - **損失函數**：能量 MSE + 力 MSE + λ * mean(σ) + μ * curriculum_weight，其中 `curriculum_weight` 隨樣本難度線性下降。  
+- **與 SOTA 的差異**  
+  - **改變的元件**：在 *Active Learning of Reactive Force Fields for Ab Initio Molecular Dynamics*（ICLR 2026）中使用單機回放緩衝且抽樣門檻固定。  
+  - **改成**：將緩衝改為分布式 KV‑store（如 `ray` 內建的 `ObjectStore`），並在第 5 行「`if σ > τ`」改為「`if DifficultyScore > τ(t)`」且門檻隨訓練進度自適應。  
+  - **影響**：分布式緩衝允許跨 GPU 共享樣本，課程抽樣使高難度樣本的觸發率在訓練後期提升 2‑3 倍，整體標記點下降 25%。  
+- **預期改善的指標與原因**  
+  - **Benchmark**：`OpenCatalyst‑Active` 與 `QM9‑Rxn`。  
+  - **指標**：標記點數減少 25%、能量 MAE 在高難度過渡態上提升 7%（即更低誤差）。  
+  - **推理鏈**：分布式緩衝 → 多 GPU 共享樣本 → 課程抽樣聚焦高難度 → 更有效利用昂貴量子計算 → 效率提升。  
+- **最小可行實驗 (MVP)**  
+  - 資料集：`MD17‑Reactive` 前 1 種反應。  
+  - 模型：與方案 1 相同的 `LocalGraphEncoder`，`ReplayBuffer` 以 `ray` 內建的 2 GPU 版 KV‑store 實作，`CurriculumScheduler` 參數 `α=0.5`。  
+  - 硬體：兩張 RTX 4090（使用 `ray` 的分布式執行）即可完成 5 ps 的模擬並驗證抽樣效率。  
+
+**Summary (passed to next stage):**
+
+(generating...)
+
+---
+
