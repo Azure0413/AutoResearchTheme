@@ -1,6 +1,6 @@
 {
   "date": "2026-09-17",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**因果表徵學習（Causal Representation Learning）在跨領域與 OOD 魯棒性上的核心方法與實驗設計（2025‑2026）**\n\n- **核心方法群**  \n  - **CausalVAE (ICLR 2025)**：變分自編碼器結合因果先驗正則化，生成可解釋的因果潛在變量。  \n  - **DoCausal (NeurIPS 2025)**：干預式資料增強 + 對比學習，強化未見干預下的預測。  \n  - **CFM‑Transformer (ICML 2026)**：在 Transformer 中加入因果注意力層，因果圖作為關係張量限制注意力權重。  \n\n- **模型架構**  \n  - **輸入**：多模態觀測向量（圖像、結構化特徵、時間序列）＋可選干預標籤。  \n  - **輸出**：可解釋的因果變量或直接預測/決策結果。  \n  - **關鍵模組**  \n    - *因果圖編碼器*：將先驗或學得的圖映射為注意力遮罩/正則化項。  \n    - *學習核心*：CausalVAE → 編碼‑解碼；DoCausal → 對比損失；CFM‑Transformer → 因果注意力。  \n  - **訓練目標**：重建/預測誤差 + 因果結構正則化（稀疏度、acyclicity）+ 干預一致性損失。  \n\n- **訓練策略**  \n  - 資料規模：10k‑50k 合成/半合成（如 *CausalWorld*），真實醫療/經濟資料 5k‑20k。  \n  - Batch：64‑256；DoCausal 混合原始與干預樣本。  \n  - 優化器：AdamW，LR 1e‑4，cosine decay。  \n  - Loss 組合：重建/預測 + 因果正則化 + 干預一致性。  \n  - 實作技巧：先無因果正則化預"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **CIC（因果干預層級對比學習）**  \n  - 核心：正樣本改為「干預後觀測 + 干預編碼」(DoCausal→`pos = concat(f(x), f(do(a,x))+embed(do(a)))`)，迫使模型學習因果變化而非噪聲不變性。  \n  - 期望：CausalWorld 未見干預得分提升 8–12%，MIMIC‑IV 因果效應 MAE 降 0.04。  \n  - MVP：CausalWorld 5k、MIMIC‑IV 2k，ResNet‑18+投影頭 128，30 epoch 可見對比損失收斂。\n\n- **ACS（因果結構稀疏化自適應正則化）**  \n  - 核心：CausalVAE 的稀疏係數 λ 由梯度‖∇A‖ 控制，早期允許探索，後期自動收斂至最小必要"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
