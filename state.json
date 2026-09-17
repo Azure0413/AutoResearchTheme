@@ -1,28 +1,13 @@
 {
-  "date": "2026-09-17",
-  "step": 5,
+  "date": "2026-09-18",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": ""
-    },
-    {
-      "stage": 2,
-      "summary": "**因果表徵學習（Causal Representation Learning）在跨領域與 OOD 魯棒性上的核心方法與實驗設計（2025‑2026）**\n\n- **核心方法群**  \n  - **CausalVAE (ICLR 2025)**：變分自編碼器結合因果先驗正則化，生成可解釋的因果潛在變量。  \n  - **DoCausal (NeurIPS 2025)**：干預式資料增強 + 對比學習，強化未見干預下的預測。  \n  - **CFM‑Transformer (ICML 2026)**：在 Transformer 中加入因果注意力層，因果圖作為關係張量限制注意力權重。  \n\n- **模型架構**  \n  - **輸入**：多模態觀測向量（圖像、結構化特徵、時間序列）＋可選干預標籤。  \n  - **輸出**：可解釋的因果變量或直接預測/決策結果。  \n  - **關鍵模組**  \n    - *因果圖編碼器*：將先驗或學得的圖映射為注意力遮罩/正則化項。  \n    - *學習核心*：CausalVAE → 編碼‑解碼；DoCausal → 對比損失；CFM‑Transformer → 因果注意力。  \n  - **訓練目標**：重建/預測誤差 + 因果結構正則化（稀疏度、acyclicity）+ 干預一致性損失。  \n\n- **訓練策略**  \n  - 資料規模：10k‑50k 合成/半合成（如 *CausalWorld*），真實醫療/經濟資料 5k‑20k。  \n  - Batch：64‑256；DoCausal 混合原始與干預樣本。  \n  - 優化器：AdamW，LR 1e‑4，cosine decay。  \n  - Loss 組合：重建/預測 + 因果正則化 + 干預一致性。  \n  - 實作技巧：先無因果正則化預"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **CIC（因果干預層級對比學習）**  \n  - 核心：正樣本改為「干預後觀測 + 干預編碼」(DoCausal→`pos = concat(f(x), f(do(a,x))+embed(do(a)))`)，迫使模型學習因果變化而非噪聲不變性。  \n  - 期望：CausalWorld 未見干預得分提升 8–12%，MIMIC‑IV 因果效應 MAE 降 0.04。  \n  - MVP：CausalWorld 5k、MIMIC‑IV 2k，ResNet‑18+投影頭 128，30 epoch 可見對比損失收斂。\n\n- **ACS（因果結構稀疏化自適應正則化）**  \n  - 核心：CausalVAE 的稀疏係數 λ 由梯度‖∇A‖ 控制，早期允許探索，後期自動收斂至最小必要"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4（🔥 嚴格自我批判）關鍵摘要**  \n\n- **方案 CIC（因果干預層級對比學習）**  \n  - *理論假設*  \n    - 假設「干預後觀測 + 干預編碼」必然比純觀測更具辨識度。  \n    - 在高度隨機干預或效應極小的情況下，正負樣本分布差異微乎其微，對比學習失效。  \n    - **補救**：加入「干預效應下界」假設；設計效應強度梯度實驗；若效應弱，使用「干預放大」生成式模組。  \n  - *資料與訓練可行性*  \n    - 只在 CausalWorld 5k 與 MIMIC‑IV 2k 上驗證，樣本規模遠低於實務千萬級資料。  \n    - 小樣本易過擬合，負樣本抽樣不穩定。  \n    - **補救**：加入大規模半監督實驗（MIMIC‑IV 200k、金融時間序列）；使用動態負樣本緩衝池、硬負樣本挖掘；加正則化並報告驗證曲線。  \n  - *計算資源*  \n    - ResNet‑18 + 128‑dim 投影頭在 30 epoch 收斂，但對比損失隨負樣本數二次增長。  \n    - 10k 負樣本會導致單卡 24 GB OOM。  \n    - **補救**：採用「負樣本分段」或「對比損失近似」（Nyström 方法）；提供單卡 24 GB 基準；列出 8×H100 設備成本估算。  \n  - *是否真優於 SOTA*  \n    - 基準僅對比「未使用干預的普通對比學習」與「純 CausalVAE」。  \n    - 缺少 2025 年 *Intervention‑Contrast*（ICLR 2025）與 *CausalBERT*（NeurIPS 2025）。  \n    - 8–12% 提升可能因訓練時間或資料前處理"
+      "summary": "**主題一：生成式目標驅動的自我指導探索**  \n- 研究人數不足十人，僅少數團隊嘗試用生成模型直接產生可達子目標，解決極稀疏獎勵環境下的學習路徑自動構造。  \n- 代表論文：*GoalDiff* (NeurIPS 2025)、*Self‑Generated Goal Proposals via Generative Flow Networks* (ICLR 2026)、*Goal‑Conditioned Exploration with Energy‑Based Models* (arXiv 2025.12)。  \n- 核心問題：  \n  - 高維狀態空間中保證目標可達性與多樣性的理論指標缺失。  \n  - 生成模型與策略同步訓練導致梯度不穩，尚無穩健聯合優化框架。  \n\n**主題二：多代理協同好奇心與新興通信協議**  \n- 單代理好奇心研究已成熟，但多代理「共同好奇」如何驅動訊息交換與協同探索仍極少，相關工作不到十篇。  \n- 代表論文：*Cooperative Curiosity* (ICLR 2026)、*Curiosity‑Driven Message Passing in Decentralised RL* (ICML 2025)、*Learning to Talk* (arXiv 2025.09)。  \n- 核心問題：  \n  - 好奇心獎勵在多代理間的分配與公平性缺乏度量，易產生訊息噪聲或策略不收斂。  \n  - 最有效訊息結構、壓縮與解碼理論尚未"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
