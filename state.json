@@ -1,13 +1,18 @@
 {
   "date": "2026-09-18",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：生成式目標驅動的自我指導探索**  \n- 研究人數不足十人，僅少數團隊嘗試用生成模型直接產生可達子目標，解決極稀疏獎勵環境下的學習路徑自動構造。  \n- 代表論文：*GoalDiff* (NeurIPS 2025)、*Self‑Generated Goal Proposals via Generative Flow Networks* (ICLR 2026)、*Goal‑Conditioned Exploration with Energy‑Based Models* (arXiv 2025.12)。  \n- 核心問題：  \n  - 高維狀態空間中保證目標可達性與多樣性的理論指標缺失。  \n  - 生成模型與策略同步訓練導致梯度不穩，尚無穩健聯合優化框架。  \n\n**主題二：多代理協同好奇心與新興通信協議**  \n- 單代理好奇心研究已成熟，但多代理「共同好奇」如何驅動訊息交換與協同探索仍極少，相關工作不到十篇。  \n- 代表論文：*Cooperative Curiosity* (ICLR 2026)、*Curiosity‑Driven Message Passing in Decentralised RL* (ICML 2025)、*Learning to Talk* (arXiv 2025.09)。  \n- 核心問題：  \n  - 好奇心獎勵在多代理間的分配與公平性缺乏度量，易產生訊息噪聲或策略不收斂。  \n  - 最有效訊息結構、壓縮與解碼理論尚未"
+    },
+    {
+      "stage": 2,
+      "summary": "**生成式目標驅動自我指導探索（Stage 2）關鍵摘要**  \n\n- **核心方法**  \n  - **GoalDiff (NeurIPS 2025)**：擴散模型產生可達子目標，差分式目標差距作即時獎勵。  \n  - **Self‑Generated Goal Proposals via GFN (ICLR 2026)**：GFN 在狀態‑目標空間構建可逆抽樣流程，流量保守性為品質指標。  \n  - **Goal‑Conditioned Exploration with EBM (arXiv 2025.12)**：能量模型估計「目標可達能量」，梯度指引探索，結合條件化策略。  \n\n- **模型架構**  \n  - 輸入：當前狀態 `s_t`（視覺/向量）與可選前一目標 `g_{t‑1}`。  \n  - 輸出：目標生成器產生候選 `ĝ`；策略網路輸出 `π(a|s_t,ĝ)`。  \n  - 生成模組共用編碼器‑解碼器；可達性估計器（前饋/GCN）評估成功機率；聯合優化器交替更新並加入「目標一致性正則」。  \n\n- **訓練策略**  \n  - 1‑2 M 步模擬軌跡（10‑20 GB）足以單機 A100。  \n  - 生成模組 batch 256‑512，策略 1024‑2048；AdamW（1e‑4）+ RMSProp/Adam（5e‑5）。  \n  - loss：生成 `KL + λ·可達性罰項`；策略 `策略梯度 + β·探索獎勵`。  \n  - tricks：交替更新（5/10 步）、目標緩衝區、噪聲尺度自適應。  \n\n- **Benchmark & 表現**"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
