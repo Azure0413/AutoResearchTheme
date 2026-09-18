@@ -1,6 +1,6 @@
 {
   "date": "2026-09-18",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**生成式目標驅動自我指導探索（Stage 2）關鍵摘要**  \n\n- **核心方法**  \n  - **GoalDiff (NeurIPS 2025)**：擴散模型產生可達子目標，差分式目標差距作即時獎勵。  \n  - **Self‑Generated Goal Proposals via GFN (ICLR 2026)**：GFN 在狀態‑目標空間構建可逆抽樣流程，流量保守性為品質指標。  \n  - **Goal‑Conditioned Exploration with EBM (arXiv 2025.12)**：能量模型估計「目標可達能量」，梯度指引探索，結合條件化策略。  \n\n- **模型架構**  \n  - 輸入：當前狀態 `s_t`（視覺/向量）與可選前一目標 `g_{t‑1}`。  \n  - 輸出：目標生成器產生候選 `ĝ`；策略網路輸出 `π(a|s_t,ĝ)`。  \n  - 生成模組共用編碼器‑解碼器；可達性估計器（前饋/GCN）評估成功機率；聯合優化器交替更新並加入「目標一致性正則」。  \n\n- **訓練策略**  \n  - 1‑2 M 步模擬軌跡（10‑20 GB）足以單機 A100。  \n  - 生成模組 batch 256‑512，策略 1024‑2048；AdamW（1e‑4）+ RMSProp/Adam（5e‑5）。  \n  - loss：生成 `KL + λ·可達性罰項`；策略 `策略梯度 + β·探索獎勵`。  \n  - tricks：交替更新（5/10 步）、目標緩衝區、噪聲尺度自適應。  \n\n- **Benchmark & 表現**"
+    },
+    {
+      "stage": 3,
+      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：自適應可達性課程 (ARC)**  \n  - 目標生成後加入可達性估計器 `R(s,ĝ)`，僅通過門檻 τ 的目標送入策略。  \n  - `R` 為兩層前饋網路，輸出 0–1 成功機率；訓練使用二元交叉熵。  \n  - 目標生成損失：KL + λ₁ × 交叉熵；策略損失：Policy + λ₂ × 探索獎勵。  \n  - 與 GoalDiff（NeurIPS 2025）相比，加入可達性過濾可降低噪聲目標，預期 Sparse‑Reward Atari 與 ProcGen hard‑level 成功率提升 15–25%。  \n  - MVP：MontezumaRevenge、procgen:bigfish；ResNet‑18 + 2‑層 R；500k 步，RTX 4090。\n\n- **方案 2：流網路目標回放緩衝 (GGRB)**  \n  - GFN 產生的高概率目標軌跡存入緩衝 `B_g`，附帶流量分數 `w`，採分層抽樣。  \n  - 策略梯度由即時目標（Policy ）與回放目標（加權離線）組成，α 控制比例。  \n  - 與 Self‑Generated Goal Proposals via GFN（ICLR 2026）不同，加入回放可提升 MiniGrid、Meta‑World 標準 30% 樣本效率。  \n  - MVP"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
