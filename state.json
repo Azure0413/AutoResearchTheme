@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-18",
-  "step": 6,
+  "date": "2026-09-19",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一：生成式目標驅動的自我指導探索**  \n- 研究人數不足十人，僅少數團隊嘗試用生成模型直接產生可達子目標，解決極稀疏獎勵環境下的學習路徑自動構造。  \n- 代表論文：*GoalDiff* (NeurIPS 2025)、*Self‑Generated Goal Proposals via Generative Flow Networks* (ICLR 2026)、*Goal‑Conditioned Exploration with Energy‑Based Models* (arXiv 2025.12)。  \n- 核心問題：  \n  - 高維狀態空間中保證目標可達性與多樣性的理論指標缺失。  \n  - 生成模型與策略同步訓練導致梯度不穩，尚無穩健聯合優化框架。  \n\n**主題二：多代理協同好奇心與新興通信協議**  \n- 單代理好奇心研究已成熟，但多代理「共同好奇」如何驅動訊息交換與協同探索仍極少，相關工作不到十篇。  \n- 代表論文：*Cooperative Curiosity* (ICLR 2026)、*Curiosity‑Driven Message Passing in Decentralised RL* (ICML 2025)、*Learning to Talk* (arXiv 2025.09)。  \n- 核心問題：  \n  - 好奇心獎勵在多代理間的分配與公平性缺乏度量，易產生訊息噪聲或策略不收斂。  \n  - 最有效訊息結構、壓縮與解碼理論尚未"
-    },
-    {
-      "stage": 2,
-      "summary": "**生成式目標驅動自我指導探索（Stage 2）關鍵摘要**  \n\n- **核心方法**  \n  - **GoalDiff (NeurIPS 2025)**：擴散模型產生可達子目標，差分式目標差距作即時獎勵。  \n  - **Self‑Generated Goal Proposals via GFN (ICLR 2026)**：GFN 在狀態‑目標空間構建可逆抽樣流程，流量保守性為品質指標。  \n  - **Goal‑Conditioned Exploration with EBM (arXiv 2025.12)**：能量模型估計「目標可達能量」，梯度指引探索，結合條件化策略。  \n\n- **模型架構**  \n  - 輸入：當前狀態 `s_t`（視覺/向量）與可選前一目標 `g_{t‑1}`。  \n  - 輸出：目標生成器產生候選 `ĝ`；策略網路輸出 `π(a|s_t,ĝ)`。  \n  - 生成模組共用編碼器‑解碼器；可達性估計器（前饋/GCN）評估成功機率；聯合優化器交替更新並加入「目標一致性正則」。  \n\n- **訓練策略**  \n  - 1‑2 M 步模擬軌跡（10‑20 GB）足以單機 A100。  \n  - 生成模組 batch 256‑512，策略 1024‑2048；AdamW（1e‑4）+ RMSProp/Adam（5e‑5）。  \n  - loss：生成 `KL + λ·可達性罰項`；策略 `策略梯度 + β·探索獎勵`。  \n  - tricks：交替更新（5/10 步）、目標緩衝區、噪聲尺度自適應。  \n\n- **Benchmark & 表現**"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：自適應可達性課程 (ARC)**  \n  - 目標生成後加入可達性估計器 `R(s,ĝ)`，僅通過門檻 τ 的目標送入策略。  \n  - `R` 為兩層前饋網路，輸出 0–1 成功機率；訓練使用二元交叉熵。  \n  - 目標生成損失：KL + λ₁ × 交叉熵；策略損失：Policy + λ₂ × 探索獎勵。  \n  - 與 GoalDiff（NeurIPS 2025）相比，加入可達性過濾可降低噪聲目標，預期 Sparse‑Reward Atari 與 ProcGen hard‑level 成功率提升 15–25%。  \n  - MVP：MontezumaRevenge、procgen:bigfish；ResNet‑18 + 2‑層 R；500k 步，RTX 4090。\n\n- **方案 2：流網路目標回放緩衝 (GGRB)**  \n  - GFN 產生的高概率目標軌跡存入緩衝 `B_g`，附帶流量分數 `w`，採分層抽樣。  \n  - 策略梯度由即時目標（Policy ）與回放目標（加權離線）組成，α 控制比例。  \n  - 與 Self‑Generated Goal Proposals via GFN（ICLR 2026）不同，加入回放可提升 MiniGrid、Meta‑World 標準 30% 樣本效率。  \n  - MVP"
-    },
-    {
-      "stage": 4,
-      "summary": "**方案 1 主要批判與補救**  \n- **理論假設失效**：可達性估計器 `R(s,ĝ)` 依賴「低階可分」假設，隱藏動力學環境（如隱蔽門 Maze）會被低估；補救：加入貝葉斯置信區間與對抗性環境測試，允許低置信度目標以低權重進入策略。  \n- **資料與訓練可行性**：手工調整目標緩衝區與門檻 τ，缺乏自適應；補救：設計基於驗證成功率的自適應門檻調整器，保持目標接受率 30‑50%。  \n- **計算資源瓶頸**：單卡 24 GB VRAM 難以同時容納目標生成器、可達性估計器與策略網路；補救：參數共享、模型剪枝、混合精度"
-    },
-    {
-      "stage": 5,
-      "summary": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 目標生成方法（GoalDiff、NeurIPS 2025）在極稀疏獎勵環境下產生大量不可達或冗餘子目標，導致學習效率低。  \n  - 生成模型與策略同步訓練缺乏穩健聯合優化，梯度不穩定；Self‑Generated Goal Proposals via GFN（ICLR 2026）亦指出此問題。  \n  - 多代理好奇心研究（Cooperative Curiosity，ICLR 2026）顯示若無動態篩選，可達性與資訊價值，訊息交換會產生噪聲，削弱探索效益。  \n\n- **核心方法：ARGG（Adaptive Reachability‑Guided Goal Generation）**  \n  - **目標生成**：小型條件擴散模型 `Gθ` 以當前狀態 `s_t` 與前一目標 `g_{t‑1}` 產生 `K` 個候選目標。  \n  - **可達性評估**：輕量前饋網路 `Rφ(s,ĝ)` 輸出成功機率 `p_i`，並根據最近 `N` 步成功率自適應調整門檻 `τ`（保持 30‑50% 接受率）。  \n  - **流量分數與回放緩衝**：使用 GFN 流量分數 `w_i` 為目標打分，存入分層回放緩衝 `B_g`（高、中、低三層），採分層抽樣得到回放目標集合 `G_buf`。  \n  - **策略更新**：同時抽樣 `G_live`（即時）與 `G_buf`（回放），計算加權策略梯度；損失包含 Policy Gradient、探索獎勵 β·探索獎勵、目標一致性正則 λ·KL。  \n  - **目標一致性正則**：KL 散度保持生成模型分布與回放緩衝高流量分布一致，防止模式崩潰。  \n\n- **創新點**  \n  - 結合可達性"
+      "summary": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **延遲感知與計算預算驅動的自適應 MoE 路由**  \n  - 目前多數 MoE 只優化吞吐量，缺少實時延遲與硬體預算考量。  \n  - 代表工作：  \n    - *Latency‑Aware Mixture of Experts for Real‑Time Inference*（NeurIPS 2025）  \n    - *Adaptive Computation Budget MoE*（ICLR 2026）  \n    - *Budget‑Constrained Expert Selection via Reinforcement Learning*（arXiv 2025.12）  \n  - 核心挑戰：  \n    - 同時訓練專家效能預測與硬體延遲模型，確保毫秒級路由決策。  \n    - 目前預算控制多依賴全局統計，缺乏對單一輸入序列的細粒度動態調整機制。  \n\n- **跨領域異質專家（Heterogeneous Experts）的共享與專化**  \n  - 研究人數不足二十，因需同時支援圖結構、時間序列與文字序列，缺乏統一評測平台。  \n  - 代表工作：  \n    - *Cross‑Domain Heterogeneous MoE for Multi‑Task Learning*（ICML 2025）  \n    - *Domain‑Aware Expert Routing for Graph and Sequence Data*（NeurIPS 2025）  \n    - *Unified Heterogeneous MoE for Structured Data*（arXiv 2026.03）  \n  - 核心挑戰：  \n    - 在同一模型內保持圖專家與序列專家的參數共享，避免負向遷移。  \n    - 異質專家路由缺乏統一特徵表示，導致多任務訓練時路由不穩定。  \n\n- **基於自監督語義聚類的 Token‑Level 路由**  \n  - 目前 token‑choice 多採硬性閾值或隨機抽樣，缺少利用自監督聚"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
