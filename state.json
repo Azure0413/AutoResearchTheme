@@ -1,13 +1,18 @@
 {
   "date": "2026-09-19",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **延遲感知與計算預算驅動的自適應 MoE 路由**  \n  - 目前多數 MoE 只優化吞吐量，缺少實時延遲與硬體預算考量。  \n  - 代表工作：  \n    - *Latency‑Aware Mixture of Experts for Real‑Time Inference*（NeurIPS 2025）  \n    - *Adaptive Computation Budget MoE*（ICLR 2026）  \n    - *Budget‑Constrained Expert Selection via Reinforcement Learning*（arXiv 2025.12）  \n  - 核心挑戰：  \n    - 同時訓練專家效能預測與硬體延遲模型，確保毫秒級路由決策。  \n    - 目前預算控制多依賴全局統計，缺乏對單一輸入序列的細粒度動態調整機制。  \n\n- **跨領域異質專家（Heterogeneous Experts）的共享與專化**  \n  - 研究人數不足二十，因需同時支援圖結構、時間序列與文字序列，缺乏統一評測平台。  \n  - 代表工作：  \n    - *Cross‑Domain Heterogeneous MoE for Multi‑Task Learning*（ICML 2025）  \n    - *Domain‑Aware Expert Routing for Graph and Sequence Data*（NeurIPS 2025）  \n    - *Unified Heterogeneous MoE for Structured Data*（arXiv 2026.03）  \n  - 核心挑戰：  \n    - 在同一模型內保持圖專家與序列專家的參數共享，避免負向遷移。  \n    - 異質專家路由缺乏統一特徵表示，導致多任務訓練時路由不穩定。  \n\n- **基於自監督語義聚類的 Token‑Level 路由**  \n  - 目前 token‑choice 多採硬性閾值或隨機抽樣，缺少利用自監督聚"
+    },
+    {
+      "stage": 2,
+      "summary": "**主題選擇**  \n- **基於自監督語義聚類的 Token‑Level 路由**  \n  - 已於 NeurIPS 2025、ICLR 2026 與 arXiv 2025.11 示範可直接復現  \n  - 只需普通 GPU、少量標註資料  \n  - 路由精度與計算效率仍有明顯提升空間，適合學生團隊切入  \n\n---\n\n### 1. 核心方法群  \n- **Self‑Supervised Token Clustering (SSTC)** – *NeurIPS 2025*  \n  - 對比學習將語意相近 token 投射至同一嵌入空間  \n  - 以動態 K‑means 產生「語意簇」，路由器根據簇指派專家  \n- **Contrastive Semantic Routing (CSR)** – *ICLR 2026*  \n  - 雙塔結構同時學習 token 與專家表示  \n  - 跨樣本對比損失強化「相近 token → 同專家」關係  \n- **Cluster‑Based Expert Allocation (CEA)** – *arXiv 2025.11*  \n  - 先離線預訓練輕量聚類模型  \n  - 推理時直接查表選擇最近 K 個專家，省去即時聚類  \n\n---\n\n### 2. 模型架構細節  \n- **輸入**：原始 token 序列 → 共享嵌入層  \n- **關鍵模組**  \n  - `TokenEncoder`：Transformer 編碼器 → token 向量  \n  - `SemanticClusterer`：自監督對比頭 + 動態 K‑means / GMM  \n  - `ExpertRouter`：根據聚類結果查表 → 專家 ID（支援 Top‑K）  \n  - `MoEExperts`：多個小型 Feed‑Forward / 圖卷積專家，僅處理被指派 token  \n- **輸出**：與原始 Transformer 相同的隱"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
