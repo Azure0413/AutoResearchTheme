@@ -1,13 +1,18 @@
 {
   "date": "2026-09-20",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：學習連續對稱群的偏微分方程求解器**  \n- 研究動機：現有神經算子僅支援固定離散對稱（平移、旋轉），缺乏自動化學習連續群的機制。  \n- 代表論文：  \n  - *Learning Continuous Symmetry Groups for PDEs* (NeurIPS 2025)  \n  - *Equivariant Neural Operators for Turbulent Combustion* (ICLR 2026)  \n  - *Group‑Equivariant Neural PDE Solver with Adaptive Mesh* (arXiv 2025.12.03)  \n- 核心技術挑戰：  \n  - 從數值資料自動辨識並參數化連續群；  \n  - 連續群表示學習與網路參數共享之數學一致性，尤其在高維流體模擬中保持數值穩定；  \n  - 自適應網格與群等變性結合時的梯度傳播與計算成本控制。\n\n**主題二：高階 SE(3)‑等變分子圖神經網路於化學反應機制預測**  \n- 研究動機：現有 SE(3)‑等變模型多聚焦靜態結構，缺乏捕捉反應過程中拓撲變化與高階張量交互的系統化方法。  \n- 代表論文：  \n  - *Higher‑Order SE(3)‑Equivariant Transformers for Reaction Prediction* (ICML 2025)  \n  - *Equivariant Graph Networks with Tensor Field Attention for Chemical Mechanisms* (NeurIPS 2025)  \n  - *Learning Equivariant Reaction Pathways via Energy‑Conserving Flows* (arXiv 2026.01.15)  \n- 核心技術挑戰：  \n  - 設計同時保留旋轉、平移與原子置換對稱的高階張量訊息傳遞機制；  \n  - 在能量守恆下學習反應坐標並生成可解釋機制路徑；  \n  - 缺"
+    },
+    {
+      "stage": 2,
+      "summary": "**核心方法與技術概覽（300–500字）**\n\n- **研究主題**  \n  學習連續對稱群（如 SO(2)、SO(3)、尺度群）以構建偏微分方程（PDE）求解器。目標是結合可微分的 Lie‑algebra 參數化、對稱正則化與自適應網格，提升解的精度與對稱保持度。\n\n- **關鍵方法群**  \n  - *Lie‑Algebra 嵌入式群參數化*（NeurIPS 2025）  \n    - 透過 MLP 直接學習 Lie‑algebra 基底係數，生成指數映射的群元素，嵌入卷積核。  \n  - *Symmetry‑Regularized Neural Operator (SNO)*（ICLR 2026）  \n    - 在損失中加入群不變性正則項，強制算子在隨機群變換下輸出保持不變。  \n  - *Adaptive‑Mesh Equivariant Operator (AMEO)*（arXiv 2025.12.03）  \n    - 結合非結構化網格細化與等變卷積，利用群資訊指導網格加密，提升局部解析度。\n\n- **模型架構**  \n  - **輸入**：初始/邊界條件場、網格座標或點雲、可選群參數。  \n  - **輸出**：時間步長或參數化的 PDE 解場。  \n  - **模組**：  \n    - 群編碼器 → Lie‑algebra 係數 → 等變卷積核。  \n    - 等變卷積層：旋轉/尺度等變操作。  \n    - AMEO（可選）：根據群導向誤差動態細分網格。  \n    - 解碼器：映射回物理空間。  \n  - **訓練目標**：  \n    - 主體損失：MSE 或相對 L2。  \n    - 正則化：群不變性損失、網格平滑正則。  \n    - `L_total = L_MSE + λ_sym L_sym + λ_mesh L_mesh`，"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
