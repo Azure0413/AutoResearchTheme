@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-02",
-    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：圖神經網路 + 貝葉斯不確定性在晶體結構穩定性預測**\n  - **突破潛力**：結合圖注意力機制與貝葉斯估計，實現端到端結構生成與能量評估，研究團隊數量少於十人。  \n  - **代表論文**  \n    - *Crystal Graph Attention Networks for Stable Structure Prediction*（Yuan Li，NeurIPS 2025）  \n    - *Bayesian Graph Neural Networks for Materials Uncertainty Quantification*（Mina Chen，ICLR 2026）  \n    - *High‑Throughput Graph‑Based Discovery of Metastable Phases*（arXi",
-    "final_proposal": ""
-  },
-  {
     "date": "2026-09-03",
     "stage1_topics": "",
     "final_proposal": "- **研究痛點**：動態圖資料需同時捕捉時間平滑性與因果結構；離散 GCN 在大時間間隔下訊息傳遞誤差（NeurIPS 2025《Continuous‑Time Graph Neural Networks via Neural ODEs》），因果學習多聚焦靜態圖，易受 spurious correlation 影響。  \n- **核心方法**：Hybrid Continuous‑Time Causal Graph Neural ODE (CCG‑ODE)，結合圖 ODE、CausalVAE 與 Jump‑Diffusion，於單一框架學習連續時間訊息傳遞與因果潛在向量 `z_c(t)`，並輸"
@@ -68,5 +63,10 @@
     "date": "2026-09-18",
     "stage1_topics": "**主題一：生成式目標驅動的自我指導探索**  \n- 研究人數不足十人，僅少數團隊嘗試用生成模型直接產生可達子目標，解決極稀疏獎勵環境下的學習路徑自動構造。  \n- 代表論文：*GoalDiff* (NeurIPS 2025)、*Self‑Generated Goal Proposals via Generative Flow Networks* (ICLR 2026)、*Goal‑Conditioned Exploration with Energy‑Based Models* (arXiv 2025.12)。  \n- 核心問題：  \n  - 高維狀態空間中保證目標可達性與多樣性的理論指標缺失。  \n  - 生成模型與策略同步訓練導致梯度不穩，尚無穩健聯合優化框架。  \n\n**主題二：多代理協同好奇心與新興通信協議**  \n- 單代理好奇心研究已成熟，但多代理「共同好奇」如何驅動訊息交換",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 目標生成方法（GoalDiff、NeurIPS 2025）在極稀疏獎勵環境下產生大量不可達或冗餘子目標，導致學習效率低。  \n  - 生成模型與策略同步訓練缺乏穩健聯合優化，梯度不穩定；Self‑Generated Goal Proposals via GFN（ICLR 2026）亦指出此問題。  \n  - 多代理好奇心研究（Cooperative Curiosity，ICLR 2026）顯示若無動態篩選，可達性與資訊價值，訊息交換會產生噪聲，削弱探索效益。  \n\n- **核心方法：ARGG（Adaptive Reach"
+  },
+  {
+    "date": "2026-09-19",
+    "stage1_topics": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **延遲感知與計算預算驅動的自適應 MoE 路由**  \n  - 目前多數 MoE 只優化吞吐量，缺少實時延遲與硬體預算考量。  \n  - 代表工作：  \n    - *Latency‑Aware Mixture of Experts for Real‑Time Inference*（NeurIPS 2025）  \n    - *Adaptive Computation Budget MoE*（ICLR 2026）  \n    - *Budget‑Constrained Expert Selection via Reinforcement Learning*（arXiv 2025.12）  \n  - 核心挑戰：  \n    - 同時訓練專家效能預測與硬體延遲模型，確保毫秒級路由決策。  \n    - 目前預算控制多依賴全局",
+    "final_proposal": ""
   }
 ]
