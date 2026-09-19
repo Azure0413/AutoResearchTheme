@@ -1,6 +1,6 @@
 {
   "date": "2026-09-19",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**主題選擇**  \n- **基於自監督語義聚類的 Token‑Level 路由**  \n  - 已於 NeurIPS 2025、ICLR 2026 與 arXiv 2025.11 示範可直接復現  \n  - 只需普通 GPU、少量標註資料  \n  - 路由精度與計算效率仍有明顯提升空間，適合學生團隊切入  \n\n---\n\n### 1. 核心方法群  \n- **Self‑Supervised Token Clustering (SSTC)** – *NeurIPS 2025*  \n  - 對比學習將語意相近 token 投射至同一嵌入空間  \n  - 以動態 K‑means 產生「語意簇」，路由器根據簇指派專家  \n- **Contrastive Semantic Routing (CSR)** – *ICLR 2026*  \n  - 雙塔結構同時學習 token 與專家表示  \n  - 跨樣本對比損失強化「相近 token → 同專家」關係  \n- **Cluster‑Based Expert Allocation (CEA)** – *arXiv 2025.11*  \n  - 先離線預訓練輕量聚類模型  \n  - 推理時直接查表選擇最近 K 個專家，省去即時聚類  \n\n---\n\n### 2. 模型架構細節  \n- **輸入**：原始 token 序列 → 共享嵌入層  \n- **關鍵模組**  \n  - `TokenEncoder`：Transformer 編碼器 → token 向量  \n  - `SemanticClusterer`：自監督對比頭 + 動態 K‑means / GMM  \n  - `ExpertRouter`：根據聚類結果查表 → 專家 ID（支援 Top‑K）  \n  - `MoEExperts`：多個小型 Feed‑Forward / 圖卷積專家，僅處理被指派 token  \n- **輸出**：與原始 Transformer 相同的隱"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1：動態層次聚類路由 (HD‑TCR)**  \n- 核心：以可微分兩階段 GMM 取代單層 K‑means，層次聚類同時捕捉局部與全局語意。  \n- 模組：`HierarchicalClusterer`（粗聚 k₁ → 細聚 k₂）＋`ExpertRouter`（根據子簇指派 Top‑K 專家）。  \n- 損失：對比損失 + 聚類一致性 + 跨層一致性懲罰，減少不同語意 token 被錯誤指派。  \n- 與 SOTA 差異：將原 `SemanticClusterer` 的「動態 K‑means」改為「兩階段可微分 GMM」，並加入跨層一致性正則。  \n- 預期：GLUE‑CoLA / SuperGLUE 推理延遲與 FLOPs 減 12%，精度提升 0.5%。  \n- MVP：6 層 8 個專家、512 隱藏維度，GLUE 訓練集 + 1% 標註，單 RTX 4090 可訓練。\n\n**方案 2：延遲感知強化路由 (LARES)**  \n- 核心：在路由中加入即時硬體延遲預測，RL 代理動態決定 Top‑k。  \n- 模組：`LatencyPredictor`（MLP 預測每個專家延遲）＋`RLRouter"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
