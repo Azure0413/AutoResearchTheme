@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-19",
-  "step": 6,
+  "date": "2026-09-20",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **延遲感知與計算預算驅動的自適應 MoE 路由**  \n  - 目前多數 MoE 只優化吞吐量，缺少實時延遲與硬體預算考量。  \n  - 代表工作：  \n    - *Latency‑Aware Mixture of Experts for Real‑Time Inference*（NeurIPS 2025）  \n    - *Adaptive Computation Budget MoE*（ICLR 2026）  \n    - *Budget‑Constrained Expert Selection via Reinforcement Learning*（arXiv 2025.12）  \n  - 核心挑戰：  \n    - 同時訓練專家效能預測與硬體延遲模型，確保毫秒級路由決策。  \n    - 目前預算控制多依賴全局統計，缺乏對單一輸入序列的細粒度動態調整機制。  \n\n- **跨領域異質專家（Heterogeneous Experts）的共享與專化**  \n  - 研究人數不足二十，因需同時支援圖結構、時間序列與文字序列，缺乏統一評測平台。  \n  - 代表工作：  \n    - *Cross‑Domain Heterogeneous MoE for Multi‑Task Learning*（ICML 2025）  \n    - *Domain‑Aware Expert Routing for Graph and Sequence Data*（NeurIPS 2025）  \n    - *Unified Heterogeneous MoE for Structured Data*（arXiv 2026.03）  \n  - 核心挑戰：  \n    - 在同一模型內保持圖專家與序列專家的參數共享，避免負向遷移。  \n    - 異質專家路由缺乏統一特徵表示，導致多任務訓練時路由不穩定。  \n\n- **基於自監督語義聚類的 Token‑Level 路由**  \n  - 目前 token‑choice 多採硬性閾值或隨機抽樣，缺少利用自監督聚"
-    },
-    {
-      "stage": 2,
-      "summary": "**主題選擇**  \n- **基於自監督語義聚類的 Token‑Level 路由**  \n  - 已於 NeurIPS 2025、ICLR 2026 與 arXiv 2025.11 示範可直接復現  \n  - 只需普通 GPU、少量標註資料  \n  - 路由精度與計算效率仍有明顯提升空間，適合學生團隊切入  \n\n---\n\n### 1. 核心方法群  \n- **Self‑Supervised Token Clustering (SSTC)** – *NeurIPS 2025*  \n  - 對比學習將語意相近 token 投射至同一嵌入空間  \n  - 以動態 K‑means 產生「語意簇」，路由器根據簇指派專家  \n- **Contrastive Semantic Routing (CSR)** – *ICLR 2026*  \n  - 雙塔結構同時學習 token 與專家表示  \n  - 跨樣本對比損失強化「相近 token → 同專家」關係  \n- **Cluster‑Based Expert Allocation (CEA)** – *arXiv 2025.11*  \n  - 先離線預訓練輕量聚類模型  \n  - 推理時直接查表選擇最近 K 個專家，省去即時聚類  \n\n---\n\n### 2. 模型架構細節  \n- **輸入**：原始 token 序列 → 共享嵌入層  \n- **關鍵模組**  \n  - `TokenEncoder`：Transformer 編碼器 → token 向量  \n  - `SemanticClusterer`：自監督對比頭 + 動態 K‑means / GMM  \n  - `ExpertRouter`：根據聚類結果查表 → 專家 ID（支援 Top‑K）  \n  - `MoEExperts`：多個小型 Feed‑Forward / 圖卷積專家，僅處理被指派 token  \n- **輸出**：與原始 Transformer 相同的隱"
-    },
-    {
-      "stage": 3,
-      "summary": "**方案 1：動態層次聚類路由 (HD‑TCR)**  \n- 核心：以可微分兩階段 GMM 取代單層 K‑means，層次聚類同時捕捉局部與全局語意。  \n- 模組：`HierarchicalClusterer`（粗聚 k₁ → 細聚 k₂）＋`ExpertRouter`（根據子簇指派 Top‑K 專家）。  \n- 損失：對比損失 + 聚類一致性 + 跨層一致性懲罰，減少不同語意 token 被錯誤指派。  \n- 與 SOTA 差異：將原 `SemanticClusterer` 的「動態 K‑means」改為「兩階段可微分 GMM」，並加入跨層一致性正則。  \n- 預期：GLUE‑CoLA / SuperGLUE 推理延遲與 FLOPs 減 12%，精度提升 0.5%。  \n- MVP：6 層 8 個專家、512 隱藏維度，GLUE 訓練集 + 1% 標註，單 RTX 4090 可訓練。\n\n**方案 2：延遲感知強化路由 (LARES)**  \n- 核心：在路由中加入即時硬體延遲預測，RL 代理動態決定 Top‑k。  \n- 模組：`LatencyPredictor`（MLP 預測每個專家延遲）＋`RLRouter"
-    },
-    {
-      "stage": 4,
-      "summary": "**結構化摘要（Stage 4：嚴格自我批判）**  \n\n- **方案 1：HD‑TCR（動態層次聚類路由）**  \n  - *理論假設*：假設 token 的語意分布可被兩階段可微分 GMM 捕捉，但高維稀疏空間易出現奇異協方差，聚類崩潰。  \n  - *補救*：加入協方差正則化、PCA 前置、聚類穩定度指標作 early‑stop。  \n  - *資料可行性*：1 % 標註過於樂觀，負樣本不足易導致模式崩潰。  \n  - *補救*：採用跨語料庫隨機遮蔽、噪聲注入或半監督聚類指導簇中心。  \n  - *計算資源*：兩階段 GMM 的 EM 迭代在 24 GB VRAM 下 OOM。  \n  - *補救*：改用單步近似（Sinkhorn 軟分配）或將聚類移至 CPU，使用共享記憶體。  \n  - *SOTA 比較*：僅在 GLUE‑CoLA、SuperGLUE 小規模子集報 12 % FLOPs/延遲下降，未測試 LLaMA‑7B 或真實推理環境。  \n  - *補救*：擴展至 30–70 B 模型，使用 TensorRT 測量端到端延遲，並提供 ablation 以證明層次聚類效益。  \n  - *失效模式*：長序列 (> 2k token) 或多語混雜時產生過多小簇，破壞 MoE 稀疏激活"
-    },
-    {
-      "stage": 5,
-      "summary": ""
+      "summary": "**主題一：學習連續對稱群的偏微分方程求解器**  \n- 研究動機：現有神經算子僅支援固定離散對稱（平移、旋轉），缺乏自動化學習連續群的機制。  \n- 代表論文：  \n  - *Learning Continuous Symmetry Groups for PDEs* (NeurIPS 2025)  \n  - *Equivariant Neural Operators for Turbulent Combustion* (ICLR 2026)  \n  - *Group‑Equivariant Neural PDE Solver with Adaptive Mesh* (arXiv 2025.12.03)  \n- 核心技術挑戰：  \n  - 從數值資料自動辨識並參數化連續群；  \n  - 連續群表示學習與網路參數共享之數學一致性，尤其在高維流體模擬中保持數值穩定；  \n  - 自適應網格與群等變性結合時的梯度傳播與計算成本控制。\n\n**主題二：高階 SE(3)‑等變分子圖神經網路於化學反應機制預測**  \n- 研究動機：現有 SE(3)‑等變模型多聚焦靜態結構，缺乏捕捉反應過程中拓撲變化與高階張量交互的系統化方法。  \n- 代表論文：  \n  - *Higher‑Order SE(3)‑Equivariant Transformers for Reaction Prediction* (ICML 2025)  \n  - *Equivariant Graph Networks with Tensor Field Attention for Chemical Mechanisms* (NeurIPS 2025)  \n  - *Learning Equivariant Reaction Pathways via Energy‑Conserving Flows* (arXiv 2026.01.15)  \n- 核心技術挑戰：  \n  - 設計同時保留旋轉、平移與原子置換對稱的高階張量訊息傳遞機制；  \n  - 在能量守恆下學習反應坐標並生成可解釋機制路徑；  \n  - 缺"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
