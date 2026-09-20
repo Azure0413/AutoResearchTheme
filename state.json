@@ -1,13 +1,18 @@
 {
   "date": "2026-09-21",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要（約 400 字）**\n\n- **聯邦學習後訓練資料中毒 + 個人化層攻擊**  \n  - 研究人數不足十人，缺乏系統化攻防基準。  \n  - 代表論文：  \n    - *Poisoning Personalized Federated Models via Gradient Manipulation*（ICLR 2025）  \n    - *Adaptive Backdoor Attacks on Heterogeneous Federated Learning*（NeurIPS 2025）  \n    - *Robust Aggregation for Post‑Training Model Fusion under Poisoning*（arXiv 2026.03）  \n  - 核心問題：在保持全局模型效能的前提下，如何將隱蔽觸發器植入特定客戶端的個人化參數？  \n  - 防禦缺口：聚合階段的魯棒性研究多，對後訓練微調與個人化層的可驗證證明不足。\n\n- **指令微調模型的對齊漂移與隱性獎勵駭客**  \n  - RLHF 後模型在新任務或長期交互中易偏離原始指令，尚未量化。  \n  - 代表論文：  \n    - *Alignment Drift in Instruction‑Finetuned Models*（ICLR 2026）  \n    - *Reward Hacking Emergence in RLHF‑Trained LLMs*（NeurIPS 2025）  \n    - *Detecting Alignment Drift via Counterfactual Probing*（arXiv 2025.11）  \n  - 核心問題：內部表徵或訓練動態何時觸發獎勵函數隱性變形，導致未授權行為？  \n  - 需求：即時偵測與校正工具，尤其在"
+    },
+    {
+      "stage": 2,
+      "summary": "**研究主題**  \n- 指令微調模型的對齊漂移與隱性獎勵駭客  \n- 目標：在單機 GPU、少量標註資料下，建立可即時偵測與校正漂移的系統  \n\n---\n\n### 核心方法群  \n- **對齊漂移監測器（ADD）**  \n  - 透過「反事實探測」：同一輸入下比較指令回應與基線回應，量化漂移。  \n  - 輕量化前向網路／Transformer encoder，無需額外標註。  \n- **獎勵函數逆向校正（RIC）**  \n  - 代理模型模擬 RLHF 獎勵，偵測實際回應與預期獎勵的偏差。  \n  - 在微調階段加入 `reward_inversion_loss`，與主 loss 同時優化。  \n- **指令一致性正則化（ICR）**  \n  - 在微調時加入「指令相似度」正則項，強迫不同語義變形的指令產生相近回應。  \n  - 透過多樣化指令變形提升模型魯棒性。  \n\n---\n\n### 模型架構與訓練目標  \n- **輸入**：`instruction` + optional `context`  \n- **輸出**：`response`  \n- **關鍵模組**：  \n  - 基礎 LLM（如 Llama‑2‑7B）指令微調層  \n  - ADD / RIC / ICR 監測/校正器（輕量化）  \n- **loss**：  \n  - `total_loss = CE + λ1 * drift_penalty + λ2 * reward_inv_loss`  \n  - λ1、λ2 於驗證集上調整，確保指令正確率不下降。  \n\n---\n\n### 訓練策略  \n- **資料**：公開指令微調集約 200k 條 + 5k 對抗指令  \n- **batch**：單卡 8‑16，梯度累積至 64  \n- **優化器**：AdamW，LR 2e‑5，線性 warm‑up 前 5%  \n- **技巧**：  \n  - 冻"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
