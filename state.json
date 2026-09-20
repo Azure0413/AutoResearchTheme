@@ -1,6 +1,6 @@
 {
   "date": "2026-09-20",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**核心方法與技術概覽（300–500字）**\n\n- **研究主題**  \n  學習連續對稱群（如 SO(2)、SO(3)、尺度群）以構建偏微分方程（PDE）求解器。目標是結合可微分的 Lie‑algebra 參數化、對稱正則化與自適應網格，提升解的精度與對稱保持度。\n\n- **關鍵方法群**  \n  - *Lie‑Algebra 嵌入式群參數化*（NeurIPS 2025）  \n    - 透過 MLP 直接學習 Lie‑algebra 基底係數，生成指數映射的群元素，嵌入卷積核。  \n  - *Symmetry‑Regularized Neural Operator (SNO)*（ICLR 2026）  \n    - 在損失中加入群不變性正則項，強制算子在隨機群變換下輸出保持不變。  \n  - *Adaptive‑Mesh Equivariant Operator (AMEO)*（arXiv 2025.12.03）  \n    - 結合非結構化網格細化與等變卷積，利用群資訊指導網格加密，提升局部解析度。\n\n- **模型架構**  \n  - **輸入**：初始/邊界條件場、網格座標或點雲、可選群參數。  \n  - **輸出**：時間步長或參數化的 PDE 解場。  \n  - **模組**：  \n    - 群編碼器 → Lie‑algebra 係數 → 等變卷積核。  \n    - 等變卷積層：旋轉/尺度等變操作。  \n    - AMEO（可選）：根據群導向誤差動態細分網格。  \n    - 解碼器：映射回物理空間。  \n  - **訓練目標**：  \n    - 主體損失：MSE 或相對 L2。  \n    - 正則化：群不變性損失、網格平滑正則。  \n    - `L_total = L_MSE + λ_sym L_sym + λ_mesh L_mesh`，"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1：Spectral‑Lie Conv**  \n- **核心**：將 Lie‑algebra 係數直接映射到頻域卷積核，避免空間層指數映射的不穩定。  \n- **模組**：Lie‑Encoder → ϕ（正交基）→ β → 頻域卷積；時間步使用顯式歐拉/Runge‑Kutta。  \n- **損失**：L = MSE + λ_spec∑|β_k|²，譜正則抑高頻噪聲。  \n- **差異**：取代 *Learning Continuous Symmetry Groups for PDEs*（NeurIPS 2025）中「指數映射」為「頻域卷積」。  \n- **預期**：Navier‑Stokes 渦旋流 L2 錯誤 ↓12%，高雷諾能量守恆 <1%。  \n- **MVP**：Re=500 2‑D CFD，2‑層 MLP + 3 層 Spectral‑Lie Conv，0.5 M 參數，RTX‑3090 4 h。\n\n**方案 2：CG‑GAM**  \n- **核心**：曲率 × 群不變誤差決定細化，聚焦對稱破缺與幾何急變。  \n- **模組**：曲率估計器 → 群誤差測度 → Score = |K|·E_sym → 二次細化 → AMEO 等變卷積。  \n- **損失**：L = MSE + λ_mesh·∑1_{Score>τ}。  \n- **差異**：改寫 *Adaptive‑Mesh Equivariant Operator*（arXiv 2025.12.03）「誤差梯度細化」為「曲率×群誤差細化」。  \n- **預期**：燃燒波前 L∞ 錯誤 ↓15%，單元數 ↓20%。  \n- **MVP**：2‑D 燃燒波前 5k 步，曲率估計 2‑層卷積，RTX‑A6000 2 h。\n\n**方案 3：Tensor‑Conserved Flow GNN**"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
