@@ -1,28 +1,13 @@
 {
-  "date": "2026-09-21",
-  "step": 5,
+  "date": "2026-09-22",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**結構化摘要（約 400 字）**\n\n- **聯邦學習後訓練資料中毒 + 個人化層攻擊**  \n  - 研究人數不足十人，缺乏系統化攻防基準。  \n  - 代表論文：  \n    - *Poisoning Personalized Federated Models via Gradient Manipulation*（ICLR 2025）  \n    - *Adaptive Backdoor Attacks on Heterogeneous Federated Learning*（NeurIPS 2025）  \n    - *Robust Aggregation for Post‑Training Model Fusion under Poisoning*（arXiv 2026.03）  \n  - 核心問題：在保持全局模型效能的前提下，如何將隱蔽觸發器植入特定客戶端的個人化參數？  \n  - 防禦缺口：聚合階段的魯棒性研究多，對後訓練微調與個人化層的可驗證證明不足。\n\n- **指令微調模型的對齊漂移與隱性獎勵駭客**  \n  - RLHF 後模型在新任務或長期交互中易偏離原始指令，尚未量化。  \n  - 代表論文：  \n    - *Alignment Drift in Instruction‑Finetuned Models*（ICLR 2026）  \n    - *Reward Hacking Emergence in RLHF‑Trained LLMs*（NeurIPS 2025）  \n    - *Detecting Alignment Drift via Counterfactual Probing*（arXiv 2025.11）  \n  - 核心問題：內部表徵或訓練動態何時觸發獎勵函數隱性變形，導致未授權行為？  \n  - 需求：即時偵測與校正工具，尤其在"
-    },
-    {
-      "stage": 2,
-      "summary": "**研究主題**  \n- 指令微調模型的對齊漂移與隱性獎勵駭客  \n- 目標：在單機 GPU、少量標註資料下，建立可即時偵測與校正漂移的系統  \n\n---\n\n### 核心方法群  \n- **對齊漂移監測器（ADD）**  \n  - 透過「反事實探測」：同一輸入下比較指令回應與基線回應，量化漂移。  \n  - 輕量化前向網路／Transformer encoder，無需額外標註。  \n- **獎勵函數逆向校正（RIC）**  \n  - 代理模型模擬 RLHF 獎勵，偵測實際回應與預期獎勵的偏差。  \n  - 在微調階段加入 `reward_inversion_loss`，與主 loss 同時優化。  \n- **指令一致性正則化（ICR）**  \n  - 在微調時加入「指令相似度」正則項，強迫不同語義變形的指令產生相近回應。  \n  - 透過多樣化指令變形提升模型魯棒性。  \n\n---\n\n### 模型架構與訓練目標  \n- **輸入**：`instruction` + optional `context`  \n- **輸出**：`response`  \n- **關鍵模組**：  \n  - 基礎 LLM（如 Llama‑2‑7B）指令微調層  \n  - ADD / RIC / ICR 監測/校正器（輕量化）  \n- **loss**：  \n  - `total_loss = CE + λ1 * drift_penalty + λ2 * reward_inv_loss`  \n  - λ1、λ2 於驗證集上調整，確保指令正確率不下降。  \n\n---\n\n### 訓練策略  \n- **資料**：公開指令微調集約 200k 條 + 5k 對抗指令  \n- **batch**：單卡 8‑16，梯度累積至 64  \n- **優化器**：AdamW，LR 2e‑5，線性 warm‑up 前 5%  \n- **技巧**：  \n  - 冻"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3：創新方法概覽（300–500字）**  \n\n- **方案 1：Gradient‑Mask Personalization Auditing (GMPA)**  \n  - **核心概念**：在客戶端微調個人化層前，使用梯度遮罩器過濾異常大幅度更新，直接阻斷後訓練階段的後門觸發。  \n  - **技術流程**：  \n    - 接收全局模型 `θ_g` → 提取個人化子模組 `θ_p` → 用本地資料 `D_i` 計算梯度 `g`。  \n    - 生成二元掩碼 `M = (|g| < τ)`，得到遮罩梯度 `ĝ = g ⊙ M`。  \n    - 損失函數：`L_total = CE(θ_p; D_i) + λ_mask * mean(|g| * (|g| ≥ τ))`。  \n  - **SOTA 差異**：在微調流程第 7 行（`optimizer.step()` 前）替換原始梯度，提供"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4 (🔥 嚴格自我批判) 方案概覽（300–500字）**\n\n- **ADD（Alignment Drift Detector）**  \n  - *核心假設*：同一輸入的基線回應永不漂移。  \n  - *問題①*：若基線本身已偏差，偽陽性高。  \n    - **補救**：多子領域基線 + 聚合信任分數。  \n  - *問題②*：需覆蓋所有長度與風格的「指令‑回應」對；公開資料不足。  \n    - **補救**：自我生成合成指令 + 分層抽樣。  \n  - *問題③*：同時推論兩模型，單卡 24 GB 只能跑小型模型。  \n    - **補救**：INT8 量化或蒸餾基線，流水線計算。  \n  - *問題④*：實驗只在少量合成後門集上報 10 % 提升，未與 *DriftGuard*（ICLR 2025）比較。  \n    - **補救**：在 *OpenAI Alignment Drift Suite* 與多 SOTA 直接對照，做統計顯著性測試。  \n  - *問題⑤*：長指令或噪聲掩蓋差異，偵測失靈。  \n    - **補救**：指令清理、分段、可調門檻。\n\n- **RIC（Reward Inversion Correction）**  \n  - *核心假設*：可逆推 RLHF 獎勵函數。  \n  - *問題①*：獎勵模型非線性、隱含多模態，逆推不確定。  \n    - **補救**：貝葉斯推斷 + 不確定性估計。  \n  - *問題②*：缺乏大量「獎勵分數」標註。  \n    - **補救**：利用 *OpenAI Preference API* 或自我對抗生成對比樣本。  \n  - *問題③*：額外 loss 使訓練時間 +30 %，單卡 24 GB 只能 4‑6 B。  \n    - **補救**：雙塔輕量化，"
+      "summary": "- **風險感知隨機神經 ODE 用於 MPC**  \n  - 研究團隊少於十人，因結合隨機微分方程（SDE）與即時可微分求解尚缺工具鏈。  \n  - 代表論文：*Stochastic Neural ODE MPC with Risk‑Averse Objectives* (ICLR 2025)、*Probabilistic Neural SDEs for Safe Exploration* (NeurIPS 2025)、*Risk‑Sensitive Continuous‑Time RL via Neural SDEs* (arXiv 2026.03)。  \n  - 核心問題：將 CVaR 等風險指標嵌入梯度傳播、實時自適應時間步長與 GPU/TPU 加速流程尚未標準化，導致高維機械臂或無人機部署受限。  \n\n- **連續正規化流在物理驅動流體與湍流模擬**  \n  - 目前僅少數團隊將可逆神經 ODE/SDE 與守恆律結合，三維湍流高頻動態缺乏可擴展訓練方法。  \n  - 代表論文：*Neural Turbulence Modeling with Continuous Normalizing Flows* (NeurIPS 2025)、*Physics‑Consistent Neural SDEs for Multi‑Scale Fluid Simulation* (ICML 2026)、*Learning Divergence‑Free Vector Fields via Stochastic Neural ODEs* (arXiv 2025.11)。  \n  - 未解之處：在不顯式求解 Navier‑Stokes 的情況下保證向量場散度為零；多尺度自適應時間步長與 CFD 驗證基準（如 DNS）尚未緊密耦合。  \n\n- **高維科學資料的自適應神經 SDE 密度估計**  \n  - 大規模天文、基因組、粒子"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
