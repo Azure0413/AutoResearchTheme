@@ -1,13 +1,18 @@
 {
   "date": "2026-09-23",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": ""
+    },
+    {
+      "stage": 2,
+      "summary": "**Stage 2 主要摘要（300–500字）**\n\n- **研究主題**  \n  - 因果表徵學習（Causal Representation Learning）在醫療決策與治療效果估計中的應用。  \n  - 參考新興論文：  \n    - *CausalVAE: Structured Causal Representation Learning* (ICLR 2025)  \n    - *Counterfactual Diffusion for Treatment Effect Estimation* (NeurIPS 2025)  \n    - *DoWhy‑LLM: Language‑Model‑Driven Causal Inference* (arXiv 2026)\n\n- **核心方法**  \n  - **CausalVAE**：VAE 基礎上加入可辨識的 DAG 先驗；結構化 KL 散度強制隱向量符合 DAG，保持重建能力。  \n  - **Counterfactual Diffusion**：逆向擴散過程生成反事實樣本；訓練同時最小化重建誤差與因果一致性損失。  \n  - **DoWhy‑LLM**：LLM 生成因果圖與假說，經 DoWhy 統計檢驗回饋，形成閉環迭代。\n\n- **模型架構**  \n  - **輸入**：結構化電子病歷、時間序列檢驗值 + 治療指標。  \n  - **輸出**：可解釋的潛在因果變量 + 個體化治療效果（ITE）。  \n  - **關鍵模組**：  \n    - 編碼器（MLP/圖神經網路）→ 隱空間  \n    - 因果圖模組（線性結構方程或 LLM 文字→圖）  \n    - 擴散/生成模組（多步噪聲去除 + 治療干預）  \n    - 解碼器（重建原始特徵）  \n  - **訓練目標**：`L = L_recon + λ_KL·L_KL(DAG)"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
