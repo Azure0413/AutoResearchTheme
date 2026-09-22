@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**風險感知隨機神經 ODE 用於 MPC 的核心概念**  \n- **方法族**  \n  - *Stochastic Neural ODE with CVaR‑Regularized Loss*（ICLR 2025）: 以 NN 參數化漂移與擴散，Monte‑Carlo 路徑估算 CVaR，加入總損失。  \n  - *Probabilistic SDE Planner with Adaptive Time‑Step Solver*（NeurIPS 2025）: 可微分自適應步長（Dormand‑Prince 變體），根據梯度方差調整步長。  \n  - *Risk‑Sensitive Continuous‑Time RL via Neural SDEs*（arXiv 2026.03）: 回報改寫為連續積分，策略梯度中加入 CVaR 或 Entropic‑Risk。  \n\n- **模型架構**  \n  - 輸入：狀態 `x_t` + 目標/約束 `g_t`。  \n  - 輸出：未來 `H` 步控制序列 `u_{t:t+H-1}`，同時給出均值與協方差。  \n  - 主要模組：兩層 NN 產生漂移 `f` 與擴散 `σ`；`torchdiffeq` 的 `odeint_adjoint` 加自適應步長；風險評估層計算 CVaR。  \n  - 訓練目標：`E[Σc] + λ·CVaR_α(Σc) + β·Smooth(u)`，其中 `c` 為任務成本。  \n\n- **訓練策略**  \n  - 資料：10⁴–10⁵ 條模擬軌跡（50–200 步），可加入 1–2k 真實機器人軌跡微調。  \n  - Batch：32–64 條軌跡，每條再抽 8–16 條 Monte‑Carlo 路徑。  \n  - 優化器：AdamW，LR 1e‑3，cosine decay，最後 10% 線性衰減。  \n  - tricks：gradient checkpointing、noise‑reparameterization、先確定性 ODE 預熱。"
+    },
+    {
+      "stage": 3,
+      "summary": ""
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
