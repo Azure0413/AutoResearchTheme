@@ -1,6 +1,6 @@
 {
   "date": "2026-09-23",
-  "step": 5,
+  "step": 6,
   "summaries": [
     {
       "stage": 1,
@@ -17,12 +17,17 @@
     {
       "stage": 4,
       "summary": "**Stage 4: 嚴格自我批判（結構化摘要）**  \n\n- **方案 CAGD**  \n  - **理論假設**  \n    - 依賴 CausalVAE 在高維醫療特徵上能唯一恢復因果 DAG；但辨識性僅在「線性、無隱藏混雜」結構方程模型下成立。  \n    - 若存在未觀測共變量或非線性交互，學得 DAG 會偏差，進而影響 diffusion 步驟。  \n    - **補救**：加入隱變量推斷（變分混雜層），合成資料驗證 DAG 可辨識性；真實資料使用 ICA‑based 方法做後驗檢查。  \n  - **資料與訓練可行性**  \n    - 只用 MIMIC‑IV 約 5,000 筆樣本，100k 次 diffusion 訓練樣本量遠低於生成模型需求。  \n    - 治療指派偏差未校正，ITE 估計高度依賴樣本分布。  \n    - **補救**：採用逆概率加權或雙重機率加權平衡處置分布；擴充資料來源（eICU、MIMIC‑III）或使用資料增強（時間序列切片、噪聲注入）。  \n  - **計算資源**  \n    - diffusion 逆向時同時條件 `z`、`g` 使特徵張量維度翻倍；單卡 24 GB VRAM 只能 batch ≤ 2，訓練超過 200 h。  \n    - **補救**：混合精度訓練＋梯度檢查點；改寫為「低階噪聲抽樣」策略，只在關鍵時間步加入圖嵌入。  \n  - **是否真優於 SOTA**  \n    - 只與 NeurIPS 2025 原始 Counterfactual Diffusion 比較；未列入 GNN‑ITE、Causal Transformer 2025 等最新圖神經因果模型。"
+    },
+    {
+      "stage": 5,
+      "summary": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 個體化治療需估計 ITE，傳統統計在高維、非線性電子病歷上失效。  \n  - *CausalVAE*（ICLR 2025）辨識性僅在線性、無隱藏混雜假設下成立；  \n  - *Counterfactual Diffusion*（NeurIPS 2025）未充分利用因果結構，生成反事實仍缺乏一致性。  \n\n- **創新框架：Causal‑Graph‑Guided Diffusion (CGGD)**  \n  - 把 *CausalVAE* 產生的 DAG 嵌入 `g` 與隱向量 `z` 同時作為擴散噪聲預測的條件。  \n  - 引入可微分因果一致性正則 `L_causal`，在逆向擴散過程中即時校正反事實。  \n\n- **核心演算法**  \n  1. `Encoder_VAE`（MLP+時間序列 GNN）編碼 `X → z`。  \n  2. `CausalGraphEncoder` 同時學習鄰接矩陣 `A`，並通過 GCN 產生圖嵌入 `g`。  \n  3. 噪聲預測網路 `ε̂ = fθ(x_t, t, z, g)` 執行條件逆向擴散，生成 `X_cf`。  \n  4. 計算 `L_causal`（檢查 `X_cf` 是否符合 DAG 方向）與 `L_recon`、`L_KL`。  \n  5. 最終目標 `L_total = L_recon + λ_KL·L_KL + λ_causal·L_causal`。  \n\n- **推論流程**  \n  - 觀測特徵 `X_obs → z_obs`，利用已學 DAG 產生 `g`。  \n  - 固定治療干預 `T`，逆向擴散生成兩組反事實 `X_cf^T="
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
     "3": 0,
-    "4": 0
+    "4": 0,
+    "5": 0
   }
 }
