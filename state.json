@@ -1,13 +1,18 @@
 {
   "date": "2026-09-24",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：深層 Mamba 變體的層級參數共享與正則化**  \n  - **研究現況**：僅少數團隊嘗試將 Mamba 的狀態空間層堆疊至百億參數，受限於訓練穩定性與記憶體開銷，研究人數 < 10。  \n  - **代表論文**  \n    - 《DeepMamba: Scaling State Space Models to Billion‑Scale Parameters》, Jia Li, ICLR 2026  \n    - 《Layerwise Parameter Sharing in State Space Networks》, Omar Patel, NeurIPS 2025  \n    - 《Stabilizing Deep Mamba via Spectral Normalization》, Wei Zhang, arXiv 2025.11  \n  - **核心技術問題**  \n    - 設計層級共享機制：上層與下層 SSM 參數既共享資訊又避免表徵退化。  \n    - 大規模訓練時的梯度爆炸與數值不穩定缺乏通用正則化理論。  \n  - **突破潛力**：若能提出可擴展的共享/正則化框架，將使 Mamba 成為百億參數級別的可訓練模型，推動大規模語言/視覺任務。  \n\n- **主題二：稀疏結構化 SSM 用於不規則時間序列**  \n  - **研究現況**：醫療監測、IoT 事件流等領域資料採樣不均，現有長序列 SSM 多假設等間距時間步，相關研究團隊 < 20。  \n  - **代表論文**  \n    - 《Sparse Structured State Space Models for Irregularly Sampled Data》, Mei Huang, ICML 2025  \n    - 《Adaptive Kernel SSM for Event‑Driven Signals》, Carlos Ruiz, arXiv 2025.12  \n    - 《Temporal Point Process Modeling with Structured SSMs》, Lina G"
+    },
+    {
+      "stage": 2,
+      "summary": "**主題：稀疏結構化 SSM 用於不規則時間序列**  \n（選擇理由：已具備可實作原型，仍有效能與穩定性缺口，算資門檻低，適合學生團隊）\n\n---\n\n### 1. 核心方法群  \n- **Sparse‑SSM** – *Mei Huang, ICML 2025*  \n  - 以可分解稀疏矩陣表示轉移與輸出權重。  \n  - 時間維度自適應稀疏化，減少記憶體佔用，保留長程依賴。  \n- **AdaKernel‑SSM** – *Carlos Ruiz, arXiv 2025.12*  \n  - 可學習核函數根據觀測時間間隔調整平滑度，解決等間距假設。  \n- **TPP‑SSM** – *Lina Gu, NeurIPS 2025*  \n  - 將離散事件強度函數嵌入輸出層，結合 Poisson 似然與 KL 正則化，同時捕捉連續信號與突發事件。\n\n---\n\n### 2. 模型架構細節  \n- **輸入**：實數時間戳 `t_i` + 特徵向量 `x_i`（醫療、IoT 等）。  \n- **輸出**：未來時間點的預測分布（回歸或事件發生率）。  \n- **關鍵模組**  \n  - 稀疏轉移矩陣（帶狀/分塊） → O(N²) 降低。  \n  - 自適應時間核 → `Δt` 送入小型 MLP 產生縮放因子。  \n  - 事件強度層 → 指數/Weibull 參數化。  \n- **訓練目標**  \n  - 連續信號：MSE + 時間加權 L2 正則。  \n  - 事件序列：負對"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
