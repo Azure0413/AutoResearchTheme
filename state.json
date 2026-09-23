@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-23",
-  "step": 6,
+  "date": "2026-09-24",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": ""
-    },
-    {
-      "stage": 2,
-      "summary": "**Stage 2 主要摘要（300–500字）**\n\n- **研究主題**  \n  - 因果表徵學習（Causal Representation Learning）在醫療決策與治療效果估計中的應用。  \n  - 參考新興論文：  \n    - *CausalVAE: Structured Causal Representation Learning* (ICLR 2025)  \n    - *Counterfactual Diffusion for Treatment Effect Estimation* (NeurIPS 2025)  \n    - *DoWhy‑LLM: Language‑Model‑Driven Causal Inference* (arXiv 2026)\n\n- **核心方法**  \n  - **CausalVAE**：VAE 基礎上加入可辨識的 DAG 先驗；結構化 KL 散度強制隱向量符合 DAG，保持重建能力。  \n  - **Counterfactual Diffusion**：逆向擴散過程生成反事實樣本；訓練同時最小化重建誤差與因果一致性損失。  \n  - **DoWhy‑LLM**：LLM 生成因果圖與假說，經 DoWhy 統計檢驗回饋，形成閉環迭代。\n\n- **模型架構**  \n  - **輸入**：結構化電子病歷、時間序列檢驗值 + 治療指標。  \n  - **輸出**：可解釋的潛在因果變量 + 個體化治療效果（ITE）。  \n  - **關鍵模組**：  \n    - 編碼器（MLP/圖神經網路）→ 隱空間  \n    - 因果圖模組（線性結構方程或 LLM 文字→圖）  \n    - 擴散/生成模組（多步噪聲去除 + 治療干預）  \n    - 解碼器（重建原始特徵）  \n  - **訓練目標**：`L = L_recon + λ_KL·L_KL(DAG)"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3：創新方法概覽（300–500字）**\n\n- **方案 1：CAGD (CausalVAE‑Graph‑Augmented Diffusion)**\n  - 核心：將 CausalVAE 產生的 DAG 直接編碼成圖嵌入 `g`，並在 DDPM 逆向過程中加入 `z` 與 `g` 作為條件，形成 `ε̂ = fθ(x_t, t, z, g)`。  \n  - 主要模組：Encoder_VAE (MLP+圖層)、CausalGraphEncoder、DiffusionCore、Decoder_VAE。  \n  - 損失組合：重建 `L_recon` + 結構化 KL `L_KL` + 因果一致性 `L_causal`。  \n  - 與 NeurIPS 2025 *Counterfactual Diffusion* 差異：噪聲預測公式改為多條件，直接把因果結構注入每一步。  \n  - 預期指標：MIMIC‑IV ITE 上 PEHE 下降 12–18%，因圖嵌入提升反事實一致性。  \n  - MVP：5,000 名 MIMIC‑IV 病例，Encoder 2層256隱藏，DiffusionCore 4層128隱藏，RTX 4090 12 h 100k 迭代。\n\n- **方案 2：DLCR (DoWhy‑LLM Guided Counterfactual Regularizer)**\n  - 核心：LLM 生成文字因果敘述 → Text2Logic 轉成可微分布林張量 `C`，作為正則項 `L_text`。  \n  - 主要模組：DiffusionModel、DoWhy‑LLM、Text2"
-    },
-    {
-      "stage": 4,
-      "summary": "**Stage 4: 嚴格自我批判（結構化摘要）**  \n\n- **方案 CAGD**  \n  - **理論假設**  \n    - 依賴 CausalVAE 在高維醫療特徵上能唯一恢復因果 DAG；但辨識性僅在「線性、無隱藏混雜」結構方程模型下成立。  \n    - 若存在未觀測共變量或非線性交互，學得 DAG 會偏差，進而影響 diffusion 步驟。  \n    - **補救**：加入隱變量推斷（變分混雜層），合成資料驗證 DAG 可辨識性；真實資料使用 ICA‑based 方法做後驗檢查。  \n  - **資料與訓練可行性**  \n    - 只用 MIMIC‑IV 約 5,000 筆樣本，100k 次 diffusion 訓練樣本量遠低於生成模型需求。  \n    - 治療指派偏差未校正，ITE 估計高度依賴樣本分布。  \n    - **補救**：採用逆概率加權或雙重機率加權平衡處置分布；擴充資料來源（eICU、MIMIC‑III）或使用資料增強（時間序列切片、噪聲注入）。  \n  - **計算資源**  \n    - diffusion 逆向時同時條件 `z`、`g` 使特徵張量維度翻倍；單卡 24 GB VRAM 只能 batch ≤ 2，訓練超過 200 h。  \n    - **補救**：混合精度訓練＋梯度檢查點；改寫為「低階噪聲抽樣」策略，只在關鍵時間步加入圖嵌入。  \n  - **是否真優於 SOTA**  \n    - 只與 NeurIPS 2025 原始 Counterfactual Diffusion 比較；未列入 GNN‑ITE、Causal Transformer 2025 等最新圖神經因果模型。"
-    },
-    {
-      "stage": 5,
-      "summary": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 個體化治療需估計 ITE，傳統統計在高維、非線性電子病歷上失效。  \n  - *CausalVAE*（ICLR 2025）辨識性僅在線性、無隱藏混雜假設下成立；  \n  - *Counterfactual Diffusion*（NeurIPS 2025）未充分利用因果結構，生成反事實仍缺乏一致性。  \n\n- **創新框架：Causal‑Graph‑Guided Diffusion (CGGD)**  \n  - 把 *CausalVAE* 產生的 DAG 嵌入 `g` 與隱向量 `z` 同時作為擴散噪聲預測的條件。  \n  - 引入可微分因果一致性正則 `L_causal`，在逆向擴散過程中即時校正反事實。  \n\n- **核心演算法**  \n  1. `Encoder_VAE`（MLP+時間序列 GNN）編碼 `X → z`。  \n  2. `CausalGraphEncoder` 同時學習鄰接矩陣 `A`，並通過 GCN 產生圖嵌入 `g`。  \n  3. 噪聲預測網路 `ε̂ = fθ(x_t, t, z, g)` 執行條件逆向擴散，生成 `X_cf`。  \n  4. 計算 `L_causal`（檢查 `X_cf` 是否符合 DAG 方向）與 `L_recon`、`L_KL`。  \n  5. 最終目標 `L_total = L_recon + λ_KL·L_KL + λ_causal·L_causal`。  \n\n- **推論流程**  \n  - 觀測特徵 `X_obs → z_obs`，利用已學 DAG 產生 `g`。  \n  - 固定治療干預 `T`，逆向擴散生成兩組反事實 `X_cf^T="
+      "summary": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：深層 Mamba 變體的層級參數共享與正則化**  \n  - **研究現況**：僅少數團隊嘗試將 Mamba 的狀態空間層堆疊至百億參數，受限於訓練穩定性與記憶體開銷，研究人數 < 10。  \n  - **代表論文**  \n    - 《DeepMamba: Scaling State Space Models to Billion‑Scale Parameters》, Jia Li, ICLR 2026  \n    - 《Layerwise Parameter Sharing in State Space Networks》, Omar Patel, NeurIPS 2025  \n    - 《Stabilizing Deep Mamba via Spectral Normalization》, Wei Zhang, arXiv 2025.11  \n  - **核心技術問題**  \n    - 設計層級共享機制：上層與下層 SSM 參數既共享資訊又避免表徵退化。  \n    - 大規模訓練時的梯度爆炸與數值不穩定缺乏通用正則化理論。  \n  - **突破潛力**：若能提出可擴展的共享/正則化框架，將使 Mamba 成為百億參數級別的可訓練模型，推動大規模語言/視覺任務。  \n\n- **主題二：稀疏結構化 SSM 用於不規則時間序列**  \n  - **研究現況**：醫療監測、IoT 事件流等領域資料採樣不均，現有長序列 SSM 多假設等間距時間步，相關研究團隊 < 20。  \n  - **代表論文**  \n    - 《Sparse Structured State Space Models for Irregularly Sampled Data》, Mei Huang, ICML 2025  \n    - 《Adaptive Kernel SSM for Event‑Driven Signals》, Carlos Ruiz, arXiv 2025.12  \n    - 《Temporal Point Process Modeling with Structured SSMs》, Lina G"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
