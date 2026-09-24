@@ -1,13 +1,18 @@
 {
   "date": "2026-09-25",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**Stage 1 – 熱門議題概覽（結構化摘要）**\n\n- **主題一：測試時計算資源與推理深度的動態縮放律**  \n  - **研究空白**：目前僅有少數工作系統化探討推理時 FLOPs、延遲與深度之多維關係，缺乏能在不同硬體預算下即時調整模型深度的通用框架。  \n  - **代表論文**  \n    - *Test‑Time Compute Scaling for Large Language Models*（Yuan Chen，NeurIPS 2025）  \n    - *Dynamic Inference Scaling for LLMs via Early‑Exit Controllers*（Mina Lee，ICLR 2026）  \n    - *Adaptive Depth Control for Transformer‑Based Reasoners*（arXiv 2025.12）  \n  - **核心技術問題**  \n    - 在保證推理正確率的前提下，以最小額外控制開銷決定「退出層」或「縮減計算路徑」。  \n    - 缺少跨任務統一的縮放指標，導致不同任務計算需求分布差異大。  \n    - 高並發部署時資源碎片化問題，尚無穩定的硬體‑軟體協同調度機制。  \n\n- **主題二：自我改進回路的理論與實踐可行性**  \n  - **研究空白**：自我生成的反饋（自我批評、迭代校正）仍處於概念驗證階段，研究團隊少於二十人，缺乏對「自我提升」是否會產生模式崩潰的系統性分析。  \n  - **代表論文**  \n    - *Self‑Improving Language Models via Bootstrapped Feedback Loops*（Hao Wang，NeurIPS 2025）  \n    - *Iterative Self‑Refinement with Learned Critics for Reasoning Tasks*（Jia Liu，ICLR 2026）  \n    - *Recursive Self‑Play for Large Language Model Skill Acquisition*（arXiv 2025.07）  \n  - **核心技術問題**  \n    - 設計穩定的「"
+    },
+    {
+      "stage": 2,
+      "summary": "**核心方法概覽（NeurIPS 2025 / ICLR 2026 / arXiv 2025.12）**  \n- **Test‑Time Compute Scaling**：在推理時即時計算輸入語意複雜度，根據預先學習的 FLOPs‑Accuracy 曲線決定「縮減層數」或「跳過子模組」。  \n- **Early‑Exit Controllers**：訓練輕量化控制器於每層隱藏層估計「信心」；信心超門檻即提前退出，減少後續計算。  \n- **Adaptive Depth Control**：使用可微分深度門，動態分配注意力頭與前饋層深度，並加入深度正則化於訓練。\n\n**模型架構要點**  \n- **輸入**：token ID + 可選任務指示。  \n- **關鍵模組**  \n  - 深度門/退出控制器（二元或可微分深度比例）。  \n  - 計算成本估算器（即時 FLOPs 預測）。  \n  - 深度正則化（平均層數懲罰）。  \n- **訓練目標**：保持原始精度，最小化期望 FLOPs，採用「精度‑成本」加權損失。\n\n**訓練策略**  \n- **資料**：與原 LLM 相同的 1‑2 T token 預訓練語料，微調時加入 5‑10 M 句計算預算標籤。  \n- **Batch**：256‑512 序列混合批次，使用梯度累積模擬大 batch。  \n- **優化器**：AdamW，lr 2e‑5（模型）/1e‑4（控制器）。  \n- **Loss**：交叉熵 + 深度正則化（λ≈0.01）+ FLOPs 罰項（L1）。  \n- **實作技巧**：先凍"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
