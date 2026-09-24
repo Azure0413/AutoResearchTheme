@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-04",
-    "stage1_topics": "**主題一：高維連續控制中的資訊增益驅動探索**  \n- 事實：在 100‑維以上機器人環境中，傳統好奇心或隨機探索難以估算行動對未來狀態分布的影響；資訊增益（empowerment）作為「控制力」指標被提出，但計算成本高。代表工作包括《Empowerment via Mutual Information Neural Estimation》（NeurIPS 2025）、《Scalable Empowerment for High‑Dimensional Robotics》（ICLR 2026）與《Variational Empowerment for Continuous Control》（ICML 2025）。  \n- 技術難題：① 在不增加樣本量的前提下估算高維狀態‑行動互資訊；② 設計可微分、可擴展的 empowerment 近似，並與深度政策網路同步訓練；③ 在多任務或非平穩環境",
-    "final_proposal": "**研究痛點**  \n- 高維連續控制（>100 維）缺乏高效探索；傳統好奇心/隨機探索樣本效率低。  \n- 現有 empowerment 方法受限於固定視窗、計算成本高、缺乏不確定性感知。  \n\n**核心創新 – BAHE‑E**  \n1. **自適應時間視窗**：利用 Horizon Predictor（兩層 MLP）根據狀態可預測性動態輸出 τ_t；加入貝葉斯 dropout 置信度 c_t，低置信度時退回 τ=5。  \n2. **貝葉斯 Ensemble Dynamics**：兩個 2‑層 MLP 模型，直接以預測方差 σ_t 作為不確定性指標，加入 intrinsic reward。"
-  },
-  {
     "date": "2026-09-05",
     "stage1_topics": "**Stage 1：探索熱門議題 – 结构化摘要**  \n\n- **主題一：階層式稀疏專家路由（Hierarchical MoE）**  \n  - *突破潛力*：同一模型同時使用粗粒度與細粒度路由層，可在不增加參數量的前提下大幅提升長序列表徵分辨率。  \n  - *代表論文*  \n    - 《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》 – Emily Chen, NeurIPS 2025  \n    - 《Multi‑Scale Routing in Sparse Expert Networks》 – Ravi Patel, ICLR 2026  \n    - 《Adaptive Hierarchical Expert Selection with Gradient‑Based ",
     "final_proposal": "**研究痛點與背景**  \n- 目前階層式稀疏專家路由（Hierarchical MoE）雖能提升長序列表徵，但仍需固定溫度退火與手動長度 bucket，導致混合長短句資料下路由不穩、資源利用率波動。  \n- NeurIPS 2025《Hierarchical Mixture‑of‑Experts for Efficient Large‑Scale Language Modeling》僅在單一長序列基準報 38% 計算下降，缺乏動態溫度調整。  \n- ICML 2025《Reinforcement Learning Guided Routing for Mixture‑of‑Experts》雖"
@@ -68,5 +63,10 @@
     "date": "2026-09-23",
     "stage1_topics": "",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 個體化治療需估計 ITE，傳統統計在高維、非線性電子病歷上失效。  \n  - *CausalVAE*（ICLR 2025）辨識性僅在線性、無隱藏混雜假設下成立；  \n  - *Counterfactual Diffusion*（NeurIPS 2025）未充分利用因果結構，生成反事實仍缺乏一致性。  \n\n- **創新框架：Causal‑Graph‑Guided Diffusion (CGGD)**  \n  - 把 *CausalVAE* 產生的 DAG 嵌入 `g` 與隱向量 `z` 同時作為擴散噪聲預測的條件。  \n "
+  },
+  {
+    "date": "2026-09-24",
+    "stage1_topics": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：深層 Mamba 變體的層級參數共享與正則化**  \n  - **研究現況**：僅少數團隊嘗試將 Mamba 的狀態空間層堆疊至百億參數，受限於訓練穩定性與記憶體開銷，研究人數 < 10。  \n  - **代表論文**  \n    - 《DeepMamba: Scaling State Space Models to Billion‑Scale Parameters》, Jia Li, ICLR 2026  \n    - 《Layerwise Parameter Sharing in State Space Networks》, Omar Patel, NeurIPS 2025  \n    - 《Stabilizing Deep Mamba via Spectral Normalization》, Wei ",
+    "final_proposal": "**研究痛點與創新概念**  \n- 現實時間序列（醫療、金融、工業）常不規則取樣、突發事件，傳統長序列模型（DeepMamba、Transformer）假設等間距，導致預測失真。  \n- 2025 年《Sparse Structured State Space Models for Irregularly Sampled Data》（Mei Huang）與《Adaptive Kernel SSM for Event‑Driven Signals》（Carlos Ruiz）證明稀疏化與自適應核可緩解部分問題，但缺乏層級參數共享與事件-連續訊號融合的系統設計。  \n\n**核心方法：HSA‑ESSM"
   }
 ]
