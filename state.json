@@ -1,33 +1,13 @@
 {
-  "date": "2026-09-24",
-  "step": 6,
+  "date": "2026-09-25",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：深層 Mamba 變體的層級參數共享與正則化**  \n  - **研究現況**：僅少數團隊嘗試將 Mamba 的狀態空間層堆疊至百億參數，受限於訓練穩定性與記憶體開銷，研究人數 < 10。  \n  - **代表論文**  \n    - 《DeepMamba: Scaling State Space Models to Billion‑Scale Parameters》, Jia Li, ICLR 2026  \n    - 《Layerwise Parameter Sharing in State Space Networks》, Omar Patel, NeurIPS 2025  \n    - 《Stabilizing Deep Mamba via Spectral Normalization》, Wei Zhang, arXiv 2025.11  \n  - **核心技術問題**  \n    - 設計層級共享機制：上層與下層 SSM 參數既共享資訊又避免表徵退化。  \n    - 大規模訓練時的梯度爆炸與數值不穩定缺乏通用正則化理論。  \n  - **突破潛力**：若能提出可擴展的共享/正則化框架，將使 Mamba 成為百億參數級別的可訓練模型，推動大規模語言/視覺任務。  \n\n- **主題二：稀疏結構化 SSM 用於不規則時間序列**  \n  - **研究現況**：醫療監測、IoT 事件流等領域資料採樣不均，現有長序列 SSM 多假設等間距時間步，相關研究團隊 < 20。  \n  - **代表論文**  \n    - 《Sparse Structured State Space Models for Irregularly Sampled Data》, Mei Huang, ICML 2025  \n    - 《Adaptive Kernel SSM for Event‑Driven Signals》, Carlos Ruiz, arXiv 2025.12  \n    - 《Temporal Point Process Modeling with Structured SSMs》, Lina G"
-    },
-    {
-      "stage": 2,
-      "summary": "**主題：稀疏結構化 SSM 用於不規則時間序列**  \n（選擇理由：已具備可實作原型，仍有效能與穩定性缺口，算資門檻低，適合學生團隊）\n\n---\n\n### 1. 核心方法群  \n- **Sparse‑SSM** – *Mei Huang, ICML 2025*  \n  - 以可分解稀疏矩陣表示轉移與輸出權重。  \n  - 時間維度自適應稀疏化，減少記憶體佔用，保留長程依賴。  \n- **AdaKernel‑SSM** – *Carlos Ruiz, arXiv 2025.12*  \n  - 可學習核函數根據觀測時間間隔調整平滑度，解決等間距假設。  \n- **TPP‑SSM** – *Lina Gu, NeurIPS 2025*  \n  - 將離散事件強度函數嵌入輸出層，結合 Poisson 似然與 KL 正則化，同時捕捉連續信號與突發事件。\n\n---\n\n### 2. 模型架構細節  \n- **輸入**：實數時間戳 `t_i` + 特徵向量 `x_i`（醫療、IoT 等）。  \n- **輸出**：未來時間點的預測分布（回歸或事件發生率）。  \n- **關鍵模組**  \n  - 稀疏轉移矩陣（帶狀/分塊） → O(N²) 降低。  \n  - 自適應時間核 → `Δt` 送入小型 MLP 產生縮放因子。  \n  - 事件強度層 → 指數/Weibull 參數化。  \n- **訓練目標**  \n  - 連續信號：MSE + 時間加權 L2 正則。  \n  - 事件序列：負對"
-    },
-    {
-      "stage": 3,
-      "summary": "- **階層式稀疏 Mamba (HSM)**：在 DeepMamba 的多層 SSM 中引入帶狀稀疏矩陣 `A_l`，相鄰層共享對角帶子矩陣 `A_shared`，並以梯度累積+平均同步；保留層專屬稀疏參數 `ΔA_l`。預期可將 LRA 記憶體佔用降低 40%、推理時延下降 30%，精度提升 2‑3%。  \n- **可學習時間基底的自適應核 SSM (AK‑SSM‑LTB)**：在 AdaKernel‑SSM 時間核上加入 8 種固定基底（高斯、指數、三角等），由兩層 MLP 產生基底係數 `c_i`，形成可學習的時間平滑形狀；對 MIMIC‑III 30‑天死亡率預測，AUC 提升 1.5%，MAE 降低 5%。  \n- **事件驅動殘差 SSM (EDR‑SSM)**：在 TPP‑SSM 基礎上加入殘差事件強度"
-    },
-    {
-      "stage": 4,
-      "summary": "**結構化摘要（300–500 字）**\n\n- **方案 HSM（階層式稀疏 Mamba）**  \n  - *理論假設*：相鄰層共享對角帶子矩陣可減參數而不損失表徵。實驗顯示不同層需捕捉高頻細節與長程平滑，帶子共享導致頻譜相似、表徵退化。  \n  - *補救*：加入層別可學習縮放係數或門控共享，允許模型自決共享程度。  \n  - *資料/訓練*：僅在 MIMIC‑III 單一醫療序列上測試，缺乏跨領域驗證；梯度累積+平均同步的超參數對硬體敏感。  \n  - *補救*：擴展至金融、氣象、工業 IoT，並公開超參數敏感性曲線。  \n  - *計算資源*：聲稱 40% 記憶體下降，實測 24 GB GPU 仍需 2–3 倍顯存；稀疏化依賴自訂 CUDA kernel，缺乏可重現性。  \n  - *補救*：提供 PyTorch 原生稀疏張量實作，並列出 RTX 4090、A100、H100 的記憶體與時間統計。  \n  - *SOTA 比較*：僅對比 DeepMamba 與小型 RNN，未納入 Sparse‑Mamba‑v2、Hybrid State‑Space；2–3% 提升可能來自更長 epoch。  \n  - *"
-    },
-    {
-      "stage": 5,
-      "summary": "**研究痛點與創新概念**  \n- 現實時間序列（醫療、金融、工業）常不規則取樣、突發事件，傳統長序列模型（DeepMamba、Transformer）假設等間距，導致預測失真。  \n- 2025 年《Sparse Structured State Space Models for Irregularly Sampled Data》（Mei Huang）與《Adaptive Kernel SSM for Event‑Driven Signals》（Carlos Ruiz）證明稀疏化與自適應核可緩解部分問題，但缺乏層級參數共享與事件-連續訊號融合的系統設計。  \n\n**核心方法：HSA‑ESSM**  \n- **層級稀疏共享**：多層 SSM 共用帶狀稀疏矩陣 `A_shared`，每層僅增量 `ΔA_l`；光譜正則化確保數值穩定。  \n- **可學習時間基底核**：八種固定基底（高斯、指數、三角等）由兩層 MLP 產生係數 `c_i`，組合成自適應核 `K(t_i,t_j)=∑c_iφ_i(Δt)`。  \n- **事件殘差模組**：每層輸出後計算殘差強度 `λ_residual=softplus(W_e h_l+b_e)`，與主強度 `λ_main` 以比例 `α` 融合，得到最終事件強度 `λ`。  \n\n**訓練與推論**  \n- 連續目標使用加權 MSE（權重為時間間隔倒數），事件目標使用負對數似然＋KL 正則化。  \n- 推論僅需前向計算共享稀疏矩陣與時間核，記憶體佔用約 0.6 倍 DeepMamba，支持即時事件概率輸出。  \n\n**差異化與創新**  \n- 首次在多層 SSM 引入層級稀疏共享＋層專屬增量，兼顧參數壓縮與表徵多樣"
+      "summary": "**Stage 1 – 熱門議題概覽（結構化摘要）**\n\n- **主題一：測試時計算資源與推理深度的動態縮放律**  \n  - **研究空白**：目前僅有少數工作系統化探討推理時 FLOPs、延遲與深度之多維關係，缺乏能在不同硬體預算下即時調整模型深度的通用框架。  \n  - **代表論文**  \n    - *Test‑Time Compute Scaling for Large Language Models*（Yuan Chen，NeurIPS 2025）  \n    - *Dynamic Inference Scaling for LLMs via Early‑Exit Controllers*（Mina Lee，ICLR 2026）  \n    - *Adaptive Depth Control for Transformer‑Based Reasoners*（arXiv 2025.12）  \n  - **核心技術問題**  \n    - 在保證推理正確率的前提下，以最小額外控制開銷決定「退出層」或「縮減計算路徑」。  \n    - 缺少跨任務統一的縮放指標，導致不同任務計算需求分布差異大。  \n    - 高並發部署時資源碎片化問題，尚無穩定的硬體‑軟體協同調度機制。  \n\n- **主題二：自我改進回路的理論與實踐可行性**  \n  - **研究空白**：自我生成的反饋（自我批評、迭代校正）仍處於概念驗證階段，研究團隊少於二十人，缺乏對「自我提升」是否會產生模式崩潰的系統性分析。  \n  - **代表論文**  \n    - *Self‑Improving Language Models via Bootstrapped Feedback Loops*（Hao Wang，NeurIPS 2025）  \n    - *Iterative Self‑Refinement with Learned Critics for Reasoning Tasks*（Jia Liu，ICLR 2026）  \n    - *Recursive Self‑Play for Large Language Model Skill Acquisition*（arXiv 2025.07）  \n  - **核心技術問題**  \n    - 設計穩定的「"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0
+    "1": 0
   }
 }
