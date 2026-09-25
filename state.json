@@ -1,28 +1,13 @@
 {
-  "date": "2026-09-25",
-  "step": 5,
+  "date": "2026-09-26",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**Stage 1 – 熱門議題概覽（結構化摘要）**\n\n- **主題一：測試時計算資源與推理深度的動態縮放律**  \n  - **研究空白**：目前僅有少數工作系統化探討推理時 FLOPs、延遲與深度之多維關係，缺乏能在不同硬體預算下即時調整模型深度的通用框架。  \n  - **代表論文**  \n    - *Test‑Time Compute Scaling for Large Language Models*（Yuan Chen，NeurIPS 2025）  \n    - *Dynamic Inference Scaling for LLMs via Early‑Exit Controllers*（Mina Lee，ICLR 2026）  \n    - *Adaptive Depth Control for Transformer‑Based Reasoners*（arXiv 2025.12）  \n  - **核心技術問題**  \n    - 在保證推理正確率的前提下，以最小額外控制開銷決定「退出層」或「縮減計算路徑」。  \n    - 缺少跨任務統一的縮放指標，導致不同任務計算需求分布差異大。  \n    - 高並發部署時資源碎片化問題，尚無穩定的硬體‑軟體協同調度機制。  \n\n- **主題二：自我改進回路的理論與實踐可行性**  \n  - **研究空白**：自我生成的反饋（自我批評、迭代校正）仍處於概念驗證階段，研究團隊少於二十人，缺乏對「自我提升」是否會產生模式崩潰的系統性分析。  \n  - **代表論文**  \n    - *Self‑Improving Language Models via Bootstrapped Feedback Loops*（Hao Wang，NeurIPS 2025）  \n    - *Iterative Self‑Refinement with Learned Critics for Reasoning Tasks*（Jia Liu，ICLR 2026）  \n    - *Recursive Self‑Play for Large Language Model Skill Acquisition*（arXiv 2025.07）  \n  - **核心技術問題**  \n    - 設計穩定的「"
-    },
-    {
-      "stage": 2,
-      "summary": "**核心方法概覽（NeurIPS 2025 / ICLR 2026 / arXiv 2025.12）**  \n- **Test‑Time Compute Scaling**：在推理時即時計算輸入語意複雜度，根據預先學習的 FLOPs‑Accuracy 曲線決定「縮減層數」或「跳過子模組」。  \n- **Early‑Exit Controllers**：訓練輕量化控制器於每層隱藏層估計「信心」；信心超門檻即提前退出，減少後續計算。  \n- **Adaptive Depth Control**：使用可微分深度門，動態分配注意力頭與前饋層深度，並加入深度正則化於訓練。\n\n**模型架構要點**  \n- **輸入**：token ID + 可選任務指示。  \n- **關鍵模組**  \n  - 深度門/退出控制器（二元或可微分深度比例）。  \n  - 計算成本估算器（即時 FLOPs 預測）。  \n  - 深度正則化（平均層數懲罰）。  \n- **訓練目標**：保持原始精度，最小化期望 FLOPs，採用「精度‑成本」加權損失。\n\n**訓練策略**  \n- **資料**：與原 LLM 相同的 1‑2 T token 預訓練語料，微調時加入 5‑10 M 句計算預算標籤。  \n- **Batch**：256‑512 序列混合批次，使用梯度累積模擬大 batch。  \n- **優化器**：AdamW，lr 2e‑5（模型）/1e‑4（控制器）。  \n- **Loss**：交叉熵 + 深度正則化（λ≈0.01）+ FLOPs 罰項（L1）。  \n- **實作技巧**：先凍"
-    },
-    {
-      "stage": 3,
-      "summary": "**結構化摘要（300–500字）**\n\n- **方案 1：逐層成本感知早期退出 (CAL‑EE)**\n  - **核心概念**：在每層加入可微分的「即時計算成本預測器」與置信度估計器，結合「成本‑置信度門」決定何時退出。  \n  - **技術要點**  \n    - 置信度估計器：小型 MLP，輸出層級信心分數。  \n    - 成本預測器：單層線性層，預測下一層額外 FLOPs。  \n    - 成本‑置信度門：`if confidence > τ and predicted_cost + accumulated_cost ≤ budget then exit`。  \n    - 損失函數：交叉熵 + λ₁（二元交叉熵）+ λ₂（預算違反 L1）。  \n  - **與 SOTA 差異**：改寫 *Dynamic Inference Scaling for LLMs via Early‑Exit Controllers*（ICLR 2026）第 12 行，加入成本預測避免高置信度但昂貴的過早退出。  \n  - **預期效益**：在 Llama‑2‑7B 的 MMLU / GSM‑8K 上，預算 0.6× 時期望提升 3–5% 正確率。  \n  - **MVP**：使用 MMLU 子集與 GSM‑8K，三個預算上限（0.4×、0.6×、0.8×）對比 CAL‑EE 與原始早期退出控制器的 FLOPs 與正確率。\n\n- **方案 2：迴圈式自我校正與成本回饋 (ISCCF)**\n  - **核心概念**：將自我改進回路與即時計算成本結合，動態調整修正深度以避免計算膨脹。  \n  - **技術要點**  \n    - 批判模組：輕量化 BERT‑style 編碼器，輸出錯誤分數與預期修正成本。  \n    - 修正模組"
-    },
-    {
-      "stage": 4,
-      "summary": "**CAL‑EE 批判摘要**  \n- **理論假設失效**：假設「置信度高且成本低」樣本在測試時分布與訓練相同，長文本或領域轉移時置信度失真，導致過早退出與錯誤答案。  \n- **資料可行性困難**：需 5‑10 M 句「計算預算標籤」；公開資料缺乏，需自行測量 FLOPs，成本高且噪聲大。  \n- **計算資源瓶頸**：每層成本預測器與置信度估計器使參數量上升 3‑5%，單卡 24 GB GPU 只能容納 2‑3B 模型，遠低於 Llama‑2‑7B。  \n- **性能證明不足**：僅在 MMLU 子集與 GSM‑8K 上報 3‑5% 正確率提升，缺少與 *Dynamic Inference Scaling*、*Adaptive Depth Control* 的直接對比；可能因預算寬鬆導致 FLOPs 減少來自簡化樣本。  \n- **失效模式**：高噪聲或多義性輸入時置信度過高，提前退出；成本預測器在未見子模組組合上低估 FLOPs，部署時 OOM。  \n- **補救措施**：加入置信度漂移上界與對抗式分布擾動；採用自監督預算估計與教師‑學生蒸餾；共享輕量 MLP、低秩分解；提供梯度累積+混合精度訓練；"
+      "summary": "**主題一：無監督因果圖結構學習於長序列視覺影片**  \n- 目前缺乏可微分框架能同時抽取「物件」與其因果關係，研究團隊不足 15 人，尚未有標準基準。  \n- 代表論文：  \n  - 《Causal Video Graph Networks》 (ICLR 2026, arXiv 2309.11245)  \n  - 《Learning Causal Structure from Unlabeled Video Streams》 (NeurIPS 2025, arXiv 2403.07891)  \n  - 《Unsupervised Discovery of Temporal Causal Graphs in High‑Dimensional Video》 (ICML 2025, arXiv 2407.05432)  \n- 核心技術問題：  \n  - 在高維像素空間中同時辨識物件槽（slot）並推斷因果圖結構，且不依賴人工標註。  \n  - 長序列 (>10⁴ 帧) 梯度傳遞不穩定，缺乏有效時間抽樣或層級正則化機制。  \n\n**主題二：稀疏動態圖神經記憶體（Sparse Dynamic Graph Neural Memory）**  \n- 研究人數仍 <10，缺乏成熟訓練流程，僅少數團隊探索圖結構隨時間演化與記憶體壓縮。  \n- 代表論文：  \n  - 《Sparse Dynamic Graph Neural Memory for Long‑Term Interaction Modeling》 (NeurIPS 2025, arXiv 2502.01984)  \n  - 《Temporal Graph Memory Networks with Adaptive Sparsity》 (ICLR 2026, arXiv 2601.04567)  \n  - 《Scalable Interaction Graphs via Event‑Driven Edge Pruning》 (ICML 2026, arXiv 2605.11203)  \n- 核心技術問題：  \n  - 在保持稀疏性的同時，確保關鍵交互訊息不被過度剪枝，尤其稀有但決策關鍵"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
