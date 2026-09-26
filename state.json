@@ -1,13 +1,18 @@
 {
   "date": "2026-09-27",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": ""
+    },
+    {
+      "stage": 2,
+      "summary": "**因果表徵學習（Causal Representation Learning）關鍵摘要**  \n\n- **核心方法**  \n  - *CausalVAE*（NeurIPS 2025）：隱變量分為因果因子 `z_c` 與噪聲因子 `z_n`，利用可微分鄰接矩陣 `A` 施加 DAG 約束，ELBO 加上結構正則與介入重建損失。  \n  - *Interventional Contrastive Learning (ICL)*（ICML 2025）：以介入樣本構造正負對，對比損失強化不同介入條件下的表徵不變性，並學習因果方向。  \n  - *Invariant Causal Energy Model (ICEM)*（ICLR 2026）：能量函數建模因果關係，結合不變性正則化，使模型在未見介入分佈上仍能產生正確條件分佈。  \n\n- **模型架構**  \n  - 輸入：觀測向量 `x` + 介入指示 `do(a)`；輸出：`z_c, z_n` 與重建 `x̂`。  \n  - 編碼器：多層感知網路或圖神經網路；因果圖參數化：可微分鄰接矩陣或 DAG 參數化；能量/對比模組：計算介入前後表徵相似度或能量差。  \n\n- **訓練策略**  \n  - 資料規模：10k–50k 含介入標籤；batch 128–256；AdamW（lr 1e‑4）。  \n  - Loss：CausalVAE = ELBO + λ₁·DAG_penalty + λ₂·Intervention_Reconstruction；ICL = Contrastive_Loss + λ·Reconstruction；ICEM = Energy_NLL + λ·Invariance_Penalty。  \n  - Tricks：do‑mask 條件拼接、Gumbel‑Softmax 近似離散結構、先凍結"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
