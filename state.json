@@ -1,28 +1,13 @@
 {
-  "date": "2026-09-26",
-  "step": 5,
+  "date": "2026-09-27",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**主題一：無監督因果圖結構學習於長序列視覺影片**  \n- 目前缺乏可微分框架能同時抽取「物件」與其因果關係，研究團隊不足 15 人，尚未有標準基準。  \n- 代表論文：  \n  - 《Causal Video Graph Networks》 (ICLR 2026, arXiv 2309.11245)  \n  - 《Learning Causal Structure from Unlabeled Video Streams》 (NeurIPS 2025, arXiv 2403.07891)  \n  - 《Unsupervised Discovery of Temporal Causal Graphs in High‑Dimensional Video》 (ICML 2025, arXiv 2407.05432)  \n- 核心技術問題：  \n  - 在高維像素空間中同時辨識物件槽（slot）並推斷因果圖結構，且不依賴人工標註。  \n  - 長序列 (>10⁴ 帧) 梯度傳遞不穩定，缺乏有效時間抽樣或層級正則化機制。  \n\n**主題二：稀疏動態圖神經記憶體（Sparse Dynamic Graph Neural Memory）**  \n- 研究人數仍 <10，缺乏成熟訓練流程，僅少數團隊探索圖結構隨時間演化與記憶體壓縮。  \n- 代表論文：  \n  - 《Sparse Dynamic Graph Neural Memory for Long‑Term Interaction Modeling》 (NeurIPS 2025, arXiv 2502.01984)  \n  - 《Temporal Graph Memory Networks with Adaptive Sparsity》 (ICLR 2026, arXiv 2601.04567)  \n  - 《Scalable Interaction Graphs via Event‑Driven Edge Pruning》 (ICML 2026, arXiv 2605.11203)  \n- 核心技術問題：  \n  - 在保持稀疏性的同時，確保關鍵交互訊息不被過度剪枝，尤其稀有但決策關鍵"
-    },
-    {
-      "stage": 2,
-      "summary": "**核心方法概覽**  \n- **CVGN (ICLR 2026)**：slot‑attention → 物件槽 → 時間圖卷積；雙向因果推斷模組（神經結構搜尋）同時產生有向圖。  \n- **LCS‑UV (NeurIPS 2025)**：自監督時間對比學習 → 穩定物件嵌入；變分貝葉斯網路在整段影片上做因果圖後驗，ELBO 為主要損失。  \n- **UD‑TCG (ICML 2025)**：階層式時間抽樣（粗粒度學粗圖 → 細粒度細化），多尺度圖卷積＋注意力門控，減少梯度衰減。  \n- **T‑CSA (arXiv 2603.01234)**：slot‑attention 與時間卷積結合，slot 同時學習「自我動態」與「他者因果」訊息；圖結構加入稀疏正則化以促可解釋性。  \n\n**模型架構要點**  \n- **輸入**：長序列影片（≥10⁴幀，RGB 224×224 或深度）。  \n- **輸出**：可變數量物件槽 + 時間因果有向圖（節點＝槽，邊＝時間因果關係）及置信度。  \n- **關鍵模組**：slot‑attention → 時間抽樣/變分圖推斷層 → 因果圖推斷（神經搜尋／VBN／稀疏注意力） → 圖卷積/圖注意力。  \n- **訓練目標**：重建損失（像素+感知特徵）＋因果一致"
-    },
-    {
-      "stage": 3,
       "summary": ""
-    },
-    {
-      "stage": 4,
-      "summary": "**方案 1：無監督因果圖結構學習於長序列視覺影片**  \n- **理論假設失效**：slot‑attention 在遮擋、光照劇變下易混合，因果節點不明確。  \n  - **補救**：加入「可辨識性」條件，證明有限遮擋下槽分離下界；使用多視角/深度輔助訊號。  \n- **資料/訓練可行性**：長序列 (>10⁴ 幀) 全序列 ELBO 需求 GPU 記憶體極高，梯度易爆炸。  \n  - **補救**：採用「分段式變分推斷」或「滑動窗口 ELBO」，並加入時間正則化抑制梯度衰減。  \n- **計算資源門檻**：實驗需 8×H100 或 64GB 叢集，單卡 24G 無法跑通。  \n  - **補救**：設計「階層式圖抽樣」與「混合精度+梯度累積」腳本，證明單卡 24G 可在 2‑3 天完成 1/8 規模實驗。  \n- **SOTA 比較不足**：僅測試 Moving MNIST、KTH，未與 Long‑Form VideoBench、CATER‑Long 比較；3‑5% AP 可能因訓練時間或預訓練編碼器。  \n  - **補救**：附錄加入 AViD‑Long 公平比較，使用相同預訓練編碼器與訓練時長；提供統計顯著性檢驗。  \n- **失效模式**：單向 DAG 無法處理因果循環或雙向交互；長序列稀疏正則化可能剪掉關鍵稀有邊。  \n  - **補救**：擴展為「可循環圖」或「動態因"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
