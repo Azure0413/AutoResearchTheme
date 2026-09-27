@@ -1,28 +1,13 @@
 {
-  "date": "2026-09-27",
-  "step": 5,
+  "date": "2026-09-28",
+  "step": 2,
   "summaries": [
     {
       "stage": 1,
-      "summary": ""
-    },
-    {
-      "stage": 2,
-      "summary": "**因果表徵學習（Causal Representation Learning）關鍵摘要**  \n\n- **核心方法**  \n  - *CausalVAE*（NeurIPS 2025）：隱變量分為因果因子 `z_c` 與噪聲因子 `z_n`，利用可微分鄰接矩陣 `A` 施加 DAG 約束，ELBO 加上結構正則與介入重建損失。  \n  - *Interventional Contrastive Learning (ICL)*（ICML 2025）：以介入樣本構造正負對，對比損失強化不同介入條件下的表徵不變性，並學習因果方向。  \n  - *Invariant Causal Energy Model (ICEM)*（ICLR 2026）：能量函數建模因果關係，結合不變性正則化，使模型在未見介入分佈上仍能產生正確條件分佈。  \n\n- **模型架構**  \n  - 輸入：觀測向量 `x` + 介入指示 `do(a)`；輸出：`z_c, z_n` 與重建 `x̂`。  \n  - 編碼器：多層感知網路或圖神經網路；因果圖參數化：可微分鄰接矩陣或 DAG 參數化；能量/對比模組：計算介入前後表徵相似度或能量差。  \n\n- **訓練策略**  \n  - 資料規模：10k–50k 含介入標籤；batch 128–256；AdamW（lr 1e‑4）。  \n  - Loss：CausalVAE = ELBO + λ₁·DAG_penalty + λ₂·Intervention_Reconstruction；ICL = Contrastive_Loss + λ·Reconstruction；ICEM = Energy_NLL + λ·Invariance_Penalty。  \n  - Tricks：do‑mask 條件拼接、Gumbel‑Softmax 近似離散結構、先凍結"
-    },
-    {
-      "stage": 3,
-      "summary": "**Stage 3 方案概覽（300–500字）**\n\n- **方案 1：Intervention‑Aware Diff‑VAE**  \n  - **核心**：同時學習可微分因果圖 `A(θ)` 與介入條件 `do(a)` 的生成分佈，圖結構在不同介入下自適應。  \n  - **技術要點**  \n    - 編碼器分為 `E_c`（因果潛在 `z_c`，32維，使用 GNN 加入 `do(a)`）與 `E_n`（噪聲潛在 `z_n`，16維，MLP）。  \n    - `A(θ)` 以 Gumbel‑Softmax 近似離散，前向時動態遮罩：`Ã = A ⊙ (1‑do(a)) + I ⊙ do(a)`，保留被介入變數自迴路。  \n    - 解碼器 `D` 同時接收 `z_c, z_n, do(a)` 生成重建 `x̂`。  \n    - 損失：重建 MSE、KL、DAG 正則、介入一致性（`‖z_c(do(a))‖₂` 小於閾值）。  \n  - **SOTA 差異**：在 CausalVAE 的圖更新公式中加入遮罩乘法，提升介入下生成真實度。  \n  - **預期指標**：CausalGenBench 介入 FID ↓12%，因果邊緣召回率 ↑8%。  \n  - **MVP**：Synthetic Causal Graph 10（10k樣本，5種介入），0.6M參數，RTX 4090 6h 內完成。\n\n- **方案 2：Counterfactual Contrastive Intervention (CCI)**  \n  - **核心**：生成逆向（counterfactual）樣本 `x_cf`，在對比學習中同時考慮「前因」與「後因」相似度，提升未見介入的穩定性。  \n  - **技術要點**  \n    - 編碼器 `E`（GCN）輸出共享表徵 `h`，兩投影頭 `g₁,g₂`"
-    },
-    {
-      "stage": 4,
-      "summary": "**方案 1 批判**  \n- **理論假設失效**：假設 `do(a)` 可用二元遮罩直接乘於鄰接矩陣，忽略多變數非線性干預；建議改用可參數化邊權重調節，並證明在任意可逆干預下保持可微分。  \n- **資料可行性不足**：僅在 10k‑50k 合成資料上驗證，缺乏真實高維結構（基因、經濟）測試；提議加入 CausalBench、ICML‑2025 介入圖資料，並在不同稀疏度、噪聲水平下做失敗曲線分析。  \n- **計算資源高昂**：動態遮罩與 Gumbel‑Softmax 需多次前向/反向，顯存近 22 GB，單卡 24 GB 只能極小 batch，訓練超過 48 h；建議採用分層圖抽樣、稀疏鄰接、混合精度與梯度累積，將訓練時間"
+      "summary": "**主題一：離散擴散於抽象語法樹（AST）驅動的程式碼合成**  \n- 研究人數不足 15 人，聚焦小型函式或單一語言，缺乏跨語言基準。  \n- 代表論文：  \n  - 《Discrete Diffusion over Abstract Syntax Trees for Program Synthesis》 (Lin Zhao, ICLR 2025)  \n  - 《Flow Matching for Structured Code Generation》 (Ananya Patel, NeurIPS 2026)  \n  - 《Graph‑Structured Diffusion for Automated Bug Repair》 (Yong‑Jin Kim, arXiv 2025.2103)  \n- 核心問題：  \n  - 保證語法合法性與語意一致性，避免無效中間狀態。  \n  - 大型程式庫受圖結構記憶體與抽樣效率限制，缺乏層次化/稀疏化策略。  \n  - 評估指標不統一，缺少可讀性、執行正確性與安全性的綜合基準。  \n\n**主題二：不規則時間序列的離散流匹配與事件預測**  \n- 團隊數少於 12 人，主要針對醫療或金融單一事件類型，混合型長序列方法不足。  \n- 代表論文：  \n  - 《EventFlow: Discrete Flow Matching for Irregular Time Series》 (Rui Chen, ICML 2025)  \n  - 《Diffusion‑based Forecasting of Categorical Health Records》 (Marta Gómez, NeurIPS 2026)  \n  - 《Discrete Diffusion"
     }
   ],
   "failures": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0
+    "1": 0
   }
 }
