@@ -1,13 +1,18 @@
 {
   "date": "2026-09-28",
-  "step": 2,
+  "step": 3,
   "summaries": [
     {
       "stage": 1,
       "summary": "**主題一：離散擴散於抽象語法樹（AST）驅動的程式碼合成**  \n- 研究人數不足 15 人，聚焦小型函式或單一語言，缺乏跨語言基準。  \n- 代表論文：  \n  - 《Discrete Diffusion over Abstract Syntax Trees for Program Synthesis》 (Lin Zhao, ICLR 2025)  \n  - 《Flow Matching for Structured Code Generation》 (Ananya Patel, NeurIPS 2026)  \n  - 《Graph‑Structured Diffusion for Automated Bug Repair》 (Yong‑Jin Kim, arXiv 2025.2103)  \n- 核心問題：  \n  - 保證語法合法性與語意一致性，避免無效中間狀態。  \n  - 大型程式庫受圖結構記憶體與抽樣效率限制，缺乏層次化/稀疏化策略。  \n  - 評估指標不統一，缺少可讀性、執行正確性與安全性的綜合基準。  \n\n**主題二：不規則時間序列的離散流匹配與事件預測**  \n- 團隊數少於 12 人，主要針對醫療或金融單一事件類型，混合型長序列方法不足。  \n- 代表論文：  \n  - 《EventFlow: Discrete Flow Matching for Irregular Time Series》 (Rui Chen, ICML 2025)  \n  - 《Diffusion‑based Forecasting of Categorical Health Records》 (Marta Gómez, NeurIPS 2026)  \n  - 《Discrete Diffusion"
+    },
+    {
+      "stage": 2,
+      "summary": "**離散擴散於抽象語法樹（AST）驅動的程式碼合成 – Stage 2 摘要**\n\n- **研究主題**  \n  - 針對「離散擴散於 AST」的程式碼合成方法，兼顧語法合法性與語意一致性，並可在單機 GPU 上完成原型。\n\n- **核心方法群**  \n  - **Discrete Diffusion over AST** (Lin Zhao, ICLR 2025)  \n    - 離散時間馬爾可夫鏈在 AST 節點上加噪，逆向過程透過條件離散分布抽樣恢復節點類型與子樹結構，確保每一步語法合法。  \n  - **Flow Matching for Structured Code Generation** (Ananya Patel, NeurIPS 2026)  \n    - 學習從噪聲到目標 AST 的連續流向映射，使用「結構化流匹配」損失，生成過程在向量空間光滑，抽樣步驟投射回語法規則。  \n  - **Graph‑Structured Diffusion for Automated Bug Repair** (Yong‑Jin Kim, arXiv 2025.2103)  \n    - 程式碼抽象為圖（節點＝語句，邊＝控制/資料流），離散擴散於圖上，逆向加入「錯誤定位」條件，兼顧錯誤檢測與修復。\n\n- **模型架構**  \n  - **輸入**：AST 或圖的節點類型 ID、父子關係表；可選函式簽名、測試案例、庫依賴。  \n  - **輸出**：完整 AST，經語法樹解碼器轉為可編譯程式碼。  \n  - **關鍵模組**  \n    - 離散噪聲模組：按排程將節點隨機替換為 MASK/UNK。  \n    - 條件 Transformer / Graph‑Transformer：預測逆向去噪類別分布。  \n    - 語法校驗器：每步抽樣後即時檢查語法，違"
     }
   ],
   "failures": {
-    "1": 0
+    "1": 0,
+    "2": 0
   }
 }
