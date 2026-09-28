@@ -1,6 +1,6 @@
 {
   "date": "2026-09-28",
-  "step": 3,
+  "step": 4,
   "summaries": [
     {
       "stage": 1,
@@ -9,10 +9,15 @@
     {
       "stage": 2,
       "summary": "**離散擴散於抽象語法樹（AST）驅動的程式碼合成 – Stage 2 摘要**\n\n- **研究主題**  \n  - 針對「離散擴散於 AST」的程式碼合成方法，兼顧語法合法性與語意一致性，並可在單機 GPU 上完成原型。\n\n- **核心方法群**  \n  - **Discrete Diffusion over AST** (Lin Zhao, ICLR 2025)  \n    - 離散時間馬爾可夫鏈在 AST 節點上加噪，逆向過程透過條件離散分布抽樣恢復節點類型與子樹結構，確保每一步語法合法。  \n  - **Flow Matching for Structured Code Generation** (Ananya Patel, NeurIPS 2026)  \n    - 學習從噪聲到目標 AST 的連續流向映射，使用「結構化流匹配」損失，生成過程在向量空間光滑，抽樣步驟投射回語法規則。  \n  - **Graph‑Structured Diffusion for Automated Bug Repair** (Yong‑Jin Kim, arXiv 2025.2103)  \n    - 程式碼抽象為圖（節點＝語句，邊＝控制/資料流），離散擴散於圖上，逆向加入「錯誤定位」條件，兼顧錯誤檢測與修復。\n\n- **模型架構**  \n  - **輸入**：AST 或圖的節點類型 ID、父子關係表；可選函式簽名、測試案例、庫依賴。  \n  - **輸出**：完整 AST，經語法樹解碼器轉為可編譯程式碼。  \n  - **關鍵模組**  \n    - 離散噪聲模組：按排程將節點隨機替換為 MASK/UNK。  \n    - 條件 Transformer / Graph‑Transformer：預測逆向去噪類別分布。  \n    - 語法校驗器：每步抽樣後即時檢查語法，違"
+    },
+    {
+      "stage": 3,
+      "summary": "**方案 1：層級稀疏離散擴散**  \n- 核心：在 AST 深度 ≤2、3‑5、≥6 的三層採用不同遮蔽比例，僅在高層做粗粒度擴散，低層快速細修。  \n- 技術：分層噪聲模組 + 稀疏逆向去噪器（Graph‑Transformer/ GNN），層間一致性正則。  \n- 與 SOTA 差異：改寫 Lin Zhao《Discrete Diffusion over AST》（ICLR 2025）第 3 行，降低 O(N/⌈depth/3⌉) 記憶體。  \n- 預期：HumanEval‑Large 成功編譯率 +12%，抽樣時間 30 s→8 s。  \n- MVP：HumanEval‑Small + 1k 大型 Python，2 層 GNN 256 維，12 M 參數，RTX 4090 24 GB。\n\n**方案 2：雙圖條件離散流匹配＋靜態分析約束**  \n- 核心：同時利用 CFG、DFG 兩圖 + LLVM 靜態標籤作條件向量。  \n- 技術：雙圖編碼器 → 條件流匹配，加入安全一致性懲罰。  \n- 與 SOTA 差異：改寫 Ananya Patel《Flow Matching for Structured Code Generation》（NeurIPS 2026）第 4 節。  \n- 預期：Bug2Fix 修復正確率 +9%，編譯器警告減 35%。  \n- MVP：CodeXGLUE‑BugFix（1k Java）+ LLVM 標籤，雙 GraphSAGE 128 維，8 M 參數，RTX 3080 10 GB。\n\n**方案 3：階梯式測試驅動離散流匹配**  \n- 核心：在訓練中引入三層測試（斷言→邊"
     }
   ],
   "failures": {
     "1": 0,
-    "2": 0
+    "2": 0,
+    "3": 0
   }
 }
