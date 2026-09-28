@@ -1,6 +1,6 @@
 {
   "date": "2026-09-28",
-  "step": 4,
+  "step": 5,
   "summaries": [
     {
       "stage": 1,
@@ -13,11 +13,16 @@
     {
       "stage": 3,
       "summary": "**方案 1：層級稀疏離散擴散**  \n- 核心：在 AST 深度 ≤2、3‑5、≥6 的三層採用不同遮蔽比例，僅在高層做粗粒度擴散，低層快速細修。  \n- 技術：分層噪聲模組 + 稀疏逆向去噪器（Graph‑Transformer/ GNN），層間一致性正則。  \n- 與 SOTA 差異：改寫 Lin Zhao《Discrete Diffusion over AST》（ICLR 2025）第 3 行，降低 O(N/⌈depth/3⌉) 記憶體。  \n- 預期：HumanEval‑Large 成功編譯率 +12%，抽樣時間 30 s→8 s。  \n- MVP：HumanEval‑Small + 1k 大型 Python，2 層 GNN 256 維，12 M 參數，RTX 4090 24 GB。\n\n**方案 2：雙圖條件離散流匹配＋靜態分析約束**  \n- 核心：同時利用 CFG、DFG 兩圖 + LLVM 靜態標籤作條件向量。  \n- 技術：雙圖編碼器 → 條件流匹配，加入安全一致性懲罰。  \n- 與 SOTA 差異：改寫 Ananya Patel《Flow Matching for Structured Code Generation》（NeurIPS 2026）第 4 節。  \n- 預期：Bug2Fix 修復正確率 +9%，編譯器警告減 35%。  \n- MVP：CodeXGLUE‑BugFix（1k Java）+ LLVM 標籤，雙 GraphSAGE 128 維，8 M 參數，RTX 3080 10 GB。\n\n**方案 3：階梯式測試驅動離散流匹配**  \n- 核心：在訓練中引入三層測試（斷言→邊"
+    },
+    {
+      "stage": 4,
+      "summary": "**Stage 4 方案批判摘要（約 420 字）**\n\n- **方案 1（層級稀疏離散擴散）**  \n  - *理論假設失效*：高層結構變化少的假設只適用於高度結構化語言；Python 中大量 `exec`/`eval` 會破壞此假設。  \n  - *資料不足*：HumanEval‑Large 164 範例遠低於 12 M 參數需求，易過擬合；建議擴充至 CodeXGLUE‑Large、BigCode‑Eval，並採用 meta‑learning 自適應遮蔽比例。  \n  - *計算瓶頸*：即使記憶體降至 O(N/⌈depth/3⌉)，Linux kernel AST >200k 節點仍需 >40 GB VRAM；可用分段稀疏抽樣 + DGL‑Distributed 分布式訓練。  \n  - *SOTA 比較不足*：報告 12% 編譯率提升僅在 HumanEval‑Small；需在 MBPP、CodeContests 等基準上報 95% 信賴區間並做 ablation。  \n  - *失效模式*：深度 >15 且分支密集時低層遮蔽比例過低，導致隱蔽邏輯錯誤；可加入全局依賴注意力與深度均衡樣本。\n\n- **方案 2（雙圖條件流匹配）**  \n  - *理論假設不足*：宏/模板元編程無法在 CFG/DFG 中表達；建議宏展開或加入編譯期節點。  \n  - *資料"
     }
   ],
   "failures": {
     "1": 0,
     "2": 0,
-    "3": 0
+    "3": 0,
+    "4": 0
   }
 }
