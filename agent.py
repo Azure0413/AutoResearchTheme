@@ -23,6 +23,15 @@ Daily Research Agent — robust edition.
    的 commit 步驟還能跑、把計數推到遠端)。
 
 7. Groq client timeout 拉長到 180s(預設過短)。
+
+8. 【本次修正】一次執行就跑完所有剩餘 stage(loop),不再「一次排程只跑一個 stage」。
+   原因:GitHub cron 實際觸發間隔常達 2.5~4 小時,5 個 stage 排到 stage 4 時
+   cron 視窗(台灣 12:42)已結束,stage 5 永遠沒機會執行。
+
+9. gpt-oss 是 reasoning 模型,reasoning tokens 會吃掉 max_tokens,可能回傳空內容。
+   現在空內容視為失敗並自動加大 max_tokens 重試;413 則先縮小 max_tokens 再重試。
+
+10. Stage 5 連續失敗 ≥ 2 次,自動改用精簡版 prompt。
 """
 
 import os
@@ -84,6 +93,10 @@ MAX_TOKENS_SUMMARY = 600
 # 重試 / fallback 設定
 MAX_RETRIES = 3                       # 每個模型的最大重試次數
 MAX_FAILURES_BEFORE_DEGRADE = 2       # 同階段累積失敗幾次後切到降級 prompt
+
+# 單次執行內連跑多個 stage 的設定
+STAGE_COOLDOWN_SEC = 45               # stage 之間冷卻,避免 Groq TPM 限流
+RUN_BUDGET_SEC = 17 * 60              # 單次執行時間預算,超過就存檔結束(workflow timeout 要比這大)
 
 
 # ===== 每日輪替焦點 =====
@@ -238,6 +251,20 @@ DEGRADED_STAGE_3_PROMPT = (
     "- MVP 設計(1 句話)\n\n"
     "**禁止**任何 LaTeX 與表格。每個方案總字數控制在 200-300 字。"
 )
+
+
+# Stage 5 的降級 prompt — 連續失敗後用這個確保最終提案能產出
+DEGRADED_STAGE_5_PROMPT = (
+    "綜合前四階段,整合出**一個**最值得執行的研究提案。**注意:之前用完整 prompt 失敗過,本次採用精簡版。**\n\n"
+    "**輸出格式**(不要 LaTeX、不要表格,總字數 800-1200 字):\n\n"
+    "## 1. 研究痛點與背景\n(3-4 句,引用 1 篇 paper)\n\n"
+    "## 2. 核心研究方法\n(一段 idea + 3-5 條演算法步驟)\n\n"
+    "## 3. 與既有方法的差異與創新性\n(3 條)\n\n"
+    "## 4. 實驗設計\n(資料集、baseline、指標、ablation、計算需求,各 1 行)\n\n"
+    "## 5. 預期貢獻與影響\n(2-3 句)\n\n"
+    "## 6. 風險與緩解\n(2 個風險)"
+)
+DEGRADED_STAGE_5_MAX_TOKENS = 2500
 
 
 def get_model(stage: int) -> str:
@@ -511,14 +538,27 @@ def safe_completion(messages, model, max_tokens, temperature=0.7):
     last_error = None
 
     for m in ladder:
+        cur_max = max_tokens  # 每個模型各自從原始 max_tokens 開始,可被動態調整
         for attempt in range(MAX_RETRIES):
             try:
                 resp = client.chat.completions.create(
                     model=m,
                     messages=messages,
                     temperature=temperature,
-                    max_tokens=max_tokens,
+                    max_tokens=cur_max,
                 )
+                choice = resp.choices[0]
+                content = choice.message.content
+                if not content or not content.strip():
+                    # reasoning 模型可能把 token 全花在 reasoning,content 為空
+                    finish = getattr(choice, "finish_reason", None)
+                    last_error = RuntimeError(f"{m} 回傳空內容 (finish_reason={finish})")
+                    if finish == "length":
+                        cur_max = min(int(cur_max * 1.5), 8000)
+                    print(f"[Empty] {m} 回傳空內容 (finish_reason={finish}),"
+                          f"max_tokens→{cur_max} 重試 ({attempt + 1}/{MAX_RETRIES})")
+                    time.sleep(3)
+                    continue
                 if m != model:
                     print(f"[Fallback OK] 用 {m} 替代 {model} 成功")
                 return resp, m
@@ -542,6 +582,11 @@ def safe_completion(messages, model, max_tokens, temperature=0.7):
                     time.sleep(wait)
                     continue
                 if status == 413:
+                    # Groq 的 413 常是「輸入 + max_tokens」超過 TPM 上限,先縮小 max_tokens 再試
+                    if cur_max > 1500:
+                        cur_max = max(int(cur_max * 0.6), 1500)
+                        print(f"[413] {m} 請求過大,縮小 max_tokens→{cur_max} 重試")
+                        continue
                     print(f"[413] {m} payload 過大,直接換 ladder 下一個模型")
                     break  # 換模型,不重試
                 # 其他 4xx
@@ -642,17 +687,25 @@ def get_active_prompt(stage: int, state: dict, prompts: dict) -> str:
         except Exception:
             pass
         return DEGRADED_STAGE_3_PROMPT
+    if stage == 5 and fc >= MAX_FAILURES_BEFORE_DEGRADE:
+        print(f"[Degraded] Stage 5 已連續失敗 {fc} 次,改用簡化 prompt")
+        try:
+            _discord_json({
+                "content": f"⚠️ Stage 5 已連續失敗 {fc} 次,本次改用簡化 prompt 以求完成。"
+            })
+        except Exception:
+            pass
+        return DEGRADED_STAGE_5_PROMPT
     return prompts[stage]
 
 
 # ===== 主流程 =====
-def main():
-    state = load_state()
+def run_stage(state: dict) -> bool:
+    """
+    執行 state["step"] 指向的那一個 stage。
+    回傳 True = 此 stage 已成功推進(可繼續下一個);False = 失敗,應結束本次執行。
+    """
     step = state["step"]
-
-    if step > 5:
-        print(f"今天 ({state['date']}) 5 階段已完成")
-        return
 
     print(f"=== Stage {step} | date={state['date']} ===")
     print(f"今日輪替焦點:{get_today_focus()}")
@@ -662,11 +715,14 @@ def main():
     primary = get_model(step)
     temp = STAGE_TEMPERATURE.get(step, 0.7)
     max_tok = STAGE_MAX_TOKENS.get(step, 2048)
-    print(f"主模型: {primary} | temperature: {temp} | max_tokens: {max_tok}")
 
     try:
         prompts = build_stage_prompts()
         active_prompt = get_active_prompt(step, state, prompts)
+        if step == 5 and active_prompt is DEGRADED_STAGE_5_PROMPT:
+            max_tok = DEGRADED_STAGE_5_MAX_TOKENS
+        print(f"主模型: {primary} | temperature: {temp} | max_tokens: {max_tok}")
+
         prompts_to_use = dict(prompts)
         prompts_to_use[step] = active_prompt
         messages = build_messages(step, state["summaries"], prompts_to_use)
@@ -689,7 +745,7 @@ def main():
         except Exception as save_err:
             print(f"[Warn] 連 state 都存不下: {save_err}")
         notify_error_to_discord(step, tb)
-        return  # 結束本次執行,等下次排程重試
+        return False  # 結束本次執行,等下次排程重試
 
     # ===== 區段 B: 主回應已取得 → 立刻推進 state(這之後失敗都不影響進度) =====
     state["summaries"].append({"stage": step, "summary": reply[:1500]})  # 暫存截斷版
@@ -730,6 +786,36 @@ def main():
             print(f"✓ 今日主題已寫入 {HISTORY_FILE}")
         except Exception as e:
             print(f"[Warn] history 寫入失敗: {e}")
+
+    return True
+
+
+def main():
+    t0 = time.time()
+    state = load_state()
+
+    if state["step"] > 5:
+        print(f"今天 ({state['date']}) 5 階段已完成")
+        return
+
+    # 一次執行連跑所有剩餘 stage;任一 stage 失敗就停(失敗計數已存檔,下次排程接續)
+    while state["step"] <= 5:
+        ok = run_stage(state)
+        if not ok:
+            print(f"Stage {state['step']} 失敗,本次執行結束,等待下次排程重試")
+            return
+        if state["step"] > 5:
+            break
+
+        elapsed = time.time() - t0
+        if elapsed + STAGE_COOLDOWN_SEC + 240 > RUN_BUDGET_SEC:
+            print(f"已用 {elapsed:.0f}s,接近時間預算,進度已存檔,留給下次排程繼續 "
+                  f"(下一個是 stage {state['step']})")
+            return
+        print(f"--- 冷卻 {STAGE_COOLDOWN_SEC}s 後接續 Stage {state['step']} ---")
+        time.sleep(STAGE_COOLDOWN_SEC)
+
+    print(f"🎉 今日 ({state['date']}) 5 階段全部完成,總耗時 {time.time() - t0:.0f}s")
 
 
 if __name__ == "__main__":
