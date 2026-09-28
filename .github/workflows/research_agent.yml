@@ -1,13 +1,13 @@
 name: Daily Research Agent
 on:
   schedule:
-    # 大幅放寬 cron 視窗 — 因為 GitHub Actions cron 在尖峰時段常被跳過
-    # 從台灣時間 01:12 ~ 12:42 連續嘗試,每 30 分鐘一次,共 24 次機會
-    # 5 階段最多只需要 5 次成功,所以即使被跳過 70% 也跑得完
+    # agent.py 現在「一次執行就跑完所有剩餘 stage」,所以每天只需要成功觸發 1 次。
+    # GitHub cron 常被延遲或跳過,因此整天(台灣時間 01:12 ~ 23:12)每小時排一次當作備援。
+    # 已完成的日子,後續觸發會立刻偵測到「今日已完成」並結束,不會重複呼叫 API。
     #
     # 拆成兩段 cron 是因為這個時間範圍會跨 UTC 換日
-    - cron: '12,42 17-23 * * *'   # UTC 17:12 ~ 23:42 = 台灣 01:12 ~ 07:42(隔日)
-    - cron: '12,42 0-4 * * *'     # UTC 00:12 ~ 04:42 = 台灣 08:12 ~ 12:42(當日)
+    - cron: '12 17-23 * * *'   # UTC 17:12 ~ 23:12 = 台灣 01:12 ~ 07:12(隔日)
+    - cron: '12 0-15 * * *'    # UTC 00:12 ~ 15:12 = 台灣 08:12 ~ 23:12(當日)
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,8 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # job timeout 要大於 agent step timeout,確保 timeout 後 commit 步驟仍有時間執行
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,6 +30,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -38,6 +40,8 @@ jobs:
       - name: Run agent
         id: run_agent
         continue-on-error: true
+        # agent.py 內部時間預算為 17 分鐘;這裡是保險用的硬上限
+        timeout-minutes: 25
         env:
           GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
