@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-08",
-    "stage1_topics": "",
-    "final_proposal": ""
-  },
-  {
     "date": "2026-09-09",
     "stage1_topics": "**主題一：因果介入與中介分析在大型語言模型內部機制**  \n- 研究缺口：目前僅有少數團隊嘗試系統化因果介入來量化單一神經元或子模組對輸出的貢獻，缺乏可擴展的中介分析框架。  \n- 代表工作  \n  - 《Causal Mediation in Large Language Models》 (Mina Lee, ICLR 2026)  \n  - 《Interventional Probes for Understanding Transformer Computation》 (Ravi Kumar, NeurIPS 2025)  \n- 核心技術挑戰  \n  - 設計低成本且不破壞模型分佈的微調介入策略。  \n  - 高維激活空間中中介效應估計易受噪聲影響，缺乏穩健方法。  \n\n**主題二：內部特徵向量軌跡聚類與異常偵測**  \n- 研究缺口：多數研究停留於單一步驟激活可視化，未系統追蹤特",
     "final_proposal": "**研究痛點與背景**  \n- 大型語言模型內部機制仍為「黑盒」，長序列或多輪對話中單點因果介入噪聲高、效應不穩。  \n- 目前因果介入（《Interventional Probes for Understanding Transformer Computation》NeurIPS 2025）缺乏全局激活軌跡觀察；僅聚類（《Trajectory‑Based Detection of Emergent Misalignment in Transformers》NeurIPS 2025）無法量化介入對輸出分布的因果貢獻。  \n- 需求：同時結合激活軌跡與因果中介，能在 24‑48 GB GPU 上"
@@ -68,5 +63,10 @@
     "date": "2026-09-30",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **高熵合金（HEA）主動學習設計平台**  \n  - **研究動機**：HEA 組成空間呈指數級增長，實驗資料稀疏且噪聲大；利用不確定性導向的圖神經網路，可在少量實驗回饋下快速定位高性能區域。  \n  - **代表論文**  \n    - 《Active Learning for High‑Entropy Alloy Design with Uncertainty‑Aware Graph Networks》, Jiawei Liu, NeurIPS 2025  \n    - 《Uncertainty‑Guided Bayesian Optimization for Multi‑Component Materials》, Arjun Patel, ICML 2025  \n    - 《Graph‑Based Transfer Learning ",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - HEA 組成空間指數級爆炸，實驗成本高、資料稀疏。  \n  - 目前 BO 在高維度易陷局部，無法同時處理機械、熱、腐蝕等多任務目標。  \n  - 《Active Learning for High‑Entropy Alloy Design with Uncertainty‑Aware Graph Networks》（NeurIPS 2025）使用 Monte‑Carlo Dropout 估計不確定性，但缺乏全局‑局部層次協調，噪聲區域仍過度探索。  \n  - 《Hierarchical Uncertainty‑Guid"
+  },
+  {
+    "date": "2026-10-01",
+    "stage1_topics": "**主題一：未監督層次化技能樹發掘**  \n- 研究人數不足 20 人，因自動化構建「技能樹」需同時解決長期依賴的表徵學習與離散選項的結構化抽象。  \n- 代表論文：  \n  - *SkillTree: Hierarchical Unsupervised Skill Discovery via Latent Diffusion*（NeurIPS 2025）  \n  - *OptionGAN: Learning Options with Generative Adversarial Intrinsic Rewards*（ICLR 2026）  \n  - *Latent Option Graphs for Scalable Skill Discovery*（arXiv 2025.11.02）  \n- 核心技術挑戰  \n  - 在無任務標籤下同時學習可遞迴組合的離散技能與層級關係。  \n  - ",
+    "final_proposal": "**研究痛點與背景**  \n- 目前未監督技能樹（如 *SkillTree* NeurIPS 2025）依賴高維 GMM 或圖神經，聚類不穩、技能分離度低。  \n- Gumbel‑Softmax 等離散化在長序列梯度噪聲大，易崩潰，尤其跨環境遷移。  \n- OptionGAN（ICLR 2026）生成的 option 重疊嚴重，缺乏能量正則。  \n- 以上方法在 24‑48 GB GPU 上難以完成端到端訓練，顯存占用過高。  \n\n**核心方法：Hierarchical Contrastive Energy Skill Discovery (HCESD)**  \n- **層次對比學習**：在潛"
   }
 ]
