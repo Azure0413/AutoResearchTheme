@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-09",
-    "stage1_topics": "**主題一：因果介入與中介分析在大型語言模型內部機制**  \n- 研究缺口：目前僅有少數團隊嘗試系統化因果介入來量化單一神經元或子模組對輸出的貢獻，缺乏可擴展的中介分析框架。  \n- 代表工作  \n  - 《Causal Mediation in Large Language Models》 (Mina Lee, ICLR 2026)  \n  - 《Interventional Probes for Understanding Transformer Computation》 (Ravi Kumar, NeurIPS 2025)  \n- 核心技術挑戰  \n  - 設計低成本且不破壞模型分佈的微調介入策略。  \n  - 高維激活空間中中介效應估計易受噪聲影響，缺乏穩健方法。  \n\n**主題二：內部特徵向量軌跡聚類與異常偵測**  \n- 研究缺口：多數研究停留於單一步驟激活可視化，未系統追蹤特",
-    "final_proposal": "**研究痛點與背景**  \n- 大型語言模型內部機制仍為「黑盒」，長序列或多輪對話中單點因果介入噪聲高、效應不穩。  \n- 目前因果介入（《Interventional Probes for Understanding Transformer Computation》NeurIPS 2025）缺乏全局激活軌跡觀察；僅聚類（《Trajectory‑Based Detection of Emergent Misalignment in Transformers》NeurIPS 2025）無法量化介入對輸出分布的因果貢獻。  \n- 需求：同時結合激活軌跡與因果中介，能在 24‑48 GB GPU 上"
-  },
-  {
     "date": "2026-09-10",
     "stage1_topics": "**主題一：多尺度階層式狀態空間模型 (H‑SSM)**  \n- 目前僅少數團隊嘗試在單一模型內同時捕捉微觀與宏觀時間尺度的長程依賴，缺乏系統化層級參數共享機制，導致超長序列（>10⁵）仍難以保持穩定與高效。  \n- 代表論文：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling* (Yuan Chen, ICLR 2026)  \n  - *Multi‑Scale Mamba: Adaptive Depth SSMs for Audio‑Video Fusion* (Lina Gupta, NeurIPS 2025)  \n  - *Scalable Hierarchical SSMs via Progressive Kernel Learning* (arXiv:2504.1123, 2025)  \n- 核心技",
     "final_proposal": "**研究痛點與背景**  \n- 超長序列（≥10⁵）在語音、影片、程式碼等領域日益重要。  \n- 目前 H‑SSM 兩大瓶頸：  \n  1. 各層核獨立學習 → 參數爆炸、記憶體高。  \n  2. 無動態層深度調度 → 在資訊緩慢變化區段仍全層計算，能耗不成比例。  \n- 相關工作：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling*（Yuan Chen，ICLR 2026）未提供參數共享。  \n  - *Gated Delta Networks for Efficient Sparse Sequence Mod"
@@ -68,5 +63,10 @@
     "date": "2026-10-01",
     "stage1_topics": "**主題一：未監督層次化技能樹發掘**  \n- 研究人數不足 20 人，因自動化構建「技能樹」需同時解決長期依賴的表徵學習與離散選項的結構化抽象。  \n- 代表論文：  \n  - *SkillTree: Hierarchical Unsupervised Skill Discovery via Latent Diffusion*（NeurIPS 2025）  \n  - *OptionGAN: Learning Options with Generative Adversarial Intrinsic Rewards*（ICLR 2026）  \n  - *Latent Option Graphs for Scalable Skill Discovery*（arXiv 2025.11.02）  \n- 核心技術挑戰  \n  - 在無任務標籤下同時學習可遞迴組合的離散技能與層級關係。  \n  - ",
     "final_proposal": "**研究痛點與背景**  \n- 目前未監督技能樹（如 *SkillTree* NeurIPS 2025）依賴高維 GMM 或圖神經，聚類不穩、技能分離度低。  \n- Gumbel‑Softmax 等離散化在長序列梯度噪聲大，易崩潰，尤其跨環境遷移。  \n- OptionGAN（ICLR 2026）生成的 option 重疊嚴重，缺乏能量正則。  \n- 以上方法在 24‑48 GB GPU 上難以完成端到端訓練，顯存占用過高。  \n\n**核心方法：Hierarchical Contrastive Energy Skill Discovery (HCESD)**  \n- **層次對比學習**：在潛"
+  },
+  {
+    "date": "2026-10-02",
+    "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：圖神經網路驅動的結構化好奇心探索**  \n  - 研究仍屬小眾，僅少數團隊將 GNN 與內在獎勵結合，缺乏大規模關聯式環境（化學合成、網路拓撲）驗證。  \n  - 代表論文：  \n    - 《Graph Curiosity: Structured Exploration via Graph Neural Networks》 (NeurIPS 2025) – Ananya Gupta。  \n    - 《Relational Intrinsic Motivation for Sparse‑Reward Environments》 (ICLR 2026) – Ming‑Hao Lee。  \n    - 《Topo‑Driven Curiosity in Multi‑Object Manipulation》 (ICML",
+    "final_proposal": "**研究痛點**  \n- 目前圖結構好奇心（Graph Curiosity, NeurIPS 2025）只用單層資訊增益，長期拓撲不變時訊號消失。  \n- 無獎勵世界模型（Self‑Supervised World Models, ICLR 2026）易過擬合噪聲，缺乏觀測噪聲估計。  \n- 缺少同時考慮層次化圖變化與噪聲自適應的內在獎勵框架，難以在動態化學合成或網路路由等環境中穩定探索。\n\n**核心方法 – HNAGC**  \n- **觀測編碼**：Encoder_GNN → 節點隱向 \\(h_v^t\\)。  \n- **動態子圖聚類**：Leiden 社群偵測產生子圖集合 \\(C_t\\)，自"
   }
 ]
