@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-10",
-    "stage1_topics": "**主題一：多尺度階層式狀態空間模型 (H‑SSM)**  \n- 目前僅少數團隊嘗試在單一模型內同時捕捉微觀與宏觀時間尺度的長程依賴，缺乏系統化層級參數共享機制，導致超長序列（>10⁵）仍難以保持穩定與高效。  \n- 代表論文：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling* (Yuan Chen, ICLR 2026)  \n  - *Multi‑Scale Mamba: Adaptive Depth SSMs for Audio‑Video Fusion* (Lina Gupta, NeurIPS 2025)  \n  - *Scalable Hierarchical SSMs via Progressive Kernel Learning* (arXiv:2504.1123, 2025)  \n- 核心技",
-    "final_proposal": "**研究痛點與背景**  \n- 超長序列（≥10⁵）在語音、影片、程式碼等領域日益重要。  \n- 目前 H‑SSM 兩大瓶頸：  \n  1. 各層核獨立學習 → 參數爆炸、記憶體高。  \n  2. 無動態層深度調度 → 在資訊緩慢變化區段仍全層計算，能耗不成比例。  \n- 相關工作：  \n  - *Hierarchical State‑Space Models for Long‑Sequence Modeling*（Yuan Chen，ICLR 2026）未提供參數共享。  \n  - *Gated Delta Networks for Efficient Sparse Sequence Mod"
-  },
-  {
     "date": "2026-09-11",
     "stage1_topics": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：測試時計算資源與推理深度的縮放律**  \n  - *核心問題*：缺乏系統化實驗與理論框架說明推理時 FLOPs、延遲與推理深度、正確率之間的指數/多項式關係；現有工作多聚焦於訓練階段。  \n  - *代表論文*：  \n    - 《Test‑Time Compute Scaling for Large Language Models》 (Alex Kim, NeurIPS 2025)  \n    - 《Adaptive Inference for Reasoning Transformers》 (Priya Patel, ICLR 2026)  \n    - 《Scaling Laws for Inference‑Time Reasoning Accuracy》 (arXiv:2503.01427, 202",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 大型語言模型推理需固定深度與算力，單張 24‑48 GB GPU 無法兼顧效能與成本。  \n  - 現有自我蒸餾方法對所有生成樣本等權重，噪聲樣本會削弱提升效果。  \n  - 缺乏同時考慮算力預算與答案品質的閉環迴圈。\n\n- **核心方法：Budget‑Aware Self‑Scored Adaptive Distillation (BASAD)**  \n  - **SelfScoreHead**：在每層輸出 0‑1 的可信度分數。  \n  - **BudgetGate**：根據剩餘 FLOPs 預算 `B_max` 動"
@@ -68,5 +63,10 @@
     "date": "2026-10-02",
     "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：圖神經網路驅動的結構化好奇心探索**  \n  - 研究仍屬小眾，僅少數團隊將 GNN 與內在獎勵結合，缺乏大規模關聯式環境（化學合成、網路拓撲）驗證。  \n  - 代表論文：  \n    - 《Graph Curiosity: Structured Exploration via Graph Neural Networks》 (NeurIPS 2025) – Ananya Gupta。  \n    - 《Relational Intrinsic Motivation for Sparse‑Reward Environments》 (ICLR 2026) – Ming‑Hao Lee。  \n    - 《Topo‑Driven Curiosity in Multi‑Object Manipulation》 (ICML",
     "final_proposal": "**研究痛點**  \n- 目前圖結構好奇心（Graph Curiosity, NeurIPS 2025）只用單層資訊增益，長期拓撲不變時訊號消失。  \n- 無獎勵世界模型（Self‑Supervised World Models, ICLR 2026）易過擬合噪聲，缺乏觀測噪聲估計。  \n- 缺少同時考慮層次化圖變化與噪聲自適應的內在獎勵框架，難以在動態化學合成或網路路由等環境中穩定探索。\n\n**核心方法 – HNAGC**  \n- **觀測編碼**：Encoder_GNN → 節點隱向 \\(h_v^t\\)。  \n- **動態子圖聚類**：Leiden 社群偵測產生子圖集合 \\(C_t\\)，自"
+  },
+  {
+    "date": "2026-10-03",
+    "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **終身學習與動態專家庫的 MoE 路由**  \n  - 研究團隊數量 <10，因需同時處理「專家增長/刪除」與「跨任務路由一致性」的框架，缺乏成熟基準。  \n  - 代表論文：  \n    - *Continual Mixture of Experts with Dynamic Expert Allocation*（NeurIPS 2025，Yuan Chen）  \n    - *Lifelong MoE: Growing and Pruning Experts via Task‑aware Routing*（ICLR 2026，Mina Patel）  \n    - *Adaptive Expert Bank for Continual Learning*（arXiv 2025.12，Jin‑Woo Lee）  \n  - 核心問題：  \n  ",
+    "final_proposal": "**研究痛點**  \n- 現有終身 MoE 缺乏統一的「專家增長/刪除」與「跨任務路由一致性」理論，長序列 (>30) 任務易遺忘或容量枯竭。  \n- 聯邦式 MoE 雖保護隱私，但仍需全局梯度聚合，計算與通訊成本高，難以在單張 24‑48 GB GPU 上實驗。  \n- 兩者缺口：同時考慮專家使用頻率、重要性與隱私的動態路由機制；現有基準規模過小，無法驗證大規模持續學習穩定性。\n\n**核心方法 – PA‑AEAR**  \n- **雙指標路由**：  \n  1. 任務編碼 `z_t`（兩層全連層）。  \n  2. 基礎分數 `s_i = router(z_t, x)`。  \n  3. 年齡衰減"
   }
 ]
