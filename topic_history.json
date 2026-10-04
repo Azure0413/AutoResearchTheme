@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-12",
-    "stage1_topics": "**主題一：因果物件中心世界模型 (Causal Object‑Centric World Models)**  \n- **市場空缺**：目前僅有零星研究在無監督 slot‑based 表徵中同時學習因果關係，缺乏系統化因果圖結構與可操作的反事實推理機制。  \n- **代表論文**：  \n  - 《Causal Slot Attention for Interactive Agents》 (Hao Zhang, ICLR 2026)  \n  - 《Counterfactual Object‑Centric World Modeling》 (Lina Petrov, NeurIPS 2025)  \n  - 《Learning Latent Causal Graphs for Robotic Manipulation》 (Ravi Kumar, arXiv 2025.04)  \n- **核心技",
-    "final_proposal": "**研究痛點與背景**  \n- 目前因果物件中心模型（*Causal Slot Attention* ICLR 2026、*Counterfactual O‑CWM* NeurIPS 2025）雖能抽取物件槽，但  \n  1. 因果圖稀疏度與穩定性不足（如 *Learning Latent Causal Graphs for Robotic Manipulation* arXiv 2025.04）。  \n  2. 反事實 roll‑out 計算 O(K²)，長序列易超過 48 GB GPU。  \n  3. 缺乏可操作的跨域正則化，物理不變性難保證。\n\n**核心方法：CISF‑SGR**  \n-"
-  },
-  {
     "date": "2026-09-13",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：元強化學習驅動的持續任務適應**  \n  - **研究空間**：同一代理生命週期內同步學習「任務嵌入」與策略更新，突破即時適應；研究人數<10人。  \n  - **代表論文**  \n    - *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）  \n    - *Task‑Aware Continual RL via Hypernetwork Modulation*（Sato Mika，arXiv 2025.12）  \n  - **核心技術問",
     "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 同一代理在生命週期內同步學習「任務嵌入」與策略更新，易出現「任務向量漂移」與「策略梯度干擾」，導致新任務學習時舊任務表現急劇下降。  \n  - 目前方法缺陷：  \n    - *Meta‑Continual RL with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）未保護嵌入穩定性，六個任務後漂移顯著。  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）僅投"
@@ -68,5 +63,10 @@
     "date": "2026-10-04",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **高維流形上自適應等變卷積核**  \n  - 研究人數不足十人，主要聚焦低維歐氏/球面，缺乏高維黎曼流形（分子構型、姿態空間）動態卷積核形狀調整。  \n  - 代表論文：  \n    - *Adaptive Equivariant Kernels on Riemannian Manifolds* (NeurIPS 2025) – Jiawei Chen。  \n    - *Learning Equivariant Operators via Neural Tangent Kernels* (ICLR 2026) – Maya Patel。  \n    - *Geometric Deep Learning for Molecular Dynamics on Non‑Euclidean Spaces* (arXiv 2025.12.03) – Y",
     "final_proposal": "**研究痛點與背景**  \n- 等變卷積假設局部曲率平坦，核尺度需手動或全域設定，易造成高曲率區域訊號過度平滑。  \n- 2025 NeurIPS 的 *Adaptive Equivariant Kernels on Riemannian Manifolds* 只用固定高斯核，未自適應頻譜；2026 ICLR 的 *Neural Tangent Equivariant Operator* 亦未考慮局部幾何。  \n- 缺乏可在訓練中根據圖結構自動演化算子的可微圖重寫機制。  \n\n**核心方法：Curvature‑Aware Adaptive Equivariant Graph Network ("
+  },
+  {
+    "date": "2026-10-05",
+    "stage1_topics": "**跨客戶聯邦後門偵測與緩解**  \n- **研究缺口**：聯邦學習已成熟，但對「隱蔽跨客戶後門」的系統性檢測極少，涉及多方協同與隱私保護，研究人數不足。  \n- **代表論文**  \n  - *Cross‑Client Backdoor Detection in Federated Learning*（Wei‑Chen Li，NeurIPS 2025）  \n  - *Federated Adaptive Trigger Synthesis for Stealthy Model Poisoning*（Mina Patel，ICLR 2026）  \n  - *Privacy‑Preserving Consensus for Backdoor Mitigation*（Jun‑Ho Kim，ICML 2025）  \n- **核心技術問題**  \n  - 在不洩露本地梯度/參數的前提下協同辨識跨客",
+    "final_proposal": "**研究痛點與缺陷**  \n- 現行聯邦學習面臨隱蔽跨客戶後門與即時資料毒化；SAAS（NeurIPS 2025）僅用梯度 L2，FTR（ICLR 2026）需大量特徵上傳，Streaming Backdoor"
   }
 ]

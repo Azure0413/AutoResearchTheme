@@ -1,26 +1,26 @@
 {
-  "date": "2026-10-04",
+  "date": "2026-10-05",
   "step": 6,
   "summaries": [
     {
       "stage": 1,
-      "summary": "**結構化摘要（300–500字）**\n\n- **高維流形上自適應等變卷積核**  \n  - 研究人數不足十人，主要聚焦低維歐氏/球面，缺乏高維黎曼流形（分子構型、姿態空間）動態卷積核形狀調整。  \n  - 代表論文：  \n    - *Adaptive Equivariant Kernels on Riemannian Manifolds* (NeurIPS 2025) – Jiawei Chen。  \n    - *Learning Equivariant Operators via Neural Tangent Kernels* (ICLR 2026) – Maya Patel。  \n    - *Geometric Deep Learning for Molecular Dynamics on Non‑Euclidean Spaces* (arXiv 2025.12.03) – Yuan Liu。  \n  - 核心技術問題：缺乏可微核參數化以同時保證等變性與梯度高效；流形曲率變化下自適應尺度選擇缺乏理論指導；大規模分子/機器人姿態資料訓練穩定性未驗證。  \n\n- **可微圖規則推理的符號‑神經混合框架**  \n  - 圖重寫系統在"
+      "summary": "**跨客戶聯邦後門偵測與緩解**  \n- **研究缺口**：聯邦學習已成熟，但對「隱蔽跨客戶後門」的系統性檢測極少，涉及多方協同與隱私保護，研究人數不足。  \n- **代表論文**  \n  - *Cross‑Client Backdoor Detection in Federated Learning*（Wei‑Chen Li，NeurIPS 2025）  \n  - *Federated Adaptive Trigger Synthesis for Stealthy Model Poisoning*（Mina Patel，ICLR 2026）  \n  - *Privacy‑Preserving Consensus for Backdoor Mitigation*（Jun‑Ho Kim，ICML 2025）  \n- **核心技術問題**  \n  - 在不洩露本地梯度/參數的前提下協同辨識跨客戶觸發模式。  \n  - 後門觸發器動態演化導致偵測器概念漂移，缺乏自適應更新機制。  \n  - 大規模客戶（>10,000）時共識協議通信開銷與收斂速度仍不實用。\n\n**持續學習環境下的即時資料流毒化防禦**  \n- **研究缺口**：大型模型持續更新時，資料流中惡意注入難以即時阻止；離線後置防禦無效，缺少統一基準與測試平台。  \n- **代表論文**  \n  - *Online Poisoning Detection for Continual Language Model Fine‑Tuning*（Sara Nguyen，ICML 2025）  \n  - *Streaming Backdoor Guard: Real‑Time Anomaly Scoring for Data Pipelines*（Rui Zhang，NeurIPS 2026）  \n  - *Adaptive Forgetting for Mitigating Cumulative Poisoning in Incremental Training*（Luca Bianchi，ICLR 2026）"
     },
     {
       "stage": 2,
-      "summary": "**高維流形自適應等變卷積核（Stage 2）關鍵摘要**  \n\n- **研究動機**  \n  - 已有可運行原型程式碼，且核心理論缺乏自適應尺度與曲率感知。  \n  - 目標：在 PyTorch 環境下，讓研究生能快速上手並推進基礎幾何深度學習。\n\n- **核心方法**  \n  - **Adaptive Equivariant Kernel (AEK)** – *NeurIPS 2025*  \n    - 在黎曼流形局部坐標圖上將卷積核參數化為曲率依賴張量場，保證對 SO(n) 等變群不變。  \n  - **Neural Tangent Equivariant Operator (NTEO)** – *ICLR 2026*  \n    - 把等變算子視為神經切線核的線性化，利用隨機特徵映射在訓練初期快速收斂。  \n  - **Manifold‑Aware Dynamic Scaling (MADS)** – *arXiv 2025.12.03*  \n    - 在每層卷積加入曲率感測模組，根據局部 Ricci 曲率自動調整卷積核半徑與頻寬，減少高曲率區過度平滑。\n\n- **模型架構**  \n  - **輸入**：點雲/離散座標 `X ∈ ℝ^{N×d}` + 切空間基底 `T_x`（可由圖拉普拉斯特徵預計算）。  \n  - **輸出**：每點特徵向量 `H ∈ ℝ^{N×c}`，直接用於分子屬性預測或姿態估計。  \n  - **關鍵模組**  \n    - 等變卷積層（呼叫 AEK 或 MADS）  \n    - 曲率感測子網（小型 MLP，輸入 Gaussian/Ricci 曲率 → 輸出尺度因子 `s`）  \n    - 全局對稱聚合（sum‑pool）+ MLP 預測。  \n  - **訓練目標**  \n    - 回歸：MSE + 曲率正則化"
+      "summary": "**跨客戶聯邦後門偵測與緩解 – Stage 2 重要摘要**  \n\n- **核心方法**  \n  - **SAAS**（Wei‑Chen Li, NeurIPS 2025）: 本地計算梯度 L2、方向偏離度 → 加密上傳單一分數；伺服器聚合後閾值判斷，隱私最強、通信低。  \n  - **FTR**（Mina Patel, ICLR 2026）: 生成式逆向重建觸發器 → 上傳特徵向量，伺服器多客戶聚類，能直接定位跨客戶共通後門。  \n  - **CGC**（Jun‑Ho Kim, ICML 2025）: 伺服器收集梯度範數分布，安全多方計算共識上限，超過者裁剪，兼容 FedAvg。  \n\n- **模型架構**  \n  - 本地異常偵測器：小型 MLP，輸入梯度統計。  \n  - 加密傳輸：安全聚合或同態加密。  \n  - 伺服器聚類/共識：Mini‑Batch K‑Means 或安全多方平均。  \n  - 目標：召回率 ≥ 90%，FPR ≤ 5%，通信開銷 ≤ 10% 帶寬。  \n\n- **訓練策略**  \n  - 客戶端數 10k–20k，樣本 1k–5k，後門 1–2%。  \n  - 本地 batch = 64，5 mini‑batch 統計。  \n  - 本地偵測器 Adam(1e‑3)，全局 SGD(0.01)。  \n  - Loss：`cross_entropy + λ·KL(grad||uniform)`（λ≈0.1），聚類使用 silhouette。  \n  - 本地梯度噪聲 σ=0.01 以滿足 ε‑DP；伺服器分層聚合、指數滑動平均更新。  \n\n- **Benchmark**  \n  - **FBB‑2025**：12 種觸發器、5 種模型（CNN、Transformer、ResNet‑50、MobileNet‑V2、ViT‑B/16）。"
     },
     {
       "stage": 3,
-      "summary": "**Stage 3 摘要（300–500字）**\n\n- **方案 1：Curvature‑Conditioned Spectral Filter (CCSF)**\n  - 核心：用 Ricci 曲率調節頻譜核 `g(λ,κ)=exp(−σ(κ)²λ)`，高曲率區域自動擴寬頻譜，減少訊號衰減。  \n  - 變更：AEK 第 4 行由固定高斯核改為曲率感知核；加入「曲率平滑」正則化 `∑(σ(κ_i)−σ(κ_nbr))²`。  \n  - 目標：回歸分子能量，MSE + 正則化。  \n  - 預期：MD17 Aspirin 能量 RMSE 下降約 12 %；MVP：2 層、隱藏 64、RTX 4090 4 h。  \n  - 引用：NeurIPS 2025。\n\n- **方案 2：Graph Rewrite Neural Compiler (GRNC)**\n  - 核心：將可微圖重寫規則與神經排程器結合，規則選擇由 softmax 產生加權求和 `G_{t+1}=∑π_t"
+      "summary": "**方案 1：分層安全聚合‑異常指標"
     },
     {
       "stage": 4,
-      "summary": "**結構化摘要（約 400 字）**\n\n- **CCSF 理論假設**：假設 Ricci 曲率可直接映射到頻譜濾波寬度，卻忽略了高維流形中曲率估計因取樣噪聲而劇烈波動，導致濾波參數不穩定。  \n- **CCSF 資料與訓練可行性**：僅在 MD17（≈1k 分子）上驗證，缺乏對更大"
+      "summary": "**SAAS 批判與補救**  \n- **理論假設**：本地梯度 L2、方向偏離能捕捉所有後門；但高非線性或梯度遮蔽時差異不明顯。  \n  - 補救：加入梯度協方差、局部曲率或輸出置信度分布，提升隱蔽觸發器檢測。  \n- **資料與訓練可行性**：僅在 ≤2k 客戶的 FBB‑2025 基準上驗證，對 >10k 客戶缺乏測試；對學習率、批次大小敏感。  \n  - 補救：在 FedScale 等公開大規模平台擴展，使用自適應學習率或 AutoML 減少手動調整。  \n- **計算資源**：每端需額外 MLP 訓練與梯度統計，手機/IoT 端功耗高。  \n  - 補救：設計單層線性投影偵測器或梯度抽樣，只在部分參數上計算。  \n- **是否真優於 SOTA**：只比 FedAvg、FedProx，未納入 SecureBackdoorGuard、DP‑Cluster 等新方法。  \n  - 補救：加入最新隱私保護後門檢測，並用 Wilcoxon 簽名檢驗驗證統計顯著性。  \n- **失效模式**：分散式觸發器（多子觸發器）被正常客戶稀釋，偵測率下降。  \n  - 補救：引入異常分數時間序列與變化點偵測，捕捉局部突發波動。\n\n**FTR 批判與補救**  \n- **理論假設**：觸發器可逆向重建為可辨識特徵；隱寫或對抗噪聲會產生噪聲特徵，聚類失"
     },
     {
       "stage": 5,
-      "summary": "**研究痛點與背景**  \n- 等變卷積假設局部曲率平坦，核尺度需手動或全域設定，易造成高曲率區域訊號過度平滑。  \n- 2025 NeurIPS 的 *Adaptive Equivariant Kernels on Riemannian Manifolds* 只用固定高斯核，未自適應頻譜；2026 ICLR 的 *Neural Tangent Equivariant Operator* 亦未考慮局部幾何。  \n- 缺乏可在訓練中根據圖結構自動演化算子的可微圖重寫機制。  \n\n**核心方法：Curvature‑Aware Adaptive Equivariant Graph Network (CA‑AEGN)**  \n- **曲率感測子網**：對每節點計算局部 Ricci 曲率 κ，輸入 2‑層 MLP 得尺度因子 s = σ(κ)。  \n- **曲率條件頻譜濾波 (CCSF)**：在圖拉普拉斯特徵 λ 上構造 g(λ, s) = exp(−s·λ)，為每節點產生專屬頻譜濾波器。  \n- **等變卷積層**：結合濾波後特徵與等變核 AEK(θ, s) 生成新特徵。  \n- **可微圖重寫 (GRNC)**：使用 softmax 加權的規則集合 {R_k}（邊添加/刪除、特徵變換）動態重寫特徵，保持可微分。  \n- **全局聚合**：sum‑pool + MLP 預測能量、姿態或圖屬性。  \n\n**訓練目標**  \n- 主損失：MSE。  \n- 曲率平滑正則 L_curv = Σ_{(i,j)∈E}(s_i−s_j)^2。  \n- 規則稀疏正則 L_rule = Σ_k‖π_t(k)‖_1。  \n- 總損失 = MSE + λ1·L_curv + λ2·L_rule。  \n\n**推論流程**  \n1."
+      "summary": "**研究痛點與缺陷**  \n- 現行聯邦學習面臨隱蔽跨客戶後門與即時資料毒化；SAAS（NeurIPS 2025）僅用梯度 L2，FTR（ICLR 2026）需大量特徵上傳，Streaming Backdoor"
     }
   ],
   "failures": {
