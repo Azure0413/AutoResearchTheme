@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-13",
-    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：元強化學習驅動的持續任務適應**  \n  - **研究空間**：同一代理生命週期內同步學習「任務嵌入」與策略更新，突破即時適應；研究人數<10人。  \n  - **代表論文**  \n    - *Meta‑Continual Reinforcement Learning with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）  \n    - *Task‑Aware Continual RL via Hypernetwork Modulation*（Sato Mika，arXiv 2025.12）  \n  - **核心技術問",
-    "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 同一代理在生命週期內同步學習「任務嵌入」與策略更新，易出現「任務向量漂移」與「策略梯度干擾」，導致新任務學習時舊任務表現急劇下降。  \n  - 目前方法缺陷：  \n    - *Meta‑Continual RL with Adaptive Task Embeddings*（Lin Wei，ICLR 2025）未保護嵌入穩定性，六個任務後漂移顯著。  \n    - *Lifelong Policy Distillation via Gradient Surgery*（Kumar Arun，NeurIPS 2025）僅投"
-  },
-  {
     "date": "2026-09-14",
     "stage1_topics": "**離散擴散在三大應用領域的關鍵概述**\n\n- **蛋白質功能設計（圖結構條件化）**  \n  - 研究人數不足二十人，缺乏成熟基準。  \n  - 代表論文：  \n    - *Graph‑Based Discrete Diffusion for Protein Function Design*（Yuan Liu，NeurIPS 2025）  \n    - *Flow Matching on Protein Contact Maps for Enzyme Engineering*（Ananya Patel，ICLR 2026）  \n    - *Discrete Diffusion for Active‑Site Motif Insertion in Enzymes*（Minghao Zhou，arXiv 2025.12）  \n  - 核心技術挑戰  \n    - 在離散擴散過程中嵌入物理",
     "final_proposal": "**研究痛點**  \n- 現有離散擴散（*Syntax‑Guided Discrete Diffusion for Program Synthesis*, ICML 2025）僅能處理 50 行以下，擴散步數指數增長，導致記憶體與時間成本失控。  \n- *Flow Matching for Structured Code Generation with Type Constraints*（ICLR 2026）雖突破類型投影，但仍依賴外部靜態類型推斷，噪聲過大時投影失敗率升高，限制長程程式碼穩定性。  \n- 兩者缺乏結構層級噪聲設計，單節點噪聲難以同時保留語法合法性與語意一致性，200 行以上編"
@@ -68,5 +63,10 @@
     "date": "2026-10-05",
     "stage1_topics": "**跨客戶聯邦後門偵測與緩解**  \n- **研究缺口**：聯邦學習已成熟，但對「隱蔽跨客戶後門」的系統性檢測極少，涉及多方協同與隱私保護，研究人數不足。  \n- **代表論文**  \n  - *Cross‑Client Backdoor Detection in Federated Learning*（Wei‑Chen Li，NeurIPS 2025）  \n  - *Federated Adaptive Trigger Synthesis for Stealthy Model Poisoning*（Mina Patel，ICLR 2026）  \n  - *Privacy‑Preserving Consensus for Backdoor Mitigation*（Jun‑Ho Kim，ICML 2025）  \n- **核心技術問題**  \n  - 在不洩露本地梯度/參數的前提下協同辨識跨客",
     "final_proposal": "**研究痛點與缺陷**  \n- 現行聯邦學習面臨隱蔽跨客戶後門與即時資料毒化；SAAS（NeurIPS 2025）僅用梯度 L2，FTR（ICLR 2026）需大量特徵上傳，Streaming Backdoor"
+  },
+  {
+    "date": "2026-10-06",
+    "stage1_topics": "**Stage 1 – 熱門議題概覽（300–500字）**\n\n- **主題一：以隨機神經常微分方程 (SDE‑ODE) 為核心的安全模型導向強化學習**  \n  - **突破潛力**：結合 SDE 的不確定性建模與連續時間動力學，可即時估計機械手臂、無人機等高維任務的風險與安全邊界。  \n  - **代表工作**  \n    - *Stochastic Neural ODEs for Safe Model‑Based Reinforcement Learning*（NeurIPS 2025）  \n    - *Probabilistic Continuous‑Time Dynamics for Real‑World Manipulation*（ICLR 2026）  \n    - *Adaptive SDE Solvers for Data‑Efficient RL*（arXiv 202",
+    "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 現有神經算子（FNO、Neural Operator Flow Matching）在非平穩、局部高頻渦旋上頻譜僵硬，導致能量漂移。  \n  - 其缺乏不確定性量化，對安全控制（機器人、航空航太）不適用。  \n  - 需求：自適應頻譜、物理守恆、可估計不確定性的框架，能在單張 24‑48 GB GPU 上高精度部署。\n\n- **核心方法：AB‑SNSDE**  \n  - **自適應正交基**：兩層 MLP 產生樣本感知基底，使用增量 QR 投影正交化，記憶體 O(K·d)。  \n  - **對稱隨機微分**：隱向量演化 "
   }
 ]
