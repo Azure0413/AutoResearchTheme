@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-18",
-    "stage1_topics": "**主題一：生成式目標驅動的自我指導探索**  \n- 研究人數不足十人，僅少數團隊嘗試用生成模型直接產生可達子目標，解決極稀疏獎勵環境下的學習路徑自動構造。  \n- 代表論文：*GoalDiff* (NeurIPS 2025)、*Self‑Generated Goal Proposals via Generative Flow Networks* (ICLR 2026)、*Goal‑Conditioned Exploration with Energy‑Based Models* (arXiv 2025.12)。  \n- 核心問題：  \n  - 高維狀態空間中保證目標可達性與多樣性的理論指標缺失。  \n  - 生成模型與策略同步訓練導致梯度不穩，尚無穩健聯合優化框架。  \n\n**主題二：多代理協同好奇心與新興通信協議**  \n- 單代理好奇心研究已成熟，但多代理「共同好奇」如何驅動訊息交換",
-    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 目標生成方法（GoalDiff、NeurIPS 2025）在極稀疏獎勵環境下產生大量不可達或冗餘子目標，導致學習效率低。  \n  - 生成模型與策略同步訓練缺乏穩健聯合優化，梯度不穩定；Self‑Generated Goal Proposals via GFN（ICLR 2026）亦指出此問題。  \n  - 多代理好奇心研究（Cooperative Curiosity，ICLR 2026）顯示若無動態篩選，可達性與資訊價值，訊息交換會產生噪聲，削弱探索效益。  \n\n- **核心方法：ARGG（Adaptive Reach"
-  },
-  {
     "date": "2026-09-19",
     "stage1_topics": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **延遲感知與計算預算驅動的自適應 MoE 路由**  \n  - 目前多數 MoE 只優化吞吐量，缺少實時延遲與硬體預算考量。  \n  - 代表工作：  \n    - *Latency‑Aware Mixture of Experts for Real‑Time Inference*（NeurIPS 2025）  \n    - *Adaptive Computation Budget MoE*（ICLR 2026）  \n    - *Budget‑Constrained Expert Selection via Reinforcement Learning*（arXiv 2025.12）  \n  - 核心挑戰：  \n    - 同時訓練專家效能預測與硬體延遲模型，確保毫秒級路由決策。  \n    - 目前預算控制多依賴全局",
     "final_proposal": ""
@@ -68,5 +63,10 @@
     "date": "2026-10-07",
     "stage1_topics": "**Stage 1 摘要（300–500字）**\n\n- **主題一：動態稀疏自編碼器於持續學習模型內部電路追蹤**  \n  - *未飽和原因*：現有稀疏自編碼器多停留於靜態分析，缺少隨訓練演化的即時電路變化捕捉機制，研究人數不足十人。  \n  - *代表論文*：  \n    - *Dynamic Sparse Autoencoders for Continual Circuit Discovery*（NeurIPS 2025）  \n    - *Adaptive Sparse Bottleneck Probes for Evolving LLM Representations*（ICLR 2026）  \n    - arXiv:2105.11234v2 *Temporal Sparse Autoencoding of Model Internals*（2025‑11‑12）  \n  - *",
     "final_proposal": "**研究痛點與創新概述**  \n- **痛點**：大型模型在終身學習中功能子網路（電路）隨時間演化，現有方法（如 *Dynamic Sparse Autoencoders for Continual Circuit Discovery*、*Adaptive Sparse Bottleneck Probes for Evolving LLM Representations*、時間對齊損失）只能一次性抽取或受限於瓶頸，缺乏跨層一致性與即時追蹤。  \n- **創新**：提出 **階層時間稀疏自編碼器＋自適應掩碼排程 (HT‑SAE‑AMS)**，同時施加層級一致損失與時間平滑損失，並以 Sparse"
+  },
+  {
+    "date": "2026-10-08",
+    "stage1_topics": "- **動態深度狀態空間模型（AD‑SSM）**  \n  - 目前 SSM 固定層數，無法根據 token 資訊量自適應深度；AD‑SSM 允許 token‑級別層數變化，降低長序列算力與記憶體需求。  \n  - 代表論文：*Adaptive‑Depth State Space Models for Long‑Sequence Modeling* (NeurIPS 2025, Lin Zhao)、*Depth‑Conditional SSMs with Tokenwise Routing* (ICLR 2026, Maria Chen)、*Token‑Adaptive SSM Layers for Efficient Sequence Processing* (arXiv 2025.09, Kai Liu)。  \n  - 核心問題：設計穩定的 token‑wise 深度選擇機制、處理不均勻",
+    "final_proposal": "- **研究痛點**：長序列建模受記憶體與算力限制；AD‑SSM（NeurIPS 2025、ICLR 2026）與 NILA（NeurIPS 2025、ICLR 2026）分別在 token‑wise 深度與單核線性注意力上取得突破，但缺乏同時考慮資訊不確定性與頻譜自適應的框架。  \n- **核心創新**：提出 HAK‑DS‑SSM，結合 Token‑wise Depth Scheduler 與 Mixture‑of‑Kernels Linear Attention；深度由兩層 64‑dim MLP 產生，透過 Gumbel‑Softmax 與 actor‑critic 強化學習最小化「計算成"
   }
 ]
