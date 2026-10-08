@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-19",
-    "stage1_topics": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **延遲感知與計算預算驅動的自適應 MoE 路由**  \n  - 目前多數 MoE 只優化吞吐量，缺少實時延遲與硬體預算考量。  \n  - 代表工作：  \n    - *Latency‑Aware Mixture of Experts for Real‑Time Inference*（NeurIPS 2025）  \n    - *Adaptive Computation Budget MoE*（ICLR 2026）  \n    - *Budget‑Constrained Expert Selection via Reinforcement Learning*（arXiv 2025.12）  \n  - 核心挑戰：  \n    - 同時訓練專家效能預測與硬體延遲模型，確保毫秒級路由決策。  \n    - 目前預算控制多依賴全局",
-    "final_proposal": ""
-  },
-  {
     "date": "2026-09-23",
     "stage1_topics": "",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 個體化治療需估計 ITE，傳統統計在高維、非線性電子病歷上失效。  \n  - *CausalVAE*（ICLR 2025）辨識性僅在線性、無隱藏混雜假設下成立；  \n  - *Counterfactual Diffusion*（NeurIPS 2025）未充分利用因果結構，生成反事實仍缺乏一致性。  \n\n- **創新框架：Causal‑Graph‑Guided Diffusion (CGGD)**  \n  - 把 *CausalVAE* 產生的 DAG 嵌入 `g` 與隱向量 `z` 同時作為擴散噪聲預測的條件。  \n "
@@ -68,5 +63,10 @@
     "date": "2026-10-08",
     "stage1_topics": "- **動態深度狀態空間模型（AD‑SSM）**  \n  - 目前 SSM 固定層數，無法根據 token 資訊量自適應深度；AD‑SSM 允許 token‑級別層數變化，降低長序列算力與記憶體需求。  \n  - 代表論文：*Adaptive‑Depth State Space Models for Long‑Sequence Modeling* (NeurIPS 2025, Lin Zhao)、*Depth‑Conditional SSMs with Tokenwise Routing* (ICLR 2026, Maria Chen)、*Token‑Adaptive SSM Layers for Efficient Sequence Processing* (arXiv 2025.09, Kai Liu)。  \n  - 核心問題：設計穩定的 token‑wise 深度選擇機制、處理不均勻",
     "final_proposal": "- **研究痛點**：長序列建模受記憶體與算力限制；AD‑SSM（NeurIPS 2025、ICLR 2026）與 NILA（NeurIPS 2025、ICLR 2026）分別在 token‑wise 深度與單核線性注意力上取得突破，但缺乏同時考慮資訊不確定性與頻譜自適應的框架。  \n- **核心創新**：提出 HAK‑DS‑SSM，結合 Token‑wise Depth Scheduler 與 Mixture‑of‑Kernels Linear Attention；深度由兩層 64‑dim MLP 產生，透過 Gumbel‑Softmax 與 actor‑critic 強化學習最小化「計算成"
+  },
+  {
+    "date": "2026-10-09",
+    "stage1_topics": "**Stage 1 主要議題概覽（約 350 字）**\n\n- **測試時計算資源可擴展性與自適應推理深度**  \n  - 研究缺乏系統化的「測試時算力縮放律」；動態 early‑exit、可變層數仍為少數團隊探索。  \n  - 代表論文：  \n    - *Dynamic Early‑Exit Transformers for Test‑Time Compute Budgeting* (NeurIPS 2025)  \n    - *Adaptive Depth Allocation in Large Language Models via Reinforcement‑Guided Token Splitting* (ICLR 2026)  \n    - *Scaling Laws for Test‑Time Compute in Autoregressive Models* (arXiv ",
+    "final_proposal": "**研究痛點**  \n- 大型語言模型推理仍需完整層前向，成本與輸入資訊量不匹配。  \n- 2025 NeurIPS 的 Dynamic Early‑Exit Transformers 與 2026 ICLR 的 Adaptive Depth Allocation 皆依賴單一置信度門檻或局部強化學習，低熵/長程句子易過早截斷，精度下降。  \n- 2025 arXiv Scaling Laws for Test‑Time"
   }
 ]
