@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-23",
-    "stage1_topics": "",
-    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 個體化治療需估計 ITE，傳統統計在高維、非線性電子病歷上失效。  \n  - *CausalVAE*（ICLR 2025）辨識性僅在線性、無隱藏混雜假設下成立；  \n  - *Counterfactual Diffusion*（NeurIPS 2025）未充分利用因果結構，生成反事實仍缺乏一致性。  \n\n- **創新框架：Causal‑Graph‑Guided Diffusion (CGGD)**  \n  - 把 *CausalVAE* 產生的 DAG 嵌入 `g` 與隱向量 `z` 同時作為擴散噪聲預測的條件。  \n "
-  },
-  {
     "date": "2026-09-24",
     "stage1_topics": "**結構化摘要 – Stage 1 (🔍 探索熱門議題)**  \n\n- **主題一：深層 Mamba 變體的層級參數共享與正則化**  \n  - **研究現況**：僅少數團隊嘗試將 Mamba 的狀態空間層堆疊至百億參數，受限於訓練穩定性與記憶體開銷，研究人數 < 10。  \n  - **代表論文**  \n    - 《DeepMamba: Scaling State Space Models to Billion‑Scale Parameters》, Jia Li, ICLR 2026  \n    - 《Layerwise Parameter Sharing in State Space Networks》, Omar Patel, NeurIPS 2025  \n    - 《Stabilizing Deep Mamba via Spectral Normalization》, Wei ",
     "final_proposal": "**研究痛點與創新概念**  \n- 現實時間序列（醫療、金融、工業）常不規則取樣、突發事件，傳統長序列模型（DeepMamba、Transformer）假設等間距，導致預測失真。  \n- 2025 年《Sparse Structured State Space Models for Irregularly Sampled Data》（Mei Huang）與《Adaptive Kernel SSM for Event‑Driven Signals》（Carlos Ruiz）證明稀疏化與自適應核可緩解部分問題，但缺乏層級參數共享與事件-連續訊號融合的系統設計。  \n\n**核心方法：HSA‑ESSM"
@@ -68,5 +63,10 @@
     "date": "2026-10-09",
     "stage1_topics": "**Stage 1 主要議題概覽（約 350 字）**\n\n- **測試時計算資源可擴展性與自適應推理深度**  \n  - 研究缺乏系統化的「測試時算力縮放律」；動態 early‑exit、可變層數仍為少數團隊探索。  \n  - 代表論文：  \n    - *Dynamic Early‑Exit Transformers for Test‑Time Compute Budgeting* (NeurIPS 2025)  \n    - *Adaptive Depth Allocation in Large Language Models via Reinforcement‑Guided Token Splitting* (ICLR 2026)  \n    - *Scaling Laws for Test‑Time Compute in Autoregressive Models* (arXiv ",
     "final_proposal": "**研究痛點**  \n- 大型語言模型推理仍需完整層前向，成本與輸入資訊量不匹配。  \n- 2025 NeurIPS 的 Dynamic Early‑Exit Transformers 與 2026 ICLR 的 Adaptive Depth Allocation 皆依賴單一置信度門檻或局部強化學習，低熵/長程句子易過早截斷，精度下降。  \n- 2025 arXiv Scaling Laws for Test‑Time"
+  },
+  {
+    "date": "2026-10-10",
+    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **因果物件槽 (Causal Slot) 世界模型**  \n  - 研究團隊 < 20 人，尚未在真實機器人環境中大規模驗證，具備突破長期規劃與安全評估的潛力。  \n  - 代表論文：  \n    - 《CausalSlot: Learning Causal Graphs over Object Slots for Interactive Planning》 (ICLR 2026) – Maya Patel 主導。  \n    - 《Counterfactual Object‑Centric World Models for Robotic Manipulation》 (NeurIPS 2025) – Junwei Li。  \n    - 《Causal Dynamics Transformers for Structured Video P",
+    "final_proposal": "**研究痛點與結論**  \n- 物件槽在遮擋、快速運動或多物件交互時穩定性下降，因果圖推斷失真（*CausalSlot* ICLR 2026，失敗率↑15%）。  \n- 全圖可微分因果搜索計算成本指數增長，8+物件耗時>200 ms（*Counterfactual Object‑Centric World Models* NeurIPS 2025）。  \n- 長序列任務缺乏層級化狀態空間，單層SSM只能保留2‑3 s動態資訊（*Hierarchical State Space Transformers* ICML 2026）。  \n- **結論**：需同時具備穩定物件槽、可擴展稀疏因果圖、層級"
   }
 ]
