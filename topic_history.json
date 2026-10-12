@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-09-29",
-    "stage1_topics": "**主題一：動態稀疏 KV Cache 壓縮與重建**  \n- 目前僅少數團隊探索「推論時即時壓縮 KV 緩衝」且可根據 token 相似度動態調整稀疏度，缺乏成熟基準。  \n- 代表論文：  \n  - 《Adaptive KV Cache Quantization with Learned Codebooks》 (NeurIPS 2025, Jiahao Li)  \n  - 《Sparse Cache Reuse via Token Similarity Clustering》 (ICLR 2026, Maria Gómez)  \n  - 《Cache Distillation for Long‑Context LLMs》 (arXiv:2509.1123, 2025)  \n- 核心問題：  \n  - 壓縮比例與重建延遲之權衡缺乏理論指導，尤其對高變異度語料。  \n  - 動態稀疏策略需",
-    "final_proposal": "**研究痛點**  \n- 大語言模型長序列推論時，KV 快取與注意力成本呈指數增長，單卡 24‑48 GB GPU 只能支援 4 k 內上下文。  \n- 近年動態稀疏與量化（NeurIPS 2025、ICLR 2026）缺乏理論指導，且高變異語料精度下降顯著。  \n- 單層推測解碼只能在 1.5‑2× 加速與 0.5‑1 % 精度損失之間取得平衡；多層分支（ICML 2025、NeurIPS 2026）同步開銷與錯誤累積仍是瓶頸。  \n- Attention Sink 使部分 token 成為全局唯一入口，導致路由不均衡；ICLR 2026 的 sink‑free 路由訓練不穩定，易產生「路由"
-  },
-  {
     "date": "2026-09-30",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **高熵合金（HEA）主動學習設計平台**  \n  - **研究動機**：HEA 組成空間呈指數級增長，實驗資料稀疏且噪聲大；利用不確定性導向的圖神經網路，可在少量實驗回饋下快速定位高性能區域。  \n  - **代表論文**  \n    - 《Active Learning for High‑Entropy Alloy Design with Uncertainty‑Aware Graph Networks》, Jiawei Liu, NeurIPS 2025  \n    - 《Uncertainty‑Guided Bayesian Optimization for Multi‑Component Materials》, Arjun Patel, ICML 2025  \n    - 《Graph‑Based Transfer Learning ",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - HEA 組成空間指數級爆炸，實驗成本高、資料稀疏。  \n  - 目前 BO 在高維度易陷局部，無法同時處理機械、熱、腐蝕等多任務目標。  \n  - 《Active Learning for High‑Entropy Alloy Design with Uncertainty‑Aware Graph Networks》（NeurIPS 2025）使用 Monte‑Carlo Dropout 估計不確定性，但缺乏全局‑局部層次協調，噪聲區域仍過度探索。  \n  - 《Hierarchical Uncertainty‑Guid"
@@ -68,5 +63,10 @@
     "date": "2026-10-12",
     "stage1_topics": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **離散擴散於受價值限制的分子圖生成**  \n  - 研究人數不足二十人，缺乏有效噪聲設計與逆向流程，具突破新藥設計潛力。  \n  - 代表論文：  \n    - 《Discrete Diffusion for Molecular Graphs with Valence Constraints》 (Yuan Zhang, ICLR 2025)  \n    - 《Flow Matching for Molecular Conformation Generation》 (Mia Liu, NeurIPS 2025)  \n    - 《Graph Discrete Diffusion with Edge‑Conditioned Score Matching》 (Karan Patel, arXiv 2026.0412)  \n  ",
     "final_proposal": "**研究痛點**  \n- 目前離散擴散模型（如 *Discrete Diffusion for Molecular Graphs with Valence Constraints* ICLR 2025）在分子 > 30 原子時合法率急降，抽樣成本呈指數增長。  \n- 噪聲設計單一 `β(t)` 無法區分高價鍵與低價鍵，易造成非法結構。  \n- 直接為 ≈ 30 種鍵學習獨立轉移矩陣，記憶體 > 20 GB，單卡 GPU 難以承載。  \n\n**創新方法 – V‑HNS‑LR**  \n- **層次噪聲排程**：根據分子大小 `s` 與鍵價值分別設 `β_h(t)`、`β_l(t)`，高價鍵保留更嚴"
+  },
+  {
+    "date": "2026-10-13",
+    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：可學習的投機解碼預測模型**  \n  - **核心問題**：現行投機解碼多依賴簡單統計或固定草稿模型，缺乏能在多任務、多語境下自我調整的深度預測網路。  \n  - **突破潛力**：若能以可學習的提案模型直接產生高品質草稿，可顯著降低實際解碼步數，提升吞吐率。  \n  - **代表論文**  \n    - 《Speculative Decoding with Learned Proposal Networks》 (NeurIPS 2025)  \n    - 《Hybrid Speculative Decoding via Multi‑Head Predictors》 (ICLR 2026)  \n    - 《Efficient Token Prediction for Speculative Decoding》 (arXiv 202",
+    "final_proposal": "- **研究痛點**：現有 Speculative Decoding 受限於固定或輕量提案模型，長序列、跨語域或多任務時正確率下降，回溯率升高，吞吐率收益被抵消。  \n- **已知不足**：《Speculative Decoding with Learned Proposal Networks》（NeurIPS 2025）單層草稿缺乏長程結構；《Hybrid Speculative Decoding via Multi‑Head Predictors》（ICLR 2026）計算開銷隨長度線性增長，仍需大量記憶體。  \n- **研究目標**：在單卡 24‑48 GB GPU 下，提出「階層式動態"
   }
 ]
