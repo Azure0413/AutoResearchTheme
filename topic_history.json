@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-01",
-    "stage1_topics": "**主題一：未監督層次化技能樹發掘**  \n- 研究人數不足 20 人，因自動化構建「技能樹」需同時解決長期依賴的表徵學習與離散選項的結構化抽象。  \n- 代表論文：  \n  - *SkillTree: Hierarchical Unsupervised Skill Discovery via Latent Diffusion*（NeurIPS 2025）  \n  - *OptionGAN: Learning Options with Generative Adversarial Intrinsic Rewards*（ICLR 2026）  \n  - *Latent Option Graphs for Scalable Skill Discovery*（arXiv 2025.11.02）  \n- 核心技術挑戰  \n  - 在無任務標籤下同時學習可遞迴組合的離散技能與層級關係。  \n  - ",
-    "final_proposal": "**研究痛點與背景**  \n- 目前未監督技能樹（如 *SkillTree* NeurIPS 2025）依賴高維 GMM 或圖神經，聚類不穩、技能分離度低。  \n- Gumbel‑Softmax 等離散化在長序列梯度噪聲大，易崩潰，尤其跨環境遷移。  \n- OptionGAN（ICLR 2026）生成的 option 重疊嚴重，缺乏能量正則。  \n- 以上方法在 24‑48 GB GPU 上難以完成端到端訓練，顯存占用過高。  \n\n**核心方法：Hierarchical Contrastive Energy Skill Discovery (HCESD)**  \n- **層次對比學習**：在潛"
-  },
-  {
     "date": "2026-10-02",
     "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：圖神經網路驅動的結構化好奇心探索**  \n  - 研究仍屬小眾，僅少數團隊將 GNN 與內在獎勵結合，缺乏大規模關聯式環境（化學合成、網路拓撲）驗證。  \n  - 代表論文：  \n    - 《Graph Curiosity: Structured Exploration via Graph Neural Networks》 (NeurIPS 2025) – Ananya Gupta。  \n    - 《Relational Intrinsic Motivation for Sparse‑Reward Environments》 (ICLR 2026) – Ming‑Hao Lee。  \n    - 《Topo‑Driven Curiosity in Multi‑Object Manipulation》 (ICML",
     "final_proposal": "**研究痛點**  \n- 目前圖結構好奇心（Graph Curiosity, NeurIPS 2025）只用單層資訊增益，長期拓撲不變時訊號消失。  \n- 無獎勵世界模型（Self‑Supervised World Models, ICLR 2026）易過擬合噪聲，缺乏觀測噪聲估計。  \n- 缺少同時考慮層次化圖變化與噪聲自適應的內在獎勵框架，難以在動態化學合成或網路路由等環境中穩定探索。\n\n**核心方法 – HNAGC**  \n- **觀測編碼**：Encoder_GNN → 節點隱向 \\(h_v^t\\)。  \n- **動態子圖聚類**：Leiden 社群偵測產生子圖集合 \\(C_t\\)，自"
@@ -68,5 +63,10 @@
     "date": "2026-10-14",
     "stage1_topics": "**主題一：量子化學自動化高精度波函數 ansatz 發掘**  \n- 研究人數不足二十人，因結合量子 Monte‑Carlo、深度強化學習與對稱保留圖神經網路門檻高，尚未形成大規模競爭。  \n- 代表論文：  \n  - 《Neural Quantum State Discovery via Reinforcement Learning》(NeurIPS 2025，Wei‑Liu)  \n  - 《Symmetry‑Aware Graph Networks for Electronic Structure Prediction》(ICML 2026，Anita Patel)  \n  - 《AutoDiff‑Enabled Variational Monte Carlo with Neural Networks》(arXiv:2508.1123, 2025)  \n- 核心技術挑戰：  \n  -",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 量子化學仍倚賴手工 Slater‑type 基底或固定深度神經波函數（FermiNet、PauliNet），多電子強相關系統計算成本爆炸、精度受限。  \n  - NeurIPS 2025《Neural Quantum State Discovery via Reinforcement Learning》證明 RL 可自動構造 ansatz，但高維 Fock 空間獎勵設計與反對稱性保證尚未成熟。  \n  - ICML 2026《Symmetry‑Aware Graph Networks for Electronic Str"
+  },
+  {
+    "date": "2026-10-15",
+    "stage1_topics": "**Stage 1 主要發現（約 400 字）**\n\n- **具身代理自發工具語言**  \n  - 研究僅有少數團隊，尚未形成成熟基準。  \n  - 代表論文：*Emergent Tool Communication in Embodied Agents*（NeurIPS 2025）、*Learning Shared Tool Semantics via Multi‑Agent Interaction*（ICLR 2026）、*Tool‑Use Language Emergence in Simulated Robotics*（arXiv 2507.01432）。  \n  - 核心問題：在高維感官訊號中自動抽取離散「指令片段」；語言穩定性與跨機體可遷移性缺乏理論保證。\n\n- **跨形態零樣本政策蒸餾**  \n  - 參與團隊僅約 10 組，缺乏大規模實驗平台。  \n  - 代表論文：*Me",
+    "final_proposal": "- **研究痛點**：現有跨形態蒸餾方法（如 *Meta‑RL for Cross‑Morphology Policy Distillation* ICLR 2026、*Universal Policy Transfer via Morphology‑Invariant Embeddings* NeurIPS 2025）僅用拓撲圖編碼，忽略質量、慣性等動力學特徵，導致形態向量 `z_m` 在不同機體間失效；工具語言研究缺乏離散語法結構，遷移成本高；資訊瓶頸驅動的技能組合（*Information‑Bottleneck Intrinsic Motivation for Open‑Ended Sk"
   }
 ]
