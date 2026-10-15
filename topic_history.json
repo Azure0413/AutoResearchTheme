@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-02",
-    "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **主題一：圖神經網路驅動的結構化好奇心探索**  \n  - 研究仍屬小眾，僅少數團隊將 GNN 與內在獎勵結合，缺乏大規模關聯式環境（化學合成、網路拓撲）驗證。  \n  - 代表論文：  \n    - 《Graph Curiosity: Structured Exploration via Graph Neural Networks》 (NeurIPS 2025) – Ananya Gupta。  \n    - 《Relational Intrinsic Motivation for Sparse‑Reward Environments》 (ICLR 2026) – Ming‑Hao Lee。  \n    - 《Topo‑Driven Curiosity in Multi‑Object Manipulation》 (ICML",
-    "final_proposal": "**研究痛點**  \n- 目前圖結構好奇心（Graph Curiosity, NeurIPS 2025）只用單層資訊增益，長期拓撲不變時訊號消失。  \n- 無獎勵世界模型（Self‑Supervised World Models, ICLR 2026）易過擬合噪聲，缺乏觀測噪聲估計。  \n- 缺少同時考慮層次化圖變化與噪聲自適應的內在獎勵框架，難以在動態化學合成或網路路由等環境中穩定探索。\n\n**核心方法 – HNAGC**  \n- **觀測編碼**：Encoder_GNN → 節點隱向 \\(h_v^t\\)。  \n- **動態子圖聚類**：Leiden 社群偵測產生子圖集合 \\(C_t\\)，自"
-  },
-  {
     "date": "2026-10-03",
     "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **終身學習與動態專家庫的 MoE 路由**  \n  - 研究團隊數量 <10，因需同時處理「專家增長/刪除」與「跨任務路由一致性」的框架，缺乏成熟基準。  \n  - 代表論文：  \n    - *Continual Mixture of Experts with Dynamic Expert Allocation*（NeurIPS 2025，Yuan Chen）  \n    - *Lifelong MoE: Growing and Pruning Experts via Task‑aware Routing*（ICLR 2026，Mina Patel）  \n    - *Adaptive Expert Bank for Continual Learning*（arXiv 2025.12，Jin‑Woo Lee）  \n  - 核心問題：  \n  ",
     "final_proposal": "**研究痛點**  \n- 現有終身 MoE 缺乏統一的「專家增長/刪除」與「跨任務路由一致性」理論，長序列 (>30) 任務易遺忘或容量枯竭。  \n- 聯邦式 MoE 雖保護隱私，但仍需全局梯度聚合，計算與通訊成本高，難以在單張 24‑48 GB GPU 上實驗。  \n- 兩者缺口：同時考慮專家使用頻率、重要性與隱私的動態路由機制；現有基準規模過小，無法驗證大規模持續學習穩定性。\n\n**核心方法 – PA‑AEAR**  \n- **雙指標路由**：  \n  1. 任務編碼 `z_t`（兩層全連層）。  \n  2. 基礎分數 `s_i = router(z_t, x)`。  \n  3. 年齡衰減"
@@ -68,5 +63,10 @@
     "date": "2026-10-15",
     "stage1_topics": "**Stage 1 主要發現（約 400 字）**\n\n- **具身代理自發工具語言**  \n  - 研究僅有少數團隊，尚未形成成熟基準。  \n  - 代表論文：*Emergent Tool Communication in Embodied Agents*（NeurIPS 2025）、*Learning Shared Tool Semantics via Multi‑Agent Interaction*（ICLR 2026）、*Tool‑Use Language Emergence in Simulated Robotics*（arXiv 2507.01432）。  \n  - 核心問題：在高維感官訊號中自動抽取離散「指令片段」；語言穩定性與跨機體可遷移性缺乏理論保證。\n\n- **跨形態零樣本政策蒸餾**  \n  - 參與團隊僅約 10 組，缺乏大規模實驗平台。  \n  - 代表論文：*Me",
     "final_proposal": "- **研究痛點**：現有跨形態蒸餾方法（如 *Meta‑RL for Cross‑Morphology Policy Distillation* ICLR 2026、*Universal Policy Transfer via Morphology‑Invariant Embeddings* NeurIPS 2025）僅用拓撲圖編碼，忽略質量、慣性等動力學特徵，導致形態向量 `z_m` 在不同機體間失效；工具語言研究缺乏離散語法結構，遷移成本高；資訊瓶頸驅動的技能組合（*Information‑Bottleneck Intrinsic Motivation for Open‑Ended Sk"
+  },
+  {
+    "date": "2026-10-16",
+    "stage1_topics": "- **元學習驅動的跨任務好奇心**  \n  - 研究僅有少數團隊，聚焦於在元訓練階段同時優化探索策略與內在獎勵，並期望在新任務上即時適應。  \n  - 代表工作：《Meta‑Curiosity for Cooperative Multi‑Agent Exploration》（NeurIPS 2025）、《Emergent Communication via Meta‑Intrinsic Motivation》（ICLR 2026）、《Learning Transferable Intrinsic Rewards with Gradient‑Based Meta‑Learning》（arXiv 2025）。  \n  - 核心問題：高維、稀疏回饋環境下的穩定性易崩潰；缺乏統一評估指標，難以量化元好奇心的通用性。  \n\n- **基於擴散模型的層次化無監督技能發現**  \n  - 仍處於萌芽階段",
+    "final_proposal": "- **研究痛點**：現有層次化無監督技能發現多依賴單一全域噪聲或能量先驗，導致高層抽象與低層具體行為耦合不佳；在 Humanoid、AntMaze 等高維連續控制環境中樣本效率偏低。  \n- **缺陷來源**：  \n  - DiffSkill（ICML 2025）缺乏層間噪聲分離，易被低層噪聲干擾。  \n  - Energy‑Based Skill Priors（NeurIPS 2026）未篩選回放池品質，低質軌跡仍污染訓練。  \n- **核心方法**：LAS‑EPR（層次化自適應噪聲排程 + 能量正則化回放池）。  \n- **關鍵概念**：  \n  - 每層 `l` 設定獨立噪聲衰減曲線 "
   }
 ]
