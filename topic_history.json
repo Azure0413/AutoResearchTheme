@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-03",
-    "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **終身學習與動態專家庫的 MoE 路由**  \n  - 研究團隊數量 <10，因需同時處理「專家增長/刪除」與「跨任務路由一致性」的框架，缺乏成熟基準。  \n  - 代表論文：  \n    - *Continual Mixture of Experts with Dynamic Expert Allocation*（NeurIPS 2025，Yuan Chen）  \n    - *Lifelong MoE: Growing and Pruning Experts via Task‑aware Routing*（ICLR 2026，Mina Patel）  \n    - *Adaptive Expert Bank for Continual Learning*（arXiv 2025.12，Jin‑Woo Lee）  \n  - 核心問題：  \n  ",
-    "final_proposal": "**研究痛點**  \n- 現有終身 MoE 缺乏統一的「專家增長/刪除」與「跨任務路由一致性」理論，長序列 (>30) 任務易遺忘或容量枯竭。  \n- 聯邦式 MoE 雖保護隱私，但仍需全局梯度聚合，計算與通訊成本高，難以在單張 24‑48 GB GPU 上實驗。  \n- 兩者缺口：同時考慮專家使用頻率、重要性與隱私的動態路由機制；現有基準規模過小，無法驗證大規模持續學習穩定性。\n\n**核心方法 – PA‑AEAR**  \n- **雙指標路由**：  \n  1. 任務編碼 `z_t`（兩層全連層）。  \n  2. 基礎分數 `s_i = router(z_t, x)`。  \n  3. 年齡衰減"
-  },
-  {
     "date": "2026-10-04",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **高維流形上自適應等變卷積核**  \n  - 研究人數不足十人，主要聚焦低維歐氏/球面，缺乏高維黎曼流形（分子構型、姿態空間）動態卷積核形狀調整。  \n  - 代表論文：  \n    - *Adaptive Equivariant Kernels on Riemannian Manifolds* (NeurIPS 2025) – Jiawei Chen。  \n    - *Learning Equivariant Operators via Neural Tangent Kernels* (ICLR 2026) – Maya Patel。  \n    - *Geometric Deep Learning for Molecular Dynamics on Non‑Euclidean Spaces* (arXiv 2025.12.03) – Y",
     "final_proposal": "**研究痛點與背景**  \n- 等變卷積假設局部曲率平坦，核尺度需手動或全域設定，易造成高曲率區域訊號過度平滑。  \n- 2025 NeurIPS 的 *Adaptive Equivariant Kernels on Riemannian Manifolds* 只用固定高斯核，未自適應頻譜；2026 ICLR 的 *Neural Tangent Equivariant Operator* 亦未考慮局部幾何。  \n- 缺乏可在訓練中根據圖結構自動演化算子的可微圖重寫機制。  \n\n**核心方法：Curvature‑Aware Adaptive Equivariant Graph Network ("
@@ -68,5 +63,10 @@
     "date": "2026-10-16",
     "stage1_topics": "- **元學習驅動的跨任務好奇心**  \n  - 研究僅有少數團隊，聚焦於在元訓練階段同時優化探索策略與內在獎勵，並期望在新任務上即時適應。  \n  - 代表工作：《Meta‑Curiosity for Cooperative Multi‑Agent Exploration》（NeurIPS 2025）、《Emergent Communication via Meta‑Intrinsic Motivation》（ICLR 2026）、《Learning Transferable Intrinsic Rewards with Gradient‑Based Meta‑Learning》（arXiv 2025）。  \n  - 核心問題：高維、稀疏回饋環境下的穩定性易崩潰；缺乏統一評估指標，難以量化元好奇心的通用性。  \n\n- **基於擴散模型的層次化無監督技能發現**  \n  - 仍處於萌芽階段",
     "final_proposal": "- **研究痛點**：現有層次化無監督技能發現多依賴單一全域噪聲或能量先驗，導致高層抽象與低層具體行為耦合不佳；在 Humanoid、AntMaze 等高維連續控制環境中樣本效率偏低。  \n- **缺陷來源**：  \n  - DiffSkill（ICML 2025）缺乏層間噪聲分離，易被低層噪聲干擾。  \n  - Energy‑Based Skill Priors（NeurIPS 2026）未篩選回放池品質，低質軌跡仍污染訓練。  \n- **核心方法**：LAS‑EPR（層次化自適應噪聲排程 + 能量正則化回放池）。  \n- **關鍵概念**：  \n  - 每層 `l` 設定獨立噪聲衰減曲線 "
+  },
+  {
+    "date": "2026-10-17",
+    "stage1_topics": "**階層式路由的多層 MoE**  \n- 2025‑2026 仍屬探索階段，少數團隊嘗試兩層或三層門控，目標同時降低路由計算與提升專家利用率。  \n- 代表論文：  \n  - *Hierarchical Mixture of Experts for Scalable Language Modeling*（Yuan Li，ICLR 2026）  \n  - *Tree‑Structured MoE with Learnable Routing*（Mina Patel，NeurIPS 2025）  \n  - *Deep Hierarchical Gating for Efficient Transformer MoE*（Joon‑Hyuk Kim，arXiv 2025.12）  \n- 核心問題：  \n  - 如何保持全局資訊流，同時讓上層門控負責粗粒度分配、下層門控負責細粒度選擇，避免訊號衝突。",
+    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**：單層 MoE 在大模型中易出現路由偏移、專家利用率低，且缺乏不確定性感知，導致長序列或低資源語言下路由不穩定。  \n- **關鍵缺口**：需同時具備階層式路由、動態負載平衡與高效不確定性估計，並能在單張 24‑48 GB GPU 上實作。  \n- **核心方法 HUGR‑DSR**：  \n  1. **階層式路由**：兩層門控，粗粒度子樹選擇 + 子樹內 top‑k 專家。  \n  2. **不確定性加權**：變分網路估計 `sigma`，用 `1/sigma` 加權上層 logits，提升高置信度 token 的路由集中度。  \n"
   }
 ]
