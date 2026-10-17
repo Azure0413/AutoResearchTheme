@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-04",
-    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **高維流形上自適應等變卷積核**  \n  - 研究人數不足十人，主要聚焦低維歐氏/球面，缺乏高維黎曼流形（分子構型、姿態空間）動態卷積核形狀調整。  \n  - 代表論文：  \n    - *Adaptive Equivariant Kernels on Riemannian Manifolds* (NeurIPS 2025) – Jiawei Chen。  \n    - *Learning Equivariant Operators via Neural Tangent Kernels* (ICLR 2026) – Maya Patel。  \n    - *Geometric Deep Learning for Molecular Dynamics on Non‑Euclidean Spaces* (arXiv 2025.12.03) – Y",
-    "final_proposal": "**研究痛點與背景**  \n- 等變卷積假設局部曲率平坦，核尺度需手動或全域設定，易造成高曲率區域訊號過度平滑。  \n- 2025 NeurIPS 的 *Adaptive Equivariant Kernels on Riemannian Manifolds* 只用固定高斯核，未自適應頻譜；2026 ICLR 的 *Neural Tangent Equivariant Operator* 亦未考慮局部幾何。  \n- 缺乏可在訓練中根據圖結構自動演化算子的可微圖重寫機制。  \n\n**核心方法：Curvature‑Aware Adaptive Equivariant Graph Network ("
-  },
-  {
     "date": "2026-10-05",
     "stage1_topics": "**跨客戶聯邦後門偵測與緩解**  \n- **研究缺口**：聯邦學習已成熟，但對「隱蔽跨客戶後門」的系統性檢測極少，涉及多方協同與隱私保護，研究人數不足。  \n- **代表論文**  \n  - *Cross‑Client Backdoor Detection in Federated Learning*（Wei‑Chen Li，NeurIPS 2025）  \n  - *Federated Adaptive Trigger Synthesis for Stealthy Model Poisoning*（Mina Patel，ICLR 2026）  \n  - *Privacy‑Preserving Consensus for Backdoor Mitigation*（Jun‑Ho Kim，ICML 2025）  \n- **核心技術問題**  \n  - 在不洩露本地梯度/參數的前提下協同辨識跨客",
     "final_proposal": "**研究痛點與缺陷**  \n- 現行聯邦學習面臨隱蔽跨客戶後門與即時資料毒化；SAAS（NeurIPS 2025）僅用梯度 L2，FTR（ICLR 2026）需大量特徵上傳，Streaming Backdoor"
@@ -68,5 +63,10 @@
     "date": "2026-10-17",
     "stage1_topics": "**階層式路由的多層 MoE**  \n- 2025‑2026 仍屬探索階段，少數團隊嘗試兩層或三層門控，目標同時降低路由計算與提升專家利用率。  \n- 代表論文：  \n  - *Hierarchical Mixture of Experts for Scalable Language Modeling*（Yuan Li，ICLR 2026）  \n  - *Tree‑Structured MoE with Learnable Routing*（Mina Patel，NeurIPS 2025）  \n  - *Deep Hierarchical Gating for Efficient Transformer MoE*（Joon‑Hyuk Kim，arXiv 2025.12）  \n- 核心問題：  \n  - 如何保持全局資訊流，同時讓上層門控負責粗粒度分配、下層門控負責細粒度選擇，避免訊號衝突。",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**：單層 MoE 在大模型中易出現路由偏移、專家利用率低，且缺乏不確定性感知，導致長序列或低資源語言下路由不穩定。  \n- **關鍵缺口**：需同時具備階層式路由、動態負載平衡與高效不確定性估計，並能在單張 24‑48 GB GPU 上實作。  \n- **核心方法 HUGR‑DSR**：  \n  1. **階層式路由**：兩層門控，粗粒度子樹選擇 + 子樹內 top‑k 專家。  \n  2. **不確定性加權**：變分網路估計 `sigma`，用 `1/sigma` 加權上層 logits，提升高置信度 token 的路由集中度。  \n"
+  },
+  {
+    "date": "2026-10-18",
+    "stage1_topics": "- **動態對稱群自適應等變 GNN**  \n  - 研究團隊少於十人，因現有等變 GNN 只固定於單一群（如 E(3)、SE(2)），難以處理時間變化的對稱性。  \n  - 代表論文：*Adaptive Symmetry Group Selection for Equivariant Graph Neural Networks*（ICLR 2026）、*Dynamic Equivariant Message Passing for Variable‑Symmetry Physical Systems*（NeurIPS 2025）、*Group‑Switching Equivariant Networks for Relational Reasoning*（arXiv 2025.12）。  \n  - 主要挑戰：自動辨識並切換最適對稱群；群切換導致梯度不連續性需平滑化；在大規模稀疏圖上維持等",
+    "final_proposal": "- **研究痛點**：現有 LieDiff、SE(3)-Transformer 只能固定 SO(3) 或 SE(3)，無法同時處理局部旋轉與全局平移，導致高噪聲階段構型漂移；能量導向模型雖加入鍵長、鍵角約束，但仍使用統一群噪聲，計算成本高。  \n- **核心創新**：提出 Adaptive Energy‑Guided Equivariant Diffusion (AEGED)，在每一步根據局部幾何自動選擇 SO(3) 或 SE(3)，並同步加入可微分的分子力場能量懲罰。  \n- **關鍵模組**：  \n  - `GroupGate`（兩層 MLP + Gumbel‑Softmax）輸出邊的群概"
   }
 ]
