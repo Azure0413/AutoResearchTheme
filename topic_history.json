@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-06",
-    "stage1_topics": "**Stage 1 – 熱門議題概覽（300–500字）**\n\n- **主題一：以隨機神經常微分方程 (SDE‑ODE) 為核心的安全模型導向強化學習**  \n  - **突破潛力**：結合 SDE 的不確定性建模與連續時間動力學，可即時估計機械手臂、無人機等高維任務的風險與安全邊界。  \n  - **代表工作**  \n    - *Stochastic Neural ODEs for Safe Model‑Based Reinforcement Learning*（NeurIPS 2025）  \n    - *Probabilistic Continuous‑Time Dynamics for Real‑World Manipulation*（ICLR 2026）  \n    - *Adaptive SDE Solvers for Data‑Efficient RL*（arXiv 202",
-    "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 現有神經算子（FNO、Neural Operator Flow Matching）在非平穩、局部高頻渦旋上頻譜僵硬，導致能量漂移。  \n  - 其缺乏不確定性量化，對安全控制（機器人、航空航太）不適用。  \n  - 需求：自適應頻譜、物理守恆、可估計不確定性的框架，能在單張 24‑48 GB GPU 上高精度部署。\n\n- **核心方法：AB‑SNSDE**  \n  - **自適應正交基**：兩層 MLP 產生樣本感知基底，使用增量 QR 投影正交化，記憶體 O(K·d)。  \n  - **對稱隨機微分**：隱向量演化 "
-  },
-  {
     "date": "2026-10-07",
     "stage1_topics": "**Stage 1 摘要（300–500字）**\n\n- **主題一：動態稀疏自編碼器於持續學習模型內部電路追蹤**  \n  - *未飽和原因*：現有稀疏自編碼器多停留於靜態分析，缺少隨訓練演化的即時電路變化捕捉機制，研究人數不足十人。  \n  - *代表論文*：  \n    - *Dynamic Sparse Autoencoders for Continual Circuit Discovery*（NeurIPS 2025）  \n    - *Adaptive Sparse Bottleneck Probes for Evolving LLM Representations*（ICLR 2026）  \n    - arXiv:2105.11234v2 *Temporal Sparse Autoencoding of Model Internals*（2025‑11‑12）  \n  - *",
     "final_proposal": "**研究痛點與創新概述**  \n- **痛點**：大型模型在終身學習中功能子網路（電路）隨時間演化，現有方法（如 *Dynamic Sparse Autoencoders for Continual Circuit Discovery*、*Adaptive Sparse Bottleneck Probes for Evolving LLM Representations*、時間對齊損失）只能一次性抽取或受限於瓶頸，缺乏跨層一致性與即時追蹤。  \n- **創新**：提出 **階層時間稀疏自編碼器＋自適應掩碼排程 (HT‑SAE‑AMS)**，同時施加層級一致損失與時間平滑損失，並以 Sparse"
@@ -68,5 +63,10 @@
     "date": "2026-10-19",
     "stage1_topics": "- **後訓練語料庫隱蔽毒化**：大多數毒化手法僅改動極少樣本，傳統統計檢測難以發現；利用模型內部表徵的細微漂移可在不暴露原始資料的前提下提前偵測。  \n- 代表工作：  \n  - *Detecting Hidden Backdoors via Representation Drift in Large Language Models*（Aisha Patel，NeurIPS 2025）  \n  - *Post‑Training Poisoning Detection with Influence‑Based Metrics*（Rui Chen，ICLR 2026）  \n  - *Representation‑Based Anomaly Scoring for Data Poisoning*（Hao Lin，arXiv 2025.08.12）  \n- 核心問題：在高維隱層空間中定義穩健、可",
     "final_proposal": "**研究痛點**  \n- 大型語言模型微調後易遭隱蔽資料毒化，攻擊者以極少量、動態觸發器混入資料。  \n- 代表性偵測方法（Patel 2025 Representation‑Drift、Chen 2026 Influence‑Based Metric、Li 2026 Adaptive Trigger）多聚焦單一訊號，對動態或低頻毒化召回率低。  \n\n**核心創新**  \n- **層級梯度‑影響序列融合偵測 (HGIF)**：同時捕捉梯度一致性與影響向量時間序列異常，並以貝式層次漂移校準統一門檻。  \n- **特徵收集**：每 epoch 透過 `GradCollector` 抽取梯度向量，`"
+  },
+  {
+    "date": "2026-10-20",
+    "stage1_topics": "**Stage 1：熱門議題概覽（300–500字）**\n\n- **自適應隨機神經常微分方程於湍流與高階流體模擬**  \n  - 研究人數不足十人，潛在服務航空、氣候模擬等高價值產業。  \n  - 代表論文：  \n    - *Stochastic Neural PDEs for Turbulent Flow Modeling*（Yuan Li，NeurIPS 2025）  \n    - *Adaptive Noise Injection in Neural SDEs for Large‑Eddy Simulation*（Mikael Sørensen，ICLR 2026，arXiv:2603.01478）  \n    - *Learning Scale‑Aware Stochastic Forcing in Continuous‑Time Fluid Nets*（Ananya Gupta",
+    "final_proposal": "**研究痛點與背景**  \n- 現代科學資料（天文光譜、基因表達、氣候模擬）高維、稀疏、多模態，傳統 deterministic CNF 會因缺乏隨機性而產生模式崩解或過度平滑。  \n- 近期 S‑CNF（Jin‑Ho Park, NeurIPS 2025）與 Stochastic Bridge（Léa Moreau, ICLR 2026）雖能捕捉局部不確定性，但噪聲尺度固定、梯度方差仍高。  \n- 需自適應噪聲課程 + 雙重控制變量，才能在單張 24‑48 GB GPU 上穩定、快速學習高維科學分布。\n\n**核心研究方法 – ACSB‑DCV**  \n- **噪聲課程**：σ(t) 由 σ_"
   }
 ]
