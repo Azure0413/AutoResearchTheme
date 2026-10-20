@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-07",
-    "stage1_topics": "**Stage 1 摘要（300–500字）**\n\n- **主題一：動態稀疏自編碼器於持續學習模型內部電路追蹤**  \n  - *未飽和原因*：現有稀疏自編碼器多停留於靜態分析，缺少隨訓練演化的即時電路變化捕捉機制，研究人數不足十人。  \n  - *代表論文*：  \n    - *Dynamic Sparse Autoencoders for Continual Circuit Discovery*（NeurIPS 2025）  \n    - *Adaptive Sparse Bottleneck Probes for Evolving LLM Representations*（ICLR 2026）  \n    - arXiv:2105.11234v2 *Temporal Sparse Autoencoding of Model Internals*（2025‑11‑12）  \n  - *",
-    "final_proposal": "**研究痛點與創新概述**  \n- **痛點**：大型模型在終身學習中功能子網路（電路）隨時間演化，現有方法（如 *Dynamic Sparse Autoencoders for Continual Circuit Discovery*、*Adaptive Sparse Bottleneck Probes for Evolving LLM Representations*、時間對齊損失）只能一次性抽取或受限於瓶頸，缺乏跨層一致性與即時追蹤。  \n- **創新**：提出 **階層時間稀疏自編碼器＋自適應掩碼排程 (HT‑SAE‑AMS)**，同時施加層級一致損失與時間平滑損失，並以 Sparse"
-  },
-  {
     "date": "2026-10-08",
     "stage1_topics": "- **動態深度狀態空間模型（AD‑SSM）**  \n  - 目前 SSM 固定層數，無法根據 token 資訊量自適應深度；AD‑SSM 允許 token‑級別層數變化，降低長序列算力與記憶體需求。  \n  - 代表論文：*Adaptive‑Depth State Space Models for Long‑Sequence Modeling* (NeurIPS 2025, Lin Zhao)、*Depth‑Conditional SSMs with Tokenwise Routing* (ICLR 2026, Maria Chen)、*Token‑Adaptive SSM Layers for Efficient Sequence Processing* (arXiv 2025.09, Kai Liu)。  \n  - 核心問題：設計穩定的 token‑wise 深度選擇機制、處理不均勻",
     "final_proposal": "- **研究痛點**：長序列建模受記憶體與算力限制；AD‑SSM（NeurIPS 2025、ICLR 2026）與 NILA（NeurIPS 2025、ICLR 2026）分別在 token‑wise 深度與單核線性注意力上取得突破，但缺乏同時考慮資訊不確定性與頻譜自適應的框架。  \n- **核心創新**：提出 HAK‑DS‑SSM，結合 Token‑wise Depth Scheduler 與 Mixture‑of‑Kernels Linear Attention；深度由兩層 64‑dim MLP 產生，透過 Gumbel‑Softmax 與 actor‑critic 強化學習最小化「計算成"
@@ -68,5 +63,10 @@
     "date": "2026-10-20",
     "stage1_topics": "**Stage 1：熱門議題概覽（300–500字）**\n\n- **自適應隨機神經常微分方程於湍流與高階流體模擬**  \n  - 研究人數不足十人，潛在服務航空、氣候模擬等高價值產業。  \n  - 代表論文：  \n    - *Stochastic Neural PDEs for Turbulent Flow Modeling*（Yuan Li，NeurIPS 2025）  \n    - *Adaptive Noise Injection in Neural SDEs for Large‑Eddy Simulation*（Mikael Sørensen，ICLR 2026，arXiv:2603.01478）  \n    - *Learning Scale‑Aware Stochastic Forcing in Continuous‑Time Fluid Nets*（Ananya Gupta",
     "final_proposal": "**研究痛點與背景**  \n- 現代科學資料（天文光譜、基因表達、氣候模擬）高維、稀疏、多模態，傳統 deterministic CNF 會因缺乏隨機性而產生模式崩解或過度平滑。  \n- 近期 S‑CNF（Jin‑Ho Park, NeurIPS 2025）與 Stochastic Bridge（Léa Moreau, ICLR 2026）雖能捕捉局部不確定性，但噪聲尺度固定、梯度方差仍高。  \n- 需自適應噪聲課程 + 雙重控制變量，才能在單張 24‑48 GB GPU 上穩定、快速學習高維科學分布。\n\n**核心研究方法 – ACSB‑DCV**  \n- **噪聲課程**：σ(t) 由 σ_"
+  },
+  {
+    "date": "2026-10-21",
+    "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **因果回路檢測與干預式探測**  \n  - 研究人數不足 15 組，缺乏成熟基準與公開工具箱，突破空間大。  \n  - 代表論文：NeurIPS 2025 *Causal Circuit Discovery in Transformers via Interventional Probing*；NeurIPS 2026 *Counterfactual Activation Analysis for Neural Loop Detection*；arXiv 2025.11.03 *Graphical Causal Modeling of Internal Attention Dynamics*。  \n  - 核心問題：設計低成本、可擴展的激活干預；缺乏統一的回路重要性度量與穩定性評估；目前圖形化僅捕捉局部回路，無全模型因果圖譜。  \n\n- **自",
+    "final_proposal": "**研究提案摘要（約 400 字）**\n\n- **痛點與背景**  \n  - 大型 Transformer 雖表現優秀，但因果回路與模組化結構仍為「黑盒」。  \n  - 近期 NeurIPS 2025/2026 研究證明單點干預能揭露局部迴路，但成本高且無全模型因果圖；ICLR 2026、ICML 2025 的自監督模組化學習語意不穩定，缺乏因果依賴量化。  \n  - 需求：可擴展因果度量、穩定模組分解、低成本頻譜正則化的統一框架，適用於 24‑48 GB GPU。\n\n- **核心方法：Differentiable Causal Modular Graph (DCMG)**  \n  - **G"
   }
 ]
