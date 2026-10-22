@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-09",
-    "stage1_topics": "**Stage 1 主要議題概覽（約 350 字）**\n\n- **測試時計算資源可擴展性與自適應推理深度**  \n  - 研究缺乏系統化的「測試時算力縮放律」；動態 early‑exit、可變層數仍為少數團隊探索。  \n  - 代表論文：  \n    - *Dynamic Early‑Exit Transformers for Test‑Time Compute Budgeting* (NeurIPS 2025)  \n    - *Adaptive Depth Allocation in Large Language Models via Reinforcement‑Guided Token Splitting* (ICLR 2026)  \n    - *Scaling Laws for Test‑Time Compute in Autoregressive Models* (arXiv ",
-    "final_proposal": "**研究痛點**  \n- 大型語言模型推理仍需完整層前向，成本與輸入資訊量不匹配。  \n- 2025 NeurIPS 的 Dynamic Early‑Exit Transformers 與 2026 ICLR 的 Adaptive Depth Allocation 皆依賴單一置信度門檻或局部強化學習，低熵/長程句子易過早截斷，精度下降。  \n- 2025 arXiv Scaling Laws for Test‑Time"
-  },
-  {
     "date": "2026-10-10",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **因果物件槽 (Causal Slot) 世界模型**  \n  - 研究團隊 < 20 人，尚未在真實機器人環境中大規模驗證，具備突破長期規劃與安全評估的潛力。  \n  - 代表論文：  \n    - 《CausalSlot: Learning Causal Graphs over Object Slots for Interactive Planning》 (ICLR 2026) – Maya Patel 主導。  \n    - 《Counterfactual Object‑Centric World Models for Robotic Manipulation》 (NeurIPS 2025) – Junwei Li。  \n    - 《Causal Dynamics Transformers for Structured Video P",
     "final_proposal": "**研究痛點與結論**  \n- 物件槽在遮擋、快速運動或多物件交互時穩定性下降，因果圖推斷失真（*CausalSlot* ICLR 2026，失敗率↑15%）。  \n- 全圖可微分因果搜索計算成本指數增長，8+物件耗時>200 ms（*Counterfactual Object‑Centric World Models* NeurIPS 2025）。  \n- 長序列任務缺乏層級化狀態空間，單層SSM只能保留2‑3 s動態資訊（*Hierarchical State Space Transformers* ICML 2026）。  \n- **結論**：需同時具備穩定物件槽、可擴展稀疏因果圖、層級"
@@ -68,5 +63,10 @@
     "date": "2026-10-22",
     "stage1_topics": "**可學習稀疏核的狀態空間模型**  \n- 目標：在保持長程依賴的同時，透過訓練自動稀疏化卷積核，減少 FLOPs 與記憶體。  \n- 代表工作：  \n  - *Sparse Kernel State Space Models for Long Sequence Modeling*（NeurIPS 2025）  \n  - *Kernel Pruning in Structured State Space Layers*（ICLR 2026）  \n  - *Adaptive Sparse SSMs via Gradient‑Based Sparsification*（arXiv 2025.12.03）  \n- 主要挑戰：  \n  - 設計跨序列長度穩定的稀疏正則項。  \n  - 推理時 GPU/TPU 稀疏卷積的編譯與排程缺乏統一策略。\n\n**連續深度門控遞迴網路**  \n- 需求：將門控機",
     "final_proposal": "**研究痛點與背景**  \n- 目前圖結構化狀態空間模型（Graph State Space Networks, NeurIPS 2025）雖能處理中等規模圖，但仍需全圖 FFT，O(N log N) 計算與記憶體瓶頸。  \n- 稀疏核 SSM（Sparse Kernel State Space Models, NeurIPS 2025）全層全局稀疏化，缺乏對圖結構與層級差異的感知，導致異質/動態圖稀疏度失衡。  \n- 缺少同時考慮圖結構稀疏性、層級自適應稀疏門控與邊條件光譜濾波的統一框架，限制大規模、異質、動態圖任務的效能。\n\n**核心研究方法 – HA‑GSSM**  \n- **層級稀疏門"
+  },
+  {
+    "date": "2026-10-23",
+    "stage1_topics": "**Stage 1 – 熱門議題概覽（約 400 字）**\n\n- **自我校正推理 (Self‑Verification)**\n  - 目前僅約 10 團隊實驗，缺乏成熟基準與效能權衡。  \n  - 代表論文：  \n    - *Self‑Verification for Large Language Models*（Yuan Chen，ICLR 2025）  \n    - *VeriLLM: On‑the‑fly Consistency Checking in LLMs*（Aisha Patel，NeurIPS 2025）  \n    - *Iterative Self‑Refinement via Program Synthesis*（Luca Rossi，arXiv 2026.0402）  \n  - 核心問題：  \n    - 如何在不顯著增加推理延遲的情況下，生成可驗證中間證據並自",
+    "final_proposal": "- **痛點**：現有 Self‑Verification 只在單點驗證，延遲大且缺乏與推理圖動態耦合；Adaptive Reasoning Graphs 依賴固定預算，無法保證最有價值子圖被探索，導致「早期錯誤放大」與「資源浪費」。\n\n- **核心架構 LV‑GPE**：層級自驗證 + 圖形化預算化擴展。每層生成後即用 300 M 參數輕量驗證子模型計算層級一致性分數（語意相似度+程式化證據），作為 MCTS 節點價值；MCTS 在預算 B（≈30 節點）內選擇最能提升正確率的子圖，重複至終止條件。\n\n- **技術細節**：主模型保留語言建模損失；驗證子模型二元交叉熵訓練，正例來自 Veri"
   }
 ]
