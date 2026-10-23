@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-10",
-    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **因果物件槽 (Causal Slot) 世界模型**  \n  - 研究團隊 < 20 人，尚未在真實機器人環境中大規模驗證，具備突破長期規劃與安全評估的潛力。  \n  - 代表論文：  \n    - 《CausalSlot: Learning Causal Graphs over Object Slots for Interactive Planning》 (ICLR 2026) – Maya Patel 主導。  \n    - 《Counterfactual Object‑Centric World Models for Robotic Manipulation》 (NeurIPS 2025) – Junwei Li。  \n    - 《Causal Dynamics Transformers for Structured Video P",
-    "final_proposal": "**研究痛點與結論**  \n- 物件槽在遮擋、快速運動或多物件交互時穩定性下降，因果圖推斷失真（*CausalSlot* ICLR 2026，失敗率↑15%）。  \n- 全圖可微分因果搜索計算成本指數增長，8+物件耗時>200 ms（*Counterfactual Object‑Centric World Models* NeurIPS 2025）。  \n- 長序列任務缺乏層級化狀態空間，單層SSM只能保留2‑3 s動態資訊（*Hierarchical State Space Transformers* ICML 2026）。  \n- **結論**：需同時具備穩定物件槽、可擴展稀疏因果圖、層級"
-  },
-  {
     "date": "2026-10-11",
     "stage1_topics": "**主題一：超參數超網路驅動的任務無關持續學習**  \n- 研究團隊僅十人以下，超網路可即時產生適應性參數向量，兼顧「忘記」與「任務辨識」雙重挑戰。  \n- 代表工作：《HyperNetCL: Hypernetwork‑based Continual Learning without Task Labels》（ICLR 2025）、《Task‑Agnostic Parameter Modulation for Lifelong Learning》（NeurIPS 2025）、《Dynamic Hypernetwork Replay for Continual Vision Tasks》（arXiv 2025.12）。  \n- 核心問題：無任務標籤時的參數生成穩定性、收斂性缺乏理論保證、參數膨脹與訓練效率的權衡。  \n\n**主題二：圖結構化持續強化學習記憶體**  \n- 圖形化長期回憶庫能以",
     "final_proposal": "**PH‑HMCL 研究提案摘要（約 400 字）**\n\n- **研究痛點**  \n  - *HyperNetCL*（ICLR 2025）與 *Task‑Agnostic Parameter Modulation*（NeurIPS 2025）雖能無任務標籤產生調製向量，但面臨  \n    1. 參數線性膨脹，訓練/推論成本急升。  \n    2. 遺忘抑制不足，長期知識保持效果有限。  \n  - *Graph Episodic Memory for Continual RL*（ICML 2026）證明圖編碼提升樣本效率，但未考慮時間衰減，遠端經驗仍佔用大量資源。  \n  - 需求：同時解決「參"
@@ -68,5 +63,10 @@
     "date": "2026-10-23",
     "stage1_topics": "**Stage 1 – 熱門議題概覽（約 400 字）**\n\n- **自我校正推理 (Self‑Verification)**\n  - 目前僅約 10 團隊實驗，缺乏成熟基準與效能權衡。  \n  - 代表論文：  \n    - *Self‑Verification for Large Language Models*（Yuan Chen，ICLR 2025）  \n    - *VeriLLM: On‑the‑fly Consistency Checking in LLMs*（Aisha Patel，NeurIPS 2025）  \n    - *Iterative Self‑Refinement via Program Synthesis*（Luca Rossi，arXiv 2026.0402）  \n  - 核心問題：  \n    - 如何在不顯著增加推理延遲的情況下，生成可驗證中間證據並自",
     "final_proposal": "- **痛點**：現有 Self‑Verification 只在單點驗證，延遲大且缺乏與推理圖動態耦合；Adaptive Reasoning Graphs 依賴固定預算，無法保證最有價值子圖被探索，導致「早期錯誤放大」與「資源浪費」。\n\n- **核心架構 LV‑GPE**：層級自驗證 + 圖形化預算化擴展。每層生成後即用 300 M 參數輕量驗證子模型計算層級一致性分數（語意相似度+程式化證據），作為 MCTS 節點價值；MCTS 在預算 B（≈30 節點）內選擇最能提升正確率的子圖，重複至終止條件。\n\n- **技術細節**：主模型保留語言建模損失；驗證子模型二元交叉熵訓練，正例來自 Veri"
+  },
+  {
+    "date": "2026-10-24",
+    "stage1_topics": "**階層式物件中心狀態空間模型**  \n- 目前多數模型僅單層「slot」分割，缺乏部件‑組件、群組‑個體等層級關係；結合層級 slot 與長序列狀態空間網路可提升長時間視覺規劃精度。  \n- 代表論文：  \n  - *Hierarchical Object‑Centric World Models for Long‑Term Video Prediction* (Lin Zhao, NeurIPS 2025)  \n  - *Object‑Structured State Space Networks* (Maya Patel, ICLR 2026)  \n  - *Deep Hierarchical Slot Attention for Video Modeling* (Jian‑Wei Liu, arXiv 2025.11)  \n- 核心問題：多層 slot 的同時分割與演化學習、長期預",
+    "final_proposal": "- **研究痛點**：現有即時可微分因果圖（如 *Online Causal Graph Discovery for Reinforcement Learning Agents*，ICML 2025）只能更新單層結構，無法同時捕捉長期規劃所需的層級物件關係；層級 slot 模型（*Hierarchical Object‑Centric World Models for Long‑Term Video Prediction*，NeurIPS 2025）雖提升預測精度，但圖結構靜態，缺乏即時調整。  \n- **核心方法**：提出 **Hierarchical Adaptive Causal Gra"
   }
 ]
