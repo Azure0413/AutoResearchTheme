@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-11",
-    "stage1_topics": "**主題一：超參數超網路驅動的任務無關持續學習**  \n- 研究團隊僅十人以下，超網路可即時產生適應性參數向量，兼顧「忘記」與「任務辨識」雙重挑戰。  \n- 代表工作：《HyperNetCL: Hypernetwork‑based Continual Learning without Task Labels》（ICLR 2025）、《Task‑Agnostic Parameter Modulation for Lifelong Learning》（NeurIPS 2025）、《Dynamic Hypernetwork Replay for Continual Vision Tasks》（arXiv 2025.12）。  \n- 核心問題：無任務標籤時的參數生成穩定性、收斂性缺乏理論保證、參數膨脹與訓練效率的權衡。  \n\n**主題二：圖結構化持續強化學習記憶體**  \n- 圖形化長期回憶庫能以",
-    "final_proposal": "**PH‑HMCL 研究提案摘要（約 400 字）**\n\n- **研究痛點**  \n  - *HyperNetCL*（ICLR 2025）與 *Task‑Agnostic Parameter Modulation*（NeurIPS 2025）雖能無任務標籤產生調製向量，但面臨  \n    1. 參數線性膨脹，訓練/推論成本急升。  \n    2. 遺忘抑制不足，長期知識保持效果有限。  \n  - *Graph Episodic Memory for Continual RL*（ICML 2026）證明圖編碼提升樣本效率，但未考慮時間衰減，遠端經驗仍佔用大量資源。  \n  - 需求：同時解決「參"
-  },
-  {
     "date": "2026-10-12",
     "stage1_topics": "**Stage 1 — 熱門議題概覽（300–500字）**\n\n- **離散擴散於受價值限制的分子圖生成**  \n  - 研究人數不足二十人，缺乏有效噪聲設計與逆向流程，具突破新藥設計潛力。  \n  - 代表論文：  \n    - 《Discrete Diffusion for Molecular Graphs with Valence Constraints》 (Yuan Zhang, ICLR 2025)  \n    - 《Flow Matching for Molecular Conformation Generation》 (Mia Liu, NeurIPS 2025)  \n    - 《Graph Discrete Diffusion with Edge‑Conditioned Score Matching》 (Karan Patel, arXiv 2026.0412)  \n  ",
     "final_proposal": "**研究痛點**  \n- 目前離散擴散模型（如 *Discrete Diffusion for Molecular Graphs with Valence Constraints* ICLR 2025）在分子 > 30 原子時合法率急降，抽樣成本呈指數增長。  \n- 噪聲設計單一 `β(t)` 無法區分高價鍵與低價鍵，易造成非法結構。  \n- 直接為 ≈ 30 種鍵學習獨立轉移矩陣，記憶體 > 20 GB，單卡 GPU 難以承載。  \n\n**創新方法 – V‑HNS‑LR**  \n- **層次噪聲排程**：根據分子大小 `s` 與鍵價值分別設 `β_h(t)`、`β_l(t)`，高價鍵保留更嚴"
@@ -68,5 +63,10 @@
     "date": "2026-10-24",
     "stage1_topics": "**階層式物件中心狀態空間模型**  \n- 目前多數模型僅單層「slot」分割，缺乏部件‑組件、群組‑個體等層級關係；結合層級 slot 與長序列狀態空間網路可提升長時間視覺規劃精度。  \n- 代表論文：  \n  - *Hierarchical Object‑Centric World Models for Long‑Term Video Prediction* (Lin Zhao, NeurIPS 2025)  \n  - *Object‑Structured State Space Networks* (Maya Patel, ICLR 2026)  \n  - *Deep Hierarchical Slot Attention for Video Modeling* (Jian‑Wei Liu, arXiv 2025.11)  \n- 核心問題：多層 slot 的同時分割與演化學習、長期預",
     "final_proposal": "- **研究痛點**：現有即時可微分因果圖（如 *Online Causal Graph Discovery for Reinforcement Learning Agents*，ICML 2025）只能更新單層結構，無法同時捕捉長期規劃所需的層級物件關係；層級 slot 模型（*Hierarchical Object‑Centric World Models for Long‑Term Video Prediction*，NeurIPS 2025）雖提升預測精度，但圖結構靜態，缺乏即時調整。  \n- **核心方法**：提出 **Hierarchical Adaptive Causal Gra"
+  },
+  {
+    "date": "2026-10-25",
+    "stage1_topics": "**主題一：動態神經架構搜尋驅動的持續學習**  \n- 仍處於探索階段，團隊人數不足二十人，重點在自動調整模型容量以應對新任務，避免參數過度堆疊或過早壓縮。  \n- 代表論文：  \n  - 《Dynamic Neural Architecture Search for Task‑Agnostic Continual Learning》, Minghao Zhou, ICLR 2025  \n  - 《Adaptive Capacity Allocation via Gradient‑Based NAS in Lifelong Vision Systems》, Lina Wu, NeurIPS 2025  \n  - 《Efficient Architecture Evolution for Continual Reinforcement Learning》, Jae‑Hyun Kim, arX",
+    "final_proposal": "- **痛點**：差分隱私回放（如 *Privacy‑Preserving Generative Replay*, NeurIPS 2025）隨噪聲增大樣本多樣性急降；動態 NAS 在持續學習中缺乏隱私結合，模型顯存過高。  \n- **提案**：層級差分隱私自適應結構回放（HDPAR），結合分層噪聲注入與梯度基 NAS，實現隱私與效能最佳平衡。  \n- **分層噪聲**：先在潛在向量 `z` 加粗粒度噪聲 σ₁，再於每層特徵圖加細粒度噪聲 σ₂；ε 由動態預算分配器根據遺忘指標自適應調整。  \n- **NAS 壓縮**：在生成過程中搜尋最小化顯存與 FLOPs 的子網路 `S_t`，生成器與主"
   }
 ]
