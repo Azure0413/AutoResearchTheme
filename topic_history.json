@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-15",
-    "stage1_topics": "**Stage 1 主要發現（約 400 字）**\n\n- **具身代理自發工具語言**  \n  - 研究僅有少數團隊，尚未形成成熟基準。  \n  - 代表論文：*Emergent Tool Communication in Embodied Agents*（NeurIPS 2025）、*Learning Shared Tool Semantics via Multi‑Agent Interaction*（ICLR 2026）、*Tool‑Use Language Emergence in Simulated Robotics*（arXiv 2507.01432）。  \n  - 核心問題：在高維感官訊號中自動抽取離散「指令片段」；語言穩定性與跨機體可遷移性缺乏理論保證。\n\n- **跨形態零樣本政策蒸餾**  \n  - 參與團隊僅約 10 組，缺乏大規模實驗平台。  \n  - 代表論文：*Me",
-    "final_proposal": "- **研究痛點**：現有跨形態蒸餾方法（如 *Meta‑RL for Cross‑Morphology Policy Distillation* ICLR 2026、*Universal Policy Transfer via Morphology‑Invariant Embeddings* NeurIPS 2025）僅用拓撲圖編碼，忽略質量、慣性等動力學特徵，導致形態向量 `z_m` 在不同機體間失效；工具語言研究缺乏離散語法結構，遷移成本高；資訊瓶頸驅動的技能組合（*Information‑Bottleneck Intrinsic Motivation for Open‑Ended Sk"
-  },
-  {
     "date": "2026-10-16",
     "stage1_topics": "- **元學習驅動的跨任務好奇心**  \n  - 研究僅有少數團隊，聚焦於在元訓練階段同時優化探索策略與內在獎勵，並期望在新任務上即時適應。  \n  - 代表工作：《Meta‑Curiosity for Cooperative Multi‑Agent Exploration》（NeurIPS 2025）、《Emergent Communication via Meta‑Intrinsic Motivation》（ICLR 2026）、《Learning Transferable Intrinsic Rewards with Gradient‑Based Meta‑Learning》（arXiv 2025）。  \n  - 核心問題：高維、稀疏回饋環境下的穩定性易崩潰；缺乏統一評估指標，難以量化元好奇心的通用性。  \n\n- **基於擴散模型的層次化無監督技能發現**  \n  - 仍處於萌芽階段",
     "final_proposal": "- **研究痛點**：現有層次化無監督技能發現多依賴單一全域噪聲或能量先驗，導致高層抽象與低層具體行為耦合不佳；在 Humanoid、AntMaze 等高維連續控制環境中樣本效率偏低。  \n- **缺陷來源**：  \n  - DiffSkill（ICML 2025）缺乏層間噪聲分離，易被低層噪聲干擾。  \n  - Energy‑Based Skill Priors（NeurIPS 2026）未篩選回放池品質，低質軌跡仍污染訓練。  \n- **核心方法**：LAS‑EPR（層次化自適應噪聲排程 + 能量正則化回放池）。  \n- **關鍵概念**：  \n  - 每層 `l` 設定獨立噪聲衰減曲線 "
@@ -68,5 +63,10 @@
     "date": "2026-10-28",
     "stage1_topics": "**主題一：逆向設計固態電解質的可解釋生成模型**  \n- 研究團隊少於百人，結合高效生成模型與材料物理約束尚未形成成熟基準，具突破性空間。  \n- 代表論文：  \n  - *Physics‑Guided Diffusion for Solid‑State Electrolyte Discovery* (Jia‑Wei Chen, ICLR 2025)  \n  - *Inverse Design of Lithium Superionic Conductors via Conditional Generative Flow* (Maya Patel, NeurIPS 2025)  \n  - *Explainable Generative Models for Battery Materials* (Luis Gómez, arXiv 2509.01234, 2025)  \n- 核心技術問題",
     "final_proposal": "- **痛點**：固態電解質需同時具備高離子導電率、寬帶隙與熱力學穩定性；現有逆向設計（Physics‑Guided Diffusion、Conditional Generative Flow）僅以後置分析提供結構解釋，硬性多目標符合率低於 60%，且易產生不可行樣本。  \n- **創新框架**：Physics‑Lagrangian Explainable Flow (PLE‑Flow)  \n  - **拉格朗日校正子網**：在每層逆向映射後即時將暫時結構拉回物理可行域，直接加入硬性物理損失。  \n  - **結構注意力層**：輸出原子配位熱圖，作為即時可解釋資訊，參考已知高性能電解質的注意力"
+  },
+  {
+    "date": "2026-10-29",
+    "stage1_topics": "- **自組織層級技能樹與跨域遷移**  \n  - 目前僅少數工作能同時自動構建多層次技能結構並直接遷移，缺乏可擴展基準與統一框架。  \n  - 代表論文：*Learning Hierarchical Skill Trees via Self‑Supervised Exploration*（NeurIPS 2025）、*Cross‑Domain Skill Transfer through Meta‑Tree Alignment*（ICML 2026）、*Self‑Organizing Skill Graphs for Long‑Horizon Planning*（arXiv:2509.04123）。  \n  - 核心問題：無標籤環境下自發辨識層級結構、跨域映射缺乏理論保證、評測平台單一，缺少跨模態、跨物理引擎測試。  \n\n- **逆向強化學習驅動的零樣本工具創造**  \n  - IRL ",
+    "final_proposal": "**研究痛點**  \n- S‑SG 只能在單一模擬環境學得固定長度窗口，導致技能碎片化（NeurIPS 2025）。  \n- Meta‑Tree Alignment 仍依賴手工相似度，缺乏跨物理引擎保證（ICML 2026）。  \n- 零樣本工具 IRL 受動力學落差影響，真機失敗率高（ICLR 2026）。  \n\n**核心方法 PH‑SDT**  \n- 結合動態時間窗口生成（DTGP）與物理導向獎勵塑形（PGRS）。  \n- RNN 產生可變窗口 `w_t`，並輸出平滑正則 `L_reg`。  \n- 在窗口內構建暫態圖 `G_t`，以時間距離與狀態相似度加權。  \n- GraphSAGE 聚"
   }
 ]
