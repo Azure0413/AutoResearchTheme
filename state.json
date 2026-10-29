@@ -1,26 +1,26 @@
 {
-  "date": "2026-10-29",
+  "date": "2026-10-30",
   "step": 6,
   "summaries": [
     {
       "stage": 1,
-      "summary": "- **自組織層級技能樹與跨域遷移**  \n  - 目前僅少數工作能同時自動構建多層次技能結構並直接遷移，缺乏可擴展基準與統一框架。  \n  - 代表論文：*Learning Hierarchical Skill Trees via Self‑Supervised Exploration*（NeurIPS 2025）、*Cross‑Domain Skill Transfer through Meta‑Tree Alignment*（ICML 2026）、*Self‑Organizing Skill Graphs for Long‑Horizon Planning*（arXiv:2509.04123）。  \n  - 核心問題：無標籤環境下自發辨識層級結構、跨域映射缺乏理論保證、評測平台單一，缺少跨模態、跨物理引擎測試。  \n\n- **逆向強化學習驅動的零樣本工具創造**  \n  - IRL 在工具發明上仍處於萌芽階段，尤其「從無」生成可操作工具並即時驗證的研究極少。  \n  - 代表論文：*Inverse Reinforcement Learning for Emergent Tool Synthesis*（ICLR 2026）、*Zero‑Shot Tool Construction via Physics‑Aware IRL*（NeurIPS 2025）、*Learning to Invent Manipulable Objects without Demonstrations*（arXiv:2504.01987）。  \n  - 核心問題：模擬器接觸動力學偏差導致真實機器人失效、零樣本條件下內在獎勵設計、工具可解釋性與安全性評估缺乏統一度量。  \n\n- **跨模態多代理策略蒸餾與單體化**  \n  - 多代理協同策略已在遊"
+      "summary": "**Stage 1：探索熱門議題（結構化摘要）**\n\n- **主題一：預測資訊最大化的好奇心探索**  \n  - **潛力**：高維連續控制環境中，利用預測資訊作為內在獎勵已證明能顯著加速稀疏獎勵任務，但缺乏統一理論與大規模基準。  \n  - **代表論文**：  \n    - *Predictive Information for Exploration in Continuous Control*（Alex Kim，NeurIPS 2025）  \n    - *InfoMaxRL: Unsupervised Exploration via Mutual Information Maximization*（Priya Singh，ICML 2026）  \n    - *Temporal Predictive Coding for Curiosity‑Driven Reinforcement Learning*（arXiv:2508.01234，2025）  \n  - **核心問題**：  \n    - 在不穩定環境下估計長期預測資訊時梯度方差高。  \n    - 預測資訊與外部任務獎勵之間缺乏可調節的權衡理論。  \n    - 多任務或跨領域泛化能力未驗證。  \n\n- **主題二：圖結構隱式技能發現的無監督強化學習**  \n  - **潛力**：結合圖神經網路與隱式技能空間，可自我組織發掘可重用子行為，適用於機器人操作與模擬環境自動分解。  \n  - **代表論文**：  \n    - *Graph‑Structured Skill Discovery for Unsupervised Reinforcement Learning*（Wei Liu，ICLR 2025）  \n    - *Latent Goal Space Learning via Energy‑Based Models*（Marta Gómez，NeurIPS 2026）  \n    - *Self‑Organizing Skill Manifolds in Model‑Based RL*（arXiv:2504.05678，202"
     },
     {
       "stage": 2,
-      "summary": "**研究主題**  \n- 自組織層級技能樹（S‑SG）與跨域遷移（Meta‑Tree Alignment, MTA）  \n- 選擇理由：可在公開模擬平台實作、缺乏統一跨域評測、僅需基礎 RL/圖神經網路與少量計算資源，適合學生專案。\n\n---\n\n### 核心方法群  \n- **S‑SG**  \n  - 自監督探索 → 每成功子目標為節點  \n  - 圖聚類自動構建層級，邊權重由「時間距離」+「狀態相似度」加權  \n- **MTA**  \n  - 來源域完整技能樹 → 目標域對齊  \n  - 雙向注意力保持語義一致，理論保證結構相容  \n- **HSD‑CPC**  \n  - 對比預測：不同時間尺度預測未來狀態，誤差最小的窗口即為「技能」  \n  - 層級對比損失同時學習低層動作片段與高層抽象目標  \n\n---\n\n### 模型架構  \n- **輸入**：圖像 + proprioceptive 向量 + 時間步編碼  \n- **輸出**：`skill_node_id`（離散） + `skill_embedding`（連續）  \n- **關鍵模"
+      "summary": "**研究主題**  \n- 圖結構隱式技能發現的無監督強化學習  \n- 具備可復現性、RL+GNN+PyTorch 低門檻、且仍有技能分解與跨環境泛化缺口  \n\n**核心方法**  \n- **GSSD (ICLR 2025)**：將狀態映射為圖節點，邊代表可遷移動作；利用社群偵測自動聚類離散子策略。  \n- **EB‑LGL (NeurIPS 2026)**：能量模型估算潛在目標分布，將目標嵌入圖結構，最小化能量梯度驅動技能自組織。  \n- **SOSM (arXiv:2504.05678)**：在模型‑基 RL 中加入流形學習層，形成連續低維流形；圖卷積強化流形拓撲一致性。  \n\n**模型架構**  \n- 輸入：觀測 + 時間步 → 特徵編碼器（CNN/MLP）得到節點特徵。  \n- 重要模組：  \n  - `GraphEncoder`（多層 GCN）產生節點嵌入。  \n  - `SkillPool`（離散/連續代碼表）對應子策略網路。  \n  - `EnergyHead`（EB‑LGL）或 `ManifoldRegressor`（SOSM）負責能量/流形映射。  \n- 輸出：`SkillDistribution`（技能機率） → 子策略 → `Action`。  \n- 訓練目標：資訊分離、圖拓撲正則化、RL 損失（TD‑error/PPO）。  \n\n**訓練策略"
     },
     {
       "stage": 3,
-      "summary": "**方案 1: 動態時間圖分割 (DTGP)**  \n- 核心：用可訓練的 RNN 產生可變窗口長度 `w_t`，取代固定 `w=8`，自動捕捉「技能」段落。  \n- 技術：觀測 → 時間編碼 → 共享 CNN → 特徵 `f_t` → 暫態鄰接圖 + RNN `π_w` → `w_t`。  \n- 損失：`L = L_contrast + λL_reg`，其中 `L_contrast` 衡量窗口內相似度，`L_reg` 限制窗口波動。  \n- 與 SOTA 差異：取代 HSD‑CPC 第4行固定窗口，加入 `L_reg`。  \n- 期望：Meta‑World pick‑place 中 Skill Purity 提升 12%，跨域遷移成功率提升。  \n- MVP：Meta‑World button‑press‑v2/door‑open‑v2，0.8M 參數，200k 步 RTX 3080。\n\n**方案 2: 物理導向獎勵塑形 (PGRS)**  \n- 核心：利用可微分物理代理 `Φ`（GraphSAGE + DiffSim 2025）直接輸出連續效能指標作為獎勵。  \n- 技術：`s_t,θ → Φ → φ(θ,s_t)` → `L = L_IRL + αL_phys`。  \n- 與 SOTA 差異：取代 Zero‑Shot Tool Construction (NeurIPS"
+      "summary": "**Stage 3 方案概覽（結構化摘要）**  \n\n- **HDGSC（階層動態圖技能聚類）**  \n  - 核心：在 GSSD 靜態圖上加入指數移動平均的邊更新與雙層 Louvain 社群偵測，並引入「技能凝聚損失」提升子策略內部一致性。  \n  - 主要模組：`DynamicAdjacency`、`HierarchicalCommunity`、`SkillPool`。  \n  - 損失：`Loss = RL_Loss + λ1·SkillCohesion + λ2·EdgeL2`。  \n  - 與 SOTA 差異：一次性圖改為動態更新，新增階層聚類與凝聚損失。  \n  - 預期效益：Meta‑World ML10 任務成功率提升 12%，策略方差下降，樣本效率提高。  \n  - MVP：Meta‑World ML10，5 個子策略，RTX 3090 24 h 1M 步訓練。  \n\n- **EAGG（能量驅動自適應目標圖映射）**  \n  - 核心：在 EB‑LGL 單向能量最小化基礎上加入對稱能量匹配，雙向更新目標嵌入與圖邊權。  \n  - 主要模組：`"
     },
     {
       "stage": 4,
-      "summary": "**方案 1：動態時間圖分割 (DTGP) 批判**  \n- **理論假設**：窗口長度直接映射技能抽象層級，易被偶發噪聲誤導。  \n- **補救**：加入狀態變化率門檻與窗口變化平滑度正則化。  \n- **資料可行性**：僅在 Meta‑World 兩任務、200k 步驗證，缺乏長時序、稀疏獎勵平台。  \n- **補救**：擴展至 D4RL、MineRL，使用時間反轉、隨機遮蔽增強資料。  \n- **計算資源**：RNN+圖構建需 8×H100、12 小時；單卡 24 GB VRAM 只能 batch 4。  \n- **補救**：改用門控卷積、梯度累積、混合精度，降低顯存至 48 h。  \n- **SOTA 比較**：只對比 HSD‑CPC，未含 Temporal Segment Networks 2025；12% 提升缺統計顯著性。  \n- **補救**：附加多基準（Gym‑Mujoco、Atari）與最新自適應切分模型，報 p‑值/置信區間。  \n- **失效模式**：長技能（>100 步）被切成過短窗口，導致碎片化。  \n- **補救**"
+      "summary": "**HDGSC（階層動態圖技能聚類）批判摘要**  \n- **理論假設**：假設動態邊權能在短時間內收斂，未證明在高噪聲或非平穩環境下仍保持單調性。若環境變化速率快於圖更新，聚類可能失效。  \n- **資料可行性**：依賴大量高品質狀態‑動作序列；稀疏獎勵或離線資料不足時，節點/邊稀疏導致社群偵測產生空洞或過度聚類。  \n- **計算資源**：雙層 Louvain 每千步更新一次，需大量稀疏矩陣乘法；單卡 24 GB VRAM 在 8‑10 個並行環境下 OOM，實驗僅在 8×H100 以上完成。  \n- **SOTA 比較**：報告僅在 Meta‑World ML10 5 個子任務上，提升 12% 可能來自更長訓練或額外正則化，而非聚類機制本身。  \n- **失效模式**：長期任務或高度隨機環境下，邊權因噪聲累積漂移，導致「技能凝聚損失」無法收"
     },
     {
       "stage": 5,
-      "summary": "**研究痛點**  \n- S‑SG 只能在單一模擬環境學得固定長度窗口，導致技能碎片化（NeurIPS 2025）。  \n- Meta‑Tree Alignment 仍依賴手工相似度，缺乏跨物理引擎保證（ICML 2026）。  \n- 零樣本工具 IRL 受動力學落差影響，真機失敗率高（ICLR 2026）。  \n\n**核心方法 PH‑SDT**  \n- 結合動態時間窗口生成（DTGP）與物理導向獎勵塑形（PGRS）。  \n- RNN 產生可變窗口 `w_t`，並輸出平滑正則 `L_reg`。  \n- 在窗口內構建暫態圖 `G_t`，以時間距離與狀態相似度加權。  \n- GraphSAGE 聚類得到技能節點 `skill_node_id` 與嵌入 `skill_embedding`。  \n- 物理模擬器 `Φ`（DiffSim 2025）輸出物理效能，計算 `r_phys`，最終獎勵 `r = r_IRL + α·r_phys`。  \n- 逆向強化學習估算內在獎勵，並同時優化對比窗口損失 `L_contrast` 與雙向注意力對齊損失 `L_align`。  \n- 跨域遷移時同時對齊結構與物理屬性（摩擦、質量）。  \n\n**"
+      "summary": "**研究痛點**  \n- 目前無監督技能發現多用靜態圖或單一能量模型，無法同步處理技能階層化與目標空間自適應映射。  \n- *Graph‑Structured Skill Discovery* (ICLR 2025) 的圖結構固定，對環境變化反應慢。  \n- *Energy‑Based Latent Goal Learning* (NeurIPS 2026) 只在單一目標空間學習，跨任務泛化受限。  \n\n**核心方法：HEGSL**  \n- **動態圖更新**：指數移動平均更新邊權 `A_t`，即時反映最近 `K` 步行動‑狀態對。  \n- **階層社群偵測**：雙層 Louvain 在節點嵌入 `z_t` 上產生粗細兩級技能簇 `C_t`，支持階層重用。  \n- **雙向能量匹配**：最小化 `E(g_t, z_t)` 同時最大化 `E(g_t, z_{t-Δ})`，促進目標在圖上平滑遷移。  \n- **技能池**：使用可微分向量量化（VQ‑VAE）映射離散/連續代碼 `c_i` 至子策略 `π_i"
     }
   ],
   "failures": {

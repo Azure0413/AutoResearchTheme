@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-16",
-    "stage1_topics": "- **元學習驅動的跨任務好奇心**  \n  - 研究僅有少數團隊，聚焦於在元訓練階段同時優化探索策略與內在獎勵，並期望在新任務上即時適應。  \n  - 代表工作：《Meta‑Curiosity for Cooperative Multi‑Agent Exploration》（NeurIPS 2025）、《Emergent Communication via Meta‑Intrinsic Motivation》（ICLR 2026）、《Learning Transferable Intrinsic Rewards with Gradient‑Based Meta‑Learning》（arXiv 2025）。  \n  - 核心問題：高維、稀疏回饋環境下的穩定性易崩潰；缺乏統一評估指標，難以量化元好奇心的通用性。  \n\n- **基於擴散模型的層次化無監督技能發現**  \n  - 仍處於萌芽階段",
-    "final_proposal": "- **研究痛點**：現有層次化無監督技能發現多依賴單一全域噪聲或能量先驗，導致高層抽象與低層具體行為耦合不佳；在 Humanoid、AntMaze 等高維連續控制環境中樣本效率偏低。  \n- **缺陷來源**：  \n  - DiffSkill（ICML 2025）缺乏層間噪聲分離，易被低層噪聲干擾。  \n  - Energy‑Based Skill Priors（NeurIPS 2026）未篩選回放池品質，低質軌跡仍污染訓練。  \n- **核心方法**：LAS‑EPR（層次化自適應噪聲排程 + 能量正則化回放池）。  \n- **關鍵概念**：  \n  - 每層 `l` 設定獨立噪聲衰減曲線 "
-  },
-  {
     "date": "2026-10-17",
     "stage1_topics": "**階層式路由的多層 MoE**  \n- 2025‑2026 仍屬探索階段，少數團隊嘗試兩層或三層門控，目標同時降低路由計算與提升專家利用率。  \n- 代表論文：  \n  - *Hierarchical Mixture of Experts for Scalable Language Modeling*（Yuan Li，ICLR 2026）  \n  - *Tree‑Structured MoE with Learnable Routing*（Mina Patel，NeurIPS 2025）  \n  - *Deep Hierarchical Gating for Efficient Transformer MoE*（Joon‑Hyuk Kim，arXiv 2025.12）  \n- 核心問題：  \n  - 如何保持全局資訊流，同時讓上層門控負責粗粒度分配、下層門控負責細粒度選擇，避免訊號衝突。",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**：單層 MoE 在大模型中易出現路由偏移、專家利用率低，且缺乏不確定性感知，導致長序列或低資源語言下路由不穩定。  \n- **關鍵缺口**：需同時具備階層式路由、動態負載平衡與高效不確定性估計，並能在單張 24‑48 GB GPU 上實作。  \n- **核心方法 HUGR‑DSR**：  \n  1. **階層式路由**：兩層門控，粗粒度子樹選擇 + 子樹內 top‑k 專家。  \n  2. **不確定性加權**：變分網路估計 `sigma`，用 `1/sigma` 加權上層 logits，提升高置信度 token 的路由集中度。  \n"
@@ -68,5 +63,10 @@
     "date": "2026-10-29",
     "stage1_topics": "- **自組織層級技能樹與跨域遷移**  \n  - 目前僅少數工作能同時自動構建多層次技能結構並直接遷移，缺乏可擴展基準與統一框架。  \n  - 代表論文：*Learning Hierarchical Skill Trees via Self‑Supervised Exploration*（NeurIPS 2025）、*Cross‑Domain Skill Transfer through Meta‑Tree Alignment*（ICML 2026）、*Self‑Organizing Skill Graphs for Long‑Horizon Planning*（arXiv:2509.04123）。  \n  - 核心問題：無標籤環境下自發辨識層級結構、跨域映射缺乏理論保證、評測平台單一，缺少跨模態、跨物理引擎測試。  \n\n- **逆向強化學習驅動的零樣本工具創造**  \n  - IRL ",
     "final_proposal": "**研究痛點**  \n- S‑SG 只能在單一模擬環境學得固定長度窗口，導致技能碎片化（NeurIPS 2025）。  \n- Meta‑Tree Alignment 仍依賴手工相似度，缺乏跨物理引擎保證（ICML 2026）。  \n- 零樣本工具 IRL 受動力學落差影響，真機失敗率高（ICLR 2026）。  \n\n**核心方法 PH‑SDT**  \n- 結合動態時間窗口生成（DTGP）與物理導向獎勵塑形（PGRS）。  \n- RNN 產生可變窗口 `w_t`，並輸出平滑正則 `L_reg`。  \n- 在窗口內構建暫態圖 `G_t`，以時間距離與狀態相似度加權。  \n- GraphSAGE 聚"
+  },
+  {
+    "date": "2026-10-30",
+    "stage1_topics": "**Stage 1：探索熱門議題（結構化摘要）**\n\n- **主題一：預測資訊最大化的好奇心探索**  \n  - **潛力**：高維連續控制環境中，利用預測資訊作為內在獎勵已證明能顯著加速稀疏獎勵任務，但缺乏統一理論與大規模基準。  \n  - **代表論文**：  \n    - *Predictive Information for Exploration in Continuous Control*（Alex Kim，NeurIPS 2025）  \n    - *InfoMaxRL: Unsupervised Exploration via Mutual Information Maximization*（Priya Singh，ICML 2026）  \n    - *Temporal Predictive Coding for Curiosity‑Driven Reinforcemen",
+    "final_proposal": "**研究痛點**  \n- 目前無監督技能發現多用靜態圖或單一能量模型，無法同步處理技能階層化與目標空間自適應映射。  \n- *Graph‑Structured Skill Discovery* (ICLR 2025) 的圖結構固定，對環境變化反應慢。  \n- *Energy‑Based Latent Goal Learning* (NeurIPS 2026) 只在單一目標空間學習，跨任務泛化受限。  \n\n**核心方法：HEGSL**  \n- **動態圖更新**：指數移動平均更新邊權 `A_t`，即時反映最近 `K` 步行動‑狀態對。  \n- **階層社群偵測**：雙層 Louvain 在節點嵌"
   }
 ]
