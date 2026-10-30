@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-17",
-    "stage1_topics": "**階層式路由的多層 MoE**  \n- 2025‑2026 仍屬探索階段，少數團隊嘗試兩層或三層門控，目標同時降低路由計算與提升專家利用率。  \n- 代表論文：  \n  - *Hierarchical Mixture of Experts for Scalable Language Modeling*（Yuan Li，ICLR 2026）  \n  - *Tree‑Structured MoE with Learnable Routing*（Mina Patel，NeurIPS 2025）  \n  - *Deep Hierarchical Gating for Efficient Transformer MoE*（Joon‑Hyuk Kim，arXiv 2025.12）  \n- 核心問題：  \n  - 如何保持全局資訊流，同時讓上層門控負責粗粒度分配、下層門控負責細粒度選擇，避免訊號衝突。",
-    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**：單層 MoE 在大模型中易出現路由偏移、專家利用率低，且缺乏不確定性感知，導致長序列或低資源語言下路由不穩定。  \n- **關鍵缺口**：需同時具備階層式路由、動態負載平衡與高效不確定性估計，並能在單張 24‑48 GB GPU 上實作。  \n- **核心方法 HUGR‑DSR**：  \n  1. **階層式路由**：兩層門控，粗粒度子樹選擇 + 子樹內 top‑k 專家。  \n  2. **不確定性加權**：變分網路估計 `sigma`，用 `1/sigma` 加權上層 logits，提升高置信度 token 的路由集中度。  \n"
-  },
-  {
     "date": "2026-10-18",
     "stage1_topics": "- **動態對稱群自適應等變 GNN**  \n  - 研究團隊少於十人，因現有等變 GNN 只固定於單一群（如 E(3)、SE(2)），難以處理時間變化的對稱性。  \n  - 代表論文：*Adaptive Symmetry Group Selection for Equivariant Graph Neural Networks*（ICLR 2026）、*Dynamic Equivariant Message Passing for Variable‑Symmetry Physical Systems*（NeurIPS 2025）、*Group‑Switching Equivariant Networks for Relational Reasoning*（arXiv 2025.12）。  \n  - 主要挑戰：自動辨識並切換最適對稱群；群切換導致梯度不連續性需平滑化；在大規模稀疏圖上維持等",
     "final_proposal": "- **研究痛點**：現有 LieDiff、SE(3)-Transformer 只能固定 SO(3) 或 SE(3)，無法同時處理局部旋轉與全局平移，導致高噪聲階段構型漂移；能量導向模型雖加入鍵長、鍵角約束，但仍使用統一群噪聲，計算成本高。  \n- **核心創新**：提出 Adaptive Energy‑Guided Equivariant Diffusion (AEGED)，在每一步根據局部幾何自動選擇 SO(3) 或 SE(3)，並同步加入可微分的分子力場能量懲罰。  \n- **關鍵模組**：  \n  - `GroupGate`（兩層 MLP + Gumbel‑Softmax）輸出邊的群概"
@@ -68,5 +63,10 @@
     "date": "2026-10-30",
     "stage1_topics": "**Stage 1：探索熱門議題（結構化摘要）**\n\n- **主題一：預測資訊最大化的好奇心探索**  \n  - **潛力**：高維連續控制環境中，利用預測資訊作為內在獎勵已證明能顯著加速稀疏獎勵任務，但缺乏統一理論與大規模基準。  \n  - **代表論文**：  \n    - *Predictive Information for Exploration in Continuous Control*（Alex Kim，NeurIPS 2025）  \n    - *InfoMaxRL: Unsupervised Exploration via Mutual Information Maximization*（Priya Singh，ICML 2026）  \n    - *Temporal Predictive Coding for Curiosity‑Driven Reinforcemen",
     "final_proposal": "**研究痛點**  \n- 目前無監督技能發現多用靜態圖或單一能量模型，無法同步處理技能階層化與目標空間自適應映射。  \n- *Graph‑Structured Skill Discovery* (ICLR 2025) 的圖結構固定，對環境變化反應慢。  \n- *Energy‑Based Latent Goal Learning* (NeurIPS 2026) 只在單一目標空間學習，跨任務泛化受限。  \n\n**核心方法：HEGSL**  \n- **動態圖更新**：指數移動平均更新邊權 `A_t`，即時反映最近 `K` 步行動‑狀態對。  \n- **階層社群偵測**：雙層 Louvain 在節點嵌"
+  },
+  {
+    "date": "2026-10-31",
+    "stage1_topics": "**Meta‑Learning 驅動的自適應路由 (Meta‑Routing for MoE)**  \n- **突破潛力**：傳統 MoE 以固定門控為主，難以在新任務或分布變化時快速調整；Meta‑Learning 允許在少量樣本下即時重構「哪裡」與「如何」選擇專家，為少數團隊開啟新方向。  \n- **代表論文**：  \n  - *Meta‑MoE: Meta‑Learned Routing for Few‑Shot Adaptation*（Jia Liu，ICLR 2025）  \n  - *Task‑Aware Expert Selection via Gradient‑Based Meta‑Learning*（Wei Zhang，NeurIPS 2025）  \n  - *Fast Adaptation of MoE via Hypernetwork‑Generated Gating*",
+    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 大型 MoE 在少樣本或快速變化任務上仍需大量微調，門控負載不均、梯度衝突嚴重（Zhang et al., NeurIPS 2025）。  \n  - Meta‑MoE、Hyper‑Gated MoE 引入元參數或超網路，但未利用任務間結構資訊；GraphMoE 只驗證單一大型任務，缺乏少樣本元學習能力（Liu et al., ICLR 2025；arXiv:2508.01345；Kim et al., ICML 2026）。  \n  - 因此，少樣本多任務環境下兼顧快速門控適應與任務圖共享的 MoE 尚未被充分探索。\n\n"
   }
 ]
