@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-19",
-    "stage1_topics": "- **後訓練語料庫隱蔽毒化**：大多數毒化手法僅改動極少樣本，傳統統計檢測難以發現；利用模型內部表徵的細微漂移可在不暴露原始資料的前提下提前偵測。  \n- 代表工作：  \n  - *Detecting Hidden Backdoors via Representation Drift in Large Language Models*（Aisha Patel，NeurIPS 2025）  \n  - *Post‑Training Poisoning Detection with Influence‑Based Metrics*（Rui Chen，ICLR 2026）  \n  - *Representation‑Based Anomaly Scoring for Data Poisoning*（Hao Lin，arXiv 2025.08.12）  \n- 核心問題：在高維隱層空間中定義穩健、可",
-    "final_proposal": "**研究痛點**  \n- 大型語言模型微調後易遭隱蔽資料毒化，攻擊者以極少量、動態觸發器混入資料。  \n- 代表性偵測方法（Patel 2025 Representation‑Drift、Chen 2026 Influence‑Based Metric、Li 2026 Adaptive Trigger）多聚焦單一訊號，對動態或低頻毒化召回率低。  \n\n**核心創新**  \n- **層級梯度‑影響序列融合偵測 (HGIF)**：同時捕捉梯度一致性與影響向量時間序列異常，並以貝式層次漂移校準統一門檻。  \n- **特徵收集**：每 epoch 透過 `GradCollector` 抽取梯度向量，`"
-  },
-  {
     "date": "2026-10-20",
     "stage1_topics": "**Stage 1：熱門議題概覽（300–500字）**\n\n- **自適應隨機神經常微分方程於湍流與高階流體模擬**  \n  - 研究人數不足十人，潛在服務航空、氣候模擬等高價值產業。  \n  - 代表論文：  \n    - *Stochastic Neural PDEs for Turbulent Flow Modeling*（Yuan Li，NeurIPS 2025）  \n    - *Adaptive Noise Injection in Neural SDEs for Large‑Eddy Simulation*（Mikael Sørensen，ICLR 2026，arXiv:2603.01478）  \n    - *Learning Scale‑Aware Stochastic Forcing in Continuous‑Time Fluid Nets*（Ananya Gupta",
     "final_proposal": "**研究痛點與背景**  \n- 現代科學資料（天文光譜、基因表達、氣候模擬）高維、稀疏、多模態，傳統 deterministic CNF 會因缺乏隨機性而產生模式崩解或過度平滑。  \n- 近期 S‑CNF（Jin‑Ho Park, NeurIPS 2025）與 Stochastic Bridge（Léa Moreau, ICLR 2026）雖能捕捉局部不確定性，但噪聲尺度固定、梯度方差仍高。  \n- 需自適應噪聲課程 + 雙重控制變量，才能在單張 24‑48 GB GPU 上穩定、快速學習高維科學分布。\n\n**核心研究方法 – ACSB‑DCV**  \n- **噪聲課程**：σ(t) 由 σ_"
@@ -68,5 +63,10 @@
     "date": "2026-11-01",
     "stage1_topics": "**主題一: 異質群對稱的自動發現與適應**  \n- 為何不飽和但有突破潛力：目前大多數等變模型只能處理單一連續或離散群，缺乏同時學習混合對稱（例如旋轉 + 鏡射 + 離散排列）的機制，這為跨領域幾何資料（化學、機械、社交網路）提供了未被開發的空間。  \n- 代表 paper  \n  - *Learning Mixed Continuous‑Discrete Symmetries in Graph Neural Networks*，第一作者 **Hao Wu**，ICLR 2025。  \n  - *Adaptive Group Selection for Equivariant Transformers*，第一作者 **Maya Patel**，NeurIPS 2025。  \n  - *Group‑Agnostic Equivariant Architectures via Neural ",
     "final_proposal": "- **研究痛點**：現實幾何資料同時具備連續旋轉、鏡射與離散置換等多重對稱，現有等變模型多限於單一群，無法自動辨識混合群，導致跨領域任務表現受限。  \n- **缺陷舉例**：  \n  - *Learning Mixed Continuous‑Discrete Symmetries in Graph Neural Networks*（ICLR 2025）僅在小規模合成圖上示範，缺乏大規模訓練策略。  \n  - *Adaptive Group Selection for Equivariant Transformers*（NeurIPS 2025）使用硬式群選擇，無法在訓練中動態調整群貢獻。  "
+  },
+  {
+    "date": "2026-11-02",
+    "stage1_topics": "**Stage 1：探索熱門議題（因果追蹤式資料毒化辨識、流式持續學習中的適應性資料毒化、模型自我修改的隱蔽後門與認證防禦）**\n\n- **主題一：因果追蹤式資料毒化辨識**  \n  - 研究缺口：傳統方法聚焦統計異常或表徵漂移，未能定位「哪筆訓練樣本導致特定錯誤」的因果來源。  \n  - 代表工作：  \n    - *Causal Tracing of Data Poisoning in Large Language Models*（Hao Liu，ICLR 2026）  \n    - *Graphical Influence Modeling for Poisoned Sample Identification*（Rina Kumar，NeurIPS 2025）  \n    - *Counterfactual Data Attribution for Post‑Training Poi",
+    "final_proposal": "- **研究痛點**：大型語言模型在持續學習中易被少量惡意樣本植入時間性後門（*Continual Poisoning Attacks and Defenses in Streaming Language Models*，ICML 2025）。現有防禦要麼導致遺忘，要麼計算成本過高。  \n- **缺口**：缺少即時、低成本且具因果解釋的防禦機制，能在 24‑48 GB GPU 上對上億參數模型進行持續毒化檢測與校正。  \n- **核心框架**：因果影響梯度＋元圖自適應防禦（CIGS‑MCGA），結合「因果影響梯度篩選」與「元學習式因果圖結構自適應」。  \n- **關鍵流程**：  \n  1. "
   }
 ]
