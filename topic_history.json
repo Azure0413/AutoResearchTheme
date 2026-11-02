@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-20",
-    "stage1_topics": "**Stage 1：熱門議題概覽（300–500字）**\n\n- **自適應隨機神經常微分方程於湍流與高階流體模擬**  \n  - 研究人數不足十人，潛在服務航空、氣候模擬等高價值產業。  \n  - 代表論文：  \n    - *Stochastic Neural PDEs for Turbulent Flow Modeling*（Yuan Li，NeurIPS 2025）  \n    - *Adaptive Noise Injection in Neural SDEs for Large‑Eddy Simulation*（Mikael Sørensen，ICLR 2026，arXiv:2603.01478）  \n    - *Learning Scale‑Aware Stochastic Forcing in Continuous‑Time Fluid Nets*（Ananya Gupta",
-    "final_proposal": "**研究痛點與背景**  \n- 現代科學資料（天文光譜、基因表達、氣候模擬）高維、稀疏、多模態，傳統 deterministic CNF 會因缺乏隨機性而產生模式崩解或過度平滑。  \n- 近期 S‑CNF（Jin‑Ho Park, NeurIPS 2025）與 Stochastic Bridge（Léa Moreau, ICLR 2026）雖能捕捉局部不確定性，但噪聲尺度固定、梯度方差仍高。  \n- 需自適應噪聲課程 + 雙重控制變量，才能在單張 24‑48 GB GPU 上穩定、快速學習高維科學分布。\n\n**核心研究方法 – ACSB‑DCV**  \n- **噪聲課程**：σ(t) 由 σ_"
-  },
-  {
     "date": "2026-10-21",
     "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **因果回路檢測與干預式探測**  \n  - 研究人數不足 15 組，缺乏成熟基準與公開工具箱，突破空間大。  \n  - 代表論文：NeurIPS 2025 *Causal Circuit Discovery in Transformers via Interventional Probing*；NeurIPS 2026 *Counterfactual Activation Analysis for Neural Loop Detection*；arXiv 2025.11.03 *Graphical Causal Modeling of Internal Attention Dynamics*。  \n  - 核心問題：設計低成本、可擴展的激活干預；缺乏統一的回路重要性度量與穩定性評估；目前圖形化僅捕捉局部回路，無全模型因果圖譜。  \n\n- **自",
     "final_proposal": "**研究提案摘要（約 400 字）**\n\n- **痛點與背景**  \n  - 大型 Transformer 雖表現優秀，但因果回路與模組化結構仍為「黑盒」。  \n  - 近期 NeurIPS 2025/2026 研究證明單點干預能揭露局部迴路，但成本高且無全模型因果圖；ICLR 2026、ICML 2025 的自監督模組化學習語意不穩定，缺乏因果依賴量化。  \n  - 需求：可擴展因果度量、穩定模組分解、低成本頻譜正則化的統一框架，適用於 24‑48 GB GPU。\n\n- **核心方法：Differentiable Causal Modular Graph (DCMG)**  \n  - **G"
@@ -68,5 +63,10 @@
     "date": "2026-11-02",
     "stage1_topics": "**Stage 1：探索熱門議題（因果追蹤式資料毒化辨識、流式持續學習中的適應性資料毒化、模型自我修改的隱蔽後門與認證防禦）**\n\n- **主題一：因果追蹤式資料毒化辨識**  \n  - 研究缺口：傳統方法聚焦統計異常或表徵漂移，未能定位「哪筆訓練樣本導致特定錯誤」的因果來源。  \n  - 代表工作：  \n    - *Causal Tracing of Data Poisoning in Large Language Models*（Hao Liu，ICLR 2026）  \n    - *Graphical Influence Modeling for Poisoned Sample Identification*（Rina Kumar，NeurIPS 2025）  \n    - *Counterfactual Data Attribution for Post‑Training Poi",
     "final_proposal": "- **研究痛點**：大型語言模型在持續學習中易被少量惡意樣本植入時間性後門（*Continual Poisoning Attacks and Defenses in Streaming Language Models*，ICML 2025）。現有防禦要麼導致遺忘，要麼計算成本過高。  \n- **缺口**：缺少即時、低成本且具因果解釋的防禦機制，能在 24‑48 GB GPU 上對上億參數模型進行持續毒化檢測與校正。  \n- **核心框架**：因果影響梯度＋元圖自適應防禦（CIGS‑MCGA），結合「因果影響梯度篩選」與「元學習式因果圖結構自適應」。  \n- **關鍵流程**：  \n  1. "
+  },
+  {
+    "date": "2026-11-03",
+    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **風險感知神經隨機微分方程（R‑Neural‑SDE）在機器人控制**  \n  - 研究團隊人數 <10，缺乏標準基準。  \n  - 代表論文：  \n    - *Risk‑Aware Neural SDE Controllers for Legged Robots* (NeurIPS 2025, arXiv:2503.11247)  \n    - *Stochastic Differential Reinforcement Learning with Safety Constraints* (ICLR 2026, arXiv:2601.04589)  \n    - *Probabilistic Reachability via Neural SDEs for Autonomous Driving* (ICML 2025, arXiv:251",
+    "final_proposal": "- **研究痛點**：現有 *Risk‑Aware Neural SDE Controllers*（NeurIPS 2025）與 *Probabilistic Reachability via Neural SDEs*（ICML 2025）在高維連續控制上需大量 Monte‑Carlo，梯度方差大；連續正規化流（ICLR 2026、NeurIPS 2025）在多模態高維資料上步長爆炸，缺少安全約束。  \n- **目標**：提出同時保證安全風險上界與計算效率的連續時間模型，能在單張 24‑48 GB GPU 上即時訓練與推論。  \n- **核心方法 RA‑CNF**：結合 Risk‑Bounde"
   }
 ]
