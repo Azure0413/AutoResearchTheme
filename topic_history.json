@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-23",
-    "stage1_topics": "**Stage 1 – 熱門議題概覽（約 400 字）**\n\n- **自我校正推理 (Self‑Verification)**\n  - 目前僅約 10 團隊實驗，缺乏成熟基準與效能權衡。  \n  - 代表論文：  \n    - *Self‑Verification for Large Language Models*（Yuan Chen，ICLR 2025）  \n    - *VeriLLM: On‑the‑fly Consistency Checking in LLMs*（Aisha Patel，NeurIPS 2025）  \n    - *Iterative Self‑Refinement via Program Synthesis*（Luca Rossi，arXiv 2026.0402）  \n  - 核心問題：  \n    - 如何在不顯著增加推理延遲的情況下，生成可驗證中間證據並自",
-    "final_proposal": "- **痛點**：現有 Self‑Verification 只在單點驗證，延遲大且缺乏與推理圖動態耦合；Adaptive Reasoning Graphs 依賴固定預算，無法保證最有價值子圖被探索，導致「早期錯誤放大」與「資源浪費」。\n\n- **核心架構 LV‑GPE**：層級自驗證 + 圖形化預算化擴展。每層生成後即用 300 M 參數輕量驗證子模型計算層級一致性分數（語意相似度+程式化證據），作為 MCTS 節點價值；MCTS 在預算 B（≈30 節點）內選擇最能提升正確率的子圖，重複至終止條件。\n\n- **技術細節**：主模型保留語言建模損失；驗證子模型二元交叉熵訓練，正例來自 Veri"
-  },
-  {
     "date": "2026-10-24",
     "stage1_topics": "**階層式物件中心狀態空間模型**  \n- 目前多數模型僅單層「slot」分割，缺乏部件‑組件、群組‑個體等層級關係；結合層級 slot 與長序列狀態空間網路可提升長時間視覺規劃精度。  \n- 代表論文：  \n  - *Hierarchical Object‑Centric World Models for Long‑Term Video Prediction* (Lin Zhao, NeurIPS 2025)  \n  - *Object‑Structured State Space Networks* (Maya Patel, ICLR 2026)  \n  - *Deep Hierarchical Slot Attention for Video Modeling* (Jian‑Wei Liu, arXiv 2025.11)  \n- 核心問題：多層 slot 的同時分割與演化學習、長期預",
     "final_proposal": "- **研究痛點**：現有即時可微分因果圖（如 *Online Causal Graph Discovery for Reinforcement Learning Agents*，ICML 2025）只能更新單層結構，無法同時捕捉長期規劃所需的層級物件關係；層級 slot 模型（*Hierarchical Object‑Centric World Models for Long‑Term Video Prediction*，NeurIPS 2025）雖提升預測精度，但圖結構靜態，缺乏即時調整。  \n- **核心方法**：提出 **Hierarchical Adaptive Causal Gra"
@@ -68,5 +63,10 @@
     "date": "2026-11-05",
     "stage1_topics": "**多尺度狀態空間模型 (MSSN)**  \n- 目前 SSM 主要處理單一時間尺度，難以同時捕捉秒級與日級依賴，對長期氣候與多層金融序列關鍵。  \n- 代表工作：*Multi‑Scale State‑Space Networks for Hierarchical Sequence Modeling* (NeurIPS 2025)、*Adaptive Inter‑Scale Coupling in Hierarchical SSMs* (ICLR 2026)、*Learning Cross‑Scale Dynamics with Structured State‑Space Blocks* (arXiv:2509.04123)。  \n- 核心問題：在保持線性時間複雜度的同時設計可學習的跨層訊號傳遞與回饋；跨尺度參數共享與正則化理論尚未完整，易於過擬合。  \n\n**閘控線性遞迴單元 (GLR",
     "final_proposal": "**研究痛點與背景**  \n- 現實長序列（氣候、金融、基因）同時具秒級快速變化與日/季節慢速趨勢，單尺度 SSM（如 Mamba）只能捕捉局部相關，導致 ERA5 氣象預測與 NASDAQ 多日走勢 RMSE 高 15%+。  \n- 直線性遞迴缺少門控，對突變點（感測器故障、金融劇烈波動）MSE 進一步上升 20%（ICML 2025）。  \n- 固定隨機特徵在稀疏高維資料上表現不穩，基因序列 1M 令牌 Top‑1 準確率低 4%（NeurIPS 2025）。  \n- 目前實作在單卡 24‑48 GB GPU 上仍超出記憶體與 FLOPs 限制。\n\n**核心研究方法 – HAG‑SSN**"
+  },
+  {
+    "date": "2026-11-06",
+    "stage1_topics": "**主題一：測試時計算資源與推理深度的動態伸縮律**  \n- **突破潛力**：缺乏量化「推理步數」與「即時算力」關係的理論與基準，若揭示伸縮律可在不增參數的前提下提升效能。  \n- **代表工作**：  \n  - *Inference Compute Frontier for Reasoning Transformers* (NeurIPS 2025, Lina Kong)  \n  - *Dynamic Reasoning Paths via Adaptive Compute Allocation* (ICLR 2026, Ravi Patel)  \n  - *Scaling Laws for Test‑time Computation in Chain‑of‑Thought Models* (arXiv 2604.01234, Mei‑Lin Hsu)  \n- **核心問題**：  \n",
+    "final_proposal": "**研究痛點與背景**  \n- 多步推理模型多停留於固定步數或單步 RLHF，缺乏動態算力分配與步驟級自我驗證。  \n- NeurIPS 2025《Inference Compute Frontier for Reasoning Transformers》與《Reward Modeling for Structured Logical Chains》僅提供靜態獎勵，無即時調整機制。  \n- 需一套能預測剩餘計算需求、即時驗證每一步、並在必要時自適應終止或重生成的完整框架。\n\n**核心方法 – ACV（Adaptive Compute‑Verify）**  \n- **步數預測器**：兩層前饋，輸"
   }
 ]
