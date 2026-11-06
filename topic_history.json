@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-24",
-    "stage1_topics": "**階層式物件中心狀態空間模型**  \n- 目前多數模型僅單層「slot」分割，缺乏部件‑組件、群組‑個體等層級關係；結合層級 slot 與長序列狀態空間網路可提升長時間視覺規劃精度。  \n- 代表論文：  \n  - *Hierarchical Object‑Centric World Models for Long‑Term Video Prediction* (Lin Zhao, NeurIPS 2025)  \n  - *Object‑Structured State Space Networks* (Maya Patel, ICLR 2026)  \n  - *Deep Hierarchical Slot Attention for Video Modeling* (Jian‑Wei Liu, arXiv 2025.11)  \n- 核心問題：多層 slot 的同時分割與演化學習、長期預",
-    "final_proposal": "- **研究痛點**：現有即時可微分因果圖（如 *Online Causal Graph Discovery for Reinforcement Learning Agents*，ICML 2025）只能更新單層結構，無法同時捕捉長期規劃所需的層級物件關係；層級 slot 模型（*Hierarchical Object‑Centric World Models for Long‑Term Video Prediction*，NeurIPS 2025）雖提升預測精度，但圖結構靜態，缺乏即時調整。  \n- **核心方法**：提出 **Hierarchical Adaptive Causal Gra"
-  },
-  {
     "date": "2026-10-25",
     "stage1_topics": "**主題一：動態神經架構搜尋驅動的持續學習**  \n- 仍處於探索階段，團隊人數不足二十人，重點在自動調整模型容量以應對新任務，避免參數過度堆疊或過早壓縮。  \n- 代表論文：  \n  - 《Dynamic Neural Architecture Search for Task‑Agnostic Continual Learning》, Minghao Zhou, ICLR 2025  \n  - 《Adaptive Capacity Allocation via Gradient‑Based NAS in Lifelong Vision Systems》, Lina Wu, NeurIPS 2025  \n  - 《Efficient Architecture Evolution for Continual Reinforcement Learning》, Jae‑Hyun Kim, arX",
     "final_proposal": "- **痛點**：差分隱私回放（如 *Privacy‑Preserving Generative Replay*, NeurIPS 2025）隨噪聲增大樣本多樣性急降；動態 NAS 在持續學習中缺乏隱私結合，模型顯存過高。  \n- **提案**：層級差分隱私自適應結構回放（HDPAR），結合分層噪聲注入與梯度基 NAS，實現隱私與效能最佳平衡。  \n- **分層噪聲**：先在潛在向量 `z` 加粗粒度噪聲 σ₁，再於每層特徵圖加細粒度噪聲 σ₂；ε 由動態預算分配器根據遺忘指標自適應調整。  \n- **NAS 壓縮**：在生成過程中搜尋最小化顯存與 FLOPs 的子網路 `S_t`，生成器與主"
@@ -68,5 +63,10 @@
     "date": "2026-11-06",
     "stage1_topics": "**主題一：測試時計算資源與推理深度的動態伸縮律**  \n- **突破潛力**：缺乏量化「推理步數」與「即時算力」關係的理論與基準，若揭示伸縮律可在不增參數的前提下提升效能。  \n- **代表工作**：  \n  - *Inference Compute Frontier for Reasoning Transformers* (NeurIPS 2025, Lina Kong)  \n  - *Dynamic Reasoning Paths via Adaptive Compute Allocation* (ICLR 2026, Ravi Patel)  \n  - *Scaling Laws for Test‑time Computation in Chain‑of‑Thought Models* (arXiv 2604.01234, Mei‑Lin Hsu)  \n- **核心問題**：  \n",
     "final_proposal": "**研究痛點與背景**  \n- 多步推理模型多停留於固定步數或單步 RLHF，缺乏動態算力分配與步驟級自我驗證。  \n- NeurIPS 2025《Inference Compute Frontier for Reasoning Transformers》與《Reward Modeling for Structured Logical Chains》僅提供靜態獎勵，無即時調整機制。  \n- 需一套能預測剩餘計算需求、即時驗證每一步、並在必要時自適應終止或重生成的完整框架。\n\n**核心方法 – ACV（Adaptive Compute‑Verify）**  \n- **步數預測器**：兩層前饋，輸"
+  },
+  {
+    "date": "2026-11-07",
+    "stage1_topics": "- **因果物件互動世界模型**  \n  - 目前多數物件中心模型僅捕捉統計相關性，缺乏「干預」推理能力，仍屬少數研究領域。  \n  - 代表工作：*Causal Object Interaction Networks for Long‑Horizon Video Prediction* (NeurIPS 2025), *Intervention‑Aware Object‑Centric World Models* (ICLR 2026), *Learning Causal Graphs of Object Relations from Unlabeled Video* (arXiv 2025)。  \n  - 核心挑戰：在無標註干預訊號下自動發現因果圖、可微分動態更新以支援長期規劃、跨場景因果遷移缺乏驗證基準。  \n\n- **記憶高效長時序狀態空間影片模型**  \n  - 目前狀態空間模型",
+    "final_proposal": "- **研究痛點**  \n  - 目前物件中心模型僅學統計相關性，無法在長時序影片中即時推理干預與因果傳遞（NeurIPS 2025《Causal Object Interaction Networks》）。  \n  - 記憶與計算瓶頸仍限制分鐘級高解析度影片建模（NeurIPS 2025《Memory‑Efficient State‑Space Transformers》）。  \n  - 先前將圖卷積嵌入 State‑Space（如 CAGC）在噪聲影片失效，缺乏結構化先驗與自適應稀疏化。\n\n- **核心方法 – CHM‑S4**  \n  - **分層 Chunk 記憶**：可變長度 chu"
   }
 ]
