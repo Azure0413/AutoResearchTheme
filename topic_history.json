@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-25",
-    "stage1_topics": "**主題一：動態神經架構搜尋驅動的持續學習**  \n- 仍處於探索階段，團隊人數不足二十人，重點在自動調整模型容量以應對新任務，避免參數過度堆疊或過早壓縮。  \n- 代表論文：  \n  - 《Dynamic Neural Architecture Search for Task‑Agnostic Continual Learning》, Minghao Zhou, ICLR 2025  \n  - 《Adaptive Capacity Allocation via Gradient‑Based NAS in Lifelong Vision Systems》, Lina Wu, NeurIPS 2025  \n  - 《Efficient Architecture Evolution for Continual Reinforcement Learning》, Jae‑Hyun Kim, arX",
-    "final_proposal": "- **痛點**：差分隱私回放（如 *Privacy‑Preserving Generative Replay*, NeurIPS 2025）隨噪聲增大樣本多樣性急降；動態 NAS 在持續學習中缺乏隱私結合，模型顯存過高。  \n- **提案**：層級差分隱私自適應結構回放（HDPAR），結合分層噪聲注入與梯度基 NAS，實現隱私與效能最佳平衡。  \n- **分層噪聲**：先在潛在向量 `z` 加粗粒度噪聲 σ₁，再於每層特徵圖加細粒度噪聲 σ₂；ε 由動態預算分配器根據遺忘指標自適應調整。  \n- **NAS 壓縮**：在生成過程中搜尋最小化顯存與 FLOPs 的子網路 `S_t`，生成器與主"
-  },
-  {
     "date": "2026-10-26",
     "stage1_topics": "**主題一：受旋轉子約束的離散擴散於蛋白質側鏈設計**  \n- 研究人數不足十人，因旋轉子離散空間高維且需同時滿足鍵長、二面角與電荷平衡。  \n- 代表論文：  \n  - 《Rotamer‑Aware Discrete Diffusion for Protein Structure Generation》, ICLR 2026, arXiv:2503.01427  \n  - 《Discrete Diffusion on Protein Side‑Chain Graphs with Chemical Validity Guarantees》, NeurIPS 2025, arXiv:2511.06789  \n  - 《Energy‑Guided Rotamer Sampling via Discrete Diffusion》, ICML 2025, arXiv:2508.04312  \n- ",
     "final_proposal": "**研究提案關鍵摘要（300–500字）**\n\n- **研究痛點**  \n  - 蛋白質側鏈設計需在離散高維旋轉子空間中滿足鍵長、二面角與電荷平衡。  \n  - 目前離散擴散多用隨機翻轉噪聲，合法率僅 80‑85%（《Rotamer‑Aware Discrete Diffusion for Protein Structure Generation》ICLR 2026），大型蛋白推論步數過多，時間>10 s（《Discrete Diffusion on Protein Side‑Chain Graphs with Chemical Validity Guarantees》NeurIPS 2025"
@@ -68,5 +63,10 @@
     "date": "2026-11-07",
     "stage1_topics": "- **因果物件互動世界模型**  \n  - 目前多數物件中心模型僅捕捉統計相關性，缺乏「干預」推理能力，仍屬少數研究領域。  \n  - 代表工作：*Causal Object Interaction Networks for Long‑Horizon Video Prediction* (NeurIPS 2025), *Intervention‑Aware Object‑Centric World Models* (ICLR 2026), *Learning Causal Graphs of Object Relations from Unlabeled Video* (arXiv 2025)。  \n  - 核心挑戰：在無標註干預訊號下自動發現因果圖、可微分動態更新以支援長期規劃、跨場景因果遷移缺乏驗證基準。  \n\n- **記憶高效長時序狀態空間影片模型**  \n  - 目前狀態空間模型",
     "final_proposal": "- **研究痛點**  \n  - 目前物件中心模型僅學統計相關性，無法在長時序影片中即時推理干預與因果傳遞（NeurIPS 2025《Causal Object Interaction Networks》）。  \n  - 記憶與計算瓶頸仍限制分鐘級高解析度影片建模（NeurIPS 2025《Memory‑Efficient State‑Space Transformers》）。  \n  - 先前將圖卷積嵌入 State‑Space（如 CAGC）在噪聲影片失效，缺乏結構化先驗與自適應稀疏化。\n\n- **核心方法 – CHM‑S4**  \n  - **分層 Chunk 記憶**：可變長度 chu"
+  },
+  {
+    "date": "2026-11-08",
+    "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **超網路驅動的功能參數生成與終身學習**  \n  - 目標：用超網路即時產生新任務完整參數，避免參數膨脹與遺忘。  \n  - 代表論文：  \n    - 《HyperCL: Hypernetwork‑Based Continual Learning with Functional Regularization》 (Yuan Li, ICLR 2025)  \n    - 《Task‑Conditional Hypernetworks for Lifelong Reinforcement Learning》 (Mikael Sørensen, NeurIPS 2025, arXiv:2508.04112)  \n    - 《Dynamic Parameter Generation for Continual Vision Mod",
+    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 終身學習需即時產生任務專屬權重，避免參數衝突與遺忘。  \n  - 現有超網路（*HyperCL* ICLR 2025、*Task‑Conditional Hypernetworks for Lifelong RL* NeurIPS 2025）功能分離不足，遺忘率>15%。  \n  - 計算與記憶開銷高：完整權重生成需大型 MLP，顯存>20 GB，難以單卡部署。  \n  - *Dynamic Parameter Generation for Continual Vision Models* ICML 2026 雖輕量化，"
   }
 ]
