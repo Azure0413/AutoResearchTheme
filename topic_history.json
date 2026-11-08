@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-26",
-    "stage1_topics": "**主題一：受旋轉子約束的離散擴散於蛋白質側鏈設計**  \n- 研究人數不足十人，因旋轉子離散空間高維且需同時滿足鍵長、二面角與電荷平衡。  \n- 代表論文：  \n  - 《Rotamer‑Aware Discrete Diffusion for Protein Structure Generation》, ICLR 2026, arXiv:2503.01427  \n  - 《Discrete Diffusion on Protein Side‑Chain Graphs with Chemical Validity Guarantees》, NeurIPS 2025, arXiv:2511.06789  \n  - 《Energy‑Guided Rotamer Sampling via Discrete Diffusion》, ICML 2025, arXiv:2508.04312  \n- ",
-    "final_proposal": "**研究提案關鍵摘要（300–500字）**\n\n- **研究痛點**  \n  - 蛋白質側鏈設計需在離散高維旋轉子空間中滿足鍵長、二面角與電荷平衡。  \n  - 目前離散擴散多用隨機翻轉噪聲，合法率僅 80‑85%（《Rotamer‑Aware Discrete Diffusion for Protein Structure Generation》ICLR 2026），大型蛋白推論步數過多，時間>10 s（《Discrete Diffusion on Protein Side‑Chain Graphs with Chemical Validity Guarantees》NeurIPS 2025"
-  },
-  {
     "date": "2026-10-27",
     "stage1_topics": "**主題一：自適應 KV 快取壓縮與可微分編碼器**  \n- 研究聚焦於「推論時動態調整 KV 快取位寬與稀疏模式」；目前僅少數團隊，缺乏大型基準。  \n- 代表論文：  \n  - *Adaptive KV‑Cache Quantization via Learned Codebooks* (NeurIPS 2025, arXiv:2506.01432)  \n  - *Differentiable Cache Sparsification for Long‑Context Transformers* (ICLR 2026, arXiv:2603.02111)  \n  - *Meta‑Learned Cache Bit‑Allocation for Efficient Autoregressive Decoding* (ICML 2025, arXiv:2511.08907)  \n- 核心問",
     "final_proposal": "- **研究痛點**：大語言模型在 8k‑token 以上長上下文時，KV 快取與注意力計算呈指數增長，單張 24‑48 GB GPU 難以實時推論。  \n- **現有技術缺陷**：  \n  - *Adaptive KV‑Cache Quantization via Learned Codebooks*（NeurIPS 2025）單層 8‑bit 量化減少 20% 帶寬，但長文本稀疏區段匹配精度下降，PPL 可能上升 1.5%。  \n  - *Dynamic Confidence‑Weighted Draft Fusion*（NeurIPS 2025）採全局置信度門檻，無法細粒度控制低信心段落"
@@ -68,5 +63,10 @@
     "date": "2026-11-08",
     "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **超網路驅動的功能參數生成與終身學習**  \n  - 目標：用超網路即時產生新任務完整參數，避免參數膨脹與遺忘。  \n  - 代表論文：  \n    - 《HyperCL: Hypernetwork‑Based Continual Learning with Functional Regularization》 (Yuan Li, ICLR 2025)  \n    - 《Task‑Conditional Hypernetworks for Lifelong Reinforcement Learning》 (Mikael Sørensen, NeurIPS 2025, arXiv:2508.04112)  \n    - 《Dynamic Parameter Generation for Continual Vision Mod",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 終身學習需即時產生任務專屬權重，避免參數衝突與遺忘。  \n  - 現有超網路（*HyperCL* ICLR 2025、*Task‑Conditional Hypernetworks for Lifelong RL* NeurIPS 2025）功能分離不足，遺忘率>15%。  \n  - 計算與記憶開銷高：完整權重生成需大型 MLP，顯存>20 GB，難以單卡部署。  \n  - *Dynamic Parameter Generation for Continual Vision Models* ICML 2026 雖輕量化，"
+  },
+  {
+    "date": "2026-11-09",
+    "stage1_topics": "**Stage 1 – 熱門議題概覽（結構化摘要）**\n\n- **主題一：AST 離散擴散於程式碼合成與自動修復**  \n  - 目前僅少數團隊將離散擴散直接應用於結構化程式語法；AST 節點的高維離散空間缺乏可微噪聲設計與逆向抽樣策略。  \n  - 代表工作：  \n    - 《Discrete Diffusion over Abstract Syntax Trees for Program Generation》 (Yuan Zhang, ICLR 2025, arXiv:2502.01873)  \n    - 《TreeFlow: Flow Matching on Structured Code Graphs》 (Mia Liu, NeurIPS 2025, arXiv:2511.04512)  \n    - 《Syntax‑Guided Discrete Diffusion for",
+    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**：  \n  - 《Discrete Diffusion over Abstract Syntax Trees》ICLR 2025 的噪聲設計過於隨機，導致語義破壞頻發，抽樣需大量回溯。  \n  - 《TreeFlow: Flow Matching on Structured Code Graphs》NeurIPS 2025 雖加速抽樣，但以單一全局向量場處理整棵 AST，忽略深層子樹長程依賴，仍出現語法違規。  \n\n- **核心創新**：Adaptive Hierarchical Flow Diffusion (AHFD)。  \n  "
   }
 ]
