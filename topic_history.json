@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-28",
-    "stage1_topics": "**主題一：逆向設計固態電解質的可解釋生成模型**  \n- 研究團隊少於百人，結合高效生成模型與材料物理約束尚未形成成熟基準，具突破性空間。  \n- 代表論文：  \n  - *Physics‑Guided Diffusion for Solid‑State Electrolyte Discovery* (Jia‑Wei Chen, ICLR 2025)  \n  - *Inverse Design of Lithium Superionic Conductors via Conditional Generative Flow* (Maya Patel, NeurIPS 2025)  \n  - *Explainable Generative Models for Battery Materials* (Luis Gómez, arXiv 2509.01234, 2025)  \n- 核心技術問題",
-    "final_proposal": "- **痛點**：固態電解質需同時具備高離子導電率、寬帶隙與熱力學穩定性；現有逆向設計（Physics‑Guided Diffusion、Conditional Generative Flow）僅以後置分析提供結構解釋，硬性多目標符合率低於 60%，且易產生不可行樣本。  \n- **創新框架**：Physics‑Lagrangian Explainable Flow (PLE‑Flow)  \n  - **拉格朗日校正子網**：在每層逆向映射後即時將暫時結構拉回物理可行域，直接加入硬性物理損失。  \n  - **結構注意力層**：輸出原子配位熱圖，作為即時可解釋資訊，參考已知高性能電解質的注意力"
-  },
-  {
     "date": "2026-10-29",
     "stage1_topics": "- **自組織層級技能樹與跨域遷移**  \n  - 目前僅少數工作能同時自動構建多層次技能結構並直接遷移，缺乏可擴展基準與統一框架。  \n  - 代表論文：*Learning Hierarchical Skill Trees via Self‑Supervised Exploration*（NeurIPS 2025）、*Cross‑Domain Skill Transfer through Meta‑Tree Alignment*（ICML 2026）、*Self‑Organizing Skill Graphs for Long‑Horizon Planning*（arXiv:2509.04123）。  \n  - 核心問題：無標籤環境下自發辨識層級結構、跨域映射缺乏理論保證、評測平台單一，缺少跨模態、跨物理引擎測試。  \n\n- **逆向強化學習驅動的零樣本工具創造**  \n  - IRL ",
     "final_proposal": "**研究痛點**  \n- S‑SG 只能在單一模擬環境學得固定長度窗口，導致技能碎片化（NeurIPS 2025）。  \n- Meta‑Tree Alignment 仍依賴手工相似度，缺乏跨物理引擎保證（ICML 2026）。  \n- 零樣本工具 IRL 受動力學落差影響，真機失敗率高（ICLR 2026）。  \n\n**核心方法 PH‑SDT**  \n- 結合動態時間窗口生成（DTGP）與物理導向獎勵塑形（PGRS）。  \n- RNN 產生可變窗口 `w_t`，並輸出平滑正則 `L_reg`。  \n- 在窗口內構建暫態圖 `G_t`，以時間距離與狀態相似度加權。  \n- GraphSAGE 聚"
@@ -68,5 +63,10 @@
     "date": "2026-11-10",
     "stage1_topics": "- **自適應提案模型的階層式推測解碼**  \n  - 目前僅有少數研究在單層提案模型上實驗，缺乏根據輸入難度動態切換或組合多層提案模型的系統化方法。  \n  - 代表論文：*Hierarchical Adaptive Proposal Speculative Decoding*（Yuan Liu，ICLR 2026，arXiv:2603.04512）；*Difficulty‑Aware Speculative Decoding with Multi‑Stage Proposers*（Mina Patel，NeurIPS 2025，arXiv:2509.07854）；*Learning When to Trust a Fast Decoder*（Jae‑Woo Kim，ICML 2025，arXiv:2512.01987）。  \n  - 核心問題：在不顯著增加前向傳播成本的前提下，快速評估",
     "final_proposal": "- **研究痛點**：階層式投射式解碼只能在全局層級切換 fast/accurate，長序列仍冗餘；動態稀疏注意力（Sink‑Free Transformers, NeurIPS 2025）在變長序列與多任務下不穩定；代幣圖路由（Token Graph Routing, ICML 2026）推論即時構圖開銷高，缺乏系統化重計算策略。  \n- **缺口**：缺少「動態稀疏 + 難度感知 + 圖路由」統一框架，能在單卡 24‑48 GB GPU 上同時降低 FLOPs、記憶體與延遲，保持或提升生成品質。  \n- **核心方法 GHASD**：圖驅動的階層式難度感知稀疏解碼。每生成步驟同步估計 to"
+  },
+  {
+    "date": "2026-11-11",
+    "stage1_topics": "**主題一：等變圖神經網路預測量子化學波函數**  \n- 研究動機：目前僅少數團隊將點群等變性嚴格嵌入波函數模型，缺乏在大型分子與固態系統上同時保證化學精度與可擴展性的基準。  \n- 代表論文：  \n  - *Equivariant Graph Neural Ansatz for Molecular Wavefunctions*（Yuan Zhou，NeurIPS 2025）  \n  - *Symmetry‑Preserving Neural Quantum States*（Lina Patel，ICLR 2026）  \n  - *Scalable Equivariant QML for Periodic Materials*（arXiv:2508.04123，2025）  \n- 核心技術挑戰：① 在保持等變性的前提下設計高效參數化策略，避免指數級計算成本；② 在實際化學計算流程中將此類模",
+    "final_proposal": "- **研究痛點**  \n  - 等變圖神經網路（如 *Equivariant Graph Neural Ansatz for Molecular Wavefunctions*，NeurIPS 2025）雖能在小分子達化學精度，但在千原子或週期性固體上成本指數級。  \n  - 傳統基底僵硬（徑向基函/平面波）缺乏自適應，導致高低對稱系統表現差異大。  \n  - 高階波函數標籤（CCSD(T)、FCI）稀缺，直接監督訓練易過擬合。  \n  - 以上缺陷亦在 *Symmetry‑Preserving Neural Quantum States*（ICLR 2026）與 *Scalable Equi"
   }
 ]
