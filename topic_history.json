@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-29",
-    "stage1_topics": "- **自組織層級技能樹與跨域遷移**  \n  - 目前僅少數工作能同時自動構建多層次技能結構並直接遷移，缺乏可擴展基準與統一框架。  \n  - 代表論文：*Learning Hierarchical Skill Trees via Self‑Supervised Exploration*（NeurIPS 2025）、*Cross‑Domain Skill Transfer through Meta‑Tree Alignment*（ICML 2026）、*Self‑Organizing Skill Graphs for Long‑Horizon Planning*（arXiv:2509.04123）。  \n  - 核心問題：無標籤環境下自發辨識層級結構、跨域映射缺乏理論保證、評測平台單一，缺少跨模態、跨物理引擎測試。  \n\n- **逆向強化學習驅動的零樣本工具創造**  \n  - IRL ",
-    "final_proposal": "**研究痛點**  \n- S‑SG 只能在單一模擬環境學得固定長度窗口，導致技能碎片化（NeurIPS 2025）。  \n- Meta‑Tree Alignment 仍依賴手工相似度，缺乏跨物理引擎保證（ICML 2026）。  \n- 零樣本工具 IRL 受動力學落差影響，真機失敗率高（ICLR 2026）。  \n\n**核心方法 PH‑SDT**  \n- 結合動態時間窗口生成（DTGP）與物理導向獎勵塑形（PGRS）。  \n- RNN 產生可變窗口 `w_t`，並輸出平滑正則 `L_reg`。  \n- 在窗口內構建暫態圖 `G_t`，以時間距離與狀態相似度加權。  \n- GraphSAGE 聚"
-  },
-  {
     "date": "2026-10-30",
     "stage1_topics": "**Stage 1：探索熱門議題（結構化摘要）**\n\n- **主題一：預測資訊最大化的好奇心探索**  \n  - **潛力**：高維連續控制環境中，利用預測資訊作為內在獎勵已證明能顯著加速稀疏獎勵任務，但缺乏統一理論與大規模基準。  \n  - **代表論文**：  \n    - *Predictive Information for Exploration in Continuous Control*（Alex Kim，NeurIPS 2025）  \n    - *InfoMaxRL: Unsupervised Exploration via Mutual Information Maximization*（Priya Singh，ICML 2026）  \n    - *Temporal Predictive Coding for Curiosity‑Driven Reinforcemen",
     "final_proposal": "**研究痛點**  \n- 目前無監督技能發現多用靜態圖或單一能量模型，無法同步處理技能階層化與目標空間自適應映射。  \n- *Graph‑Structured Skill Discovery* (ICLR 2025) 的圖結構固定，對環境變化反應慢。  \n- *Energy‑Based Latent Goal Learning* (NeurIPS 2026) 只在單一目標空間學習，跨任務泛化受限。  \n\n**核心方法：HEGSL**  \n- **動態圖更新**：指數移動平均更新邊權 `A_t`，即時反映最近 `K` 步行動‑狀態對。  \n- **階層社群偵測**：雙層 Louvain 在節點嵌"
@@ -68,5 +63,10 @@
     "date": "2026-11-11",
     "stage1_topics": "**主題一：等變圖神經網路預測量子化學波函數**  \n- 研究動機：目前僅少數團隊將點群等變性嚴格嵌入波函數模型，缺乏在大型分子與固態系統上同時保證化學精度與可擴展性的基準。  \n- 代表論文：  \n  - *Equivariant Graph Neural Ansatz for Molecular Wavefunctions*（Yuan Zhou，NeurIPS 2025）  \n  - *Symmetry‑Preserving Neural Quantum States*（Lina Patel，ICLR 2026）  \n  - *Scalable Equivariant QML for Periodic Materials*（arXiv:2508.04123，2025）  \n- 核心技術挑戰：① 在保持等變性的前提下設計高效參數化策略，避免指數級計算成本；② 在實際化學計算流程中將此類模",
     "final_proposal": "- **研究痛點**  \n  - 等變圖神經網路（如 *Equivariant Graph Neural Ansatz for Molecular Wavefunctions*，NeurIPS 2025）雖能在小分子達化學精度，但在千原子或週期性固體上成本指數級。  \n  - 傳統基底僵硬（徑向基函/平面波）缺乏自適應，導致高低對稱系統表現差異大。  \n  - 高階波函數標籤（CCSD(T)、FCI）稀缺，直接監督訓練易過擬合。  \n  - 以上缺陷亦在 *Symmetry‑Preserving Neural Quantum States*（ICLR 2026）與 *Scalable Equi"
+  },
+  {
+    "date": "2026-11-12",
+    "stage1_topics": "**主題一：語言驅動工具自發發現與合成**  \n- **潛力來源**：目前僅少數團隊能以純文字指令產生新物理工具，缺乏系統化語意‑物理對齊與高效樣本學習。  \n- **代表論文**：  \n  - *Language‑Guided Tool Discovery for Embodied Agents*（ICLR 2026）  \n  - *Zero‑Shot Tool Synthesis via World Models*（NeurIPS 2025）  \n  - *Grounded Physical Reasoning for Tool Construction*（arXiv 2025）  \n- **核心技術挑戰**：  \n  ① 在高維物理模擬中以極少語言示例推斷可行工具形狀與材質。  \n  ② 缺乏可微分的跨模態語意與動作執行共同表徵。  \n  ③ 生成工具的安全性與可驗證性尚無統一評估基",
+    "final_proposal": "- **研究痛點**：現有語言驅動工具合成系統（如 *Language‑Guided Tool Discovery* ICLR 2026、*Zero‑Shot Tool Synthesis via World Models* NeurIPS 2025）樣本效率低、跨模擬引擎泛化差，且缺乏統一安全評估基準。  \n- **核心創新**：提出「梯度投影式物理約束潛在搜尋」（GP‑PCLS），將 DiffPhysics 可微分彈性體模擬的功能梯度與安全梯度直接投影至語意‑形狀潛在空間，實現高樣本效率與即時推論。  \n- **演算法流程**：  \n  1. `LangEncoder`（Llama‑2‑7"
   }
 ]
