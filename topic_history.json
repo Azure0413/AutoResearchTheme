@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-10-31",
-    "stage1_topics": "**Meta‑Learning 驅動的自適應路由 (Meta‑Routing for MoE)**  \n- **突破潛力**：傳統 MoE 以固定門控為主，難以在新任務或分布變化時快速調整；Meta‑Learning 允許在少量樣本下即時重構「哪裡」與「如何」選擇專家，為少數團隊開啟新方向。  \n- **代表論文**：  \n  - *Meta‑MoE: Meta‑Learned Routing for Few‑Shot Adaptation*（Jia Liu，ICLR 2025）  \n  - *Task‑Aware Expert Selection via Gradient‑Based Meta‑Learning*（Wei Zhang，NeurIPS 2025）  \n  - *Fast Adaptation of MoE via Hypernetwork‑Generated Gating*",
-    "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 大型 MoE 在少樣本或快速變化任務上仍需大量微調，門控負載不均、梯度衝突嚴重（Zhang et al., NeurIPS 2025）。  \n  - Meta‑MoE、Hyper‑Gated MoE 引入元參數或超網路，但未利用任務間結構資訊；GraphMoE 只驗證單一大型任務，缺乏少樣本元學習能力（Liu et al., ICLR 2025；arXiv:2508.01345；Kim et al., ICML 2026）。  \n  - 因此，少樣本多任務環境下兼顧快速門控適應與任務圖共享的 MoE 尚未被充分探索。\n\n"
-  },
-  {
     "date": "2026-11-01",
     "stage1_topics": "**主題一: 異質群對稱的自動發現與適應**  \n- 為何不飽和但有突破潛力：目前大多數等變模型只能處理單一連續或離散群，缺乏同時學習混合對稱（例如旋轉 + 鏡射 + 離散排列）的機制，這為跨領域幾何資料（化學、機械、社交網路）提供了未被開發的空間。  \n- 代表 paper  \n  - *Learning Mixed Continuous‑Discrete Symmetries in Graph Neural Networks*，第一作者 **Hao Wu**，ICLR 2025。  \n  - *Adaptive Group Selection for Equivariant Transformers*，第一作者 **Maya Patel**，NeurIPS 2025。  \n  - *Group‑Agnostic Equivariant Architectures via Neural ",
     "final_proposal": "- **研究痛點**：現實幾何資料同時具備連續旋轉、鏡射與離散置換等多重對稱，現有等變模型多限於單一群，無法自動辨識混合群，導致跨領域任務表現受限。  \n- **缺陷舉例**：  \n  - *Learning Mixed Continuous‑Discrete Symmetries in Graph Neural Networks*（ICLR 2025）僅在小規模合成圖上示範，缺乏大規模訓練策略。  \n  - *Adaptive Group Selection for Equivariant Transformers*（NeurIPS 2025）使用硬式群選擇，無法在訓練中動態調整群貢獻。  "
@@ -68,5 +63,10 @@
     "date": "2026-11-13",
     "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **主題一：Empowerment‑驅動的多代理自發通訊**  \n  - *關鍵點*：現有多聚焦於單一代理的資訊增益，缺乏對「控制自身未來狀態的能力」(empowerment) 的系統化研究，難以直接產生語意化自發通訊協議。  \n  - *代表論文*：  \n    - *Empowerment‑Driven Emergent Communication in Multi‑Agent Reinforcement Learning*（Yuan Chen，ICLR 2026）  \n    - *Variational Empowerment for Cooperative Exploration*（Lina Wang，NeurIPS 2025）  \n    - *Information‑Theoretic Intrinsic Rewards for D",
     "final_proposal": "- **研究痛點**：多代理在高維視覺環境需自發語意通訊；現有 empowerment 方法不穩定，對比式動力學未結合，樣本效率低。  \n- **核心框架**：雙層變分‑對比式 Empowerment (DVCE)，同時估算即時潛變量 `z` 與長期潛變量 `w`，形成兩層 KL 下界，並以對比式潛在動力學校正 `c_t` 修正 `z`。  \n- **資訊瓶頸**：訊息 `msg_i` 透過高斯重參數化抽樣，加入 KL 正則 `L_ib`，只保留對 empowerment 有貢獻的資訊，維持訊息維度 ≤16。  \n- **演算法流程**：觀測編碼 → 雙層變分估算 → 對比校正 → 訊息產生 "
+  },
+  {
+    "date": "2026-11-14",
+    "stage1_topics": "**主題一：延遲感知的即時路由與動態專家裁剪**  \n- **突破潛力**：現有 MoE 以吞吐量為唯一目標，忽略硬體延遲與功耗；邊緣即時服務需即時裁剪低貢獻專家、調整門檻。  \n- **代表論文**：  \n  - *Latency‑Aware Mixture of Experts for Real‑Time Inference* (ICLR 2025, arXiv:2502.04123)  \n  - *Dynamic Expert Pruning for Efficient MoE Deployment* (NeurIPS 2025, arXiv:2510.11208)  \n  - *Adaptive Compute Budgeting in Sparse Experts* (ICML 2026, arXiv:2605.06791)  \n- **核心技術問題**：  \n  - 設計可微延",
+    "final_proposal": "**研究痛點與背景**  \n- 現有 MoE 研究多聚焦吞吐量，忽略即時延遲、功耗與專家老化。  \n- *Latency‑Aware MoE for Real‑Time Inference*（ICLR 2025）雖降低 P99 延遲，但僅考慮單次推論，缺乏跨時間專家生命周期管理。  \n- *Lifelong MoE with Expert Lifecycle Management*（ICML 2026）提供專家增刪，但未處理硬體資源波動與即時負載平衡，易在邊緣/雲混合部署中產生熱點。  \n- 因此，缺乏「即時延遲感知 + 動態專家裁剪 + 終身專家管理」的閉環系統。\n\n**核心研究方法 – L"
   }
 ]
