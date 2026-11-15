@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-11-02",
-    "stage1_topics": "**Stage 1：探索熱門議題（因果追蹤式資料毒化辨識、流式持續學習中的適應性資料毒化、模型自我修改的隱蔽後門與認證防禦）**\n\n- **主題一：因果追蹤式資料毒化辨識**  \n  - 研究缺口：傳統方法聚焦統計異常或表徵漂移，未能定位「哪筆訓練樣本導致特定錯誤」的因果來源。  \n  - 代表工作：  \n    - *Causal Tracing of Data Poisoning in Large Language Models*（Hao Liu，ICLR 2026）  \n    - *Graphical Influence Modeling for Poisoned Sample Identification*（Rina Kumar，NeurIPS 2025）  \n    - *Counterfactual Data Attribution for Post‑Training Poi",
-    "final_proposal": "- **研究痛點**：大型語言模型在持續學習中易被少量惡意樣本植入時間性後門（*Continual Poisoning Attacks and Defenses in Streaming Language Models*，ICML 2025）。現有防禦要麼導致遺忘，要麼計算成本過高。  \n- **缺口**：缺少即時、低成本且具因果解釋的防禦機制，能在 24‑48 GB GPU 上對上億參數模型進行持續毒化檢測與校正。  \n- **核心框架**：因果影響梯度＋元圖自適應防禦（CIGS‑MCGA），結合「因果影響梯度篩選」與「元學習式因果圖結構自適應」。  \n- **關鍵流程**：  \n  1. "
-  },
-  {
     "date": "2026-11-03",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **風險感知神經隨機微分方程（R‑Neural‑SDE）在機器人控制**  \n  - 研究團隊人數 <10，缺乏標準基準。  \n  - 代表論文：  \n    - *Risk‑Aware Neural SDE Controllers for Legged Robots* (NeurIPS 2025, arXiv:2503.11247)  \n    - *Stochastic Differential Reinforcement Learning with Safety Constraints* (ICLR 2026, arXiv:2601.04589)  \n    - *Probabilistic Reachability via Neural SDEs for Autonomous Driving* (ICML 2025, arXiv:251",
     "final_proposal": "- **研究痛點**：現有 *Risk‑Aware Neural SDE Controllers*（NeurIPS 2025）與 *Probabilistic Reachability via Neural SDEs*（ICML 2025）在高維連續控制上需大量 Monte‑Carlo，梯度方差大；連續正規化流（ICLR 2026、NeurIPS 2025）在多模態高維資料上步長爆炸，缺少安全約束。  \n- **目標**：提出同時保證安全風險上界與計算效率的連續時間模型，能在單張 24‑48 GB GPU 上即時訓練與推論。  \n- **核心方法 RA‑CNF**：結合 Risk‑Bounde"
@@ -68,5 +63,10 @@
     "date": "2026-11-15",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：等變神經算子於演化領域的 PDE 求解**  \n  - **痛點**：現有算子假設固定幾何域，無法處理拓撲變化或動態網格，限制在流體、材料斷裂等真實模擬中的應用。  \n  - **代表工作**：  \n    - *Equivariant Neural Operators for Time‑Varying Domains*（ICLR 2026）  \n    - *Topo‑Equivariant Neural PDE Solvers*（NeurIPS 2025）  \n    - *Geometry‑Aware Neural Operators with Adaptive Mesh Equivariance*（arXiv:2504.01234，2025）  \n  - **核心技術問題**：  \n    - 在網格細化/重構時保持群等變性",
     "final_proposal": "**研究痛點與背景**  \n- 現實模擬中常見拓撕與拓撲變化，傳統神經算子（FNO、DeepONet）假設固定域，導致拓撲點誤差急升。  \n- 2026 ICLR《Equivariant Neural Operators for Time‑Varying Domains》支援光滑變形，拓撲一致率≈70%。  \n- 2025 NeurIPS《Topo‑Equivariant Neural PDE Solvers》加入拓撲同構訊息傳遞，一致率>90%，但圖同構成本高、訓練時間+30%。  \n- 仍缺低成本、等變且能保持拓撲的動態網格再參數化方案。\n\n**核心研究方法（TCMR）**  \n- **可"
+  },
+  {
+    "date": "2026-11-16",
+    "stage1_topics": "**主題一：動態因果圖推斷與可逆修復的後訓練資料毒化**  \n- 研究缺口：目前僅有零星工作將因果圖應用於後訓練毒化辨識，缺乏系統化「因果路徑」抽取與可逆修復流程，模型層級與資料子集尚未被充分探索。  \n- 代表論文：  \n  - *Causal Attribution of Post‑Training Data Poisoning in Large Language Models*（NeurIPS 2025）  \n  - *Repairing Poisoned Models via Counterfactual Fine‑Tuning*（ICLR 2026）  \n  - *Graphical Causal Inference for Data Poisoning Detection*（arXiv:2508.01234, 2025）  \n- 核心技術挑戰：  \n  - 在不重新訓練全模型的",
+    "final_proposal": "**研究痛點與背景**  \n- 大型語言模型後訓練易被少量惡意資料毒化，現有防禦多聚焦於全模型再訓練或單次反事實微調，資源受限時難快速恢復。  \n- *Causal Attribution of Post‑Training Data Poisoning*（NeurIPS 2025）證明可透過激活圖重建因果子圖定位毒化路徑，但僅一次性診斷。  \n- *Repairing Poisoned Models via Counterfactual Fine‑Tuning*（ICLR 2026）顯示局部微調有效，但未考慮毒化訊號在圖結構中的傳播，次級偏差仍可能殘留。  \n\n**核心方法 – CGAIR‑S"
   }
 ]
