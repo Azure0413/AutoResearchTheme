@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-11-03",
-    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **風險感知神經隨機微分方程（R‑Neural‑SDE）在機器人控制**  \n  - 研究團隊人數 <10，缺乏標準基準。  \n  - 代表論文：  \n    - *Risk‑Aware Neural SDE Controllers for Legged Robots* (NeurIPS 2025, arXiv:2503.11247)  \n    - *Stochastic Differential Reinforcement Learning with Safety Constraints* (ICLR 2026, arXiv:2601.04589)  \n    - *Probabilistic Reachability via Neural SDEs for Autonomous Driving* (ICML 2025, arXiv:251",
-    "final_proposal": "- **研究痛點**：現有 *Risk‑Aware Neural SDE Controllers*（NeurIPS 2025）與 *Probabilistic Reachability via Neural SDEs*（ICML 2025）在高維連續控制上需大量 Monte‑Carlo，梯度方差大；連續正規化流（ICLR 2026、NeurIPS 2025）在多模態高維資料上步長爆炸，缺少安全約束。  \n- **目標**：提出同時保證安全風險上界與計算效率的連續時間模型，能在單張 24‑48 GB GPU 上即時訓練與推論。  \n- **核心方法 RA‑CNF**：結合 Risk‑Bounde"
-  },
-  {
     "date": "2026-11-04",
     "stage1_topics": "**Stage 1 — 熱門議題概覽（約 400 字）**\n\n- **跨層稀疏自編碼器驅動的功能模組聚類與映射**  \n  - 目前研究多聚焦於單層稀疏自編碼器，缺乏將不同層稀疏代碼自動對齊成跨層模組的系統化方法。  \n  - 代表工作：  \n    - *Sparse Autoencoder Discovery of Modular Computation in Transformers*（Yuan Li，NeurIPS 2025）  \n    - *Cross‑Layer Module Alignment via Sparse Coding*（Mina Patel，ICLR 2026）  \n    - *Interpretable Sparse Coding of LLM Internal Representations*（arXiv:2509.01357，2025）  \n  - 主要",
     "final_proposal": "**研究痛點與背景**  \n- 現有跨層稀疏自編碼器（Sparse Autoencoder Discovery of Modular Computation in Transformers, NeurIPS 2025）只能在單層取得稀疏碼，跨層對齊需雙向 KL 或歐氏距離，導致深層模型梯度消失、對齊不穩。  \n- CL‑MAC（Cross‑Layer Module Alignment via Sparse Coding, ICLR 2026）引入對稱 KL，但在百億參數模型上計算成本呈二次增長，缺乏可擴展碼本對齊機制。  \n- 兩者限制「模組可重用性」與「推理加速」，尤其在單張 24‑48 G"
@@ -68,5 +63,10 @@
     "date": "2026-11-16",
     "stage1_topics": "**主題一：動態因果圖推斷與可逆修復的後訓練資料毒化**  \n- 研究缺口：目前僅有零星工作將因果圖應用於後訓練毒化辨識，缺乏系統化「因果路徑」抽取與可逆修復流程，模型層級與資料子集尚未被充分探索。  \n- 代表論文：  \n  - *Causal Attribution of Post‑Training Data Poisoning in Large Language Models*（NeurIPS 2025）  \n  - *Repairing Poisoned Models via Counterfactual Fine‑Tuning*（ICLR 2026）  \n  - *Graphical Causal Inference for Data Poisoning Detection*（arXiv:2508.01234, 2025）  \n- 核心技術挑戰：  \n  - 在不重新訓練全模型的",
     "final_proposal": "**研究痛點與背景**  \n- 大型語言模型後訓練易被少量惡意資料毒化，現有防禦多聚焦於全模型再訓練或單次反事實微調，資源受限時難快速恢復。  \n- *Causal Attribution of Post‑Training Data Poisoning*（NeurIPS 2025）證明可透過激活圖重建因果子圖定位毒化路徑，但僅一次性診斷。  \n- *Repairing Poisoned Models via Counterfactual Fine‑Tuning*（ICLR 2026）顯示局部微調有效，但未考慮毒化訊號在圖結構中的傳播，次級偏差仍可能殘留。  \n\n**核心方法 – CGAIR‑S"
+  },
+  {
+    "date": "2026-11-17",
+    "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：連續時間風險感知強化學習於能源系統與金融交易**  \n  - **研究動機**：能源電網與高頻金融市場的隨機動態尚缺乏以神經 SDE 為基礎的即時決策框架，競爭壁壘低，突破潛力大。  \n  - **代表論文**  \n    - *Stochastic Differential Reinforcement Learning for Energy Grid Management*（Yuan Liu，NeurIPS 2025）  \n    - *Continuous‑Time Policy Gradient via Neural SDEs*（Jae‑Hyun Kim，ICML 2026）  \n    - *Risk‑Sensitive Neural SDE Planning for Autonomous Vehicles*（Ananya ",
+    "final_proposal": "- **研究痛點**：高維科學資料（天體模擬、單細胞 RNA‑seq）呈現非線性、隨機波動，傳統 CNF 會崩解；ICML 2025 的隨機 CNF 雖捕捉宏觀噪聲，但手工噪聲排程導致 ELBO 方差高、收斂慢；NeurIPS 2026 的 VR‑S‑CNF 用控制變量減方差，但噪聲仍全局固定。  \n- **核心創新**：提出 **RANS‑S‑CNF**，將離線強化學習代理與控制變量結合，於每 ODE 步即時決定噪聲標準差 `σ_i`，以最小化梯度方差並保持可逆性。  \n- **關鍵演算法**：  \n  1. 初始化漂移 `f_θ`、擴散 `g_θ`（與 Wang ICML 2025 同）。"
   }
 ]
