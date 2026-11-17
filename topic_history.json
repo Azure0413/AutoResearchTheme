@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-11-04",
-    "stage1_topics": "**Stage 1 — 熱門議題概覽（約 400 字）**\n\n- **跨層稀疏自編碼器驅動的功能模組聚類與映射**  \n  - 目前研究多聚焦於單層稀疏自編碼器，缺乏將不同層稀疏代碼自動對齊成跨層模組的系統化方法。  \n  - 代表工作：  \n    - *Sparse Autoencoder Discovery of Modular Computation in Transformers*（Yuan Li，NeurIPS 2025）  \n    - *Cross‑Layer Module Alignment via Sparse Coding*（Mina Patel，ICLR 2026）  \n    - *Interpretable Sparse Coding of LLM Internal Representations*（arXiv:2509.01357，2025）  \n  - 主要",
-    "final_proposal": "**研究痛點與背景**  \n- 現有跨層稀疏自編碼器（Sparse Autoencoder Discovery of Modular Computation in Transformers, NeurIPS 2025）只能在單層取得稀疏碼，跨層對齊需雙向 KL 或歐氏距離，導致深層模型梯度消失、對齊不穩。  \n- CL‑MAC（Cross‑Layer Module Alignment via Sparse Coding, ICLR 2026）引入對稱 KL，但在百億參數模型上計算成本呈二次增長，缺乏可擴展碼本對齊機制。  \n- 兩者限制「模組可重用性」與「推理加速」，尤其在單張 24‑48 G"
-  },
-  {
     "date": "2026-11-05",
     "stage1_topics": "**多尺度狀態空間模型 (MSSN)**  \n- 目前 SSM 主要處理單一時間尺度，難以同時捕捉秒級與日級依賴，對長期氣候與多層金融序列關鍵。  \n- 代表工作：*Multi‑Scale State‑Space Networks for Hierarchical Sequence Modeling* (NeurIPS 2025)、*Adaptive Inter‑Scale Coupling in Hierarchical SSMs* (ICLR 2026)、*Learning Cross‑Scale Dynamics with Structured State‑Space Blocks* (arXiv:2509.04123)。  \n- 核心問題：在保持線性時間複雜度的同時設計可學習的跨層訊號傳遞與回饋；跨尺度參數共享與正則化理論尚未完整，易於過擬合。  \n\n**閘控線性遞迴單元 (GLR",
     "final_proposal": "**研究痛點與背景**  \n- 現實長序列（氣候、金融、基因）同時具秒級快速變化與日/季節慢速趨勢，單尺度 SSM（如 Mamba）只能捕捉局部相關，導致 ERA5 氣象預測與 NASDAQ 多日走勢 RMSE 高 15%+。  \n- 直線性遞迴缺少門控，對突變點（感測器故障、金融劇烈波動）MSE 進一步上升 20%（ICML 2025）。  \n- 固定隨機特徵在稀疏高維資料上表現不穩，基因序列 1M 令牌 Top‑1 準確率低 4%（NeurIPS 2025）。  \n- 目前實作在單卡 24‑48 GB GPU 上仍超出記憶體與 FLOPs 限制。\n\n**核心研究方法 – HAG‑SSN**"
@@ -68,5 +63,10 @@
     "date": "2026-11-17",
     "stage1_topics": "**結構化摘要（300–500字）**\n\n- **主題一：連續時間風險感知強化學習於能源系統與金融交易**  \n  - **研究動機**：能源電網與高頻金融市場的隨機動態尚缺乏以神經 SDE 為基礎的即時決策框架，競爭壁壘低，突破潛力大。  \n  - **代表論文**  \n    - *Stochastic Differential Reinforcement Learning for Energy Grid Management*（Yuan Liu，NeurIPS 2025）  \n    - *Continuous‑Time Policy Gradient via Neural SDEs*（Jae‑Hyun Kim，ICML 2026）  \n    - *Risk‑Sensitive Neural SDE Planning for Autonomous Vehicles*（Ananya ",
     "final_proposal": "- **研究痛點**：高維科學資料（天體模擬、單細胞 RNA‑seq）呈現非線性、隨機波動，傳統 CNF 會崩解；ICML 2025 的隨機 CNF 雖捕捉宏觀噪聲，但手工噪聲排程導致 ELBO 方差高、收斂慢；NeurIPS 2026 的 VR‑S‑CNF 用控制變量減方差，但噪聲仍全局固定。  \n- **核心創新**：提出 **RANS‑S‑CNF**，將離線強化學習代理與控制變量結合，於每 ODE 步即時決定噪聲標準差 `σ_i`，以最小化梯度方差並保持可逆性。  \n- **關鍵演算法**：  \n  1. 初始化漂移 `f_θ`、擴散 `g_θ`（與 Wang ICML 2025 同）。"
+  },
+  {
+    "date": "2026-11-18",
+    "stage1_topics": "- **圖神經網路驅動的自動電路抽取與驗證**  \n  - 目前缺乏能在億級參數模型中自動化、可驗證地抽取功能電路的系統，圖神經網路提供結構化搜尋與推理的可能。  \n  - 核心技術難題：如何在不產生過度密集圖的情況下構建可靠的 **activation graph**，並在大模型上保持計算可擴展；抽取得到的電路缺乏可操作的驗證方法，需設計基於干預的自動測試框架以證實功能正確性。  \n  - 代表論文：*Neural Circuit Discovery with Graph Neural Networks* (NeurIPS 2025)、*Automated Verification of Interpretable Circuits in Large Language Models* (ICLR 2026)、*Activation Graph Mining for Mechanistic",
+    "final_proposal": "**研究摘要（300–500字）**\n\n- **痛點**  \n  - LLM 內部機制仍為「黑盒」；現有 *Neural Circuit Discovery with Graph Neural Networks*（NeurIPS 2025）與 *Automated Verification of Interpretable Circuits in Large Language Models*（ICLR 2026）依賴固定門檻產生的 activation graph，億級模型下圖過密，記憶與計算爆炸。  \n  - *Contrastive Sparse Coding for Multi‑Scal"
   }
 ]
