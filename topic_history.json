@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-11-05",
-    "stage1_topics": "**多尺度狀態空間模型 (MSSN)**  \n- 目前 SSM 主要處理單一時間尺度，難以同時捕捉秒級與日級依賴，對長期氣候與多層金融序列關鍵。  \n- 代表工作：*Multi‑Scale State‑Space Networks for Hierarchical Sequence Modeling* (NeurIPS 2025)、*Adaptive Inter‑Scale Coupling in Hierarchical SSMs* (ICLR 2026)、*Learning Cross‑Scale Dynamics with Structured State‑Space Blocks* (arXiv:2509.04123)。  \n- 核心問題：在保持線性時間複雜度的同時設計可學習的跨層訊號傳遞與回饋；跨尺度參數共享與正則化理論尚未完整，易於過擬合。  \n\n**閘控線性遞迴單元 (GLR",
-    "final_proposal": "**研究痛點與背景**  \n- 現實長序列（氣候、金融、基因）同時具秒級快速變化與日/季節慢速趨勢，單尺度 SSM（如 Mamba）只能捕捉局部相關，導致 ERA5 氣象預測與 NASDAQ 多日走勢 RMSE 高 15%+。  \n- 直線性遞迴缺少門控，對突變點（感測器故障、金融劇烈波動）MSE 進一步上升 20%（ICML 2025）。  \n- 固定隨機特徵在稀疏高維資料上表現不穩，基因序列 1M 令牌 Top‑1 準確率低 4%（NeurIPS 2025）。  \n- 目前實作在單卡 24‑48 GB GPU 上仍超出記憶體與 FLOPs 限制。\n\n**核心研究方法 – HAG‑SSN**"
-  },
-  {
     "date": "2026-11-06",
     "stage1_topics": "**主題一：測試時計算資源與推理深度的動態伸縮律**  \n- **突破潛力**：缺乏量化「推理步數」與「即時算力」關係的理論與基準，若揭示伸縮律可在不增參數的前提下提升效能。  \n- **代表工作**：  \n  - *Inference Compute Frontier for Reasoning Transformers* (NeurIPS 2025, Lina Kong)  \n  - *Dynamic Reasoning Paths via Adaptive Compute Allocation* (ICLR 2026, Ravi Patel)  \n  - *Scaling Laws for Test‑time Computation in Chain‑of‑Thought Models* (arXiv 2604.01234, Mei‑Lin Hsu)  \n- **核心問題**：  \n",
     "final_proposal": "**研究痛點與背景**  \n- 多步推理模型多停留於固定步數或單步 RLHF，缺乏動態算力分配與步驟級自我驗證。  \n- NeurIPS 2025《Inference Compute Frontier for Reasoning Transformers》與《Reward Modeling for Structured Logical Chains》僅提供靜態獎勵，無即時調整機制。  \n- 需一套能預測剩餘計算需求、即時驗證每一步、並在必要時自適應終止或重生成的完整框架。\n\n**核心方法 – ACV（Adaptive Compute‑Verify）**  \n- **步數預測器**：兩層前饋，輸"
@@ -68,5 +63,10 @@
     "date": "2026-11-18",
     "stage1_topics": "- **圖神經網路驅動的自動電路抽取與驗證**  \n  - 目前缺乏能在億級參數模型中自動化、可驗證地抽取功能電路的系統，圖神經網路提供結構化搜尋與推理的可能。  \n  - 核心技術難題：如何在不產生過度密集圖的情況下構建可靠的 **activation graph**，並在大模型上保持計算可擴展；抽取得到的電路缺乏可操作的驗證方法，需設計基於干預的自動測試框架以證實功能正確性。  \n  - 代表論文：*Neural Circuit Discovery with Graph Neural Networks* (NeurIPS 2025)、*Automated Verification of Interpretable Circuits in Large Language Models* (ICLR 2026)、*Activation Graph Mining for Mechanistic",
     "final_proposal": "**研究摘要（300–500字）**\n\n- **痛點**  \n  - LLM 內部機制仍為「黑盒」；現有 *Neural Circuit Discovery with Graph Neural Networks*（NeurIPS 2025）與 *Automated Verification of Interpretable Circuits in Large Language Models*（ICLR 2026）依賴固定門檻產生的 activation graph，億級模型下圖過密，記憶與計算爆炸。  \n  - *Contrastive Sparse Coding for Multi‑Scal"
+  },
+  {
+    "date": "2026-11-19",
+    "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **圖結構化狀態空間模型 (Graph‑Structured State‑Space Networks)**\n  - 目前 SSM 主要處理一維時間序列，缺乏圖拓撲內建支援，影響交通、電網、分子動力學等空間連結與長期依賴的預測。\n  - 代表論文：  \n    - *Graph Structured State Space Networks*（Jia‑Wei Lin，NeurIPS 2025）  \n    - *Sparse Graph‑SSM for Molecular Dynamics*（Mina Patel，ICLR 2026）  \n    - *Structured State Space for Spatio‑Temporal Graph Forecasting*（arXiv:2507.01342，2025）\n  - 核心問題  \n  ",
+    "final_proposal": "**動態稀疏自適應圖‑狀態空間模型（DSA‑GSSM）摘要**\n\n- **研究痛點**  \n  - 既有 Graph‑SSM（NeurIPS 2025）假設圖結構不變；  \n  - Sparse Graph‑SSM（ICLR 2026）在高稀疏比例下失去局部結構且缺乏自適應更新。  \n  - 需求：單卡 24‑48 GB GPU 上，O(N) 計算、拓撲自適應、理論穩定。\n\n- **核心創新**  \n  - **可微邊門控**：\\(g_{ij}^t = σ(w_g[h_i^t‖h_j^t]+b_g)\\) 產生稀疏掩碼 \\(G^t\\)。  \n  - **K‑hop 局部稀疏化**：保留每節點最近"
   }
 ]
