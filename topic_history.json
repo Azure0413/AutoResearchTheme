@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-11-06",
-    "stage1_topics": "**主題一：測試時計算資源與推理深度的動態伸縮律**  \n- **突破潛力**：缺乏量化「推理步數」與「即時算力」關係的理論與基準，若揭示伸縮律可在不增參數的前提下提升效能。  \n- **代表工作**：  \n  - *Inference Compute Frontier for Reasoning Transformers* (NeurIPS 2025, Lina Kong)  \n  - *Dynamic Reasoning Paths via Adaptive Compute Allocation* (ICLR 2026, Ravi Patel)  \n  - *Scaling Laws for Test‑time Computation in Chain‑of‑Thought Models* (arXiv 2604.01234, Mei‑Lin Hsu)  \n- **核心問題**：  \n",
-    "final_proposal": "**研究痛點與背景**  \n- 多步推理模型多停留於固定步數或單步 RLHF，缺乏動態算力分配與步驟級自我驗證。  \n- NeurIPS 2025《Inference Compute Frontier for Reasoning Transformers》與《Reward Modeling for Structured Logical Chains》僅提供靜態獎勵，無即時調整機制。  \n- 需一套能預測剩餘計算需求、即時驗證每一步、並在必要時自適應終止或重生成的完整框架。\n\n**核心方法 – ACV（Adaptive Compute‑Verify）**  \n- **步數預測器**：兩層前饋，輸"
-  },
-  {
     "date": "2026-11-07",
     "stage1_topics": "- **因果物件互動世界模型**  \n  - 目前多數物件中心模型僅捕捉統計相關性，缺乏「干預」推理能力，仍屬少數研究領域。  \n  - 代表工作：*Causal Object Interaction Networks for Long‑Horizon Video Prediction* (NeurIPS 2025), *Intervention‑Aware Object‑Centric World Models* (ICLR 2026), *Learning Causal Graphs of Object Relations from Unlabeled Video* (arXiv 2025)。  \n  - 核心挑戰：在無標註干預訊號下自動發現因果圖、可微分動態更新以支援長期規劃、跨場景因果遷移缺乏驗證基準。  \n\n- **記憶高效長時序狀態空間影片模型**  \n  - 目前狀態空間模型",
     "final_proposal": "- **研究痛點**  \n  - 目前物件中心模型僅學統計相關性，無法在長時序影片中即時推理干預與因果傳遞（NeurIPS 2025《Causal Object Interaction Networks》）。  \n  - 記憶與計算瓶頸仍限制分鐘級高解析度影片建模（NeurIPS 2025《Memory‑Efficient State‑Space Transformers》）。  \n  - 先前將圖卷積嵌入 State‑Space（如 CAGC）在噪聲影片失效，缺乏結構化先驗與自適應稀疏化。\n\n- **核心方法 – CHM‑S4**  \n  - **分層 Chunk 記憶**：可變長度 chu"
@@ -68,5 +63,10 @@
     "date": "2026-11-19",
     "stage1_topics": "**結構化摘要（約 400 字）**\n\n- **圖結構化狀態空間模型 (Graph‑Structured State‑Space Networks)**\n  - 目前 SSM 主要處理一維時間序列，缺乏圖拓撲內建支援，影響交通、電網、分子動力學等空間連結與長期依賴的預測。\n  - 代表論文：  \n    - *Graph Structured State Space Networks*（Jia‑Wei Lin，NeurIPS 2025）  \n    - *Sparse Graph‑SSM for Molecular Dynamics*（Mina Patel，ICLR 2026）  \n    - *Structured State Space for Spatio‑Temporal Graph Forecasting*（arXiv:2507.01342，2025）\n  - 核心問題  \n  ",
     "final_proposal": "**動態稀疏自適應圖‑狀態空間模型（DSA‑GSSM）摘要**\n\n- **研究痛點**  \n  - 既有 Graph‑SSM（NeurIPS 2025）假設圖結構不變；  \n  - Sparse Graph‑SSM（ICLR 2026）在高稀疏比例下失去局部結構且缺乏自適應更新。  \n  - 需求：單卡 24‑48 GB GPU 上，O(N) 計算、拓撲自適應、理論穩定。\n\n- **核心創新**  \n  - **可微邊門控**：\\(g_{ij}^t = σ(w_g[h_i^t‖h_j^t]+b_g)\\) 產生稀疏掩碼 \\(G^t\\)。  \n  - **K‑hop 局部稀疏化**：保留每節點最近"
+  },
+  {
+    "date": "2026-11-20",
+    "stage1_topics": "**Stage 1 摘要（300–500字）**\n\n- **迭代式自我驗證回路**  \n  - 目標：讓模型在推理過程中自行產生驗證步驟，形成閉環回饋，提升自我修正能力。  \n  - 代表工作：  \n    - *Self‑Check: Iterative Self‑Verification for Reasoning in Large Language Models*（Yuan Chen，ICLR 2025）  \n    - *Recursive Self‑Consistency for Multi‑Step Reasoning*（Mina Patel，NeurIPS 2025）  \n    - *Bootstrapped Self‑Improvement via Model‑Generated Curriculum*（Jin‑Ho Lee，arXiv 2026）  \n  - 核心挑戰：",
+    "final_proposal": "- **研究痛點**：Self‑Check（ICLR 2025）與 Recursive Self‑Consistency（NeurIPS 2025）在每次推理後固定多輪驗證，導致高置信度樣本仍被重複計算；可微分推理圖（NeurIPS 2025）與 Neural Symbolic Reasoning Graph（ICML 2026）在自然語句抽取上仍依賴手工規則，跨領域遷移成本高；目前驗證預算調度多為啟發式，缺乏理論保證。\n\n- **核心框架**：Adaptive Verification‑Graph Framework（AVGF）將語意推理圖與驗證預算動態耦合，實現「雙向回饋迴路」；只在必要時"
   }
 ]
