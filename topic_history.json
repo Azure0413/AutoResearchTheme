@@ -1,10 +1,5 @@
 [
   {
-    "date": "2026-11-07",
-    "stage1_topics": "- **因果物件互動世界模型**  \n  - 目前多數物件中心模型僅捕捉統計相關性，缺乏「干預」推理能力，仍屬少數研究領域。  \n  - 代表工作：*Causal Object Interaction Networks for Long‑Horizon Video Prediction* (NeurIPS 2025), *Intervention‑Aware Object‑Centric World Models* (ICLR 2026), *Learning Causal Graphs of Object Relations from Unlabeled Video* (arXiv 2025)。  \n  - 核心挑戰：在無標註干預訊號下自動發現因果圖、可微分動態更新以支援長期規劃、跨場景因果遷移缺乏驗證基準。  \n\n- **記憶高效長時序狀態空間影片模型**  \n  - 目前狀態空間模型",
-    "final_proposal": "- **研究痛點**  \n  - 目前物件中心模型僅學統計相關性，無法在長時序影片中即時推理干預與因果傳遞（NeurIPS 2025《Causal Object Interaction Networks》）。  \n  - 記憶與計算瓶頸仍限制分鐘級高解析度影片建模（NeurIPS 2025《Memory‑Efficient State‑Space Transformers》）。  \n  - 先前將圖卷積嵌入 State‑Space（如 CAGC）在噪聲影片失效，缺乏結構化先驗與自適應稀疏化。\n\n- **核心方法 – CHM‑S4**  \n  - **分層 Chunk 記憶**：可變長度 chu"
-  },
-  {
     "date": "2026-11-08",
     "stage1_topics": "**Stage 1 主要議題概覽（300–500字）**\n\n- **超網路驅動的功能參數生成與終身學習**  \n  - 目標：用超網路即時產生新任務完整參數，避免參數膨脹與遺忘。  \n  - 代表論文：  \n    - 《HyperCL: Hypernetwork‑Based Continual Learning with Functional Regularization》 (Yuan Li, ICLR 2025)  \n    - 《Task‑Conditional Hypernetworks for Lifelong Reinforcement Learning》 (Mikael Sørensen, NeurIPS 2025, arXiv:2508.04112)  \n    - 《Dynamic Parameter Generation for Continual Vision Mod",
     "final_proposal": "**結構化摘要（約 400 字）**\n\n- **研究痛點**  \n  - 終身學習需即時產生任務專屬權重，避免參數衝突與遺忘。  \n  - 現有超網路（*HyperCL* ICLR 2025、*Task‑Conditional Hypernetworks for Lifelong RL* NeurIPS 2025）功能分離不足，遺忘率>15%。  \n  - 計算與記憶開銷高：完整權重生成需大型 MLP，顯存>20 GB，難以單卡部署。  \n  - *Dynamic Parameter Generation for Continual Vision Models* ICML 2026 雖輕量化，"
@@ -68,5 +63,10 @@
     "date": "2026-11-20",
     "stage1_topics": "**Stage 1 摘要（300–500字）**\n\n- **迭代式自我驗證回路**  \n  - 目標：讓模型在推理過程中自行產生驗證步驟，形成閉環回饋，提升自我修正能力。  \n  - 代表工作：  \n    - *Self‑Check: Iterative Self‑Verification for Reasoning in Large Language Models*（Yuan Chen，ICLR 2025）  \n    - *Recursive Self‑Consistency for Multi‑Step Reasoning*（Mina Patel，NeurIPS 2025）  \n    - *Bootstrapped Self‑Improvement via Model‑Generated Curriculum*（Jin‑Ho Lee，arXiv 2026）  \n  - 核心挑戰：",
     "final_proposal": "- **研究痛點**：Self‑Check（ICLR 2025）與 Recursive Self‑Consistency（NeurIPS 2025）在每次推理後固定多輪驗證，導致高置信度樣本仍被重複計算；可微分推理圖（NeurIPS 2025）與 Neural Symbolic Reasoning Graph（ICML 2026）在自然語句抽取上仍依賴手工規則，跨領域遷移成本高；目前驗證預算調度多為啟發式，缺乏理論保證。\n\n- **核心框架**：Adaptive Verification‑Graph Framework（AVGF）將語意推理圖與驗證預算動態耦合，實現「雙向回饋迴路」；只在必要時"
+  },
+  {
+    "date": "2026-11-21",
+    "stage1_topics": "**階層式物件中心世界模型**  \n- 目前多數模型僅在單層結構學習關係，缺乏「部件‑組件」多層次動態建模，導致長時間預測與跨場景遷移受限。  \n- 代表論文：*Hierarchical Object‑Centric World Models for Long‑Horizon Video Prediction* (NeurIPS 2025, Alex Kim)、*Compositional Dynamics via Multi‑Scale Object Graphs* (ICLR 2026, Sara Liu)、*Learning Hierarchical Relational Priors for Structured Video Generation* (ICML 2025, Ravi Patel)。  \n- 核心技術挑戰：同時學習不同層級物件分割與動態圖結構，避免層間訊息衝突；層級圖",
+    "final_proposal": "**結構化摘要（300–500字）**\n\n- **研究痛點**  \n  - 目前階層式物件中心模型（HO‑World、MSOG、HRP）在長時段影片預測中遇到三大瓶頸：  \n    1. 層間訊息衝突，圖卷積同時更新造成預測不穩定。  \n    2. 動態圖結構不夠彈性，僅於 epoch 結束後剪枝。  \n    3. 計算與記憶體開銷高，完整鄰接矩陣仍需每幀乘法。  \n  - *Spatial‑Temporal State Space Networks for Ultra‑Long Video Modeling*（ICLR 2026, Maya Patel）證明可微分狀態空間單元（SSM）能"
   }
 ]
